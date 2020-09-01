@@ -1,0 +1,17 @@
+[
+  {
+    "id": "get",
+    "alias": "g",
+    "name": "从Github本地仓库复制"
+  },
+  {
+    "id": "upload",
+    "alias": "u",
+    "name": "复制进Github本地仓库"
+  },
+  {
+    "id": "pull",
+    "alias": "p",
+    "name": "拉取Github代码"
+  }
+]

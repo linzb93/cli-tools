@@ -1,0 +1,13 @@
+[
+  {
+    "id": "init",
+    "alias": "i",
+    "name": "初始化"
+  },
+  {
+    "id": "upload",
+    "alias": "u",
+    "name": "上传文档",
+    "extra": "filename.md"
+  }
+]

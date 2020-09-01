@@ -1,0 +1,25 @@
+[
+  {
+    "id": "clear",
+    "alias": "c",
+    "name": "清除搜索记录"
+  },
+  {
+    "id": "has",
+    "alias": "h",
+    "name": "查找一个依赖是否已安装",
+    "extra": "lodash"
+  },
+  {
+    "id": "require",
+    "alias": "r",
+    "name": "确认一个js文件里面的依赖是否都已安装",
+    "extra": "test"
+  },
+  {
+    "id": "search",
+    "alias": "s",
+    "name": "获取一个依赖的详细信息，包括月下载量、最近更新日期等",
+    "extra": "lodash"
+  }
+]
