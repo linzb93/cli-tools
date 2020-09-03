@@ -1,3 +1,3 @@
-const {moduleInit} = require('../lib/util');
+const {subParser} = require('../lib/command-parser');
 
-module.exports = moduleInit.bind(this, __dirname);
+module.exports = subParser.bind(this, __dirname);

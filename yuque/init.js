@@ -20,6 +20,6 @@ module.exports = async () => {
   if (!token || !name) {
     return;
   }
-  await fs.writeJSON(path.join(__dirname, 'yuque.config.json'), {token, name});
+  await fs.writeJSON(path.join(__dirname, 'config.local.json'), {token, name});
   console.log('配置成功');
 }

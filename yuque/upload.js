@@ -9,7 +9,7 @@ module.exports = async () => {
   const BASEURL = 'https://www.yuque.com/api/v2';
   let config;
   try {
-    config = await fs.readJSON(path.join(__dirname, 'yuque.config.json'));
+    config = await fs.readJSON(path.join(__dirname, 'config.local.json'));
   } catch (e) {
     console.log('请先配置基础信息');
     return;

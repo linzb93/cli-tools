@@ -1,33 +1,24 @@
 #!/usr/bin/env node
-const {errorLogger} = require('./lib/util');
+const fs = require('fs-extra');
+const chalk = require('chalk');
+const {errorLogger, cliColumns} = require('./lib/util');
+const {parser} = require('./lib/command-parser');
+require('./lib/uncaughtHandler');
 
-process.on('uncaughtException', err => {
-  errorLogger(err);
-  process.exit(0);
-});
-process.on('uncaughtRejection', err => {
-  errorLogger(err);
-  process.exit(0);
-});
-const cli = process.argv.slice(2);
-const type = cli[0];
-let args, flag;
-if (cli[1] && cli[1].indexOf('-') === 0) {
-  args = cli.slice(2);
-  flag = cli[1].replace('-', '');
-} else {
-  args = cli.slice(1);
-}
-const typeMap = {
-  'npm': 'npm',          // npm相关
-  'access': 'access',    // 公司“精彩链接”能否正常访问
-  'gh': 'gh',            // 本地node-demo代码同步相关
-  'mock': 'mock',        // 接口mock
-  'diary': 'diary',      // 复制日记模板
-  'yuque': 'yuque',      // 语雀cli app
-};
-if (typeMap[type]) {
-  require(`./${typeMap[type]}`)(args, flag);
-} else {
-  errorLogger('命令输入有误，请重新输入！');
-}
+(async () => {
+  const {command} = parser();
+  
+  const commandMap = await fs.readJSON('./command.json');
+  if (command === undefined) {
+    console.log(`Usage: mycli <command> [options]
+
+Commands:
+${cliColumns(commandMap.map(tp => [`${tp.id}`, tp.name]))}
+
+Run ${chalk.cyan(`mycli <command> -h`)} for detailed usage of given command.`);
+  } else if (commandMap.find(item => item.id === command)) {
+    require(`./${command}`)();
+  } else {
+    errorLogger('命令输入有误，请重新输入！');
+  }
+})();
