@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs-extra');
 const chalk = require('chalk');
+const path = require('path');
 const {errorLogger, cliColumns} = require('./lib/util');
 const {parser} = require('./lib/command-parser');
 require('./lib/uncaughtHandler');
@@ -8,7 +9,7 @@ require('./lib/uncaughtHandler');
 (async () => {
   const {command} = parser();
   
-  const commandMap = await fs.readJSON('./command.json');
+  const commandMap = await fs.readJSON(path.join(__dirname, 'command.json'));
   if (command === undefined) {
     console.log(`Usage: mycli <command> [options]
 
