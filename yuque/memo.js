@@ -13,7 +13,7 @@ module.exports = async args => {
         console.log('请先配置基础信息');
         return;
     }
-    const { token, name } = config;
+    const { token } = config;
 
     const service = axios.create({
         baseURL: BASEURL,
@@ -25,7 +25,7 @@ module.exports = async args => {
     });
 
     try {
-        await service.post(`/repos/linzb93/diary/docs`, {
+        await service.post(`/repos/linzb93/notes/docs`, {
             title: `memo ${moment().format('YYYY-MM-DD h:mm:ss a')}`,
             body: args[0]
         });
