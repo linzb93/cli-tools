@@ -1,8 +1,9 @@
 const axios = require('axios');
 const fs = require('fs-extra');
 const moment = require('moment');
+const cheerio = require('cheerio');
 const path = require('path');
-const { errorLogger } = require('../lib/util');
+const { errorLogger, isURL } = require('../lib/util');
 
 module.exports = async args => {
     const BASEURL = 'https://www.yuque.com/api/v2';
@@ -24,15 +25,22 @@ module.exports = async args => {
         }
     });
 
+    let title = `memo ${moment().format('YYYY-MM-DD h:mm:ss a')}`;
+    let body = args[0];
+    if (isURL(body)) {
+        const {data: html} = await service.get(body);
+        const $ = cheerio.load(html);
+        title = $('title').text();
+    }
+
     try {
         await service.post(`/repos/linzb93/notes/docs`, {
-            title: `memo ${moment().format('YYYY-MM-DD h:mm:ss a')}`,
-            body: args[0]
+            title,
+            body
         });
     } catch (error) {
         errorLogger(error.response.data);
         return;   
     }
     console.log('推送成功');
-    // await service.put(`/repos/diary/docs/12703595`)
 }
