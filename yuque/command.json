@@ -1,9 +1,5 @@
 [
   {
-    "id": "init",
-    "name": "初始化"
-  },
-  {
     "id": "upload",
     "name": "上传文档",
     "extra": "filename.md"
