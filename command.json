@@ -13,6 +13,10 @@
         "hasOptions": true
     },
     {
+      "id": "mock",
+      "name": "接口mock"
+    },
+    {
         "id": "yuque",
         "name": "语雀cli app"
     }
