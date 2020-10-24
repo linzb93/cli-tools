@@ -48,7 +48,7 @@ function parseZhihuAnswer(url, $, next) {
     html = filterHTML($('.RichContent-inner').first().html());
     return {
       title: `${pageTitles[0]} - ${$('.UserLink-link').eq(1).text()}的回答 - ${pageTitles[1]}`,
-      body: `原文： ${url}
+      body: `原文：<a href="${url}">${url}</a> \n
       ${html}`,
       format: 'lake'
     }
@@ -60,7 +60,7 @@ function parseZhihuArticle(url, $, next) {
     const html = filterHTML($('.Post-RichText').html());
     return {
       title: $('title').text(),
-      body: `原文： ${url}
+      body: `原文： <a href="${url}">${url}</a> \n
       ${html}`,
       format: 'lake'
     }

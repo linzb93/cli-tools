@@ -8,7 +8,6 @@ require('./lib/uncaughtHandler');
 
 (async () => {
   const {command} = parser();
-  
   const commandMap = await fs.readJSON(path.join(__dirname, 'command.json'));
   if (command === undefined) {
     console.log(`Usage: mycli <command> [options]
