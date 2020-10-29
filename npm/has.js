@@ -22,6 +22,9 @@ async function handleNotFound(name, flag) {
     message: `${name} 不存在，是否安装？`
   });
   const flags = ['S', 'D'];
+  if (!flag) {
+    flag = 'S';
+  }
   if (!flags.includes(flag)) {
     errorLogger(`flag有误，应该是${flags.map(flagItem => `-${flagItem}`).join('或')}`);
     return;
