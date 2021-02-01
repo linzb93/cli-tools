@@ -1,9 +1,10 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
-const {successLogger, errorLogger, warnLogger} = require('../lib/util');
+const { successLogger, errorLogger, warnLogger } = require('../lib/util');
 
 const repository = `${process.env.HOME}/Documents/GitHub/node-demo`;
+
 
 module.exports = async args => {
   /**
@@ -17,11 +18,11 @@ module.exports = async args => {
     errorLogger('源文件不存在');
     return;
   }
-  
+
   let destFile = '';
   let destPath = repository;
   let finished = false; // 是否写入操作已完成，已完成的话循环结束不需要再写入
-  while(path.extname(destFile) !== '.js') {
+  while (path.extname(destFile) !== '.js') {
     // 获取仓库列表
     let dirList;
     try {
@@ -39,7 +40,7 @@ module.exports = async args => {
     }]);
     destFile = answer.destFile;
     if (destFile === '新建文件夹') {
-      const {answer} = await inquirer.prompt([{
+      const { answer } = await inquirer.prompt([{
         type: 'input',
         name: 'answer',
         message: '请输入文件夹名称并进入'
@@ -56,7 +57,7 @@ module.exports = async args => {
       await fs.mkdir(destPath);
       successLogger(`文件夹 ${answer} 创建成功`);
     } else if (destFile === '新建文件') {
-      const {answer} = await inquirer.prompt([{
+      const { answer } = await inquirer.prompt([{
         type: 'input',
         name: 'answer',
         message: '请输入文件名称并拷贝'
