@@ -6,7 +6,6 @@ const Chain = require('../lib/Chain');
 const { errorLogger, isURL } = require('../lib/util');
 const {parseZhihuAnswer, parseZhihuArticle} = require('./parser/zhihu');
 const parseJuejinArticle = require('./parser/juejin');
-const parseWeixinArticle = require('./parser/weixin');
 
 module.exports = async args => {
   const service = await require('./service')();
@@ -41,7 +40,6 @@ async function handleLink(url) {
     parseZhihuAnswer,
     parseZhihuArticle,
     parseJuejinArticle,
-    parseWeixinArticle,
     parseOtherUrl
   ]);
   return  queue.run(url, $);
