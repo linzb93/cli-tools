@@ -1,5 +1,5 @@
 const axios = require('axios');
-const moment = require('moment');
+const dayjs = require('dayjs');
 const cheerio = require('cheerio');
 const ora = require('ora');
 const Chain = require('../lib/Chain');
@@ -18,7 +18,7 @@ module.exports = async args => {
     params = await handleLink(args[0]);
   } else {
     params = {
-      title: `memo ${moment().format('YYYY-MM-DD h:mm:ss a')}`,
+      title: `memo ${dayjs().format('YYYY-MM-DD h:mm:ss a')}`,
       body: args[0],
       format: null
     };
