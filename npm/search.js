@@ -8,7 +8,7 @@ const Table = require('cli-table3');
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const {errorLogger} = require('../lib/util');
+const logger = require('../lib/logger');
 
 const adapter = new FileSync(path.resolve(__dirname, 'db.json'))
 const db = low(adapter)
@@ -58,7 +58,7 @@ async function fetchNp(packageName) {
     }
     const $ = cheerio.load(res.data);
     if (!$('._9ba9a726').length) {
-      errorLogger(`可能 https://npmjs.com 重新发布，请修改。`);
+      logger.error(`可能 https://npmjs.com 重新发布，请修改。`);
       return;
     }
     /**
@@ -119,7 +119,7 @@ async function fetchMulNp(args) {
     const retList = resList.map(res => {
       const $ = cheerio.load(res.data);
       if (!$('._9ba9a726').length) {
-        errorLogger(`可能 https://npmjs.com 重新发布，请修改。`);
+        logger.error(`可能 https://npmjs.com 重新发布，请修改。`);
         process.exit(0);
       }
       let obj = [];
@@ -151,7 +151,7 @@ module.exports = async args => {
     } else if (pkg.length > 1) {
       fetchMulNp(pkg);
     } else {
-      errorLogger('未检测到 package 名称，退出程序。');
+      logger.error('未检测到 package 名称，退出程序。');
     }
   }
 };

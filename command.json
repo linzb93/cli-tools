@@ -11,5 +11,9 @@
     {
         "id": "yuque",
         "name": "语雀cli app"
+    },
+    {
+        "id": "server",
+        "name": "本地服务器"
     }
 ]

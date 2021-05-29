@@ -1,24 +1,30 @@
 #!/usr/bin/env node
-const fs = require('fs-extra');
-const chalk = require('chalk');
-const path = require('path');
-const {errorLogger, cliColumns} = require('./lib/util');
-const {parser} = require('./lib/command-parser');
-require('./lib/uncaughtHandler');
+const { program } = require('commander');
+const logger = require('./lib/logger');
 
-(async () => {
-  const {command} = parser();
-  const commandMap = await fs.readJSON(path.join(__dirname, 'command.json'));
-  if (command === undefined) {
-    console.log(`Usage: mycli <command> [options]
+process.on('uncaughtException', e => {
+	logger.error(`uncaughtException:
+	${e}`);
+});
+process.on('unhandledRejection', e => {
+	logger.error(`unhandledRejection:
+	${e}`);
+});
 
-Commands:
-${cliColumns(commandMap.map(tp => [`${tp.id}`, tp.name]))}
-
-Run ${chalk.cyan(`mycli <command> -h`)} for detailed usage of given command.`);
-  } else if (commandMap.find(item => item.id === command)) {
-    require(`./${command}`)();
-  } else {
-    errorLogger('命令输入有误，请重新输入！');
-  }
-})();
+program
+.command('npm <sub-command> [rest...]')
+.option('-D, --dev', '安装到devDependencies')
+.action((subCommand, rest, cmd) => {
+    require(`./npm/${subCommand}`)(rest, cmd);
+});
+program
+.command('yuque <sub-command> [rest...]')
+.action((subCommand, rest) => {
+    require(`./yuque/${subCommand}`)(rest);
+});
+program
+.command('server')
+.action(() => {
+    require('./server');
+});
+program.parse(process.argv);

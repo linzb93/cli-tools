@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const clipboardy = require('clipboardy');
 const pFilter = require('p-filter');
-const {successLogger, errorLogger} = require('../lib/util');
+const logger = require('../lib/logger');
 
 module.exports = async args => {
   const pkgList = [];
@@ -10,7 +10,7 @@ module.exports = async args => {
   try {
     file = await fs.readFile(`${cwd}/${args[0]}.js`, 'utf8');
   } catch (e) {
-    errorLogger(`文件${args[0]}.js 不存在`);
+    logger.error(`文件${args[0]}.js 不存在`);
     return;
   }
   const patt = /require\('([a-z0-9-]+)'\)/g;
@@ -26,9 +26,9 @@ module.exports = async args => {
     return !ret;
   });
   if (filterList.length === 0) {
-    successLogger(`没有需要安装的依赖`);
+    logger.done(`没有需要安装的依赖`);
   } else {
-    errorLogger(`${filterList.join(',')} 需要安装`);
+    logger.error(`${filterList.join(',')} 需要安装`);
     clipboardy.writeSync(`cnpm i ${filterList.join(' ')} -S`);
   }
 }
