@@ -15,7 +15,11 @@ program
 .command('npm <sub-command> [rest...]')
 .option('-D, --dev', '安装到devDependencies')
 .action((subCommand, rest, cmd) => {
-    require(`./npm/${subCommand}`)(rest, cmd);
+    const aliases = {
+      i: 'install'
+    };
+    const target = aliases[subCommand] || subCommand;
+    require(`./npm/${target}`)(rest, cmd);
 });
 program
 .command('yuque <sub-command> [rest...]')
