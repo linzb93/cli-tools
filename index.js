@@ -8,7 +8,7 @@ process.on('uncaughtException', e => {
 });
 process.on('unhandledRejection', e => {
 	logger.error(`unhandledRejection:
-	${e}`);
+	${e.stack}`);
 });
 
 program
@@ -31,4 +31,19 @@ program
 .action(() => {
     require('./server');
 });
+program
+.command('getSize <url>')
+.action(url => {
+    require('./getSize')(url);
+});
+program
+.command('open <name>')
+.action(url => {
+    require('./open')(url);
+});
+program
+.command('exec <filename> [args]')
+.action((filename, args) => {
+    require('./exec')(filename, args);
+})
 program.parse(process.argv);
