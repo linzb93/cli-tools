@@ -5,7 +5,7 @@ const path = require('path');
 const {warn} = require('../lib/logger');
 const del = require('del');
 module.exports = async filePath => {
-    let fileData;
+    let fileData = '';
     if (filePath.startsWith('http')) {
         let res;
         try {

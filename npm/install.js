@@ -23,7 +23,7 @@ module.exports = async (pkgs, flag) => {
     const spinner = ora(`正在安装${targetPath}的依赖`);
     const deps = pkgConfig.dependencies || [];
     await execa('cnpm', ['install'].concat(Object.keys(deps)));
-    spinner.succeed();
+    spinner.succeed('依赖安装完成');
   } else if (isURL(pkg)) {
     logger.error('无法识别npm包');
   } else {
