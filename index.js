@@ -27,6 +27,11 @@ program
     require(`./yuque/${subCommand}`)(rest);
 });
 program
+.command('git <sub-command> [rest...]')
+.action((subCommand, rest) => {
+    require(`./git/${subCommand}`)(rest);
+});
+program
 .command('server')
 .action(() => {
     require('./server');
