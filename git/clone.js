@@ -3,7 +3,7 @@ const ora = require('ora');
 const npmPage = require('../npm/_internal/npmPage');
 const git = require('./_internal/git');
 const {clidb} = require('../lib/db');
-const execa = require('../lib/exec');
+const {openInEditor} = require('../lib/util');
 
 module.exports = async package => {
     const spinner = ora(`正在获取${package}的仓库地址`).start();
@@ -24,5 +24,5 @@ module.exports = async package => {
         return;
     }
     spinner.succeed('下载成功');
-    execa(`code ${path.resolve(cwd, dirName)}`);
+    await openInEditor(path.resolve(cwd, dirName));
 }

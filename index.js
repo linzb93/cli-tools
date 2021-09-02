@@ -47,6 +47,11 @@ program
     require('./open')(url);
 });
 program
+.command('code <name>')
+.action(name => {
+    require('./code')(name);
+});
+program
 .command('exec <filename> [args]')
 .action((filename, args) => {
     require('./exec')(filename, args);
