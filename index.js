@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 const { program } = require('commander');
 const logger = require('./lib/logger');
+const execa = require('execa');
 
-process.on('uncaughtException', e => {
+process.on('uncaughtException', async e => {
+    await execa('code', [__dirname]);
 	logger.error(`uncaughtException:
 	${e}`);
 });
-process.on('unhandledRejection', e => {
+process.on('unhandledRejection', async e => {
+    await execa('code', [__dirname]);
 	logger.error(`unhandledRejection:
 	${e.stack}`);
 });
