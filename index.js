@@ -3,13 +3,11 @@ const { program } = require('commander');
 const logger = require('./lib/logger');
 const execa = require('execa');
 
-process.on('uncaughtException', async e => {
-    await execa('code', [__dirname]);
+process.on('uncaughtException', e => {
 	logger.error(`uncaughtException:
 	${e}`);
 });
-process.on('unhandledRejection', async e => {
-    await execa('code', [__dirname]);
+process.on('unhandledRejection', e => {
 	logger.error(`unhandledRejection:
 	${e.stack}`);
 });
@@ -54,7 +52,7 @@ program
 program
 .command('code <name>')
 .action(name => {
-    require('./code')(name);
+    require('./openCode')(name);
 });
 program
 .command('exec <filename> [args]')
