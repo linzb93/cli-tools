@@ -4,3 +4,4 @@ config.secret.json
 config.local.json
 npm/db.json
 server/index.js
+.DS_Store

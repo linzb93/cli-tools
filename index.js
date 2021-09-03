@@ -31,8 +31,10 @@ program
 });
 program
 .command('git <sub-command> [rest...]')
-.action((subCommand, rest) => {
-    require(`./git/${subCommand}`)(rest);
+.option('--dir <dir>', '选择安装的目录')
+.option('--open', '在VSCode中打开项目')
+.action((subCommand, rest, cmd) => {
+    require(`./git/${subCommand}`)(rest, cmd);
 });
 program
 .command('server')
