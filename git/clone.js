@@ -3,7 +3,7 @@ const ora = require('ora');
 const npmPage = require('../npm/_internal/npmPage');
 const git = require('./_internal/git');
 const {clidb} = require('../lib/db');
-const execa = require('../lib/exec');
+const {openInEditor} = require('../lib/util');
 const logger = require('../lib/logger');
 const {isURL} = require('../lib/util');
 // TODO:commander是V7+，检查下是不是版本不对
@@ -31,7 +31,7 @@ module.exports = async (param, cmd) => {
         }
         spinner.succeed('下载成功');
         if (cmd.open) {
-            execa(`code ${path.resolve(openMap[cmd.dir], dirName)}`);
+            await openInEditor(path.resolve(openMap[cmd.dir], dirName));
         }
         return;
     }
@@ -57,7 +57,7 @@ module.exports = async (param, cmd) => {
         return;
     }
     spinner.succeed('下载成功');
-    execa(`code ${path.resolve(cwd, dirName)}`);
+    await openInEditor(path.resolve(cwd, dirName));
 }
 
 function isGitUrl(url) {
