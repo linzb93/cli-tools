@@ -6,7 +6,7 @@ const {clidb} = require('../lib/db');
 const {openInEditor} = require('../lib/util');
 const logger = require('../lib/logger');
 const {isURL} = require('../lib/util');
-// TODO:commander是V7+，检查下是不是版本不对
+
 module.exports = async (param, cmd) => {
     const package = Array.isArray(param) ? param[0] : param;
     let spinner = ora(`正在下载`);
