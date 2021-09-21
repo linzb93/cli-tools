@@ -14,7 +14,7 @@
     "url": "https://github.com/linzb93/cli-tools"
   },
   "bin": {
-    "mycli": "bin.js"
+    "mycli": "index.js"
   },
   "author": "linzhibin",
   "license": "ISC",

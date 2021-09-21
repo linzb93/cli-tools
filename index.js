@@ -50,6 +50,11 @@ program
     require('./open')(url, cmd);
 });
 program
+.command('clear <filename>')
+.action(filename => {
+    require('./clear')(filename);
+})
+program
 .command('exec <filename> [args]')
 .action((filename, args) => {
     require('./exec')(filename, args);
