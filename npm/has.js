@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const ora = require('ora');
-const execa = require('execa');
+const npm = require('./_internal/util');
 const logger = require('../lib/logger');
 
 module.exports = async (args, flag) => {
@@ -21,15 +21,12 @@ async function handleNotFound(name, dev) {
     name: 'action',
     message: `${name} 不存在，是否安装？`
   });
-  const flag = dev ? 'D' : 'S';
   if (action) {
     const spinner = ora(`正在安装${name}`).start();
-    try {
-      await execa('cnpm', ['i', name, `-${flag}`]);
-    } catch (e) {
-      spinner.fail(`${name} 无法下载，请检查拼写是否有误。`);
-      return;
-    }
+    await npm.install(name, {
+        dependencies: !dev,
+        devDependencies: dev
+    });
     spinner.succeed(`${name} 安装成功`);
   }
 }

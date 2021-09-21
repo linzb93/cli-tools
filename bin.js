@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const { program } = require('commander');
 const logger = require('./lib/logger');
-const execa = require('execa');
 
 process.on('uncaughtException', e => {
 	logger.error(`uncaughtException:
@@ -46,13 +45,9 @@ program
 });
 program
 .command('open <name>')
-.action(url => {
-    require('./open')(url);
-});
-program
-.command('code <name>')
-.action(name => {
-    require('./openCode')(name);
+.option('-c,--code', '在编辑器中打开')
+.action((url, cmd) => {
+    require('./open')(url, cmd);
 });
 program
 .command('exec <filename> [args]')

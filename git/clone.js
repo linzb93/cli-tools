@@ -71,5 +71,6 @@ function toGitUrl(url) {
         return url;
     }
     return url
-    .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/');
+    .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
+    .replace(/$/, '.git');
 }

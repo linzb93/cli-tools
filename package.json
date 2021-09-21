@@ -14,7 +14,7 @@
     "url": "https://github.com/linzb93/cli-tools"
   },
   "bin": {
-    "mycli": "index.js"
+    "mycli": "bin.js"
   },
   "author": "linzhibin",
   "license": "ISC",
@@ -35,6 +35,7 @@
     "open": "^6.4.0",
     "ora": "^3.4.0",
     "p-filter": "^2.1.0",
-    "progress": "^2.0.3"
+    "progress": "^2.0.3",
+    "runscript": "^1.5.1"
   }
 }
