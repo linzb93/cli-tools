@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const bytes = require('bytes');
 const axios = require('axios');
 const path = require('path');
-const {warn} = require('./lib/logger');
+const { warn } = require('./lib/logger');
 const del = require('del');
 module.exports = async filePath => {
     let fileData = '';
@@ -21,7 +21,7 @@ module.exports = async filePath => {
         await new Promise(resolve => {
             ws.on('finish', () => {
                 resolve();
-            })
+            });
         });
         fileData = await fs.stat(name);
         const size = bytes(fileData.size);
@@ -36,4 +36,4 @@ module.exports = async filePath => {
         return;
     }
     console.log(bytes(fileData.size));
-}
+};

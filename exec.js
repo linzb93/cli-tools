@@ -11,7 +11,7 @@ module.exports = async (filename, args) => {
         if (args === '') {
             result = target();
         } else {
-            result = target(...[args.split(',')]);
+            result = target(...[ args.split(',') ]);
         }
     } else {
         if (args.indexOf('(') > 0) {
@@ -28,4 +28,4 @@ module.exports = async (filename, args) => {
         }
     }
     console.log(await result);
-}
+};

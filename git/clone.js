@@ -2,14 +2,14 @@ const path = require('path');
 const ora = require('ora');
 const npmPage = require('../npm/_internal/npmPage');
 const git = require('./_internal/git');
-const {clidb} = require('../lib/db');
-const {openInEditor} = require('../lib/util');
+const { clidb } = require('../lib/db');
+const { openInEditor } = require('../lib/util');
 const logger = require('../lib/logger');
-const {isURL} = require('../lib/util');
+const { isURL } = require('../lib/util');
 
 module.exports = async (param, cmd) => {
     const package = Array.isArray(param) ? param[0] : param;
-    let spinner = ora(`正在下载`);
+    const spinner = ora('正在下载');
     let dirName;
     if (isGitUrl(package)) {
         const openMap = await clidb.get('openMap');
@@ -58,7 +58,7 @@ module.exports = async (param, cmd) => {
     }
     spinner.succeed('下载成功');
     await openInEditor(path.resolve(cwd, dirName));
-}
+};
 
 function isGitUrl(url) {
     return (isURL(url) && url.endsWith('.git')) || isGitSSH(url);
@@ -71,6 +71,6 @@ function toGitUrl(url) {
         return url;
     }
     return url
-    .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
-    .replace(/$/, '.git');
+        .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
+        .replace(/$/, '.git');
 }

@@ -1,0 +1,8 @@
+{
+  "extends": "eslint-config-egg",
+  "rules": {
+      "indent":["error", 4],
+      "strict": "off",
+      "comma-dangle": [2, "never"]
+  }
+}

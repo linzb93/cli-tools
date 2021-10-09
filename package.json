@@ -37,5 +37,9 @@
     "p-filter": "^2.1.0",
     "progress": "^2.0.3",
     "runscript": "^1.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-egg": "^9.0.0"
   }
 }

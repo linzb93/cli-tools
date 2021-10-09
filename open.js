@@ -1,15 +1,14 @@
-const open = require('open');
-const {clidb} = require('./lib/db');
+const { clidb } = require('./lib/db');
 const inquirer = require('inquirer');
 const logger = require('./lib/logger');
 const fs = require('fs-extra');
 const path = require('path');
-const {openInEditor} = require('./lib/util');
-module.exports = async (name) => {
+const { openInEditor } = require('./lib/util');
+module.exports = async name => {
     if (name === 'source') {
         const sourceDir = await clidb.get('sourceCodeDir');
         const dirs = await fs.readdir(sourceDir);
-        const {source} = await inquirer.prompt([
+        const { source } = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'source',
@@ -19,6 +18,9 @@ module.exports = async (name) => {
         ]);
         await openInEditor(path.join(sourceDir, source));
         return;
+    } else if (name === 'test') {
+        await openInEditor(await clidb.get('code.tool'));
+        return;
     }
     const code = await clidb.get('code');
     if (code[name]) {
@@ -26,4 +28,4 @@ module.exports = async (name) => {
     } else {
         logger.error('项目不存在');
     }
-}
+};
