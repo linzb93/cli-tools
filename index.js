@@ -14,6 +14,7 @@ process.on('unhandledRejection', e => {
 program
 .command('npm <sub-command> [rest...]')
 .option('-D, --dev', '安装到devDependencies')
+.option('-v, --version', '获取依赖的版本号')
 .action((subCommand, rest, cmd) => {
     const aliases = {
       i: 'install'

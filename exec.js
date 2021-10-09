@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const logger = require('./lib/logger');
 module.exports = async (filename, args) => {
     if (!fs.existsSync(`${filename}.js`)) {
-        logger.error('文件不存在！');
+        logger.error('文件不存在');
         return;
     }
     const target = require(`${process.cwd()}/${filename}.js`);

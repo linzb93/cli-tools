@@ -33,6 +33,7 @@ module.exports = async filePath => {
         fileData = fs.stat(filePath);
     } catch (error) {
         warn(`文件${filePath}不存在或无法读取`);
+        return;
     }
     console.log(bytes(fileData.size));
 }

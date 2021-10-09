@@ -6,13 +6,18 @@ const logger = require('../lib/logger');
 
 module.exports = async (args, flag) => {
   const name = args[0];
+  let pkg;
   try {
-    await fs.access(`./node_modules/${name}`, fs.constants.F_OK);
+    pkg = require(`${process.cwd()}/node_modules/${name}/package.json`);
   } catch (e) {
     handleNotFound(name, flag.dev);
     return;
   }
-  logger.done(`${name} 存在`);
+  if (!flag.version) {
+    logger.done(`${name} 存在`);
+  } else {
+      logger.done(`${name} 版本号是 ${pkg.version}`);
+  }
 }
 
 async function handleNotFound(name, dev) {
