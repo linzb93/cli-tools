@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const ora = require('ora');
 const npm = require('./_internal/util');

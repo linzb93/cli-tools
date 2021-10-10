@@ -18,7 +18,8 @@ module.exports = async name => {
         ]);
         await openInEditor(path.join(sourceDir, source));
         return;
-    } else if (name === 'test') {
+    }
+    if (name === 'test') {
         await openInEditor(await clidb.get('code.tool'));
         return;
     }

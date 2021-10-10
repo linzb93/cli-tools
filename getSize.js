@@ -5,7 +5,7 @@ const path = require('path');
 const { warn } = require('./lib/logger');
 const del = require('del');
 module.exports = async filePath => {
-    let fileData = '';
+    let fileData;
     if (filePath.startsWith('http')) {
         let res;
         try {
@@ -30,7 +30,7 @@ module.exports = async filePath => {
         return;
     }
     try {
-        fileData = fs.stat(filePath);
+        fileData = await fs.stat(filePath);
     } catch (error) {
         warn(`文件${filePath}不存在或无法读取`);
         return;
