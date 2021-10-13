@@ -14,7 +14,6 @@ process.on('unhandledRejection', e => {
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
-    .option('-v, --version', '获取依赖的版本号')
     .action((subCommand, rest, cmd) => {
         const aliases = {
             i: 'install'
@@ -59,5 +58,15 @@ program
     .command('exec <filename> [args]')
     .action((filename, args) => {
         require('./exec')(filename, args);
+    });
+program
+    .command('occ [data...]')
+    .action(data => {
+        require('./occ')(data);
+    });
+program
+    .command('proj [type]')
+    .action(type => {
+        require('./project')(type);
     });
 program.parse(process.argv);

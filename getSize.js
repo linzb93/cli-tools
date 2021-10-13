@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const bytes = require('bytes');
 const axios = require('axios');
 const path = require('path');
-const { warn } = require('./lib/logger');
+const logger = require('./lib/logger');
 const del = require('del');
 module.exports = async filePath => {
     let fileData;
@@ -13,7 +13,7 @@ module.exports = async filePath => {
                 responseType: 'stream'
             });
         } catch (e) {
-            warn('文件地址不存在或无法正常下载');
+            logger.error('文件地址不存在或无法正常下载');
         }
         const name = path.basename(filePath);
         const ws = fs.createWriteStream(name);
@@ -32,7 +32,7 @@ module.exports = async filePath => {
     try {
         fileData = await fs.stat(filePath);
     } catch (error) {
-        warn(`文件${filePath}不存在或无法读取`);
+        logger.error(`文件${filePath}不存在或无法读取`);
         return;
     }
     console.log(bytes(fileData.size));

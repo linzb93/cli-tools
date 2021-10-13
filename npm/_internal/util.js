@@ -1,4 +1,4 @@
-const runscript = require('runscript');
+const runscript = require('../../lib/exec');
 const { memoize, isPlainObject } = require('lodash');
 
 let npmBin = '';
