@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const { program } = require('commander');
+const { Command } = require('commander');
+const program = new Command();
 const logger = require('./lib/logger');
 
 process.on('uncaughtException', e => {
@@ -69,4 +70,4 @@ program
     .action(type => {
         require('./project')(type);
     });
-program.parse(process.argv);
+program.parse();

@@ -19,10 +19,10 @@ module.exports = async (args, flag) => {
         spinner.succeed(`${name}存在，版本号是${pkg.version}`);
         return;
     }
-    const matches = dirs.filter(dir => dir.startsWith(`_${name}@`));
+    const matches = dirs.filter(dir => dir.startsWith(`_${name.startsWith('@') ? name.replace('/', '_') : name}@`));
     if (matches.length > 1) {
         const list = matches.map(item => {
-            const version = item.match(/@(.+)@/)[1];
+            const version = getVersion(item);
             return `v${version}${version === currentVersion ? '（当前版本）' : ''}`;
         });
         spinner.succeed('发现有多个符合条件的依赖:');
@@ -50,3 +50,7 @@ module.exports = async (args, flag) => {
         }
     }
 };
+
+function getVersion(packageName) {
+    return packageName.match(/@([0-9a-z\-]+)@/)[1];
+}
