@@ -28,10 +28,10 @@ program
         require(`./yuque/${subCommand}`)(rest);
     });
 program
-    .command('git <sub-command> [rest...]')
+    .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
-    .action((subCommand, rest, cmd) => {
+    .action((subCommand = 'index', rest, cmd) => {
         require(`./git/${subCommand}`)(rest, cmd);
     });
 program
