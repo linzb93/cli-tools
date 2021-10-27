@@ -62,8 +62,9 @@ program
     });
 program
     .command('occ [data...]')
-    .action(data => {
-        require('./occ')(data);
+    .option('--token', '获取token')
+    .action((data, options) => {
+        require('./occ')(data, options);
     });
 program
     .command('proj [type]')
