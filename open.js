@@ -20,7 +20,7 @@ module.exports = async name => {
         return;
     }
     if (name === 'test') {
-        await openInEditor(await clidb.get('code.tool'));
+        await openInEditor(await clidb.get('code.tools'));
         return;
     }
     const code = await clidb.get('code');

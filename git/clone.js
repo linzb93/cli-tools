@@ -22,11 +22,12 @@ module.exports = async (param, cmd) => {
         try {
             dirName = await git.clone({
                 url,
+                dirName: path.basename(url, '.git'),
                 cwd: openMap[cmd.dir]
             });
         } catch (error) {
-            spinner.fail('下载失败');
-            console.log(error.message);
+            spinner.fail(`下载失败:
+            ${error.message}`);
             return;
         }
         spinner.succeed('下载成功');
@@ -61,16 +62,16 @@ module.exports = async (param, cmd) => {
 };
 
 function isGitUrl(url) {
-    return (isURL(url) && url.endsWith('.git')) || isGitSSH(url);
+    return isURL(url) || isGitSSH(url);
 }
 function isGitSSH(url) {
     return url.startsWith('git@') && url.endsWith('.git');
 }
 function toGitUrl(url) {
-    if (isURL(url) && url.endsWith('.git')) {
-        return url;
+    if (isURL(url)) {
+        return url.endsWith('.git') ? url : `${url}.git`;
     }
     return url
         .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
-        .replace(/$/, '.git');
+        .replace(/[^\.git]$/, '.git');
 }

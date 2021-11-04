@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const { program } = require('commander');
+const { Command } = require('commander');
+const program = new Command();
 const logger = require('./lib/logger');
 
 process.on('uncaughtException', e => {
@@ -14,7 +15,6 @@ process.on('unhandledRejection', e => {
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
-    .option('-v, --version', '获取依赖的版本号')
     .action((subCommand, rest, cmd) => {
         const aliases = {
             i: 'install'
@@ -28,10 +28,10 @@ program
         require(`./yuque/${subCommand}`)(rest);
     });
 program
-    .command('git <sub-command> [rest...]')
+    .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
-    .action((subCommand, rest, cmd) => {
+    .action((subCommand = 'index', rest, cmd) => {
         require(`./git/${subCommand}`)(rest, cmd);
     });
 program
@@ -59,5 +59,16 @@ program
     .command('exec <filename> [args]')
     .action((filename, args) => {
         require('./exec')(filename, args);
+    });
+program
+    .command('occ [data...]')
+    .option('--token', '获取token')
+    .action((data, options) => {
+        require('./occ')(data, options);
+    });
+program
+    .command('proj [type]')
+    .action(type => {
+        require('./project')(type);
     });
 program.parse();
