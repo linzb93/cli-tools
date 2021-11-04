@@ -60,4 +60,4 @@ program
     .action((filename, args) => {
         require('./exec')(filename, args);
     });
-program.parse(process.argv);
+program.parse();
