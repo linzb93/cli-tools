@@ -31,6 +31,8 @@ program
     .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
+    .option('--copy', '复制结果文本')
+    .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
         require(`./git/${subCommand}`)(rest, cmd);
     });
