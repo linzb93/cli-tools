@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const { Command } = require('commander');
 const program = new Command();
 const logger = require('./lib/logger');
@@ -67,10 +66,5 @@ program
     .option('--token', '获取token')
     .action((data, options) => {
         require('./occ')(data, options);
-    });
-program
-    .command('proj [type]')
-    .action(type => {
-        require('./project')(type);
     });
 program.parse();
