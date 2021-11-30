@@ -19,9 +19,7 @@ module.exports = async filePath => {
         const ws = fs.createWriteStream(name);
         res.data.pipe(ws);
         await new Promise(resolve => {
-            ws.on('finish', () => {
-                resolve();
-            });
+            ws.on('finish', resolve);
         });
         fileData = await fs.stat(name);
         const size = bytes(fileData.size);

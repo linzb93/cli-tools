@@ -19,7 +19,7 @@
   "author": "linzhibin",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.24.0",
     "bytes": "^3.1.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.3",
@@ -31,9 +31,11 @@
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.4.1",
+    "listr": "^0.14.3",
     "lowdb": "^1.0.0",
     "open": "^6.4.0",
     "ora": "^3.4.0",
+    "p-every": "^1.0.2",
     "p-filter": "^2.1.0",
     "progress": "^2.0.3",
     "vue": "^2.6.14"

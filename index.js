@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const { Command } = require('commander');
 const program = new Command();
 const logger = require('./lib/logger');
@@ -31,6 +30,8 @@ program
     .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
+    .option('--copy', '复制结果文本')
+    .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
         require(`./git/${subCommand}`)(rest, cmd);
     });
@@ -63,12 +64,14 @@ program
 program
     .command('occ [data...]')
     .option('--token', '获取token')
+    .option('--search <params>', '高级搜索')
     .action((data, options) => {
         require('./occ')(data, options);
     });
 program
-    .command('proj [type]')
-    .action(type => {
-        require('./project')(type);
+    .command('fund [data...]')
+    .option('--help', '帮助')
+    .action(data => {
+        require('./fund')(data);
     });
 program.parse();

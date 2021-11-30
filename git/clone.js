@@ -14,8 +14,7 @@ module.exports = async (param, cmd) => {
     if (isGitUrl(package)) {
         const openMap = await clidb.get('openMap');
         if (!openMap[cmd.dir]) {
-            logger.error('目标文件夹不存在');
-            return;
+            cmd.dir = 'source';
         }
         const url = toGitUrl(package);
         spinner.start();
