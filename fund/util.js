@@ -44,7 +44,7 @@ const settingUtil = {
         return fs.readJSONSync('fund/setting.json')[key];
     },
     set(key, value) {
-        const data = fs.readJSONSync('fund/setting.json')[key];
+        const data = fs.readJSONSync('fund/setting.json');
         data[key] = value;
         fs.writeJSONSync('fund/setting.json', data);
     }

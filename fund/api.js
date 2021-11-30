@@ -39,7 +39,7 @@ exports.getFundNetDiagram = ({ FCODE, RANGE }) => service({
     }
 });
 // 获取基金基础信息
-exports.getFundBaseTypeInformation = ({ FCODE }) => service({
+exports.getFundBaseTypeInformation = FCODE => service({
     url: '/FundMApi/FundBaseTypeInformation.ashx',
     params: {
         FCODE

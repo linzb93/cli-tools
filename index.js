@@ -1,10 +1,12 @@
+#!/usr/bin/env node
+
 const { Command } = require('commander');
 const program = new Command();
 const logger = require('./lib/logger');
 
 process.on('uncaughtException', e => {
     logger.error(`uncaughtException:
-	${e}`);
+	${e.stack}`);
 });
 process.on('unhandledRejection', e => {
     logger.error(`unhandledRejection:
@@ -71,7 +73,7 @@ program
 program
     .command('fund [data...]')
     .option('--help', '帮助')
-    .action(data => {
-        require('./fund')(data);
+    .action((data, options) => {
+        require('./fund')(data, options);
     });
 program.parse();
