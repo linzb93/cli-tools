@@ -64,7 +64,13 @@ program
 program
     .command('occ [data...]')
     .option('--token', '获取token')
+    .option('--search <params>', '高级搜索')
     .action((data, options) => {
         require('./occ')(data, options);
+    });
+program
+    .command('fund [data...]')
+    .action(data => {
+        require('./fund')(data);
     });
 program.parse();

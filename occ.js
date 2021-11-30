@@ -1,6 +1,7 @@
 const axios = require('axios');
 const open = require('open');
 const ora = require('ora');
+const dayjs = require('dayjs');
 const clipboard = require('clipboardy');
 const { sleep } = require('./lib/util');
 
@@ -89,6 +90,7 @@ module.exports = async (input, options) => {
         pageIndex: 1,
         pageSize: 2,
         param: shopId,
+        // startTime: parseDate(options.search),
         platform: match.platform,
         serviceName: match.serviceName
     });
@@ -114,3 +116,24 @@ module.exports = async (input, options) => {
         open(result);
     }
 };
+
+function parseSearch(params) {
+    if (!params) {
+        return '';
+    }
+    // 'date<=10'.match(/(>=)|(<=)|=|>|</)
+
+    const date = params.slice(5);
+    if (Number.isInteger(date)) {
+        return dayjs().subtract(date, 'd').unix();
+    }
+    const joinLength = date.split('').filter(char => char === '').length;
+    if (joinLength === 1) {
+        return dayjs(`${dayjs().year()}-${date}`).unix();
+    } else if (joinLength === 2) {
+        return dayjs(date).unix();
+    }
+    return '';
+}
+// > < = >= <=
+// a b c d e f g
