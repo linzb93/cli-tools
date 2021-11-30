@@ -70,6 +70,7 @@ program
     });
 program
     .command('fund [data...]')
+    .option('--help', '帮助')
     .action(data => {
         require('./fund')(data);
     });
