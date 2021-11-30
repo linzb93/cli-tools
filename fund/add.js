@@ -29,8 +29,8 @@ module.exports = async funds => {
 
 async function update(code) {
     let range;
-    const { netWorth } = db.fund.get(code);
-    const lastDay = netWorth.slice(-1)[0].FSRQ;
+    const { diagram } = db.fund.get(code);
+    const lastDay = diagram.slice(-1)[0].FSRQ;
     const delta = dayjs().diff(lastDay, 'd');
     if (delta < 30) {
         range = 'y';
@@ -41,19 +41,19 @@ async function update(code) {
     } else {
         range = 'n';
     }
-    const [ detail, netWorthRes ] = await Promise.all([
+    const [ baseInfo, diagramRes ] = await Promise.all([
         getFundInfo({ FCODE: code }),
         getFundNetDiagram({
             FCODE: code,
             RANGE: range
         })
     ]);
-    db.fund.updateInfo(code, detail.Expansion);
-    db.fund.insertNetWorth(code, netWorthRes.Datas.filter(item => dayjs(item.FSRQ).isAfter(dayjs(lastDay))));
-    return detail.Expansion;
+    db.fund.updateInfo(code, baseInfo.Expansion);
+    db.fund.insertDiagram(code, diagramRes.Datas.filter(item => dayjs(item.FSRQ).isAfter(dayjs(lastDay))));
+    return baseInfo.Expansion;
 }
 async function create(code) {
-    const [ detail, netWorth ] = await Promise.all([
+    const [ baseInfo, diagram ] = await Promise.all([
         getFundInfo({ FCODE: code }),
         getFundNetDiagram({
             FCODE: code,
@@ -61,9 +61,10 @@ async function create(code) {
         })
     ]);
     const resData = {
-        detail: detail.Expansion,
-        netWorth: netWorth.Datas
+        baseInfo: baseInfo.Expansion,
+        diagram: diagram.Datas,
+        setting: {}
     };
     db.fund.set(code, resData);
-    return detail.Expansion;
+    return baseInfo.Expansion;
 }
