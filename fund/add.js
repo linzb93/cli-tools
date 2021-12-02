@@ -1,30 +1,33 @@
-const { db } = require('./util');
-const { getFundInfo, getFundNetDiagram } = require('./api');
-const pMap = require('p-map');
 const dayjs = require('dayjs');
 const Listr = require('listr');
+const logger = require('../lib/logger');
+const { db } = require('./util');
+const { getFundInfo, getFundNetDiagram } = require('./api');
 
 module.exports = async funds => {
-    await pMap(funds, async fund => {
-        if (db.fund.has(fund)) {
-            await update(fund);
-        } else {
-            await create(fund);
-        }
-    });
+    if (!funds.length) {
+        logger.error('请输入基金代码，中间用空格分隔');
+        return;
+    }
     const tasks = new Listr(funds.map(fund => ({
         title: `获取${fund}信息`,
         task: async (ctx, task) => {
             let ret;
+            if (!/[0-9]{6}/.test(fund)) {
+                throw new Error('请输入6位数基金代码');
+            }
             if (db.fund.has(fund)) {
                 ret = await update(fund);
+                task.title = `${ret.SHORTNAME}信息更新成功`;
             } else {
                 ret = await create(fund);
+                task.title = `${ret.SHORTNAME}信息添加成功`;
             }
-            task.title = `${ret.SHORTNAME}信息更新成功`;
         }
     })));
-    await tasks.run();
+    tasks.run().catch(e => {
+        logger.error(e);
+    });
 };
 
 async function update(code) {

@@ -6,19 +6,22 @@ module.exports = async ([ code ]) => {
             {
                 type: 'input',
                 message: '请输入下跌补仓率（单位%）',
-                name: 'fallPercent'
+                name: 'fallPercent',
+                filter: value => (isNaN(Number(value)) ? 4 : Number(value)),
+                default: 4
             },
             {
                 type: 'input',
                 message: '请输入止盈百分比（单位%）',
-                name: 'stopPercent'
+                name: 'stopPercent',
+                filter: value => (isNaN(Number(value)) ? 15 : Number(value)),
+                default: 15
             }
         ]);
-        db.setting.set('fallPercent', answer.fallPercent);
-        db.setting.set('stopPercent', answer.stopPercent);
+        db.setting.set('*', answer);
         return;
     }
-    const data = db.fund.get(code);
+    const data = db.setting.get('fallPercent,stopPercent');
     const answer = await inquirer.prompt([
         {
             type: 'input',
@@ -33,12 +36,17 @@ module.exports = async ([ code ]) => {
         {
             type: 'input',
             message: '请输入下跌补仓率（单位%）',
-            name: 'fallPercent'
+            name: 'fallPercent',
+            filter: value => (isNaN(Number(value)) ? data.fallPercent : Number(value)),
+            default: data.fallPercent
         },
         {
             type: 'input',
             message: '请输入止盈百分比（单位%）',
-            name: 'stopPercent'
+            name: 'stopPercent',
+            filter: value => (isNaN(Number(value)) ? data.stopPercent : Number(value)),
+            default: data.stopPercent
         }
     ]);
+    db.fund.updateSetting(answer);
 };

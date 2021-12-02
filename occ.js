@@ -113,7 +113,12 @@ module.exports = async (input, options) => {
         spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的token`);
     } else {
         spinner.succeed('打开成功');
-        open(result);
+        if (options.pc && [ '4', '36' ].includes(match.appKey)) {
+            // 只有美团经营神器和装修神器有PC端
+            open(result.replace('app', ''));
+        } else {
+            open(result);
+        }
     }
 };
 

@@ -30,6 +30,14 @@ const fundUtil = {
         data.baseInfo = info;
         fs.writeJSONSync(resolve(`./data/${code}.json`), data);
     },
+    updateSetting(code, info) {
+        const data = fs.readJSONSync(resolve(`./data/${code}.json`));
+        data.setting = {
+            ...data.setting,
+            ...info
+        };
+        fs.writeJSONSync(resolve(`./data/${code}.json`), data);
+    },
     insertDiagram(code, dataArg) {
         if (!dataArg.length) {
             return;
@@ -41,11 +49,27 @@ const fundUtil = {
 };
 const settingUtil = {
     get(key) {
+        if (key.includes(',')) {
+            const segKeys = key.split(',');
+            const data = fs.readJSONSync('fund/setting.json');
+            return segKeys.reduce((obj, item) => {
+                return {
+                    ...obj,
+                    item: data[item]
+                };
+            }, {});
+        }
         return fs.readJSONSync('fund/setting.json')[key];
     },
     set(key, value) {
         const data = fs.readJSONSync('fund/setting.json');
-        data[key] = value;
+        if (key === '*') {
+            for (const key1 in value) {
+                data[key1] = value[key1];
+            }
+        } else {
+            data[key] = value;
+        }
         fs.writeJSONSync('fund/setting.json', data);
     }
 };

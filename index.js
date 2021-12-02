@@ -66,6 +66,7 @@ program
 program
     .command('occ [data...]')
     .option('--token', '获取token')
+    .option('--pc', '打开PC端')
     .option('--search <params>', '高级搜索')
     .action((data, options) => {
         require('./occ')(data, options);
