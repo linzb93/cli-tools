@@ -8,6 +8,7 @@ module.exports = async filePath => {
     let fileData;
     if (filePath.startsWith('http')) {
         let res;
+        filePath = filePath.replace(/\s/g, ',');
         try {
             res = await axios.get(filePath, {
                 responseType: 'stream'
@@ -15,16 +16,16 @@ module.exports = async filePath => {
         } catch (e) {
             logger.error('文件地址不存在或无法正常下载');
         }
-        const name = path.basename(filePath);
-        const ws = fs.createWriteStream(name);
+        const filename = getFileName(filePath);
+        const ws = fs.createWriteStream(filename);
         res.data.pipe(ws);
         await new Promise(resolve => {
             ws.on('finish', resolve);
         });
-        fileData = await fs.stat(name);
+        fileData = await fs.stat(filename);
         const size = bytes(fileData.size);
         console.log(size);
-        await del(name);
+        await del(filename);
         return;
     }
     try {
@@ -35,3 +36,8 @@ module.exports = async filePath => {
     }
     console.log(bytes(fileData.size));
 };
+
+function getFileName(src) {
+    const realSrc = src.split('?')[0];
+    return path.basename(realSrc);
+}
