@@ -4,5 +4,4 @@ config.secret.json
 config.local.json
 npm/db.json
 fund/data
-server/index.js
 .DS_Store

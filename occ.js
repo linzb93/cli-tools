@@ -94,6 +94,10 @@ module.exports = async (input, options) => {
         platform: match.platform,
         serviceName: match.serviceName
     });
+    if (!listData.result) {
+        spinner.fail('服务器故障，请稍后再试');
+        return;
+    }
     if (!listData.result.list.length) {
         spinner.fail('未找到店铺');
         return;

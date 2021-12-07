@@ -39,8 +39,11 @@ program
     });
 program
     .command('server')
-    .action(() => {
-        require('./server');
+    .option('--proxy <url>', '代理地址')
+    .option('--port <num>', '端口号')
+    .option('-c, --copy', '复制网络地址')
+    .action(options => {
+        require('./server')(options);
     });
 program
     .command('getSize <url>')
