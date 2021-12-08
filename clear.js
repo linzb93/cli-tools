@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const del = require('del');
 const globby = require('globby');
 const pMap = require('p-map');
 const logger = require('./lib/logger');
@@ -10,7 +10,7 @@ module.exports = async filename => {
         return;
     }
     await pMap(paths, async file => {
-        return fs.unlink(file);
+        return del(file);
     }, { concurrency: 10 });
-    logger.done(`操作成功，共发现${len}个文件`);
+    logger.done(`操作成功，共删除${len}个文件`);
 };

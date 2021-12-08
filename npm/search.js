@@ -43,7 +43,6 @@ async function fetchNpmPackage(packageName, isMultiple) {
     if (searchItems.length) {
         data = {
             name: packageName,
-            desc: searchItems[0].desc,
             weeklyDl: transformNumberCn(searchItems[0].weeklyDl),
             lastPb: searchItems[0].lastPb,
             homepage: searchItems[0].homepage
@@ -55,7 +54,6 @@ async function fetchNpmPackage(packageName, isMultiple) {
         const page = await npmPage(packageName);
         data = {
             name: packageName,
-            desc: page.get('desc'),
             weeklyDl: page.get('weeklyDl'),
             lastPb: page.get('lastPb')
         };
@@ -69,7 +67,6 @@ async function fetchNpmPackage(packageName, isMultiple) {
     }
     spinner.stop();
     console.log(`${chalk.bold(`关于${packageName}`)}:
-  ${data.desc}
   周下载量：${chalk.green(data.weeklyDl)}
   上次更新：${chalk.green(data.lastPb)}`);
     const { openNpmPage } = await inquirer.prompt([

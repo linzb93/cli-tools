@@ -2,15 +2,31 @@
 
 const { Command } = require('commander');
 const program = new Command();
+const inquirer = require('inquirer');
+const { openInEditor } = require('./lib/util');
 const logger = require('./lib/logger');
 
-process.on('uncaughtException', e => {
-    logger.error(`uncaughtException:
-	${e.stack}`);
+process.on('uncaughtException', async e => {
+    logger.error(e.stack, true);
+    const ans = await inquirer.prompt([{
+        type: 'confirm',
+        message: '发现未处理的错误，是否打开编辑器修复bug？',
+        name: 'open'
+    }]);
+    if (ans.open) {
+        openInEditor(__dirname);
+    }
 });
-process.on('unhandledRejection', e => {
-    logger.error(`unhandledRejection:
-	${e.stack}`);
+process.on('unhandledRejection', async e => {
+    logger.error(e.stack, true);
+    const ans = await inquirer.prompt([{
+        type: 'confirm',
+        message: '发现未处理的异步错误，是否打开编辑器修复bug？',
+        name: 'open'
+    }]);
+    if (ans.open) {
+        openInEditor(__dirname);
+    }
 });
 
 program
@@ -38,12 +54,12 @@ program
         require(`./git/${subCommand}`)(rest, cmd);
     });
 program
-    .command('server')
+    .command('server [sub-command]')
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
     .option('-c, --copy', '复制网络地址')
-    .action(options => {
-        require('./server')(options);
+    .action((subCommand, options) => {
+        require('./server')(subCommand, options);
     });
 program
     .command('getSize <url>')
@@ -79,5 +95,10 @@ program
     .option('--help', '帮助')
     .action((data, options) => {
         require('./fund')(data, options);
+    });
+program
+    .command('mon <filename>')
+    .action(file => {
+        require('./monitor')(file);
     });
 program.parse();

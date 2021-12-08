@@ -1,11 +1,8 @@
 {
   "name": "mycli",
   "version": "1.0.0",
-  "description": "A cli used by linzhibin",
+  "description": "A cli for private use",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [
     "cli"
   ],
@@ -16,7 +13,7 @@
   "bin": {
     "mycli": "index.js"
   },
-  "author": "linzhibin",
+  "author": "linzb93",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.24.0",
@@ -24,6 +21,7 @@
     "bytes": "^3.1.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.3",
+    "chokidar": "^3.5.2",
     "cli-table3": "^0.5.1",
     "clipboardy": "^2.3.0",
     "commander": "^7.2.0",
@@ -35,14 +33,15 @@
     "express": "^4.17.1",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.4.1",
+    "internal-ip": "^6.2.0",
     "listr": "^0.14.3",
+    "log-symbols": "^4.1.0",
     "lowdb": "^1.0.0",
     "open": "^6.4.0",
     "ora": "^3.4.0",
     "p-every": "^1.0.2",
     "p-filter": "^2.1.0",
-    "terminal-link": "^2.1.1",
-    "uuid": "^8.3.2"
+    "runscript": "^1.5.1"
   },
   "devDependencies": {
     "eslint": "^7.28.0",

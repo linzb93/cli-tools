@@ -7,14 +7,14 @@ const { openInEditor } = require('../lib/util');
 const logger = require('../lib/logger');
 const { isURL } = require('../lib/util');
 
-module.exports = async (param, cmd) => {
+module.exports = async (param, options) => {
     const package = Array.isArray(param) ? param[0] : param;
     const spinner = ora('正在下载');
     let dirName;
     if (isGitUrl(package)) {
         const openMap = await clidb.get('openMap');
-        if (!openMap[cmd.dir]) {
-            cmd.dir = 'source';
+        if (!openMap[options.dir]) {
+            options.dir = 'source';
         }
         const url = toGitUrl(package);
         spinner.start();
@@ -22,7 +22,7 @@ module.exports = async (param, cmd) => {
             dirName = await git.clone({
                 url,
                 dirName: path.basename(url, '.git'),
-                cwd: openMap[cmd.dir]
+                cwd: openMap[options.dir]
             });
         } catch (error) {
             spinner.fail(`下载失败:
@@ -30,8 +30,8 @@ module.exports = async (param, cmd) => {
             return;
         }
         spinner.succeed('下载成功');
-        if (cmd.open) {
-            await openInEditor(path.resolve(openMap[cmd.dir], dirName));
+        if (options.open) {
+            await openInEditor(path.resolve(openMap[options.dir], dirName));
         }
         return;
     }

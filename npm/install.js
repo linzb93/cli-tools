@@ -5,7 +5,7 @@ const del = require('del');
 const ora = require('ora');
 const { isPath, isURL } = require('../lib/util');
 const logger = require('../lib/logger');
-
+// 安装本地依赖至项目中
 module.exports = async (pkgs, flag) => {
     const pkg = pkgs[0];
     if (isPath(pkg)) {

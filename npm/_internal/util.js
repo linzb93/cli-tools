@@ -1,4 +1,4 @@
-const runscript = require('../../lib/exec');
+const execa = require('../../lib/exec');
 const { memoize, isPlainObject } = require('lodash');
 
 let npmBin = '';
@@ -7,7 +7,7 @@ const getNpmBin = memoize(async () => {
         return npmBin;
     }
     try {
-        await runscript('cnpm');
+        await execa('cnpm');
         npmBin = 'cnpm';
         return 'cnpm';
     } catch (e) {
@@ -39,7 +39,7 @@ module.exports = {
                 params.push('-g');
             }
         }
-        return runscript(`${bin} ${params.join(' ')}`, restOpts);
+        return execa(`${bin} ${params.join(' ')}`, restOpts);
     },
     async update(name, options) {
         const { global: globalOpt, ...restOpts } = options;
@@ -48,11 +48,11 @@ module.exports = {
         if (globalOpt) {
             params.push('-g');
         }
-        return runscript(`${bin} ${params.join(' ')}`, restOpts);
+        return execa(`${bin} ${params.join(' ')}`, restOpts);
     },
     async outdated(name) {
         const bin = await getNpmBin();
-        const { data } = await runscript(`${bin} outdated ${name} --json`);
+        const { data } = await execa(`${bin} outdated ${name} --json`);
         const ret = JSON.parse(data.toString())[name];
         return {
             isOutdated: ret.current === ret.latest,

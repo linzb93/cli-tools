@@ -13,10 +13,6 @@ class Npm {
             return $('#repository').next().find('a')
                 .attr('href');
         }
-        if (type === 'description') {
-            const $firstP = $('article p').first();
-            return $firstP.text().trim() === '' ? $firstP.next().text().trim() : $firstP.text().trim();
-        }
         if (type === 'weeklyDl') {
             return $('._9ba9a726').text();
         }
