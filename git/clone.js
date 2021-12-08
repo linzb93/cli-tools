@@ -57,7 +57,9 @@ module.exports = async (param, options) => {
         return;
     }
     spinner.succeed('下载成功');
-    await openInEditor(path.resolve(cwd, dirName));
+    if (options.open) {
+        await openInEditor(path.resolve(cwd, dirName));
+    }
 };
 
 function isGitUrl(url) {
