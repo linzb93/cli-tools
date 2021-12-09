@@ -1,8 +1,17 @@
 const execa = require('../../lib/exec');
-const pEvery = require('p-every');
 const git = async () => {
     await execa('git add .');
     await execa('git commit -m update');
+};
+git.isGit = async ({ cwd = process.cwd() }) => {
+    try {
+        await execa('git rev-parse --is-inside-work-tree', {
+            cwd
+        });
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
 git.clone = async ({
     url,
@@ -20,23 +29,33 @@ git.remote = async () => {
     const { stdout: data } = await execa('git remote -v');
     return data.split('\n')[0].match(/http.+\.git/)[0];
 };
-git.hasUncommited = async () => {
-    const { stdout: data } = await execa('git status --short');
-    return data === '';
-};
-git.hasUnPushed = async isOnlyCurrentBranch => {
-    // 根据输出内容是否包含“origin/”判断是否有commit未推送
-    if (isOnlyCurrentBranch) {
-        const { stdout: data } = await execa('git log -1 --oneline');
-        return !data.includes('origin/');
+// 获取代码提交状态，分为未提交 1；未推送 2；已推送 3；不在master分支上 4；状态未知 0
+git.getPushStatus = async ({ cwd }) => {
+    // if (!await git.isGit()) {
+    //     return 0;
+    // }
+    let stdout = '';
+    try {
+        const data = await execa('git status', {
+            cwd
+        });
+        stdout = data.stdout;
+    } catch (error) {
+        return 0;
     }
-    const branchs = await git.branch();
-    const ret = await pEvery(branchs, async branch => {
-        const { stdout: data } = await execa(`git log ${branch} -1 --oneline`);
-        console.log(data);
-        return data.includes('origin/');
-    });
-    return !ret;
+    if (stdout.includes('Changes not staged for commit') || stdout.includes('Changes to be committed')) {
+        return 1;
+    }
+    if (stdout.includes('Your branch is ahead of ')) {
+        return 2;
+    }
+    if (stdout.match(/On branch (\S+)/)[1] !== 'master') {
+        return 4;
+    }
+    if (stdout.includes('nothing to commit')) {
+        return 3;
+    }
+    return 0;
 };
 git.branch = async () => {
     const { stdout: data } = await execa('git branch --list');

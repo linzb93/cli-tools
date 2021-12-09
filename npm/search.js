@@ -6,11 +6,10 @@ const Table = require('cli-table3');
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const logger = require('../lib/logger');
-const npmPage = require('./_internal/npmPage');
-
 const adapter = new FileSync(path.resolve(__dirname, 'db.json'));
 const db = low(adapter);
+const logger = require('../lib/logger');
+const npmPage = require('./_internal/npmPage');
 const table = new Table({
     head: [
         chalk.green('名称'),

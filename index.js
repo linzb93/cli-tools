@@ -19,6 +19,9 @@ process.on('uncaughtException', async e => {
 });
 process.on('unhandledRejection', async e => {
     logger.error(e.stack, true);
+    if (program.args.includes('--debug')) {
+        return;
+    }
     const ans = await inquirer.prompt([{
         type: 'confirm',
         message: '发现未处理的异步错误，是否打开编辑器修复bug？',
@@ -32,6 +35,7 @@ process.on('unhandledRejection', async e => {
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
+    .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
         const aliases = {
             i: 'install'
@@ -58,6 +62,7 @@ program
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
     .option('-c, --copy', '复制网络地址')
+    .allowUnknownOption()
     .action((subCommand, options) => {
         require('./server')(subCommand, options);
     });
@@ -87,18 +92,26 @@ program
     .option('--token', '获取token')
     .option('--pc', '打开PC端')
     .option('--search <params>', '高级搜索')
+    .allowUnknownOption()
     .action((data, options) => {
         require('./occ')(data, options);
     });
 program
     .command('fund [data...]')
     .option('--help', '帮助')
+    .allowUnknownOption()
     .action((data, options) => {
         require('./fund')(data, options);
     });
 program
     .command('mon <filename>')
+    .allowUnknownOption()
     .action(file => {
         require('./monitor')(file);
+    });
+program
+    .command('upload <filename>')
+    .action(file => {
+        require('./upload')(file);
     });
 program.parse();
