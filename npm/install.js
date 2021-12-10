@@ -3,6 +3,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const del = require('del');
 const ora = require('ora');
+const semver = require('semver');
+const axios = require('axios');
 const { isPath, isURL } = require('../lib/util');
 const logger = require('../lib/logger');
 // 安装本地依赖至项目中
@@ -28,10 +30,27 @@ module.exports = async (pkgs, flag) => {
         logger.error('无法识别npm包');
     } else {
         const npmFlag = flag.dev ? '-D' : '-S';
+        const version = await getAvailableVersion(pkg);
+        const pkgName = `${pkg}@${version}`;
         try {
-            execa('cnpm', [ 'install', pkg, npmFlag ]);
+            execa('cnpm', [ 'install', pkgName, npmFlag ]);
         } catch {
             logger.error('无法下载，请检查名称是否有误');
         }
+        logger.done('下载成功');
     }
 };
+
+async function getAvailableVersion(name) {
+    let version = 'latest';
+    let type = 'module';
+    while (type === 'module') {
+        if (version !== 'latest') {
+            version = semver.coerce(semver.major(version) - 1).version;
+        }
+        const res = await axios.get(`https://registry.npmjs.org/${name}/${version}`);
+        type = res.data.type;
+        version = res.data.version;
+    }
+    return version;
+}

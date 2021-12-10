@@ -42,7 +42,8 @@
     "ora": "^3.4.0",
     "p-every": "^1.0.2",
     "p-filter": "^2.1.0",
-    "runscript": "^1.5.1"
+    "runscript": "^1.5.1",
+    "semver": "^7.3.5"
   },
   "devDependencies": {
     "eslint": "^7.28.0",
