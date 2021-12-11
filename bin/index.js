@@ -2,34 +2,15 @@
 
 const { Command } = require('commander');
 const program = new Command();
-const inquirer = require('inquirer');
-const { openInEditor } = require('../lib/util');
-const logger = require('../lib/logger');
-const path = require('path');
+const { errorHandler } = require('../lib/util');
+
 process.on('uncaughtException', async e => {
-    logger.error(e.stack, true);
-    const ans = await inquirer.prompt([{
-        type: 'confirm',
-        message: '发现未处理的错误，是否打开编辑器修复bug？',
-        name: 'open'
-    }]);
-    if (ans.open) {
-        openInEditor(path.dirname(__dirname));
-    }
+    errorHandler(e, program);
 });
 process.on('unhandledRejection', async e => {
-    logger.error(e.stack, true);
-    if (program.args.includes('--debug') || process.cwd() === path.dirname(__dirname)) {
-        process.exit(0);
-    }
-    const ans = await inquirer.prompt([{
-        type: 'confirm',
-        message: '发现未处理的异步错误，是否打开编辑器修复bug？',
-        name: 'open'
-    }]);
-    if (ans.open) {
-        openInEditor(path.dirname(__dirname));
-    }
+    errorHandler(e, program, {
+        async: true
+    });
 });
 
 program
@@ -73,7 +54,7 @@ program
     });
 program
     .command('open <name>')
-    .option('-c,--code', '在编辑器中打开')
+    .option('--name <name>')
     .action((url, cmd) => {
         require('../open')(url, cmd);
     });
