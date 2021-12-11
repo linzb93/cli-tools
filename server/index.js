@@ -1,18 +1,20 @@
 const chalk = require('chalk');
 const clipboard = require('clipboardy');
-const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
 const execa = require('execa');
 const internalIp = require('internal-ip');
-const resolve = src => path.resolve(__dirname, src);
+const { db } = require('./util');
 
 module.exports = async (subCommand, options) => {
     if (subCommand === 'stop') {
         require('./stop')();
         return;
     }
-    const cacheData = await fs.readJSON(resolve('cache.json'));
+    db
+        .defaults({ items: [] })
+        .write();
+    const cacheData = db.get('items');
     const match = cacheData.find(item => item.proxy === options.proxy);
     if (!match) {
         if (!options.proxy) {
@@ -40,11 +42,10 @@ module.exports = async (subCommand, options) => {
                     when: answer => answer.choosed
                 }]);
             if (ans.choosed) {
-                cacheData.push({
+                db.get('items').push({
                     name: ans.projName,
                     proxy: options.proxy
-                });
-                await fs.writeJSON(resolve('cache.json'), cacheData);
+                }).write();
             }
         }
     }
@@ -58,7 +59,7 @@ module.exports = async (subCommand, options) => {
     }
     args.push('--from-bin=mycli');
     const child = execa('node', args, {
-        cwd: resolve('../'),
+        cwd: path.resolve(__dirname, '../'),
         detached: true,
         stdio: [ null, null, null, 'ipc' ]
     });

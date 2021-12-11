@@ -2,34 +2,15 @@
 
 const { Command } = require('commander');
 const program = new Command();
-const inquirer = require('inquirer');
-const { openInEditor } = require('./lib/util');
-const logger = require('./lib/logger');
+const { errorHandler } = require('../lib/util');
 
 process.on('uncaughtException', async e => {
-    logger.error(e.stack, true);
-    const ans = await inquirer.prompt([{
-        type: 'confirm',
-        message: '发现未处理的错误，是否打开编辑器修复bug？',
-        name: 'open'
-    }]);
-    if (ans.open) {
-        openInEditor(__dirname);
-    }
+    errorHandler(e, program);
 });
 process.on('unhandledRejection', async e => {
-    logger.error(e.stack, true);
-    if (program.args.includes('--debug')) {
-        return;
-    }
-    const ans = await inquirer.prompt([{
-        type: 'confirm',
-        message: '发现未处理的异步错误，是否打开编辑器修复bug？',
-        name: 'open'
-    }]);
-    if (ans.open) {
-        openInEditor(__dirname);
-    }
+    errorHandler(e, program, {
+        async: true
+    });
 });
 
 program
@@ -41,12 +22,12 @@ program
             i: 'install'
         };
         const target = aliases[subCommand] || subCommand;
-        require(`./npm/${target}`)(rest, cmd);
+        require(`../npm/${target}`)(rest, cmd);
     });
 program
     .command('yuque <sub-command> [rest...]')
     .action((subCommand, rest) => {
-        require(`./yuque/${subCommand}`)(rest);
+        require(`../yuque/${subCommand}`)(rest);
     });
 program
     .command('git [sub-command] [rest...]')
@@ -55,7 +36,7 @@ program
     .option('--copy', '复制结果文本')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
-        require(`./git/${subCommand}`)(rest, cmd);
+        require(`../git/${subCommand}`)(rest, cmd);
     });
 program
     .command('server [sub-command]')
@@ -64,28 +45,28 @@ program
     .option('-c, --copy', '复制网络地址')
     .allowUnknownOption()
     .action((subCommand, options) => {
-        require('./server')(subCommand, options);
+        require('../server')(subCommand, options);
     });
 program
     .command('getSize <url>')
     .action(url => {
-        require('./getSize')(url);
+        require('../getSize')(url);
     });
 program
     .command('open <name>')
-    .option('-c,--code', '在编辑器中打开')
+    .option('--name <name>')
     .action((url, cmd) => {
-        require('./open')(url, cmd);
+        require('../open')(url, cmd);
     });
 program
     .command('clear <filename>')
     .action(filename => {
-        require('./clear')(filename);
+        require('../clear')(filename);
     });
 program
     .command('exec <filename> [args]')
     .action((filename, args) => {
-        require('./exec')(filename, args);
+        require('../exec')(filename, args);
     });
 program
     .command('occ [data...]')
@@ -94,24 +75,24 @@ program
     .option('--search <params>', '高级搜索')
     .allowUnknownOption()
     .action((data, options) => {
-        require('./occ')(data, options);
+        require('../occ')(data, options);
     });
 program
     .command('fund [data...]')
     .option('--help', '帮助')
     .allowUnknownOption()
     .action((data, options) => {
-        require('./fund')(data, options);
+        require('../fund')(data, options);
     });
 program
     .command('mon <filename>')
     .allowUnknownOption()
     .action(file => {
-        require('./monitor')(file);
+        require('../monitor')(file);
     });
 program
     .command('upload <filename>')
     .action(file => {
-        require('./upload')(file);
+        require('../upload')(file);
     });
 program.parse();

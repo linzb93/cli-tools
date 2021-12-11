@@ -108,6 +108,6 @@ module.exports = async args => {
     } else if (args.length > 1) {
         fetchMulNpmPackage(args);
     } else {
-        logger.error('未检测到 package 名称，退出程序。');
+        logger.error('未检测到依赖名称。');
     }
 };

@@ -19,6 +19,7 @@
     "ali-oss": "^6.16.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
+    "boxen": "^5.1.2",
     "bytes": "^3.1.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.3",
@@ -43,7 +44,9 @@
     "p-every": "^1.0.2",
     "p-filter": "^2.1.0",
     "runscript": "^1.5.1",
-    "semver": "^7.3.5"
+    "semver": "^7.3.5",
+    "stacktracey": "^2.1.7",
+    "windows-shortcuts": "^0.1.6"
   },
   "devDependencies": {
     "eslint": "^7.28.0",

@@ -8,6 +8,7 @@ module.exports = async filePath => {
     let fileData;
     if (filePath.startsWith('http')) {
         let res;
+        // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要还原回去
         filePath = filePath.replace(/\s/g, ',');
         try {
             res = await axios.get(filePath, {
@@ -23,8 +24,7 @@ module.exports = async filePath => {
             ws.on('finish', resolve);
         });
         fileData = await fs.stat(filename);
-        const size = bytes(fileData.size);
-        console.log(size);
+        console.log(bytes(fileData.size));
         await del(filename);
         return;
     }
