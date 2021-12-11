@@ -1,4 +1,4 @@
-const git = require('./_internal/git');
+const git = require('./util');
 const clipboard = require('clipboardy');
 const chalk = require('chalk');
 const logger = require('../lib/logger');

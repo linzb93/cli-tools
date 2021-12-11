@@ -2,6 +2,8 @@ const del = require('del');
 const globby = require('globby');
 const pMap = require('p-map');
 const logger = require('./lib/logger');
+
+// 主要是来清理Windows上被Git同步过来的 macOS的 .DS_Store
 module.exports = async filename => {
     const paths = await globby([ filename, `**/*/${filename}`, '!node_modules' ]);
     const len = paths.length;

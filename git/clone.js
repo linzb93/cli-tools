@@ -1,7 +1,7 @@
 const path = require('path');
 const ora = require('ora');
 const npmPage = require('../npm/_internal/npmPage');
-const git = require('./_internal/git');
+const git = require('./util');
 const { clidb } = require('../lib/db');
 const { openInEditor } = require('../lib/util');
 const logger = require('../lib/logger');
@@ -12,7 +12,7 @@ module.exports = async (param, options) => {
     const spinner = ora('正在下载');
     let dirName;
     if (isGitUrl(package)) {
-        const openMap = await clidb.get('openMap');
+        const openMap = await clidb.get('open');
         if (!openMap[options.dir]) {
             options.dir = 'source';
         }
@@ -44,7 +44,7 @@ module.exports = async (param, options) => {
     }
     const repo = page.get('repository');
     spinner.start();
-    const cwd = clidb.get('sourceCodeDir');
+    const cwd = clidb.get('open.source');
     try {
         dirName = await git.clone({
             url: `${repo}.git`,

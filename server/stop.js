@@ -1,9 +1,6 @@
 const runscript = require('runscript');
-const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const path = require('path');
-const resolve = src => path.resolve(__dirname, src);
-const isWin = process.platform === 'win32';
+const { db, isWin } = require('./util');
 const pMap = require('p-map');
 const logger = require('../lib/logger');
 
@@ -13,13 +10,13 @@ module.exports = async () => {
         'ps -eo "pid,args"';
     const { stdout } = await runscript(command, { stdio: 'pipe' });
     const list = stdout.toString().split('\n');
-    const cacheData = await fs.readJSON(resolve('cache.json'));
     const arr = list
         .filter(item => item.includes('--from-bin=mycli'))
         .map(item => {
+            // 未兼容macOS。
             const pid = item.match(/([0-9]+)\s+\r\r$/)[1];
             const proxy = item.match(/--proxy=(\S+)/)[1];
-            const match = cacheData.find(cache => cache.proxy === proxy);
+            const match = db.get('item').find(cache => cache.proxy === proxy);
             if (match) {
                 return {
                     pid,

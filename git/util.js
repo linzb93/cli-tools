@@ -1,4 +1,4 @@
-const execa = require('../../lib/exec');
+const execa = require('../lib/exec');
 const git = async () => {
     await execa('git add .');
     await execa('git commit -m update');

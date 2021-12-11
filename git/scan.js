@@ -2,12 +2,12 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const pMap = require('p-map');
-const git = require('./_internal/git');
+const git = require('./util');
 const { clidb } = require('../lib/db');
 
 // 扫描所有工作项目文件夹，有未提交、推送的git就提醒。
 module.exports = async () => {
-    const openMap = clidb.get('openMap');
+    const openMap = clidb.get('open');
     const outputList = [];
     await pMap([ 'admin', 'tools', 'mt', 'ele', 'print' ], async parentProj => {
         const cur = {

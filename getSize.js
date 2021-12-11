@@ -23,8 +23,7 @@ module.exports = async filePath => {
             ws.on('finish', resolve);
         });
         fileData = await fs.stat(filename);
-        const size = bytes(fileData.size);
-        console.log(size);
+        console.log(bytes(fileData.size));
         await del(filename);
         return;
     }
