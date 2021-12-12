@@ -39,6 +39,7 @@ module.exports = {
                 params.push('-g');
             }
         }
+        console.log(`${bin} ${params.join(' ')}`);
         return execa(`${bin} ${params.join(' ')}`, restOpts);
     }
 };

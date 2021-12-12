@@ -12,7 +12,7 @@ process.on('unhandledRejection', async e => {
         async: true
     });
 });
-
+program.version(`mycli ${require('../package').version}`, '-v, --version');
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
@@ -95,4 +95,7 @@ program
     .action(file => {
         require('../upload')(file);
     });
+program
+    .command('test')
+    .action(() => { require('../test')(); });
 program.parse();
