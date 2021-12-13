@@ -38,6 +38,7 @@ module.exports = async (pkgs, flag) => {
             });
         } catch {
             consola.error('无法下载，请检查名称是否有误');
+            return;
         }
         consola.success('下载成功');
     }

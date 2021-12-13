@@ -14,7 +14,7 @@ module.exports = async (subCommand, options) => {
     db
         .defaults({ items: [] })
         .write();
-    const cacheData = db.get('items');
+    const cacheData = db.get('items').value();
     const match = cacheData.find(item => item.proxy === options.proxy);
     if (!match) {
         if (!options.proxy) {
@@ -63,8 +63,8 @@ module.exports = async (subCommand, options) => {
         detached: true,
         stdio: [ null, null, null, 'ipc' ]
     });
-    const ip = await internalIp.v4();
-    child.on('message', ({ port }) => {
+    child.on('message', async ({ port }) => {
+        const ip = await internalIp.v4();
         console.log(`
 代理服务器已在${chalk.yellow(port)}端口启动：
 - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}

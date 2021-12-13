@@ -1,10 +1,8 @@
 const fs = require('fs-extra');
 const bytes = require('bytes');
 const axios = require('axios');
-const path = require('path');
-const del = require('del');
 const consola = require('consola');
-
+const getStream = require('get-stream');
 module.exports = async filePath => {
     let fileData;
     if (filePath.startsWith('http')) {
@@ -17,16 +15,9 @@ module.exports = async filePath => {
             });
         } catch (e) {
             consola.error('文件地址不存在或无法正常下载');
+            return;
         }
-        const filename = getFileName(filePath);
-        const ws = fs.createWriteStream(filename);
-        res.data.pipe(ws);
-        await new Promise(resolve => {
-            ws.on('finish', resolve);
-        });
-        fileData = await fs.stat(filename);
-        console.log(bytes(fileData.size));
-        await del(filename);
+        console.log(bytes((await getStream.buffer(res.data)).length));
         return;
     }
     try {
@@ -37,8 +28,3 @@ module.exports = async filePath => {
     }
     console.log(bytes(fileData.size));
 };
-
-function getFileName(src) {
-    const realSrc = src.split('?')[0];
-    return path.basename(realSrc);
-}

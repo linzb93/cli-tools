@@ -85,7 +85,7 @@ program
         require('../fund')(data, options);
     });
 program
-    .command('mon <filename>')
+    .command('mon [filename]')
     .allowUnknownOption()
     .action(file => {
         require('../monitor')(file);
