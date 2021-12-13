@@ -2,7 +2,7 @@ const runscript = require('runscript');
 const inquirer = require('inquirer');
 const { db, isWin } = require('./util');
 const pMap = require('p-map');
-const logger = require('../lib/logger');
+const consola = require('consola');
 
 module.exports = async () => {
     const command = isWin ?
@@ -30,7 +30,7 @@ module.exports = async () => {
             };
         });
     if (!arr.length) {
-        logger.info('没有要关闭的进程');
+        consola.info('没有要关闭的进程');
         return;
     }
     const { pids } = await inquirer.prompt([{
@@ -45,5 +45,5 @@ module.exports = async () => {
     await pMap(pids, async pid => {
         await runscript(`taskkill /pid ${pid} /F`, { stdio: 'pipe' });
     });
-    logger.done('操作成功');
+    consola.success('操作成功');
 };

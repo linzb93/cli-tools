@@ -1,7 +1,7 @@
 const git = require('./util');
 const clipboard = require('clipboardy');
 const chalk = require('chalk');
-const logger = require('../lib/logger');
+const consola = require('consola');
 
 module.exports = async (_, options) => {
     try {
@@ -13,6 +13,6 @@ module.exports = async (_, options) => {
             console.log(data);
         }
     } catch (error) {
-        logger.error(error.message);
+        consola.error(error.message);
     }
 };

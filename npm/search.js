@@ -8,7 +8,7 @@ const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync(path.resolve(__dirname, 'db.json'));
 const db = low(adapter);
-const logger = require('../lib/logger');
+const consola = require('consola');
 const npmPage = require('./_internal/npmPage');
 const table = new Table({
     head: [
@@ -108,6 +108,6 @@ module.exports = async args => {
     } else if (args.length > 1) {
         fetchMulNpmPackage(args);
     } else {
-        logger.error('未检测到依赖名称。');
+        consola.error('未检测到依赖名称。');
     }
 };

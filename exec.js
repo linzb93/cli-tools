@@ -1,8 +1,9 @@
 const fs = require('fs-extra');
-const logger = require('./lib/logger');
+const consola = require('consola');
+
 module.exports = async (filename, args) => {
     if (!fs.existsSync(`${filename}.js`)) {
-        logger.error('文件不存在');
+        consola.error('文件不存在');
         return;
     }
     const target = require(`${process.cwd()}/${filename}.js`);
@@ -18,7 +19,7 @@ module.exports = async (filename, args) => {
             const idx = args.indexOf('(');
             const func = args.slice(0, idx);
             if (!target[func]) {
-                logger.error('函数不存在');
+                consola.error('函数不存在');
                 return;
             }
             const params = args.match(/\((.+)\)/)[1];

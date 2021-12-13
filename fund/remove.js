@@ -1,11 +1,11 @@
 const pMap = require('p-map');
 const fs = require('fs-extra');
 const { db } = require('./util');
-const logger = require('../lib/logger');
+const consola = require('consola');
 
 module.exports = async funds => {
     if (!funds.length) {
-        logger.error('请输入基金代码，中间用空格分隔');
+        consola.error('请输入基金代码，中间用空格分隔');
         return;
     }
     const ret = [];
@@ -18,9 +18,9 @@ module.exports = async funds => {
         await fs.unlink(`fund/data/${fund}.json`);
     });
     if (ret.length > 1) {
-        logger.done(`以下基金已被移除：
+        consola.success(`以下基金已被移除：
             ${ret.join('\n')}`);
     } else {
-        logger.done(`基金"${ret[0]}"已被移除`);
+        consola.success(`基金"${ret[0]}"已被移除`);
     }
 };

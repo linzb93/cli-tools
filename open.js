@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const { openInEditor, isWin, getOriginPath, pLocate } = require('./lib/util');
 const open = require('open');
-const logger = require('./lib/logger');
+const consola = require('consola');
 
 module.exports = async (name, options) => {
     if (name === 'source') {
@@ -25,7 +25,7 @@ module.exports = async (name, options) => {
                     return file;
                 });
             } catch (error) {
-                logger.error('项目不存在');
+                consola.error('项目不存在');
                 return;
             }
             const path2 = await getOriginPath(matchPath);

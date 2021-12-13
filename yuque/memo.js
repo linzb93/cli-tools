@@ -4,7 +4,7 @@ const cheerio = require('cheerio');
 const ora = require('ora');
 const Chain = require('../lib/Chain');
 const { isURL } = require('../lib/util');
-const logger = require('../lib/logger');
+const consola = require('consola');
 const { parseZhihuAnswer, parseZhihuArticle } = require('./parser/zhihu');
 const parseJuejinArticle = require('./parser/juejin');
 
@@ -27,7 +27,7 @@ module.exports = async args => {
     try {
         await service.post('/repos/linzb93/notes/docs', params);
     } catch (error) {
-        logger.error(error.response.data);
+        consola.error(error.response.data);
         spinner.fail('上传失败');
         return;
     }

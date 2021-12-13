@@ -5,7 +5,7 @@ const ora = require('ora');
 const semver = require('semver');
 const axios = require('axios');
 const { isPath, isURL } = require('../lib/util');
-const logger = require('../lib/logger');
+const consola = require('consola');
 const npm = require('./_internal/util');
 // 安装本地依赖至项目中
 module.exports = async (pkgs, flag) => {
@@ -27,7 +27,7 @@ module.exports = async (pkgs, flag) => {
         await npm.install(Object.keys(deps));
         spinner.succeed('依赖安装完成');
     } else if (isURL(pkg)) {
-        logger.error('无法识别npm包');
+        consola.error('无法识别npm包');
     } else {
         const version = await getAvailableVersion(pkg);
         const pkgName = `${pkg}@${version}`;
@@ -37,9 +37,9 @@ module.exports = async (pkgs, flag) => {
                 devDependencies: flag.dev
             });
         } catch {
-            logger.error('无法下载，请检查名称是否有误');
+            consola.error('无法下载，请检查名称是否有误');
         }
-        logger.done('下载成功');
+        consola.success('下载成功');
     }
 };
 

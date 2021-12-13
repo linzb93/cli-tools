@@ -1,9 +1,10 @@
 const OSS = require('ali-oss');
 const { clidb } = require('./lib/db');
 const { random } = require('lodash');
-const logger = require('./lib/logger');
 const clipboard = require('clipboardy');
 const path = require('path');
+const consola = require('consola');
+
 module.exports = async pic => {
     const ossConfig = clidb.get('oss');
     const oss = new OSS({
@@ -15,10 +16,10 @@ module.exports = async pic => {
         const res = await oss.put(`${getUploadFileName()}${path.extname(pic)}`, pic);
         url = `https://oss.fjdaze.com/${res.name}`;
     } catch (error) {
-        logger.error('上传失败');
+        consola.error('上传失败');
         return;
     }
-    logger.done(`图片上传成功，地址是：
+    consola.success(`图片上传成功，地址是：
     ${url}`);
     clipboard.writeSync(url);
 };

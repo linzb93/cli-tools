@@ -4,7 +4,7 @@ const npmPage = require('../npm/_internal/npmPage');
 const git = require('./util');
 const { clidb } = require('../lib/db');
 const { openInEditor } = require('../lib/util');
-const logger = require('../lib/logger');
+const consola = require('consola');
 const { isURL } = require('../lib/util');
 
 module.exports = async (param, options) => {
@@ -39,7 +39,7 @@ module.exports = async (param, options) => {
     try {
         page = await npmPage(package);
     } catch (error) {
-        logger.error(error);
+        consola.error(error);
         return;
     }
     const repo = page.get('repository');

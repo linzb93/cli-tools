@@ -19,8 +19,7 @@ program
             const url = req.url.replace('/proxy', '');
             /**
              * 下载静态资源用
-             * res.sendFile(path.resolve(__dirname, '38523.png'));
-             * 一定要先下到本地，用绝对路径
+             * sourceRes.data.pipe(expressRes);
              */
             const payload = req.method === 'get' ? { params: req.params } : { data: req.body };
             axios({

@@ -27,6 +27,7 @@
     "cli-table3": "^0.5.1",
     "clipboardy": "^2.3.0",
     "commander": "^7.2.0",
+    "consola": "^2.15.3",
     "cors": "^2.8.5",
     "dayjs": "^1.9.6",
     "del": "^6.0.0",

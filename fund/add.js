@@ -1,12 +1,12 @@
 const dayjs = require('dayjs');
 const Listr = require('listr');
-const logger = require('../lib/logger');
+const consola = require('consola');
 const { db } = require('./util');
 const { getFundInfo, getFundNetDiagram } = require('./api');
 
 module.exports = async funds => {
     if (!funds.length) {
-        logger.error('请输入基金代码，中间用空格分隔');
+        consola.error('请输入基金代码，中间用空格分隔');
         return;
     }
     const tasks = new Listr(funds.map(fund => ({
@@ -26,7 +26,7 @@ module.exports = async funds => {
         }
     })));
     tasks.run().catch(e => {
-        logger.error(e);
+        consola.error(e);
     });
 };
 
