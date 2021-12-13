@@ -25,6 +25,11 @@ git.clone = async ({
     });
     return dirName || url.split('/').slice(-1)[0].slice(0, -4);
 };
+git.pull = async ({ cwd = process.cwd() }) => {
+    await execa('git pull', {
+        cwd
+    });
+};
 git.remote = async () => {
     const { stdout: data } = await execa('git remote -v');
     return data.split('\n')[0].match(/http.+\.git/)[0];

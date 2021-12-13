@@ -1,5 +1,6 @@
 const path = require('path');
 const ora = require('ora');
+const fs = require('fs-extra');
 const npmPage = require('../npm/_internal/npmPage');
 const git = require('./util');
 const { clidb } = require('../lib/db');
@@ -45,6 +46,17 @@ module.exports = async (param, options) => {
     const repo = page.get('repository');
     spinner.start();
     const cwd = clidb.get('open.source');
+    if (await fs.pathExists(path.join(cwd, path.basename(repo)))) {
+        spinner.text = '正在拉取最新代码';
+        await git.pull({
+            cwd: path.join(cwd, path.basename(repo))
+        });
+        spinner.succeed('下载成功');
+        if (options.open) {
+            await openInEditor(path.resolve(cwd, path.basename(repo)));
+        }
+        return;
+    }
     try {
         dirName = await git.clone({
             url: `${repo}.git`,
