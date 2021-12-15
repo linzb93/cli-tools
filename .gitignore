@@ -1,6 +1,7 @@
 node_modules/
 package-lock.json
 config.secret.json
+config.local.json
 npm/db.json
 fund/data
 .DS_Store
