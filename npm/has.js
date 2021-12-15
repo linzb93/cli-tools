@@ -1,36 +1,23 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
-const fs = require('fs-extra');
+const getNpmList = require('./_internal/getList');
 const npm = require('./_internal/util');
-const shouldUseYarn = require('./_internal/shouldUseYarn');
 module.exports = async (args, flag) => {
     const name = args[0];
-    const dirs = await fs.readdir('node_modules');
     const spinner = ora('正在查找').start();
-    let pkg;
-    try {
-        pkg = require(`${process.cwd()}/node_modules/${name}/package.json`);
-    } catch (error) {
+    const listRet = await getNpmList(name);
+    if (!listRet.list.length) {
         handleNotFound(name, flag.dev);
         return;
     }
-    if (shouldUseYarn()) {
-        spinner.succeed(`${name}存在，版本号是${pkg.version}`);
+    if (listRet.list.length === 1) {
+        spinner.succeed(`${name}存在，版本号是${listRet.versionList[0]}`);
         return;
     }
-    const matches = dirs.filter(dir => dir.startsWith(`_${name.startsWith('@') ? name.replace('/', '_') : name}@`));
-    if (matches.length > 1) {
-        const list = matches.map(item => {
-            const version = getVersion(item);
-            return `v${version}`;
-        });
-        spinner.succeed('发现有多个符合条件的依赖:');
-        list.forEach(text => {
-            console.log(`${text}`);
-        });
-    } else if (matches.length === 1) {
-        spinner.succeed(`${name}存在，版本号是${pkg.version}`);
-    }
+    spinner.succeed('发现有多个符合条件的依赖:');
+    listRet.versionList.forEach(text => {
+        console.log(`${text}`);
+    });
 
     async function handleNotFound(name, dev) {
         spinner.stop();
@@ -49,7 +36,3 @@ module.exports = async (args, flag) => {
         }
     }
 };
-
-function getVersion(packageName) {
-    return packageName.match(/@([0-9a-z\.\-]+)@/)[1];
-}

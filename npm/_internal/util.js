@@ -20,8 +20,12 @@ module.exports = {
     async install(...args) {
         let pkgName = '';
         let options = {};
-        if (args.length === 1 && isPlainObject(args[0])) {
-            options = args[0];
+        if (args.length === 1) {
+            if (isPlainObject(args[0])) {
+                options = args[0];
+            } else if (typeof args[0] === 'string') {
+                pkgName = args[0];
+            }
         } else if (args.length === 2) {
             pkgName = args[0];
             options = args[1];
@@ -39,7 +43,6 @@ module.exports = {
                 params.push('-g');
             }
         }
-        console.log(`${bin} ${params.join(' ')}`);
         return execa(`${bin} ${params.join(' ')}`, restOpts);
     }
 };

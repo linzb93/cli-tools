@@ -1,13 +1,19 @@
-
 const { sleep } = require('./lib/util');
+const { createRequire } = require('module');
+const npm = require('./npm/_internal/util');
+const path = require('path');
+async function requireDynamic(moduleName) {
+    try {
+        return require(moduleName);
+    } catch {
+        await npm.install(moduleName);
+        // const counter = 0;
+        await sleep(1000);
+        return createRequire(path.resolve(__dirname, 'package.json'))(moduleName);
+    }
+}
+
 module.exports = async () => {
-    const spinner = require('./lib/spinner');
-    console.log('进入程序');
-    spinner.text = '开始';
-    await sleep(2000);
-    spinner.stopAndPersist();
-    await sleep(1000);
-    spinner.text = '中场时间';
-    await sleep(16000);
-    spinner.succeed('成功完成');
+    const doomfist = await requireDynamic('doomfist');
+    doomfist();
 };

@@ -36,9 +36,6 @@ git.remote = async () => {
 };
 // 获取代码提交状态，分为未提交 1；未推送 2；已推送 3；不在master分支上 4；状态未知 0
 git.getPushStatus = async ({ cwd }) => {
-    // if (!await git.isGit()) {
-    //     return 0;
-    // }
     let stdout = '';
     try {
         const data = await execa('git status', {
@@ -62,9 +59,9 @@ git.getPushStatus = async ({ cwd }) => {
     }
     return 0;
 };
-git.branch = async () => {
-    const { stdout: data } = await execa('git branch --list');
-    return data.split('\n').map(line => line.replace('*', '').trim());
+git.getCurrentBranch = async () => {
+    const { stdout } = await execa('git branch --show-current');
+    return stdout;
 };
 
 module.exports = git;

@@ -19,7 +19,8 @@ program
     .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
         const aliases = {
-            i: 'install'
+            i: 'install',
+            un: 'uninstall'
         };
         const target = aliases[subCommand] || subCommand;
         require(`../npm/${target}`)(rest, cmd);
@@ -34,18 +35,19 @@ program
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
     .option('--copy', '复制结果文本')
+    .option('--commit [msg]', '提交信息')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
         require(`../git/${subCommand}`)(rest, cmd);
     });
 program
-    .command('server [sub-command]')
+    .command('mock [sub-command]')
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
     .option('-c, --copy', '复制网络地址')
     .allowUnknownOption()
     .action((subCommand, options) => {
-        require('../server')(subCommand, options);
+        require('../mock')(subCommand, options);
     });
 program
     .command('getSize <url>')
@@ -94,6 +96,11 @@ program
     .command('upload <filename>')
     .action(file => {
         require('../upload')(file);
+    });
+program
+    .command('server')
+    .action(() => {
+        require('../server')();
     });
 program
     .command('test')
