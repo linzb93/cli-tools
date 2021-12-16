@@ -5,15 +5,14 @@ const path = require('path');
 const execa = require('execa');
 const internalIp = require('internal-ip');
 const { db } = require('./util');
+const { processArgvToFlags } = require('../lib/util');
+const { pick } = require('lodash');
 
 module.exports = async (subCommand, options) => {
     if (subCommand === 'stop') {
         require('./stop')();
         return;
     }
-    db
-        .defaults({ items: [] })
-        .write();
     const cacheData = db.get('items').value();
     const match = cacheData.find(item => item.proxy === options.proxy);
     if (!match) {
@@ -50,23 +49,17 @@ module.exports = async (subCommand, options) => {
         }
     }
 
-    const args = [ 'server/server.js' ];
-    if (options.proxy) {
-        args.push(`--proxy=${options.proxy}`);
-    }
-    if (options.port) {
-        args.push(`--port=${options.port}`);
-    }
-    args.push('--from-bin=mycli');
+    const args = [ path.resolve(__filename, './server.js'), ...processArgvToFlags(pick(options, [ 'proxy', 'port', 'debug' ])), '--from-bin=mycli' ];
     const child = execa('node', args, {
         cwd: path.resolve(__dirname, '../'),
         detached: true,
         stdio: [ null, null, null, 'ipc' ]
     });
     child.on('message', async ({ port }) => {
+        console.log(port);
         const ip = await internalIp.v4();
         console.log(`
-代理服务器已在${chalk.yellow(port)}端口启动：
+代理服务器已在 ${chalk.yellow(port)} 端口启动：
 - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
 - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
 路由映射至：${chalk.cyan(options.proxy)}`);

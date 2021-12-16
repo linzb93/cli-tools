@@ -3,17 +3,15 @@ const program = new Command();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const getPort = require('detect-port');
-
 program
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
-    .allowUnknownOption()
+    .option('--debug', '调试阶段')
     .action(async options => {
         const app = express();
-        app.use(bodyParser.urlencoded({ extended: false }));
-        app.use(bodyParser.json());
+        app.use(express.urlencoded({ extended: false }));
+        app.use(express.json());
         app.use(cors());
         app.all('/proxy/*', (req, res) => {
             const url = req.url.replace('/proxy', '');

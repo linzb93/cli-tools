@@ -36,13 +36,14 @@ program
         require(`../git/${subCommand}`)(rest, cmd);
     });
 program
-    .command('mock [sub-command]')
+    .command('agent [sub-command]')
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
     .option('-c, --copy', '复制网络地址')
+    .option('--debug', '调试阶段')
     .allowUnknownOption()
     .action((subCommand, options) => {
-        require('../mock')(subCommand, options);
+        require('../agent')(subCommand, options);
     });
 program
     .command('getSize <url>')
