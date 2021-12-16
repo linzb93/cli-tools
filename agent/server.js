@@ -8,6 +8,7 @@ program
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
     .option('--debug', '调试阶段')
+    .allowUnknownOption()
     .action(async options => {
         const app = express();
         app.use(express.urlencoded({ extended: false }));
@@ -38,7 +39,7 @@ program
         });
         const port = await getPort(options.port || 8080);
         app.listen(port, () => {
-            process.send({ port });
+            !options.debug && process.send({ port });
         });
     });
 program.parse();

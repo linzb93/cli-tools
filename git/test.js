@@ -1,23 +1,21 @@
-const { command } = require('execa');
 const git = require('./util');
+const { sequenceExec } = require('../lib/util');
 const consola = require('consola');
-const chalk = require('chalk');
-const exec = async cmd => {
-    console.log(`${chalk.cyan('actions:')} ${chalk.yellow(cmd)}`);
-    await command(cmd, { stdio: 'inherit' });
-};
-module.exports = async options => {
+
+module.exports = async (data, options) => {
     const curBranch = await git.getCurrentBranch();
     try {
-        await exec('git add .');
-        await exec(`git commit -m ${options.commit || 'update'}`);
-        await exec('git pull');
-        await exec('git push');
-        await exec('git checkout release');
-        await exec(`git merge ${curBranch}`);
-        await exec('git pull');
-        await exec('git push');
-        await exec(`git checkout ${curBranch}`);
+        await sequenceExec([
+            'git add .',
+            `git commit -m ${options.commit || 'update'}`,
+            'git pull',
+            'git push',
+            'git checkout release',
+            `git merge ${curBranch}`,
+            'git pull',
+            'git push',
+            `git checkout ${curBranch}`
+        ]);
     } catch (error) {
         consola.error(error);
         return;

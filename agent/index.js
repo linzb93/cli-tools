@@ -7,7 +7,6 @@ const internalIp = require('internal-ip');
 const { db } = require('./util');
 const { processArgvToFlags } = require('../lib/util');
 const { pick } = require('lodash');
-
 module.exports = async (subCommand, options) => {
     if (subCommand === 'stop') {
         require('./stop')();
@@ -49,14 +48,16 @@ module.exports = async (subCommand, options) => {
         }
     }
 
-    const args = [ path.resolve(__filename, './server.js'), ...processArgvToFlags(pick(options, [ 'proxy', 'port', 'debug' ])), '--from-bin=mycli' ];
-    const child = execa('node', args, {
+    const args = [ path.resolve(__dirname, './server.js'), ...processArgvToFlags(pick(options, [ 'proxy', 'port', 'debug' ])), '--from-bin=mycli' ];
+    const child = options.debug ? execa('node', args, {
+        cwd: path.resolve(__dirname, '../'),
+        stdio: 'inherit'
+    }) : execa('node', args, {
         cwd: path.resolve(__dirname, '../'),
         detached: true,
         stdio: [ null, null, null, 'ipc' ]
     });
     child.on('message', async ({ port }) => {
-        console.log(port);
         const ip = await internalIp.v4();
         console.log(`
 代理服务器已在 ${chalk.yellow(port)} 端口启动：
