@@ -26,11 +26,6 @@ program
         require(`../npm/${target}`)(rest, cmd);
     });
 program
-    .command('yuque <sub-command> [rest...]')
-    .action((subCommand, rest) => {
-        require(`../yuque/${subCommand}`)(rest);
-    });
-program
     .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')

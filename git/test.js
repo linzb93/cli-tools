@@ -3,7 +3,7 @@ const git = require('./util');
 const consola = require('consola');
 const chalk = require('chalk');
 const exec = async cmd => {
-    console.log(`actions: ${chalk.yellow(cmd)}`);
+    console.log(`${chalk.cyan('actions:')} ${chalk.yellow(cmd)}`);
     await command(cmd, { stdio: 'inherit' });
 };
 module.exports = async options => {
