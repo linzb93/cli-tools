@@ -57,7 +57,7 @@ program
         require('../lib/commands/open')(url, cmd);
     });
 program
-    .command('clear <filename>')
+    .command('clear [filename]')
     .action(filename => {
         require('../lib/commands/clear')(filename);
     });
@@ -85,8 +85,9 @@ program
 program
     .command('mon [filename]')
     .allowUnknownOption()
-    .action(file => {
-        require('../lib/commands/monitor')(file);
+    .action((file, _, options) => {
+        const combinedOptions = options.args.slice(1);
+        require('../lib/commands/monitor')(file, combinedOptions);
     });
 program
     .command('upload <filename>')
@@ -100,5 +101,7 @@ program
     });
 program
     .command('test')
-    .action(() => { require('../lib/commands/test')(); });
+    .action(() => {
+        require('../lib/commands/test')();
+    });
 program.parse();
