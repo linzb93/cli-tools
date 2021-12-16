@@ -12,7 +12,7 @@ process.on('unhandledRejection', async e => {
         async: true
     });
 });
-program.version(`mycli ${require('../package').version}`, '-v, --version');
+program.version(`mycli ${require('../package.json').version}`, '-v, --version');
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
@@ -23,7 +23,7 @@ program
             un: 'uninstall'
         };
         const target = aliases[subCommand] || subCommand;
-        require(`../npm/${target}`)(rest, cmd);
+        require(`../lib/commands/npm/${target}`)(rest, cmd);
     });
 program
     .command('git [sub-command] [rest...]')
@@ -33,7 +33,7 @@ program
     .option('--commit <msg>', '提交信息')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
-        require(`../git/${subCommand}`)(rest, cmd);
+        require(`../lib/commands/git/${subCommand}`)(rest, cmd);
     });
 program
     .command('agent [sub-command]')
@@ -43,28 +43,28 @@ program
     .option('--debug', '调试阶段')
     .allowUnknownOption()
     .action((subCommand, options) => {
-        require('../agent')(subCommand, options);
+        require('../lib/commands/agent')(subCommand, options);
     });
 program
     .command('getSize <url>')
     .action(url => {
-        require('../getSize')(url);
+        require('../lib/commands/getSize')(url);
     });
 program
     .command('open <name>')
     .option('--name <name>')
     .action((url, cmd) => {
-        require('../open')(url, cmd);
+        require('../lib/commands/open')(url, cmd);
     });
 program
     .command('clear <filename>')
     .action(filename => {
-        require('../clear')(filename);
+        require('../lib/commands/clear')(filename);
     });
 program
     .command('exec <filename> [args]')
     .action((filename, args) => {
-        require('../exec')(filename, args);
+        require('../lib/commands/exec')(filename, args);
     });
 program
     .command('occ [data...]')
@@ -73,32 +73,32 @@ program
     .option('--search <params>', '高级搜索')
     .allowUnknownOption()
     .action((data, options) => {
-        require('../occ')(data, options);
+        require('../lib/commands/occ')(data, options);
     });
 program
     .command('fund [data...]')
     .option('--help', '帮助')
     .allowUnknownOption()
     .action((data, options) => {
-        require('../fund')(data, options);
+        require('../lib/commands/fund')(data, options);
     });
 program
     .command('mon [filename]')
     .allowUnknownOption()
     .action(file => {
-        require('../monitor')(file);
+        require('../lib/commands/monitor')(file);
     });
 program
     .command('upload <filename>')
     .action(file => {
-        require('../upload')(file);
+        require('../lib/commands/upload')(file);
     });
 program
     .command('server')
     .action(() => {
-        require('../server')();
+        require('../lib/commands/server')();
     });
 program
     .command('test')
-    .action(() => { require('../test')(); });
+    .action(() => { require('../lib/commands/test')(); });
 program.parse();
