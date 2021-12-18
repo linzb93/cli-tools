@@ -3,7 +3,8 @@
 const { Command } = require('commander');
 const program = new Command();
 const { errorHandler } = require('../lib/util');
-
+const consola = require('consola');
+const chalk = require('chalk');
 process.on('uncaughtException', async e => {
     errorHandler(e, program);
 });
@@ -23,6 +24,12 @@ program
             un: 'uninstall'
         };
         const target = aliases[subCommand] || subCommand;
+        try {
+            require.resolve(`../lib/commands/npm/${target}`);
+        } catch (error) {
+            consola.error(`命令 ${chalk.yellow(`mycli git ${target}`)} 不存在`);
+            return;
+        }
         require(`../lib/commands/npm/${target}`)(rest, cmd);
     });
 program
@@ -33,6 +40,12 @@ program
     .option('--commit <msg>', '提交信息')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
+        try {
+            require.resolve(`../lib/commands/git/${subCommand}`);
+        } catch (error) {
+            consola.error(`命令 ${chalk.yellow(`mycli git ${subCommand}`)} 不存在`);
+            return;
+        }
         require(`../lib/commands/git/${subCommand}`)(rest, cmd);
     });
 program
