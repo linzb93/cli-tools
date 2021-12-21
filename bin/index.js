@@ -114,6 +114,11 @@ program
         require('../lib/commands/server')();
     });
 program
+    .command('kill [...data]')
+    .action(data => {
+        require('../lib/commands/kill')(data);
+    });
+program
     .command('test')
     .action(() => {
         require('../lib/commands/test')();
