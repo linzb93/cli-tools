@@ -17,6 +17,7 @@ program.version(`mycli ${require('../package.json').version}`, '-v, --version');
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
+    .option('-g, --global', '全局操作')
     .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
         const aliases = {
@@ -114,7 +115,7 @@ program
         require('../lib/commands/server')();
     });
 program
-    .command('kill [...data]')
+    .command('kill [data...]')
     .action(data => {
         require('../lib/commands/kill')(data);
     });
