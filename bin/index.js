@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 
-import commander from 'commander';
-const program = new commander.Command();
-// import { errorHandler } from '../lib/util';
-import * as consola from 'consola';
-import * as chalk from 'chalk';
-import pkg from '../package';
-// process.on('uncaughtException', async e => {
-//     errorHandler(e, program);
-// });
-// process.on('unhandledRejection', async e => {
-//     errorHandler(e, program, {
-//         async: true
-//     });
-// });
-program.version(`mycli ${pkg.version}`, '-v, --version');
+const { Command } = require('commander');
+const program = new Command();
+const { errorHandler } = require('../lib/util');
+const consola = require('consola');
+const chalk = require('chalk');
+process.on('uncaughtException', async e => {
+    errorHandler(e, program);
+});
+process.on('unhandledRejection', async e => {
+    errorHandler(e, program, {
+        async: true
+    });
+});
+program.version(`mycli ${require('../package.json').version}`, '-v, --version');
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
