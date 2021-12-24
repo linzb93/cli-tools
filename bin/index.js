@@ -18,6 +18,7 @@ program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
     .option('-g, --global', '全局操作')
+    .option('--open', '打开页面')
     .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
         const aliases = {
@@ -85,6 +86,7 @@ program
     .command('occ [data...]')
     .option('--token', '获取token')
     .option('--pc', '打开PC端')
+    .option('--copy', '复制地址')
     .option('--search <params>', '高级搜索')
     .allowUnknownOption()
     .action((data, options) => {
