@@ -77,8 +77,6 @@ program
     .action(filename => {
         require('../lib/commands/clear')(filename);
     });
-
-
 program
     .command('occ [data...]')
     .option('--token', '获取token')
