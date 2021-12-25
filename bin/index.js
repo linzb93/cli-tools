@@ -78,11 +78,6 @@ program
         require('../lib/commands/clear')(filename);
     });
 program
-    .command('exec <filename> [args]')
-    .action((filename, args) => {
-        require('../lib/commands/exec')(filename, args);
-    });
-program
     .command('occ [data...]')
     .option('--token', '获取token')
     .option('--pc', '打开PC端')
