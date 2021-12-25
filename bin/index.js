@@ -40,7 +40,6 @@ program
     .option('--open', '在VSCode中打开项目')
     .option('--copy', '复制结果文本')
     .option('--commit <msg>', '提交信息')
-    .option('--notSync', '当前分支不与远端同步')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
         try {
