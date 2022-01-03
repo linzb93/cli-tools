@@ -38,7 +38,7 @@ program
     .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
-    .option('--copy', '复制结果文本')
+    .option('--from <src>', '来源')
     .option('--commit <msg>', '提交信息')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
