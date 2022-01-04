@@ -2,6 +2,7 @@ node_modules/
 package-lock.json
 config.secret.json
 config.local.json
-lib/command/fund/codes
+lib/commands/fund/codes
+lib/commands/fund/.cache
 .DS_Store
 lib/commands/test
