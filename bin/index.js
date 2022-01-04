@@ -87,11 +87,16 @@ program
         require('../lib/commands/occ')(data, options);
     });
 program
-    .command('fund [data...]')
-    .option('--help', '帮助')
+    .command('fund <sub-command> [data...]')
     .allowUnknownOption()
-    .action((data, options) => {
-        require('../lib/commands/fund')(data, options);
+    .action((subCommand = 'index', data, options) => {
+        try {
+            require.resolve(`../lib/commands/fund/${subCommand}`);
+        } catch (error) {
+            consola.error(`命令 ${chalk.yellow(`mycli fund ${subCommand}`)} 不存在`);
+            return;
+        }
+        require(`../lib/commands/fund/${subCommand}`)(data, options);
     });
 program
     .command('mon [filename]')
