@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
-const program = new Command();
-const { errorHandler } = require('../lib/util');
 const consola = require('consola');
 const chalk = require('chalk');
+const { errorHandler } = require('../lib/util');
+
+const program = new Command();
 process.on('uncaughtException', async e => {
     errorHandler(e, program);
 });
