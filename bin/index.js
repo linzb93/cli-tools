@@ -4,7 +4,7 @@ const { Command } = require('commander');
 const consola = require('consola');
 const chalk = require('chalk');
 const { errorHandler } = require('../lib/util');
-
+// const statLogger = require('../lib/commands/stats/logger');
 const program = new Command();
 process.on('uncaughtException', async e => {
     errorHandler(e, program);
@@ -122,6 +122,7 @@ program
     });
 program
     .command('test')
+    .allowUnknownOption()
     .action(() => {
         require('../lib/commands/test');
     });
