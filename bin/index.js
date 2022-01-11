@@ -57,7 +57,6 @@ program
     .option('--port <num>', '端口号')
     .option('-c, --copy', '复制网络地址')
     .option('--debug', '调试阶段')
-    .allowUnknownOption()
     .action((subCommand, options) => {
         require('../lib/commands/agent')(subCommand, options);
     });
