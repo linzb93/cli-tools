@@ -123,6 +123,6 @@ program
 program
     .command('test')
     .action(() => {
-        require('../lib/commands/test')();
+        require('../lib/commands/test');
     });
 program.parse();

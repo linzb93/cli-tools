@@ -52,7 +52,8 @@
     "pascal-case": "^3.1.2",
     "read-pkg": "^5.2.0",
     "runscript": "^1.5.1",
-    "semver": "^7.3.5"
+    "semver": "^7.3.5",
+    "through2": "^4.0.2"
   },
   "devDependencies": {
     "eslint": "^7.28.0",
