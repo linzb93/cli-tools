@@ -5,3 +5,4 @@ config.local.json
 lib/commands/fund/.cache
 .DS_Store
 lib/commands/test.js
+lib/commands/stats/db.log

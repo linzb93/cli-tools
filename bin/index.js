@@ -3,18 +3,23 @@
 const { Command } = require('commander');
 const consola = require('consola');
 const chalk = require('chalk');
-const { errorHandler } = require('../lib/util');
-// const statLogger = require('../lib/commands/stats/logger');
+const handleUncaughtError = require('../lib/util/handleUncaughtError');
+const getSetting = require('../lib/util/db');
+handleUncaughtError();
+const StatLogger = require('../lib/commands/stats/logger');
 const program = new Command();
-process.on('uncaughtException', async e => {
-    errorHandler(e, program);
-});
-process.on('unhandledRejection', async e => {
-    errorHandler(e, program, {
-        async: true
-    });
-});
+
+const { editSetting } = getSetting;
+
 program.version(`mycli ${require('../package.json').version}`, '-v, --version');
+program.hook('preAction', obj => {
+    if (getSetting('debug')) {
+        consola.info('当前处于调试模式，如需切换会生产模式，请运行 mycli debug');
+    }
+    const logger = new StatLogger();
+    logger.insert({ full: `mycli ${obj.args.join(' ')}` });
+});
+
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
@@ -125,5 +130,9 @@ program
     .allowUnknownOption()
     .action(() => {
         require('../lib/commands/test');
+    });
+program.command('debug')
+    .action(() => {
+        editSetting('debug', '!');
     });
 program.parse();
