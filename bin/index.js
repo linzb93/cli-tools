@@ -1,20 +1,18 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
-const consola = require('consola');
+const logger = require('../lib/util/logger');
 const chalk = require('chalk');
 const handleUncaughtError = require('../lib/util/handleUncaughtError');
-const getSetting = require('../lib/util/db');
-handleUncaughtError();
 const StatLogger = require('../lib/commands/stats/logger');
+
+handleUncaughtError();
+
 const program = new Command();
-
-const { editSetting } = getSetting;
-
 program.version(`mycli ${require('../package.json').version}`, '-v, --version');
 program.hook('preAction', obj => {
-    if (getSetting('debug')) {
-        consola.info('当前处于调试模式，如需切换会生产模式，请运行 mycli debug');
+    if (obj.args[0] === 'test') {
+        return;
     }
     const logger = new StatLogger();
     logger.insert({ full: `mycli ${obj.args.join(' ')}` });
@@ -35,7 +33,7 @@ program
         try {
             require.resolve(`../lib/commands/npm/${target}`);
         } catch (error) {
-            consola.error(`命令 ${chalk.yellow(`mycli git ${target}`)} 不存在`);
+            logger.error(`命令 ${chalk.yellow(`mycli git ${target}`)} 不存在`);
             return;
         }
         require(`../lib/commands/npm/${target}`)(rest, cmd);
@@ -45,13 +43,14 @@ program
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
     .option('--from <src>', '来源')
+    .option('-d, --delete', '删除')
     .option('--commit <msg>', '提交信息')
     .allowUnknownOption()
     .action((subCommand = 'index', rest, cmd) => {
         try {
             require.resolve(`../lib/commands/git/${subCommand}`);
         } catch (error) {
-            consola.error(`命令 ${chalk.yellow(`mycli git ${subCommand}`)} 不存在`);
+            logger.error(`命令 ${chalk.yellow(`mycli git ${subCommand}`)} 不存在`);
             return;
         }
         require(`../lib/commands/git/${subCommand}`)(rest, cmd);
@@ -93,12 +92,11 @@ program
     });
 program
     .command('fund <sub-command> [data...]')
-    .allowUnknownOption()
     .action((subCommand = 'index', data, options) => {
         try {
             require.resolve(`../lib/commands/fund/${subCommand}`);
         } catch (error) {
-            consola.error(`命令 ${chalk.yellow(`mycli fund ${subCommand}`)} 不存在`);
+            logger.error(`命令 ${chalk.yellow(`mycli fund ${subCommand}`)} 不存在`);
             return;
         }
         require(`../lib/commands/fund/${subCommand}`)(data, options);
@@ -130,9 +128,5 @@ program
     .allowUnknownOption()
     .action(() => {
         require('../lib/commands/test');
-    });
-program.command('debug')
-    .action(() => {
-        editSetting('debug', '!');
     });
 program.parse();

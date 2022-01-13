@@ -16,6 +16,8 @@
   "author": "linzb93",
   "license": "ISC",
   "dependencies": {
+    "@vue/reactivity": "^3.2.26",
+    "@vue/runtime-core": "^3.2.26",
     "ali-oss": "^6.16.0",
     "async-validator": "^4.0.7",
     "axios": "^0.24.0",
