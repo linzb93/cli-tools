@@ -59,7 +59,8 @@ program
 program
     .command('getSize <url>')
     .action(url => {
-        require('../lib/commands/getSize')(url);
+        const Command = require('../lib/commands/getSize');
+        new Command(url).run();
     });
 program
     .command('open <name>')
