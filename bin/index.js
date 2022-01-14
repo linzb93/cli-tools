@@ -4,19 +4,11 @@ const { Command } = require('commander');
 const logger = require('../lib/util/logger');
 const chalk = require('chalk');
 const handleUncaughtError = require('../lib/util/handleUncaughtError');
-const StatLogger = require('../lib/commands/stats/logger');
 
 handleUncaughtError();
 
 const program = new Command();
 program.version(`mycli ${require('../package.json').version}`, '-v, --version');
-program.hook('preAction', obj => {
-    if (obj.args[0] === 'test') {
-        return;
-    }
-    const logger = new StatLogger();
-    logger.insert({ full: `mycli ${obj.args.join(' ')}` });
-});
 
 program
     .command('npm <sub-command> [rest...]')
