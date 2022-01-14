@@ -17,11 +17,11 @@ program
     .option('--open', '打开页面')
     .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
-        const aliases = {
+        const shorthands = {
             i: 'install',
             un: 'uninstall'
         };
-        const target = aliases[subCommand] || subCommand;
+        const target = shorthands[subCommand] || subCommand;
         try {
             require.resolve(`../lib/commands/npm/${target}`);
         } catch (error) {
@@ -52,7 +52,7 @@ program
     .option('--proxy <url>', '代理地址')
     .option('--port <num>', '端口号')
     .option('-c, --copy', '复制网络地址')
-    .option('--debug', '调试阶段')
+    .option('--debug', '调试模式')
     .action((subCommand, options) => {
         require('../lib/commands/agent')(subCommand, options);
     });
@@ -114,6 +114,12 @@ program
     .command('kill [data...]')
     .action(data => {
         require('../lib/commands/kill')(data);
+    });
+program
+    .command('spider [url]')
+    .option('--dest <dest>', '下载目标文件夹')
+    .action((url, option) => {
+        require('../lib/commands/spider')(url, option);
     });
 program
     .command('test')
