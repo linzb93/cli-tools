@@ -1,7 +1,7 @@
-const ora = require('ora');
-const { isWin } = require('./index');
+import ora from 'ora';
+import Helper from './Helper';
 const createProxy = require('./proxy');
-
+const {isWin} = new Helper();
 const defaults = {
     timeWarning: 3000,
     timeout: 5000,

@@ -1,8 +1,8 @@
-const { command: execa } = require('execa');
-const chalk = require('chalk');
+import { execaCommand as execa } from 'execa';
+import chalk from 'chalk';
 
 // 按顺序执行异步函数，返回第一个成功的结果
-exports.pLocate = async (list, callback) => {
+export const pLocate = async (list:any[], callback: Function):Promise<any> => {
     for (let i = 0; i < list.length; i++) {
         try {
             return await callback(list[i]);
@@ -13,7 +13,7 @@ exports.pLocate = async (list, callback) => {
     throw new Error('err');
 };
 
-exports.pRetry = async (input, {
+export const pRetry = async (input, {
     retries = 10,
     retryTimesCallback
 }) => {
@@ -40,7 +40,8 @@ exports.pRetry = async (input, {
     return data;
 };
 
-exports.sequenceExec = async commandList => {
+interface CommandItem {message: string, onError: Function}
+export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
     for (const commandItem of commandList) {
         const command = typeof commandItem === 'string' ? commandItem : commandItem.message;
         if (!command) {
@@ -53,9 +54,9 @@ exports.sequenceExec = async commandList => {
                 console.log(stdout);
             }
         } catch (error) {
-            if (typeof commandItem.onError === 'function') {
+            if (typeof (commandItem as CommandItem).onError === 'function') {
                 try {
-                    await commandItem.onError(error.message);
+                    await (commandItem as CommandItem).onError(error.message);
                 } catch (e) {
                     throw e;
                 }

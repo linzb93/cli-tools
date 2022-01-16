@@ -1,24 +1,26 @@
-const inquirer = require('inquirer');
-const boxen = require('boxen');
-const createCallsiteRecord = require('callsite-record');
-const path = require('path');
-const chalk = require('chalk');
-const logger = require('./logger');
-const { openInEditor, root } = require('./');
+import inquirer from 'inquirer';
+import boxen from 'boxen';
+import createCallsiteRecord from 'callsite-record';
+import path from 'path';
+import chalk from 'chalk';
+import logger from './logger.js';
+import { openInEditor, root } from './helper.js';
 
 module.exports = () => {
     process.on('uncaughtException', async e => {
         errorHandler(e);
     });
     process.on('unhandledRejection', async e => {
-        errorHandler(e, {
+        errorHandler(e as Error, {
             async: true
         });
     });
 };
 
 // 处理全局未捕捉的错误
-async function errorHandler(e, options = {}) {
+async function errorHandler(e: Error, options:{
+    async?:boolean
+} = {}) {
     logger.clearConsole(1);
     try {
         console.log(boxen(`${chalk.bold.red('UNCAUGHTED ERROR!')}\n${e.message}`, {
@@ -29,7 +31,7 @@ async function errorHandler(e, options = {}) {
             margin: 1,
             float: 'left'
         }));
-        console.log(createCallsiteRecord({ forError: e }).renderSync());
+        console.log(createCallsiteRecord({ forError: e }).renderSync({}));
         if (process.cwd() === root) {
             return;
         }

@@ -1,10 +1,12 @@
-const BaseCommand = require('../util/BaseCommand');
-const fs = require('fs-extra');
-const bytes = require('bytes');
-const axios = require('axios');
+import BaseCommand from '../util/BaseCommand.js';
+import * as fs from 'fs-extra';
+import bytes from 'bytes';
+import axios, {AxiosResponse} from 'axios';
+import {Readable} from 'stream';
 
-module.exports = class extends BaseCommand {
-    constructor(filePath) {
+export default class extends BaseCommand {
+    private filePath:string;
+    constructor(filePath:string) {
         super();
         this.filePath = filePath;
         this.helper.validate({
@@ -18,9 +20,8 @@ module.exports = class extends BaseCommand {
     }
     async run() {
         let { filePath } = this;
-        let fileData;
         if (this.helper.isURL(filePath)) {
-            let res;
+            let res:AxiosResponse;
             // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
             filePath = filePath.replace(/\s/g, ',');
             try {
@@ -34,6 +35,7 @@ module.exports = class extends BaseCommand {
             this.logger.success(bytes((await this.getSize(res.data))));
             return;
         }
+        let fileData;
         try {
             fileData = await fs.stat(filePath);
         } catch (error) {
@@ -42,7 +44,7 @@ module.exports = class extends BaseCommand {
         }
         console.log(bytes(fileData.size));
     }
-    async getSize(inputStream) {
+    async getSize(inputStream:Readable):Promise<number> {
         let len = 0;
         return new Promise(resolve => {
             inputStream.on('data', str => {
