@@ -5,10 +5,13 @@ import logger from './logger.js';
 import lodash from 'lodash';
 import npm from './npm.js';
 import chalk from 'chalk';
-import Schema from 'async-validator';
-const {pick} = lodash;
+import Schema, {
+    Rules as ValidatorRules,
+    Values as ValidatorValues
+} from 'async-validator';
+const { pick } = lodash;
 export const isWin = process.platform === 'win32';
-export const root = path.resolve(import.meta.url.replace('file://', ''), '../../../');
+
 export const isURL = (text: string): boolean => {
     return text.startsWith('http://') || text.startsWith('https://');
 };
@@ -17,8 +20,8 @@ export const isPath = (value: string): boolean => {
     return value.startsWith('/') || /[CDEFGHI]\:.+/.test(value) || value.startsWith('./') || value.startsWith('../');
 };
 export const validate = (
-    obj,
-    descriptor
+    obj: ValidatorValues,
+    descriptor: ValidatorRules
 ): void => {
     const validator = new Schema(descriptor);
     validator.validate(obj, (errors, fields) => {
@@ -30,6 +33,8 @@ export const validate = (
         process.exit(1);
     });
 };
+export const parseImportUrl = (url:string) => url.replace('file://', '');
+export const root = path.resolve(parseImportUrl(import.meta.url), '../../../');
 export const openInEditor = async (project: string): Promise<void> => {
     try {
         await execa(`code ${project}`);

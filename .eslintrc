@@ -1,11 +1,12 @@
 {
-  "extends": "eslint-config-egg",
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "parserOptions": {
     "sourceType": "module"
-    },
+  },
   "rules": {
-      "indent":["error", 4],
-      "strict": "off",
-      "comma-dangle": [2, "never"]
+    "indent": ["error", 4],
+    "strict": "off",
+    "comma-dangle": [2, "never"]
   }
 }

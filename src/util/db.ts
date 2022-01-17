@@ -5,7 +5,7 @@ import path from 'path';
 import { BaseType } from './types';
 import {root} from './helper.js';
 const {readJSONSync, writeFileSync} = fs;
-// console.log(import.meta.url);
+
 const resolve = (src: string) => path.resolve(root, src);
 const {
     get: objectGet,
