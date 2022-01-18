@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import express from 'express';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
-import axios from 'axios';
+import axios, {AxiosRequestHeaders,Method} from 'axios';
 import cors from 'cors';
 import getPort from 'detect-port';
 import internalIp from 'internal-ip';
@@ -26,7 +26,7 @@ program
                 // 处理静态资源
                 axios({
                     url: `${options.proxy}${url}`,
-                    headers: req.headers,
+                    headers: req.headers as AxiosRequestHeaders,
                     responseType: 'stream'
                 })
                     .then(sourceRes => {
@@ -36,10 +36,10 @@ program
             }
             const payload = req.method === 'get' ? { params: req.params } : { data: req.body };
             axios({
-                method: req.method,
+                method: req.method as Method,
                 url: `${options.proxy}${url}`,
                 ...payload,
-                headers: req.headers
+                headers: req.headers as AxiosRequestHeaders
             })
                 .then(resp => {
                     res.send(resp.data);

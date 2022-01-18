@@ -1,11 +1,11 @@
-const dayjs = require('dayjs');
-const Listr = require('listr');
-const { castArray } = require('lodash');
-const { pickAndRename } = require('../../util');
-const db = require('./util/db');
-const { validateCode } = require('./util');
-const { getFundInfo, getFundNetDiagram } = require('./api');
-const logger = require('../../util/logger');
+import dayjs from 'dayjs';
+import Listr from 'listr';
+import { castArray } from 'lodash';
+import { pickAndRename } from '../../util/helper';
+import db from './util/db';
+import { validateCode } from './util';
+import { getFundInfo, getFundNetDiagram } from './api';
+import logger from '../../util/logger';
 
 module.exports = async (fundsArg, options) => {
     const funds = castArray(fundsArg);

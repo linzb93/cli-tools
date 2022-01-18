@@ -31,7 +31,6 @@ export default async (name:string) => {
     };
 };
 
-function getVersion(packageName:string) {
+export function getVersion(packageName:string) {
     return packageName.match(/@([0-9a-z\.\-]+)@/)[1];
 }
-module.exports.getVersion = getVersion;

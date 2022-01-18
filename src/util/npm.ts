@@ -22,9 +22,9 @@ const getNpmBin = memoize(async () => {
  * or cnpm: https://registry.npmmirror.com/ 版本号支持缩写
  */
 interface InstallOptions {
-    devDependencies: boolean
-    dependencies: boolean
-    global: boolean
+    devDependencies?: boolean
+    dependencies?: boolean
+    global?: boolean
 }
 function install(name: string):void
 function install(name: string, options: InstallOptions):void

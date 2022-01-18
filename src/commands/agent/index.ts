@@ -3,22 +3,37 @@ import inquirer from 'inquirer';
 import path from 'path';
 import { fork } from 'child_process';
 import lodash from 'lodash';
+import {LowdbSync} from 'lowdb';
 import { db } from './util/index.js';
 import Monitor from '../monitor.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import Stop from './stop.js';
-const {pick} = lodash;
-
+const { pick } = lodash;
+interface Options {
+    proxy?:string,
+    port?:string,
+    debug?:boolean,
+    copy?:boolean
+}
+interface CacheItem {
+    proxy: string,
+    name: string,
+    port?: number
+}
+interface CacheSaveOption {
+    choosed:boolean,
+    projName?:string
+}
 export default class extends BaseCommand {
-    private subCommand:any;
-    private options:any;
-    constructor(subCommand, options) {
+    private subCommand?: string;
+    private options: Options;
+    constructor(subCommand?:string, options?:Options) {
         super()
         this.subCommand = subCommand;
         this.options = options;
     }
-    async run  ()  {
-        const {subCommand, options} = this;
+    async run() {
+        const { subCommand, options } = this;
         if (subCommand === 'stop') {
             new Stop().run();
             return;
@@ -40,11 +55,11 @@ export default class extends BaseCommand {
                 }
             ]
         });
-        const cacheData = db.get('items').value();
+        const cacheData = db.get('items').value() as CacheItem[];
         const match = cacheData.find(item => item.proxy === options.proxy);
         if (!match) {
             if (!options.proxy) {
-                const { server } = await inquirer.prompt([{
+                const { server }: {server:string} = await inquirer.prompt([{
                     message: '请选择要开启的代理服务器',
                     type: 'list',
                     choices: cacheData.map(data => ({
@@ -55,7 +70,7 @@ export default class extends BaseCommand {
                 }]);
                 options.proxy = server;
             } else {
-                const ans = await inquirer.prompt([
+                const ans:CacheSaveOption = await inquirer.prompt([
                     {
                         type: 'confirm',
                         message: '是否将服务器数据存入缓存？',
@@ -78,21 +93,21 @@ export default class extends BaseCommand {
         if (!options.debug) {
             const child = fork(
                 path.resolve(this.helper.parseImportUrl(import.meta.url), '../server.js'),
-                [ ...this.helper.processArgvToFlags(pick(options, [ 'proxy', 'port', 'debug', 'copy' ])), '--from-bin=mycli-agent' ],
+                [...this.helper.processArgvToFlags(pick(options, ['proxy', 'port', 'debug', 'copy'])), '--from-bin=mycli-agent'],
                 {
                     cwd: this.helper.root,
                     detached: true,
-                    stdio: [ null, null, null, 'ipc' ]
+                    stdio: [null, null, null, 'ipc']
                 });
-            child.on('message', async ({ port, ip }: {port: string, ip: string}) => {
+            child.on('message', async ({ port, ip }: { port: string, ip: string }) => {
                 console.log(`
     代理服务器已在 ${chalk.yellow(port)} 端口启动：
     - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
     - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
     路由映射至：${chalk.cyan(options.proxy)}`);
-                const items = db.get('items').value() as any;
+                const items:CacheItem[] = db.get('items').value();
                 const match = items.find(item => item.proxy === options.proxy);
-                (match as any).port = port;
+                match.port = Number(port);
                 db.set('items', items).write();
                 child.unref();
                 child.disconnect(); // 试验下，这行代码有必要加吗？
@@ -101,7 +116,7 @@ export default class extends BaseCommand {
         } else {
             new Monitor(
                 path.resolve(this.helper.parseImportUrl(import.meta.url), '../server.js'),
-                (this.helper.processArgvToFlags(pick(options, [ 'proxy', 'port', 'debug', 'copy' ])) as string[])
+                (this.helper.processArgvToFlags(pick(options, ['proxy', 'port', 'debug', 'copy'])) as string[])
             ).run();
         }
     };

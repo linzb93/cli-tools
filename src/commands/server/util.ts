@@ -5,11 +5,12 @@ const resolve = src => path.resolve(__dirname, src);
 // 只处理HH:mm格式的
 
 class TimeClass {
+    private time:any;
     constructor(time) {
         this.time = time;
     }
-    isAfter(ctor) {
-        if (!ctor instanceof TimeClass) {
+    isAfter(ctor:any) {
+        if (ctor instanceof TimeClass === false) {
             throw new Error('类型错误');
         }
         if (!ctor.time) {
@@ -27,10 +28,10 @@ class TimeClass {
         return true;
     }
 }
-exports.timejs = time => {
+export const timejs = (time?:any) => {
     return new TimeClass(time);
 };
-exports.serverDB = {
+export const serverDB = {
     get(key) {
         const data = fs.readJSONSync(resolve('server/meta.json'));
         return data.files.find(file => file.name === key);
