@@ -2,10 +2,10 @@ import chokidar, { FSWatcher } from 'chokidar';
 import { fork, ChildProcess } from 'child_process';
 import path from 'path';
 import chalk from 'chalk';
-import { debounce } from 'lodash';
-import * as fs from 'fs-extra';
-import BaseCommand from '@/util/BaseCommand.js';
-
+import lodash from 'lodash';
+import fs from 'fs-extra';
+import BaseCommand from '../util/BaseCommand.js';
+const { debounce } = lodash;
 export default class extends BaseCommand {
     private filename: string | undefined
     private combinedOptions: string[]

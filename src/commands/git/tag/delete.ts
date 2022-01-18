@@ -1,20 +1,19 @@
 import inquirer from 'inquirer';
 import ora from 'ora';
 import pMap from 'p-map';
-import BaseCommand from '@/util/BaseCommand.js';
+import BaseCommand from '../../../util/BaseCommand.js';
 import { reactive } from '@vue/reactivity';
 import { watch } from '@vue/runtime-core';
-import logger from '../../../util/logger';
-import git from '../../../util/git';
+import git from '../../../util/git.js';
 
 export default class extends BaseCommand {
     async run() {
         const tags = await git.tag();
         if (!tags.length) {
-            logger.info('没有tag可以删除');
+            this.logger.info('没有tag可以删除');
             return;
         }
-        logger.clearConsole();
+        this.logger.clearConsole();
         const { selected } = await inquirer.prompt({
             message: '请选择需要删除的tag',
             name: 'selected',
@@ -31,7 +30,7 @@ export default class extends BaseCommand {
             watch(errorTags, value => {
                 spinner.text = `删除成功${successTags.length}个，失败${value.length}个`;
             });
-            await pMap(selected, async tag => {
+            await pMap(selected, async (tag:string) => {
                 try {
                     await Promise.all([
                         git.deleteTag(tag),
@@ -48,10 +47,10 @@ export default class extends BaseCommand {
             }, { concurrency: 5 });
             spinner.succeed();
             if (errorTags.length) {
-                logger.error(errorTags);
+                this.logger.error(errorTags.join(','));
             }
             return;
         }
-        logger.info('未选中需要删除的tag');
+        this.logger.info('未选中需要删除的tag');
     };
 }

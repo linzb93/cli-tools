@@ -3,7 +3,7 @@ import open from 'open';
 import ora from 'ora';
 import clipboard from 'clipboardy';
 import { AnyObject } from '../util/types';
-import BaseCommand from '@/util/BaseCommand.js';
+import BaseCommand from '../util/BaseCommand.js';
 
 interface Options {
     token: string,

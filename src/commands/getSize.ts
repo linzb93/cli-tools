@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import bytes from 'bytes';
 import axios, { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
-import BaseCommand from '@/util/BaseCommand.js';
+import BaseCommand from '../util/BaseCommand.js';
 
 export default class extends BaseCommand {
     private filePath: string;

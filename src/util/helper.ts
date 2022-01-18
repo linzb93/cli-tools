@@ -5,9 +5,10 @@ import logger from './logger.js';
 import lodash from 'lodash';
 import npm from './npm.js';
 import chalk from 'chalk';
-import Schema, {
+import isClass from 'is-class-function';
+import ValidatorSchema, {
     Rules as ValidatorRules,
-    Values as ValidatorValues
+    ValidateSource
 } from 'async-validator';
 const { pick } = lodash;
 export const isWin = process.platform === 'win32';
@@ -20,9 +21,10 @@ export const isPath = (value: string): boolean => {
     return value.startsWith('/') || /[CDEFGHI]\:.+/.test(value) || value.startsWith('./') || value.startsWith('../');
 };
 export const validate = (
-    obj: ValidatorValues,
+    obj: ValidateSource,
     descriptor: ValidatorRules
 ): void => {
+    const Schema = isClass(ValidatorSchema) ? ValidatorSchema : (ValidatorSchema as any).default;
     const validator = new Schema(descriptor);
     validator.validate(obj, (errors, fields) => {
         if (!errors) {
@@ -33,8 +35,8 @@ export const validate = (
         process.exit(1);
     });
 };
-export const parseImportUrl = (url:string) => url.replace('file://', '');
-export const root = path.resolve(parseImportUrl(import.meta.url), '../../../');
+export const parseImportUrl = (url: string) => decodeURI(url.replace('file:///', ''));
+export const root = path.join(parseImportUrl(import.meta.url), '../../../');
 export const openInEditor = async (project: string): Promise<void> => {
     try {
         await execa(`code ${project}`);
@@ -90,7 +92,7 @@ export const splitByLine = (str: string): string[] => {
     const eol = (str.includes('\r\n') ? '\r\n' : '\n');
     return str === '' ? [] : str.split(eol);
 };
-export const processArgvToFlags = (options: object, isStr: boolean): string | string[] => {
+export const processArgvToFlags = (options: object, isStr?: boolean): string | string[] => {
     const ret = Object.keys(options).map(opt => {
         if (options[opt] === true) {
             return `--${opt}`;

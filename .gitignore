@@ -6,3 +6,4 @@ lib/commands/fund/.cache
 lib/commands/test.js
 lib/commands/spider/images/
 dist
+data/

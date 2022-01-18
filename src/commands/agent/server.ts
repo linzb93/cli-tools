@@ -1,11 +1,11 @@
-const { Command } = require('commander');
-const express = require('express');
-const chalk = require('chalk');
-const clipboard = require('clipboardy');
-const axios = require('axios');
-const cors = require('cors');
-const getPort = require('detect-port');
-const internalIp = require('internal-ip');
+import { Command } from 'commander';
+import express from 'express';
+import chalk from 'chalk';
+import clipboard from 'clipboardy';
+import axios from 'axios';
+import cors from 'cors';
+import getPort from 'detect-port';
+import internalIp from 'internal-ip';
 const program = new Command();
 
 program

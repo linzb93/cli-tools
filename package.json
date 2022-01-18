@@ -1,6 +1,6 @@
 {
   "name": "cli",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A cli for private use",
   "main": "index.js",
   "type": "module",
@@ -9,14 +9,15 @@
   ],
   "scripts": {
     "start": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "ts-patch install -s"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/linzb93/cli-tools"
   },
   "bin": {
-    "cli": "dist/bin/index.js"
+    "mycli": "dist/bin/index.js"
   },
   "author": "linzb93",
   "license": "ISC",
@@ -24,7 +25,7 @@
     "@vue/reactivity": "^3.2.26",
     "@vue/runtime-core": "^3.2.26",
     "ali-oss": "^6.16.0",
-    "async-validator": "^4.0.7",
+    "async-validator": "^3.5.1",
     "axios": "^0.24.0",
     "boxen": "^5.1.2",
     "bytes": "^3.1.0",
@@ -48,6 +49,7 @@
     "iconv-lite": "^0.6.3",
     "inquirer": "^6.4.1",
     "internal-ip": "^6.2.0",
+    "is-class-function": "^0.0.1",
     "kill-port": "^1.6.1",
     "listr": "^0.14.3",
     "lowdb": "^1.0.0",
@@ -58,7 +60,6 @@
     "pascal-case": "^3.1.2",
     "prettier": "^2.5.1",
     "read-pkg": "^5.2.0",
-    "runscript": "^1.5.1",
     "semver": "^7.3.5"
   },
   "devDependencies": {

@@ -19,9 +19,9 @@ export default {
         cwd = process.cwd()
     }: {
         url: string,
-        branch: string,
-        dirName: string,
-        shallow: boolean,
+        branch?: string,
+        dirName?: string,
+        shallow?: boolean,
         cwd: string
     }) {
         try {

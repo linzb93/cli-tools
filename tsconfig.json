@@ -3,15 +3,11 @@
     "target": "es6",
     "types": ["node"],
     "module": "ESNext",
-    "baseUrl": ".",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "dist",
-    "paths": {
-        "@/*":["src/*"]
-    }
+    "outDir": "./dist/",
   },
   "include": ["src/**/*.ts"]
 }

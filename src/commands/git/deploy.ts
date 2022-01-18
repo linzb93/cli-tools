@@ -4,7 +4,7 @@
  * mycli git deploy 测试环境
  * mycli git deploy prod 生产环境
  */
- import BaseCommand from '@/util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import inquirer from 'inquirer';
 import git from '../../util/git';
 import GitTag from './tag/index.js';

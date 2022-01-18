@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import globalNpm from 'global-modules';
-import BaseCommand from '@/util/BaseCommand.js';
+import BaseCommand from '../util/BaseCommand.js';
 import { pLocate } from '../util/pFunc.js';
 import getSetting from '../util/db.js';
 

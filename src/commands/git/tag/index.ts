@@ -1,7 +1,8 @@
 import clipboard from 'clipboardy';
 import chalk from 'chalk';
-import git from '@/util/git';
-import BaseCommand from '@/util/BaseCommand.js';
+import git from '../../../util/git.js';
+import BaseCommand from '../../../util/BaseCommand.js';
+import DeleteTag from './delete.js';
 
 export default class extends BaseCommand {
     private params:any[]
@@ -13,7 +14,8 @@ export default class extends BaseCommand {
         const {params} = this;
         const options = params.length === 2 ? params[1] : params[0];
         if (options.delete) {
-            require('./delete')();
+            new DeleteTag().run();
+            return;
         }
         const tags = await git.tag();
         const last = tags[tags.length - 1];
