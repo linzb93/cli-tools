@@ -1,13 +1,11 @@
 import inquirer from 'inquirer';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import globalNpm from 'global-modules';
-import BaseCommand from '../util/BaseCommand.js';
-import { openInEditor, getOriginPath } from '../util/helper.js';
+import BaseCommand from '@/util/BaseCommand.js';
 import { pLocate } from '../util/pFunc.js';
 import getSetting from '../util/db.js';
-import logger from '../util/logger.js';
 
 interface Option {
     name: string
@@ -40,11 +38,11 @@ export default class extends BaseCommand {
                         return file;
                     });
                 } catch (error) {
-                    logger.error('项目不存在');
+                    this.logger.error('项目不存在');
                     return;
                 }
-                const path2 = await getOriginPath(matchPath);
-                await openInEditor(path2);
+                const path2 = await this.helper.getOriginPath(matchPath);
+                await this.helper.openInEditor(path2);
             } else {
                 const { source } = await inquirer.prompt([
                     {
@@ -54,8 +52,8 @@ export default class extends BaseCommand {
                         choices: dirs.map(dir => path.basename(dir))
                     }
                 ]);
-                const path2 = await getOriginPath(path.join(sourceDir, source));
-                await openInEditor(path2);
+                const path2 = await this.helper.getOriginPath(path.join(sourceDir, source));
+                await this.helper.openInEditor(path2);
             }
             return;
         }
@@ -81,11 +79,11 @@ export default class extends BaseCommand {
     async makeOpenAction(map: any[], name: string) {
         const match = map.find(item => item.name === name);
         if (!match) {
-            logger.error('命令错误');
+            this.logger.error('命令错误');
             return;
         }
         if (match.setting && match.isEditor) {
-            await openInEditor(getSetting(match.setting));
+            await this.helper.openInEditor(getSetting(match.setting));
         } else if (match.target) {
             await open(match.target);
         }

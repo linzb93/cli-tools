@@ -1,11 +1,15 @@
 import axios from 'axios';
 import open from 'open';
 import ora from 'ora';
-// const dayjs = require('dayjs');
 import clipboard from 'clipboardy';
-import { sleep } from '../util/helper';
 import { AnyObject } from '../util/types';
-import BaseCommand from '@/util/BaseCommand';
+import BaseCommand from '@/util/BaseCommand.js';
+
+interface Options {
+    token: string,
+    pc: boolean,
+    copy: boolean
+}
 
 const map = {
     default: {},
@@ -66,11 +70,6 @@ const map = {
     }
 };
 map.default = map.jysq;
-interface Options {
-    token: string,
-    pc: boolean,
-    copy: boolean
-}
 export default class extends BaseCommand {
     private input: string[];
     private options: Options;
@@ -149,7 +148,7 @@ export default class extends BaseCommand {
         } else {
             spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
         }
-        await sleep(1500);
+        await this.helper.sleep(1500);
         const { data: { result } } = await service.post(match.url.login, match.loginKey(shop));
         if (options.token) {
             const { hash } = new URL(result);

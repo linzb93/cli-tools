@@ -7,6 +7,13 @@ import { db } from './util/index.js';
 import { processArgvToFlags, validate, root } from '@/util/helper';
 import monitor from '../monitor.js';
 import logger from '@/util/logger';
+import BaseCommand from '@/util/BaseCommand.js';
+
+export default class extends BaseCommand {
+    constructor() {
+        super()
+    }
+}
 
 module.exports = async (subCommand, options) => {
     if (subCommand === 'stop') {

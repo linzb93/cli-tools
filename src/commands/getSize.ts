@@ -1,12 +1,12 @@
-import BaseCommand from '../util/BaseCommand.js';
 import * as fs from 'fs-extra';
 import bytes from 'bytes';
-import axios, {AxiosResponse} from 'axios';
-import {Readable} from 'stream';
+import axios, { AxiosResponse } from 'axios';
+import { Readable } from 'stream';
+import BaseCommand from '@/util/BaseCommand.js';
 
 export default class extends BaseCommand {
-    private filePath:string;
-    constructor(filePath:string) {
+    private filePath: string;
+    constructor(filePath: string) {
         super();
         this.filePath = filePath;
         this.helper.validate({
@@ -21,7 +21,7 @@ export default class extends BaseCommand {
     async run() {
         let { filePath } = this;
         if (this.helper.isURL(filePath)) {
-            let res:AxiosResponse;
+            let res: AxiosResponse;
             // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
             filePath = filePath.replace(/\s/g, ',');
             try {
@@ -44,7 +44,7 @@ export default class extends BaseCommand {
         }
         console.log(bytes(fileData.size));
     }
-    async getSize(inputStream:Readable):Promise<number> {
+    async getSize(inputStream: Readable): Promise<number> {
         let len = 0;
         return new Promise(resolve => {
             inputStream.on('data', str => {
