@@ -6,26 +6,29 @@
  */
 import BaseCommand from '../../util/BaseCommand.js';
 import inquirer from 'inquirer';
-import git from '../../util/git';
+import git from '../../util/git.js';
 import GitTag from './tag/index.js';
-import { sequenceExec } from '../../util/pFunc';
+import { sequenceExec } from '../../util/pFunc.js';
 
+interface Options {
+    commit?: string
+}
 export default class extends BaseCommand {
-    private data;
-    private options;
-    constructor(data, options) {
+    private data: string[];
+    private options: Options;
+    constructor(data: string[], options: Options) {
         super();
         this.data = data;
         this.options = options;
     }
-    async run () {
-        const {data, options} = this;
+    async run() {
+        const { data, options } = this;
         this.helper.validate({
             data: data[0]
         }, {
             data: [{
                 type: 'enum',
-                enum: [ 'test', 'prod' ],
+                enum: ['test', 'prod'],
                 message: '请输入正确的部署环境，测试环境可以不写，生产环境为prod'
             }]
         });
@@ -47,7 +50,7 @@ export default class extends BaseCommand {
                 },
                 {
                     message: 'git pull',
-                    onError() {}
+                    onError() { }
                 },
                 {
                     message: 'git push',
@@ -83,12 +86,12 @@ export default class extends BaseCommand {
                         `git tag ${newTag}`,
                         `git push origin ${newTag}`
                     ]
-                    : [ `git checkout ${curBranch}` ]
+                    : [`git checkout ${curBranch}`]
             ]);
         } catch (error) {
             this.logger.error(error);
             return;
         }
         this.logger.success('操作成功');
-    }   
+    }
 }

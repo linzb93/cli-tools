@@ -1,3 +1,5 @@
+import { AnyObject } from "../../util/types";
+
 const dayjs = require('dayjs');
 const fs = require('fs-extra');
 const path = require('path');
@@ -5,11 +7,11 @@ const resolve = src => path.resolve(__dirname, src);
 // 只处理HH:mm格式的
 
 class TimeClass {
-    private time:any;
-    constructor(time) {
+    private time:string;
+    constructor(time:string) {
         this.time = time;
     }
-    isAfter(ctor:any) {
+    isAfter(ctor:{time:string}) {
         if (ctor instanceof TimeClass === false) {
             throw new Error('类型错误');
         }
@@ -28,15 +30,15 @@ class TimeClass {
         return true;
     }
 }
-export const timejs = (time?:any) => {
+export const timejs = (time?:string) => {
     return new TimeClass(time);
 };
 export const serverDB = {
-    get(key) {
+    get(key:string) {
         const data = fs.readJSONSync(resolve('server/meta.json'));
         return data.files.find(file => file.name === key);
     },
-    set(key, entity) {
+    set(key:string, entity:AnyObject) {
         const data = fs.readJSONSync(resolve('server/meta.json'));
         let match = data.files.find(file => file.name === key);
         // eslint-disable-next-line no-unused-vars

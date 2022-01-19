@@ -2,24 +2,29 @@ import inquirer from 'inquirer';
 import del from 'del';
 import path from 'path';
 import globalNpm from 'global-modules';
-import readPkg from 'read-pkg';
-import getNpmList, {getVersion} from './util/getList';
+import readPkg, { NormalizedPackageJson } from 'read-pkg';
+import getNpmList, { getVersion } from './util/getList';
 import logger from '../../util/logger';
 import BaseCommand from '../../util/BaseCommand';
 
+interface Options {
+    global?: boolean
+}
+interface SimilarOption {
+    name: string
+}
 export default class extends BaseCommand {
-    private args:any;
-    private options:any;
-    constructor(args, options) {
+    private name: string;
+    private options: Options;
+    constructor(args: string[], options: Options) {
         super();
-        this.args=args;
-        this.options=options;
+        this.name = args[0];
+        this.options = options;
     }
     async run() {
-        const {args,options} = this;
-        const name = args[0];
+        const { name, options } = this;
         if (options.global) {
-            await delGlobal(name);
+            await this.delGlobal(name);
             logger.success('删除成功');
             return;
         }
@@ -51,70 +56,66 @@ export default class extends BaseCommand {
             return;
         }
         logger.success('删除成功');
-    };
-}
-
-// 除了删除全局的文件，还要删除全局命令
-async function delGlobal(name) {
-    let pkg;
-    try {
-        pkg = await readPkg({
-            cwd: path.resolve(globalNpm, 'node_modules', name)
-        });
-    } catch (error) {
-        const similarNpm = await getSimilar(name);
-        if ((similarNpm as SimilarOption).name) {
-            const { action } = await inquirer.prompt([{
-                type: 'confirm',
-                message: `${name}不存在，你想删除的是${(similarNpm as SimilarOption).name}吗？`,
-                default: true,
-                name: 'action'
-            }]);
-            if (action) {
-                pkg = await readPkg({
-                    cwd: path.resolve(globalNpm, 'node_modules', (similarNpm as SimilarOption).name)
-                });
-                const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
-                await del((similarNpm as SimilarOption).name, {
-                    cwd: path.resolve(globalNpm, 'node_modules')
-                });
-                for (const cmd of cmds) {
-                    await del([ cmd, `${cmd}.cmd`, `${cmd}.ps1` ], {
-                        cwd: globalNpm
+    }
+    // 除了删除全局的文件，还要删除全局命令
+    private async delGlobal(name: string) {
+        let pkg: NormalizedPackageJson;
+        try {
+            pkg = await readPkg({
+                cwd: path.resolve(globalNpm, 'node_modules', name)
+            });
+        } catch (error) {
+            const similarNpm = await this.getSimilar(name);
+            if ((similarNpm as SimilarOption).name) {
+                const { action } = await inquirer.prompt([{
+                    type: 'confirm',
+                    message: `${name}不存在，你想删除的是${(similarNpm as SimilarOption).name}吗？`,
+                    default: true,
+                    name: 'action'
+                }]);
+                if (action) {
+                    pkg = await readPkg({
+                        cwd: path.resolve(globalNpm, 'node_modules', (similarNpm as SimilarOption).name)
                     });
+                    const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
+                    await del((similarNpm as SimilarOption).name, {
+                        cwd: path.resolve(globalNpm, 'node_modules')
+                    });
+                    for (const cmd of cmds) {
+                        await del([cmd, `${cmd}.cmd`, `${cmd}.ps1`], {
+                            cwd: globalNpm
+                        });
+                    }
                 }
+            } else {
+                logger.error('模块不存在');
+                process.exit(1);
             }
-        } else {
-            logger.error('模块不存在');
-            process.exit(1);
+        }
+        const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
+        await del(name, {
+            cwd: path.resolve(globalNpm, 'node_modules')
+        });
+        for (const cmd of cmds) {
+            await del([cmd, `${cmd}.cmd`, `${cmd}.ps1`], {
+                cwd: globalNpm
+            });
         }
     }
-    const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
-    await del(name, {
-        cwd: path.resolve(globalNpm, 'node_modules')
-    });
-    for (const cmd of cmds) {
-        await del([ cmd, `${cmd}.cmd`, `${cmd}.ps1` ], {
-            cwd: globalNpm
-        });
-    }
-}
-interface SimilarOption {
-    name: string
-}
-async function getSimilar(name:string):Promise<SimilarOption | Boolean> {
-    const similarNpm = `@${name.replace('-', '/')}`;
-    if (similarNpm === `@${name}`) {
-        return false;
-    }
-    try {
-        await readPkg({
-            cwd: path.resolve(globalNpm, 'node_modules', similarNpm)
-        });
-        return {
-            name: similarNpm
-        };
-    } catch (error) {
-        return false;
+    private async getSimilar(name: string): Promise<SimilarOption | Boolean> {
+        const similarNpm = `@${name.replace('-', '/')}`;
+        if (similarNpm === `@${name}`) {
+            return false;
+        }
+        try {
+            await readPkg({
+                cwd: path.resolve(globalNpm, 'node_modules', similarNpm)
+            });
+            return {
+                name: similarNpm
+            };
+        } catch (error) {
+            return false;
+        }
     }
 }

@@ -26,10 +26,10 @@ interface InstallOptions {
     dependencies?: boolean
     global?: boolean
 }
-async function install(name: string):Promise<void>
-async function install(name: string, options: InstallOptions):Promise<void>
-async function install(options: InstallOptions):Promise<void>
-async function install(...args:any[]):Promise<void> {
+async function install(name: string):Promise<void>;
+async function install(name: string, options: InstallOptions):Promise<void>;
+async function install(options: InstallOptions):Promise<void>;
+async function install(...args:any[]) {
     let pkgName = '';
     let options: InstallOptions;
     if (args.length === 1) {

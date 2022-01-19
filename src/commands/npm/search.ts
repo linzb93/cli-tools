@@ -1,7 +1,7 @@
 import open from 'open';
-import ora from 'ora';
+import ora, { Ora } from 'ora';
 import chalk from 'chalk';
-import Table from 'cli-table3';
+import Table, {VerticalTable} from 'cli-table3';
 import logger from '../../util/logger';
 import npmPage from './util/npmPage';
 import BaseCommand from '../../util/BaseCommand';
@@ -13,15 +13,25 @@ const table = new Table({
         chalk.green('上次更新')
     ],
     colAligns: ['center', 'center', 'center', 'center']
-});
-
+}) as VerticalTable;
+interface Options {
+    open?:boolean
+}
+interface OutputPkgItem {
+    name: string,
+    description: string
+    weeklyDl: string
+    lastPb: string,
+}
 export default class extends BaseCommand {
-    private args: any[];
-    private options: any;
-    constructor(args, options) {
+    private args: string[];
+    private options: Options;
+    private spinner: Ora;
+    constructor(args:string[], options:Options) {
         super();
         this.args = args;
         this.options = options;
+        this.spinner = ora('');
     }
     async run() {
         const { args, options } = this;
@@ -34,10 +44,11 @@ export default class extends BaseCommand {
         }
     }
     // 获取单个包信息
-    async fetchNpmPackage(packageName, isMultiple, options?: any) {
-        let spinner;
+    private async fetchNpmPackage(packageName:string, isMultiple:boolean, options: Options = {}):Promise<OutputPkgItem> {
+        const {spinner} = this;
         if (!isMultiple) {
-            spinner = ora(`正在查找 ${packageName} 模块`).start();
+            spinner.text = `正在查找 ${packageName} 模块`;
+            spinner.start();
         }
         const page = await npmPage(packageName);
         const data = {
@@ -46,7 +57,7 @@ export default class extends BaseCommand {
             weeklyDl: page.get('weeklyDl'),
             lastPb: page.get('lastPb')
         };
-        data.weeklyDl = this.transformNumberCn(data.weeklyDl);
+        data.weeklyDl = this.transformNumberCn(data.weeklyDl).toString();
         if (isMultiple) {
             return data;
         }
@@ -55,13 +66,16 @@ export default class extends BaseCommand {
         ${data.description}
       周下载量：${chalk.green(data.weeklyDl)}
       上次更新：${chalk.green(data.lastPb)}`);
-        if (options && options.open) {
-            open(`https://npmjs.com/package/${packageName}`);
+        if (options.open) {
+           await open(`https://npmjs.com/package/${packageName}`);
         }
+        return data;
     }
     // 获取多个包信息并比较
-    async fetchMulNpmPackage(args) {
-        const spinner = ora(`正在查找 ${args.join(' ')} 这些模块`).start();
+    private async fetchMulNpmPackage(args:string[]) {
+        const {spinner} = this;
+        spinner.text = `正在查找 ${args.join(' ')} 这些模块`;
+        spinner.start();
         let resList;
         try {
             resList = await Promise.all(args.map(arg => {
@@ -76,19 +90,24 @@ export default class extends BaseCommand {
             process.exit(0);
         }
         spinner.stop();
-        table.push(...resList.map(item => [item.name, this.lineFeed(item.description), item.weeklyDl, item.lastPb]));
+        table.push(
+            ...resList.map(item => [
+                item.name,
+                this.lineFeed(item.description),
+                item.weeklyDl,
+                item.lastPb,
+            ]));
         console.log(table.toString());
     }
     // 12,345,678 => 1234万
-    transformNumberCn(val) {
+    private transformNumberCn(val:string) {
         const value = Number(val.replace(/,/g, ''));
         if (value > 10000) {
             return `${parseInt((value / 10000).toString())}万`;
         }
         return value;
     }
-
-    lineFeed(str, perLineLength = 30) {
+    private lineFeed(str:string, perLineLength = 30) {
         const strArr = str.split(' ');
         let tempArr = [];
         const retArr = [];

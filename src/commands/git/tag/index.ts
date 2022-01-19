@@ -4,15 +4,19 @@ import git from '../../../util/git.js';
 import BaseCommand from '../../../util/BaseCommand.js';
 import DeleteTag from './delete.js';
 
+interface Options {
+    delete?:boolean,
+    silent?:boolean
+}
+
 export default class extends BaseCommand {
-    private params:any[]
-    constructor(...params) {
+    private options: Options
+    constructor(options: Options) {
         super();
-        this.params = params;
+        this.options = options;
     }
-    async run () {
-        const {params} = this;
-        const options = params.length === 2 ? params[1] : params[0];
+    async run() {
+        const { options } = this;
         if (options.delete) {
             new DeleteTag().run();
             return;
