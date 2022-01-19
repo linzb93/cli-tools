@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import express from 'express';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
-import axios, {AxiosRequestHeaders,Method} from 'axios';
+import axios, { AxiosRequestHeaders, Method } from 'axios';
 import cors from 'cors';
 import getPort from 'detect-port';
 import internalIp from 'internal-ip';
@@ -51,7 +51,7 @@ program
                     });
                 });
         });
-        const [ port, ip ] = await Promise.all([
+        const [port, ip] = await Promise.all([
             getPort(options.port || 8080),
             internalIp.v4()
         ]);

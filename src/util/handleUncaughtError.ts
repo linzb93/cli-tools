@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import logger from './logger.js';
 import { openInEditor, root } from './helper.js';
 
-module.exports = () => {
+export default async () => {
     process.on('uncaughtException', async e => {
         errorHandler(e);
     });
@@ -18,9 +18,9 @@ module.exports = () => {
 };
 
 // 处理全局未捕捉的错误
-async function errorHandler(e: Error, options:{
-    async?:boolean
-} = {}) {
+async function errorHandler(e: Error, options: {
+    async?: boolean
+} = {}): Promise<void> {
     logger.clearConsole(1);
     try {
         console.log(boxen(`${chalk.bold.red('UNCAUGHTED ERROR!')}\n${e.message}`, {
@@ -35,7 +35,9 @@ async function errorHandler(e: Error, options:{
         if (process.cwd() === root) {
             return;
         }
-        const ans = await inquirer.prompt([{
+        const ans: {
+            open: boolean
+        } = await inquirer.prompt([{
             type: 'confirm',
             message: `发现未处理的${options.async ? '异步' : ''}错误，是否打开编辑器修复bug？`,
             name: 'open'

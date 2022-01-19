@@ -1,9 +1,9 @@
-import OSS from 'ali-oss';
+import OSS, {OssConfig} from 'ali-oss';
 import lodash from 'lodash';
 import clipboard from 'clipboardy';
 import path from 'path';
-import getSetting from '../util/db';
-import BaseCommand from '../util/BaseCommand';
+import getSetting from '../util/db.js';
+import BaseCommand from '../util/BaseCommand.js';
 const { random } = lodash;
 
 export default class extends BaseCommand {
@@ -14,7 +14,7 @@ export default class extends BaseCommand {
     }
     async run() {
         const { pic } = this;
-        const ossConfig = getSetting('oss');
+        const ossConfig = getSetting('oss') as Omit<OssConfig, 'timeout'>;
         const oss = new OSS({
             ...ossConfig,
             timeout: 15000

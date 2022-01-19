@@ -5,7 +5,9 @@ import chalk from 'chalk';
 import lodash from 'lodash';
 import fs from 'fs-extra';
 import BaseCommand from '../util/BaseCommand.js';
+
 const { debounce } = lodash;
+
 export default class extends BaseCommand {
     private filename: string | undefined
     private combinedOptions: string[]
@@ -80,6 +82,7 @@ export default class extends BaseCommand {
             });
         }
         function restartServer() {
+            subProcess.removeAllListeners();
             subProcess.kill();
             startServer();
         }

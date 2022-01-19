@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import fs, {Stats as FSStats} from 'fs-extra';
 import bytes from 'bytes';
 import axios, { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
@@ -35,7 +35,7 @@ export default class extends BaseCommand {
             this.logger.success(bytes((await this.getSize(res.data))));
             return;
         }
-        let fileData;
+        let fileData:FSStats;
         try {
             fileData = await fs.stat(filePath);
         } catch (error) {

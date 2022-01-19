@@ -1,17 +1,25 @@
-import cheerio from 'cheerio';
-import axios from 'axios';
+import cheerio, {CheerioAPI, Node as CheerioNode} from 'cheerio';
+import axios,{AxiosResponse} from 'axios';
 import inquirer from 'inquirer';
 import lodash from 'lodash';
+
 const { get } = lodash;
+interface RegData {
+    description:string
+}
+// 本来CheerioNode上应该有data属性的，但作者没写。
+interface ExtCheerioNode extends CheerioNode {
+    data?:string
+}
 
 class Npm {
-    private $:any;
-    private regData:any;
-    constructor($, regData) {
+    private $:CheerioAPI;
+    private regData:RegData;
+    constructor($:CheerioAPI, regData:RegData) {
         this.$ = $;
         this.regData = regData;
     }
-    get(type) {
+    get(type:string):string {
         const { $ } = this;
         if (type === 'repository') {
             return $('#repository').next().find('a')
@@ -29,7 +37,6 @@ class Npm {
         return '';
     }
 }
-
 export default async (pkg: string) => {
     let html = '';
     try {
@@ -49,7 +56,7 @@ export default async (pkg: string) => {
             const list = $('.d0963384')
                 .find('.db7ee1ac')
                 .filter(index => index <= 10)
-                .map((_, item) => (item.children[0] as any).data);
+                .map((_, item) => (item.children[0] as ExtCheerioNode).data);
             const choices = Array.prototype.slice.call(list);
             if (choices.length) {
                 throw new Error('检测到您输入的npm依赖有误');

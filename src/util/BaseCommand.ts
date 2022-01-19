@@ -1,9 +1,8 @@
-import consola from 'consola';
 import logger from './logger.js';
 // const spinner = require('./spinner');
 import * as helper from './helper.js';
 
-export default class {
+export default abstract class {
     protected logger: typeof logger;
     protected spinner:any;
     protected helper: typeof helper;
@@ -12,7 +11,5 @@ export default class {
        // this.spinner = spinner;
         this.helper = helper;
     }
-    run() {
-        consola.error('run方法必须被重写');
-    }
+    abstract run():void
 };

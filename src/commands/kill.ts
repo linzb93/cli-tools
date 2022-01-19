@@ -5,9 +5,11 @@ import chalk from 'chalk';
 import BaseCommand from '../util/BaseCommand.js';
 
 const numberRE = /[1-9][0-9]*/;
+
+type Params = [string] | [string, string];
 export default class extends BaseCommand {
-    private args:any[];
-    constructor(args:any[]) {
+    private args:Params;
+    constructor(args:Params) {
         super();
         this.args = args;
     }
@@ -74,7 +76,7 @@ export default class extends BaseCommand {
         }
     };
 }
-async function confirm() {
+async function confirm():Promise<boolean> {
     const ans = await inquirer.prompt([{
         type: 'confirm',
         message: '您可能要关闭系统进程，确认是否继续？',
@@ -83,7 +85,7 @@ async function confirm() {
     }]);
     return ans.data;
 }
-async function killPort(port) {
+async function killPort(port:number):Promise<void> {
     return new Promise((resolve, reject) => {
         rawKillPort(port, 'tcp')
             .then(data => {

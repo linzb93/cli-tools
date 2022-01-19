@@ -2,7 +2,6 @@ import axios from 'axios';
 import open from 'open';
 import ora from 'ora';
 import clipboard from 'clipboardy';
-import { AnyObject } from '../util/types';
 import BaseCommand from '../util/BaseCommand.js';
 
 interface Options {
@@ -10,9 +9,43 @@ interface Options {
     pc: boolean,
     copy: boolean
 }
-
+interface MeituanLoginParams {
+    appKey: string,
+    memberId: string,
+    platform: number
+}
+interface EleLoginParams {
+    shopId: string,
+    userId: string
+}
+interface ShopItem extends MeituanLoginParams, EleLoginParams {
+    memeberName?:string,
+    shopName?:string
+}
+interface ShopListResponse {
+    result: {
+        list: ShopItem[]
+    }
+}
 const map = {
-    default: {},
+    default: {
+        appKey: '',
+        serviceName: '',
+        platform: 0,
+        url: {
+            base: '',
+            list: '',
+            login: ''
+        },
+        nameKey: '',
+        loginKey: (item: MeituanLoginParams) => ({
+            appKey: item.appKey,
+            memberId: item.memberId,
+            platform: item.platform,
+            specificationId: 'v3'
+        }),
+        testId: ''
+    },
     jysq: {
         appKey: '4',
         serviceName: '经营神器-美团',
@@ -23,7 +56,7 @@ const map = {
             login: '/order/replaceUserLogin'
         },
         nameKey: 'memberName',
-        loginKey: (item: any) => ({
+        loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
             platform: item.platform,
@@ -41,7 +74,7 @@ const map = {
             login: '/order/replaceUserLogin'
         },
         nameKey: 'memberName',
-        loginKey: (item: any) => ({
+        loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
             platform: item.platform,
@@ -61,7 +94,7 @@ const map = {
             login: '/auth/onelogin'
         },
         nameKey: 'shopName',
-        loginKey: (item: any) => ({
+        loginKey: (item: EleLoginParams) => ({
             appId: '29665924',
             shopId: item.shopId,
             userId: item.userId
@@ -80,7 +113,7 @@ export default class extends BaseCommand {
     }
     async run() {
         const { input, options } = this;
-        let match: AnyObject;
+        let match: typeof map.jysq;
         let shopId: string;
         const spinner = ora('正在搜索店铺').start();
         if (input.length === 0) {
@@ -118,7 +151,7 @@ export default class extends BaseCommand {
         const service = axios.create({
             baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`
         });
-        let listData: AnyObject;
+        let listData: ShopListResponse;
         try {
             const res = await service.post(match.url.list, {
                 appKey: match.appKey,

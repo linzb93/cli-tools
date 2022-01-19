@@ -1,27 +1,30 @@
 import path from 'path';
 import ora from 'ora';
 import fs from 'fs-extra';
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import chalk from 'chalk';
 import cheerio from 'cheerio';
 import npmPage from '../npm/util/npmPage.js';
 import git from '../../util/git.js';
 import getSetting from '../../util/db.js';
-import { isURL } from '../../util/helper.js';
 import { pRetry } from '../../util/pFunc.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
+interface Options {
+    dir?: string,
+    open?:boolean,
+    from?:string
+}
 export default class extends BaseCommand {
-    private param:any;
-    private options:any;
-    constructor(param, options) {
+    private pkg: string;
+    private options: Options;
+    constructor(pkg:string, options:Options) {
         super();
-        this.param = param;
+        this.pkg = pkg;
         this.options = options;
     }
-    async run () {
-        const {param,options} = this;
-        const pkg = Array.isArray(param) ? param[0] : param;
+    async run() {
+        const { pkg, options } = this;
         this.helper.validate({
             pkg
         }, {
@@ -31,13 +34,13 @@ export default class extends BaseCommand {
             }]
         });
         const spinner = ora('正在下载');
-        let dirName;
+        let dirName: string;
         const openMap = await getSetting('open');
         if (!openMap[options.dir]) {
             options.dir = 'source';
         }
-        if (isGitUrl(pkg)) {
-            const url = toGitUrl(pkg);
+        if (this.isGitUrl(pkg)) {
+            const url = this.toGitUrl(pkg);
             spinner.start();
             try {
                 dirName = await git.clone({
@@ -57,7 +60,7 @@ export default class extends BaseCommand {
             return;
         }
         if (options.from === 'github' || options.from === 'gh') {
-            let pageRes;
+            let pageRes:AxiosResponse;
             spinner.start();
             try {
                 pageRes = await pRetry(() => axios({
@@ -151,20 +154,19 @@ export default class extends BaseCommand {
         if (options.open) {
             await this.helper.openInEditor(path.resolve(cwd, dirName));
         }
-    };
-}
-
-function isGitUrl(url) {
-    return isURL(url) || isGitSSH(url);
-}
-function isGitSSH(url) {
-    return url.startsWith('git@') && url.endsWith('.git');
-}
-function toGitUrl(url) {
-    if (isURL(url)) {
-        return url.endsWith('.git') ? url : `${url}.git`;
     }
-    return url
-        .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
-        .replace(/[^\.git]$/, '.git');
+    isGitUrl(url: string): boolean {
+        return this.helper.isURL(url) || this.isGitSSH(url);
+    }
+    isGitSSH(url: string): boolean {
+        return url.startsWith('git@') && url.endsWith('.git');
+    }
+    toGitUrl(url: string): string {
+        if (this.helper.isURL(url)) {
+            return url.endsWith('.git') ? url : `${url}.git`;
+        }
+        return url
+            .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
+            .replace(/[^\.git]$/, '.git');
+    }
 }

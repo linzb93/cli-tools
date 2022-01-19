@@ -2,45 +2,34 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import path from 'path';
 import { fork } from 'child_process';
-import lodash from 'lodash';
-import {LowdbSync} from 'lowdb';
+import lodash, { CollectionChain } from 'lodash';
 import { db } from './util/index.js';
 import Monitor from '../monitor.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import Stop from './stop.js';
+
 const { pick } = lodash;
 interface Options {
-    proxy?:string,
-    port?:string,
-    debug?:boolean,
-    copy?:boolean
+    proxy?: string,
+    port?: string,
+    debug?: boolean,
+    copy?: boolean
 }
-interface CacheItem {
+export interface CacheItem {
     proxy: string,
     name: string,
     port?: number
 }
 interface CacheSaveOption {
-    choosed:boolean,
-    projName?:string
+    choosed: boolean,
+    projName?: string
 }
+
 export default class extends BaseCommand {
     private subCommand?: string;
-    private options: Options;
-    constructor(subCommand?:string, options?:Options) {
+    private options?: Options;
+    constructor(subCommand?: string, options?: Options) {
         super()
-        this.subCommand = subCommand;
-        this.options = options;
-    }
-    async run() {
-        const { subCommand, options } = this;
-        if (subCommand === 'stop') {
-            new Stop().run();
-            return;
-        } else if (subCommand !== undefined) {
-            this.logger.error('命令不存在，请重新输入');
-            return;
-        }
         this.helper.validate(options, {
             proxy: [
                 {
@@ -55,11 +44,23 @@ export default class extends BaseCommand {
                 }
             ]
         });
+        this.subCommand = subCommand;
+        this.options = options;
+    }
+    async run() {
+        const { subCommand, options } = this;
+        if (subCommand === 'stop') {
+            new Stop().run();
+            return;
+        } else if (subCommand !== undefined) {
+            this.logger.error('命令不存在，请重新输入');
+            return;
+        }
         const cacheData = db.get('items').value() as CacheItem[];
         const match = cacheData.find(item => item.proxy === options.proxy);
         if (!match) {
             if (!options.proxy) {
-                const { server }: {server:string} = await inquirer.prompt([{
+                const { server }: { server: string } = await inquirer.prompt([{
                     message: '请选择要开启的代理服务器',
                     type: 'list',
                     choices: cacheData.map(data => ({
@@ -70,7 +71,7 @@ export default class extends BaseCommand {
                 }]);
                 options.proxy = server;
             } else {
-                const ans:CacheSaveOption = await inquirer.prompt([
+                const ans: CacheSaveOption = await inquirer.prompt([
                     {
                         type: 'confirm',
                         message: '是否将服务器数据存入缓存？',
@@ -83,7 +84,7 @@ export default class extends BaseCommand {
                         when: answer => answer.choosed
                     }]);
                 if (ans.choosed) {
-                    (db.get('items') as any).push({
+                    (db.get('items') as CollectionChain<CacheItem>).push({
                         name: ans.projName,
                         proxy: options.proxy
                     }).write();
@@ -105,12 +106,12 @@ export default class extends BaseCommand {
     - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
     - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
     路由映射至：${chalk.cyan(options.proxy)}`);
-                const items:CacheItem[] = db.get('items').value();
+                const items: CacheItem[] = db.get('items').value();
                 const match = items.find(item => item.proxy === options.proxy);
                 match.port = Number(port);
                 db.set('items', items).write();
                 child.unref();
-                child.disconnect(); // 试验下，这行代码有必要加吗？
+                child.disconnect();
                 process.exit(0);
             });
         } else {

@@ -8,7 +8,8 @@ import chalk from 'chalk';
 import isClass from 'is-class-function';
 import ValidatorSchema, {
     Rules as ValidatorRules,
-    ValidateSource
+    ValidateSource,
+    FieldErrorList
 } from 'async-validator';
 const { pick } = lodash;
 export const isWin = process.platform === 'win32';
@@ -26,7 +27,7 @@ export const validate = (
 ): void => {
     const Schema = isClass(ValidatorSchema) ? ValidatorSchema : (ValidatorSchema as any).default;
     const validator = new Schema(descriptor);
-    validator.validate(obj, (errors, fields) => {
+    validator.validate(obj, (errors:Error, fields:FieldErrorList) => {
         if (!errors) {
             return;
         }
@@ -51,11 +52,14 @@ export const openInEditor = async (project: string): Promise<void> => {
     }
 };
 // 获取快捷方式文件夹的真实地址
+interface ShortCutsObject {
+    target: string
+}
 export const getOriginPath = async (rawPath: string): Promise<string> => {
     if (isWin) {
         const ws = await requireDynamic('windows-shortcuts');
         return await new Promise(resolve => {
-            ws.query(rawPath, (err, lnk) => {
+            ws.query(rawPath, (err:Error, lnk: ShortCutsObject) => {
                 if (err) {
                     resolve(rawPath);
                 } else {
@@ -77,7 +81,7 @@ const requireDynamic = async (moduleName: string): Promise<any> => {
         return require(moduleName);
     }
 };
-const isEmptyObject = (value: any) => {
+export const isEmptyObject = (value: any) => {
     for (const key of value) {
         return false;
     }

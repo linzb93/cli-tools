@@ -1,7 +1,9 @@
 import { execaCommand as execa } from 'execa';
 
+type PushStatus = 0 | 1 | 2 | 3 | 4;
+
 export default {
-    async isGit({ cwd = process.cwd() }) {
+    async isGit({ cwd = process.cwd() }): Promise<boolean> {
         try {
             await execa('git rev-parse --is-inside-work-tree', {
                 cwd
@@ -23,7 +25,7 @@ export default {
         dirName?: string,
         shallow?: boolean,
         cwd: string
-    }) {
+    }): Promise<string> {
         try {
             await execa(`git clone${branch ? ` -b ${branch}` : ''} ${url}${dirName ? ` ${dirName}` : ''}${shallow ? ' --depth=1' : ''}`, {
                 cwd,
@@ -34,7 +36,7 @@ export default {
         }
         return dirName || url.split('/').slice(-1)[0].slice(0, -4);
     },
-    async pull({ cwd = process.cwd() } = {}) {
+    async pull({ cwd = process.cwd() } = {}): Promise<void> {
         try {
             await execa('git pull', {
                 cwd
@@ -49,7 +51,7 @@ export default {
     }: {
         cwd?: string,
         branch?: string
-    } = {}) {
+    } = {}): Promise<void> {
         if (branch) {
             await execa('git push', {
                 cwd
@@ -58,12 +60,12 @@ export default {
             await execa(`git push --set-upstream origin ${branch}`);
         }
     },
-    async remote() {
+    async remote(): Promise<string> {
         const { stdout: data } = await execa('git remote -v');
         return data.split('\n')[0].match(/http.+\.git/)[0];
     },
     // 获取代码提交状态，分为未提交 1；未推送 2；已推送 3；不在master分支上 4；状态未知 0
-    async getPushStatus({ cwd }) {
+    async getPushStatus({ cwd }): Promise<PushStatus> {
         let stdout = '';
         try {
             const data = await execa('git status', {
@@ -87,11 +89,11 @@ export default {
         }
         return 0;
     },
-    async getCurrentBranch() {
+    async getCurrentBranch(): Promise<string> {
         const { stdout } = await execa('git branch --show-current');
         return stdout;
     },
-    async tag() {
+    async tag(): Promise<string[]> {
         const { stdout } = await execa('git tag');
         return stdout === '' ? [] : stdout.split('\n');
     },
@@ -101,7 +103,7 @@ export default {
     }: {
         includeRemote?: boolean,
         cwd?: string
-    } = {}) {
+    } = {}): Promise<void> {
         if (includeRemote) {
             await execa(`git push origin :refs/tags/${tag}`, { cwd });
         } else {

@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import inquirer, { CheckboxQuestion } from 'inquirer';
 import ora from 'ora';
 import pMap from 'p-map';
 import BaseCommand from '../../../util/BaseCommand.js';
@@ -18,8 +18,9 @@ export default class extends BaseCommand {
             message: '请选择需要删除的tag',
             name: 'selected',
             type: 'checkbox',
-            choices: tags
-        });
+            choices: tags,
+            c1:2
+        } as CheckboxQuestion);
         if (selected.length) {
             const spinner = ora('开始删除').start();
             const successTags = reactive([]);

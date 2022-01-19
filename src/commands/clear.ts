@@ -1,7 +1,7 @@
 import del from 'del';
 import globby from 'globby';
 import pMap from 'p-map';
-import BaseCommand from '../util/BaseCommand';
+import BaseCommand from '../util/BaseCommand.js';
 
 // 主要是来清理Windows上被Git同步过来的 macOS的 .DS_Store
 export default class extends BaseCommand {
@@ -21,5 +21,4 @@ export default class extends BaseCommand {
         await pMap(paths, async file => del(file), { concurrency: 10 });
         this.logger.success(`操作成功，共删除${len}个文件`);
     };
-
 }

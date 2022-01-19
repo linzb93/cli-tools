@@ -26,10 +26,10 @@ interface InstallOptions {
     dependencies?: boolean
     global?: boolean
 }
-function install(name: string):void
-function install(name: string, options: InstallOptions):void
-function install(options: InstallOptions):void
-async function install(...args:any[]) {
+async function install(name: string):Promise<void>
+async function install(name: string, options: InstallOptions):Promise<void>
+async function install(options: InstallOptions):Promise<void>
+async function install(...args:any[]):Promise<void> {
     let pkgName = '';
     let options: InstallOptions;
     if (args.length === 1) {
@@ -55,7 +55,7 @@ async function install(...args:any[]) {
             params.push('-g');
         }
     }
-    return execa(`${bin} ${params.join(' ')}`, restOpts);
+    await execa(`${bin} ${params.join(' ')}`, restOpts);
 }
 
 const npm = {

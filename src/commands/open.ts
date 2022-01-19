@@ -7,13 +7,19 @@ import BaseCommand from '../util/BaseCommand.js';
 import { pLocate } from '../util/pFunc.js';
 import getSetting from '../util/db.js';
 
-interface Option {
+interface Options {
     name: string
+}
+interface OpenItem {
+    name: string,
+    setting?: string,
+    isEditor: boolean
+    target?: string
 }
 export default class extends BaseCommand {
     private name: string;
-    private options: Option;
-    constructor(name: string, options: Option) {
+    private options: Options;
+    constructor(name: string, options: Options) {
         super();
         this.name = name;
         this.options = options;
@@ -24,7 +30,7 @@ export default class extends BaseCommand {
             const sourceDir = getSetting('open.source');
             const dirs = await fs.readdir(sourceDir);
             if (options.name) {
-                let matchPath:string;
+                let matchPath: string;
                 try {
                     matchPath = await pLocate([
                         path.join(sourceDir, options.name),
@@ -76,7 +82,7 @@ export default class extends BaseCommand {
         ];
         await this.makeOpenAction(map, name);
     }
-    async makeOpenAction(map: any[], name: string) {
+    async makeOpenAction(map: OpenItem[], name: string) {
         const match = map.find(item => item.name === name);
         if (!match) {
             this.logger.error('命令错误');
