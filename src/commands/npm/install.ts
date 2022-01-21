@@ -1,8 +1,8 @@
 import ora, { Ora } from 'ora';
 import semver from 'semver';
 import axios from 'axios';
-import npm from '../../util/npm';
-import BaseCommand from '../../util/BaseCommand';
+import npm from '../../util/npm.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 interface Flag {
     dev?: boolean

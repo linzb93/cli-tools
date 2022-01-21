@@ -2,9 +2,8 @@ import open from 'open';
 import ora, { Ora } from 'ora';
 import chalk from 'chalk';
 import Table, {VerticalTable} from 'cli-table3';
-import logger from '../../util/logger';
-import npmPage from './util/npmPage';
-import BaseCommand from '../../util/BaseCommand';
+import npmPage from './util/npmPage.js';
+import BaseCommand from '../../util/BaseCommand.js';
 const table = new Table({
     head: [
         chalk.green('名称'),
@@ -40,7 +39,7 @@ export default class extends BaseCommand {
         } else if (args.length > 1) {
             this.fetchMulNpmPackage(args);
         } else {
-            logger.error('未检测到依赖名称。');
+            this.logger.error('未检测到依赖名称。');
         }
     }
     // 获取单个包信息

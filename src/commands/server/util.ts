@@ -1,9 +1,8 @@
-import { AnyObject } from "../../util/types";
 
 const dayjs = require('dayjs');
 const fs = require('fs-extra');
 const path = require('path');
-const resolve = src => path.resolve(__dirname, src);
+const resolve = (src:string) => path.resolve(__dirname, src);
 // 只处理HH:mm格式的
 
 class TimeClass {
@@ -11,7 +10,7 @@ class TimeClass {
     constructor(time:string) {
         this.time = time;
     }
-    isAfter(ctor:{time:string}) {
+    isAfter(ctor:TimeClass) {
         if (ctor instanceof TimeClass === false) {
             throw new Error('类型错误');
         }
@@ -38,7 +37,7 @@ export const serverDB = {
         const data = fs.readJSONSync(resolve('server/meta.json'));
         return data.files.find(file => file.name === key);
     },
-    set(key:string, entity:AnyObject) {
+    set(key:string, entity:any) {
         const data = fs.readJSONSync(resolve('server/meta.json'));
         let match = data.files.find(file => file.name === key);
         // eslint-disable-next-line no-unused-vars

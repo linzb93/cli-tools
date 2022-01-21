@@ -3,7 +3,7 @@ import ora from 'ora';
 import fs from 'fs-extra';
 import axios, {AxiosResponse} from 'axios';
 import chalk from 'chalk';
-import cheerio from 'cheerio';
+import cheerio, {CheerioAPI, Node as CheerioNode} from 'cheerio';
 import npmPage from '../npm/util/npmPage.js';
 import git from '../../util/git.js';
 import getSetting from '../../util/db.js';
@@ -18,9 +18,9 @@ interface Options {
 export default class extends BaseCommand {
     private pkg: string;
     private options: Options;
-    constructor(pkg:string, options:Options) {
+    constructor(pkg:string[], options:Options) {
         super();
-        this.pkg = pkg;
+        this.pkg = pkg[0];
         this.options = options;
     }
     async run() {

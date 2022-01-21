@@ -3,9 +3,8 @@ import del from 'del';
 import path from 'path';
 import globalNpm from 'global-modules';
 import readPkg, { NormalizedPackageJson } from 'read-pkg';
-import getNpmList, { getVersion } from './util/getList';
-import logger from '../../util/logger';
-import BaseCommand from '../../util/BaseCommand';
+import getNpmList, { getVersion } from './util/getList.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
     global?: boolean
@@ -25,17 +24,17 @@ export default class extends BaseCommand {
         const { name, options } = this;
         if (options.global) {
             await this.delGlobal(name);
-            logger.success('删除成功');
+            this.logger.success('删除成功');
             return;
         }
         const listRet = await getNpmList(name);
         if (!listRet.list.length) {
-            logger.error('没找到，无法删除');
+            this.logger.error('没找到，无法删除');
             return;
         }
         if (listRet.list.length === 1) {
             await del(`node_modules/${listRet.list[0]}`);
-            logger.success('删除成功');
+            this.logger.success('删除成功');
             return;
         }
         const ans = await inquirer.prompt([{
@@ -52,10 +51,10 @@ export default class extends BaseCommand {
                 await del(`node_modules/${pkg}`);
             }
         } catch (error) {
-            logger.error(error);
+            this.logger.error(error);
             return;
         }
-        logger.success('删除成功');
+        this.logger.success('删除成功');
     }
     // 除了删除全局的文件，还要删除全局命令
     private async delGlobal(name: string) {
@@ -88,7 +87,7 @@ export default class extends BaseCommand {
                     }
                 }
             } else {
-                logger.error('模块不存在');
+                this.logger.error('模块不存在');
                 process.exit(1);
             }
         }

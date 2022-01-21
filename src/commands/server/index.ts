@@ -42,32 +42,32 @@ export default class extends BaseCommand {
                     // });
                 }
             });
-            setInterval(async () => {
-                // 任务做完后会标记当日已执行。这里检测任务时间逻辑和上面一样。
-                for (const item of arr) {
-                    const stat = await fs.stat(item.filename);
-                    if (dayjs(item.updateTime).isBefore(stat.mtimeMs)) {
-                        // 启动服务器后文件有更新，需要重新引入
-                        delete require.cache[item.filename];
-                        item.content = require(item.filename);
-                        if (!timejs(item.time).isAfter(timejs())) {
-                            item.content.action();
-                            serverDB.set({
-                                name: item.filename,
-                                finished: true
-                            });
-                            notifier.notify('请查看今日信息');
-                        }
-                    } else if (!timejs(item.time).isAfter(timejs())) {
-                        item.content.action();
-                        serverDB.set({
-                            name: item.filename,
-                            finished: true
-                        });
-                        notifier.notify('请查看今日信息');
-                    }
-                }
-            }, 1000 * 60 * 10);
+            // setInterval(async () => {
+            //     // 任务做完后会标记当日已执行。这里检测任务时间逻辑和上面一样。
+            //     for (const item of arr) {
+            //         const stat = await fs.stat(item.filename);
+            //         if (dayjs(item.updateTime).isBefore(stat.mtimeMs)) {
+            //             // 启动服务器后文件有更新，需要重新引入
+            //             delete require.cache[item.filename];
+            //             item.content = require(item.filename);
+            //             if (!timejs(item.time).isAfter(timejs())) {
+            //                 item.content.action();
+            //                 serverDB.set({
+            //                     name: item.filename,
+            //                     finished: true
+            //                 });
+            //                 notifier.notify('请查看今日信息');
+            //             }
+            //         } else if (!timejs(item.time).isAfter(timejs())) {
+            //             item.content.action();
+            //             serverDB.set({
+            //                 name: item.filename,
+            //                 finished: true
+            //             });
+            //             notifier.notify('请查看今日信息');
+            //         }
+            //     }
+            // }, 1000 * 60 * 10);
         }
     };
     

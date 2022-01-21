@@ -1,9 +1,23 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import logger from '../util/logger';
-const program = new Command();
+import commander from 'commander';
+const program = new commander.Command();
 
+program
+    .command('npm <sub-command> [rest...]')
+    .option('-D, --dev', '安装到devDependencies')
+    .option('-g, --global', '全局操作')
+    .option('--open', '打开页面')
+    .allowUnknownOption()
+    .action(async (subCommand, rest, cmd) => {
+        const shorthands = {
+            i: 'install',
+            un: 'uninstall'
+        };
+        const target = shorthands[subCommand] || subCommand;
+        const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
+        new CommandCtor(rest, cmd).run();
+    });
 program
     .command('git [sub-command] [rest...]')
     .option('--dir <dir>', '选择安装的目录')
@@ -13,15 +27,10 @@ program
     .option('--commit <msg>', '提交信息')
     .allowUnknownOption()
     .action(async (subCommand = 'index', rest, cmd) => {
-        // try {
-        //     require.resolve(`../lib/commands/git/${subCommand}`);
-        // } catch (error) {
-        //     logger.error(`命令 ${chalk.yellow(`mycli git ${subCommand}`)} 不存在`);
-        //     return;
-        // }
         if (subCommand === 'tag') {
             subCommand = 'tag/index';
         }
+        console.log(subCommand);
         const CommandCtor = (await import(`../commands/git/${subCommand}.js`)).default;
         new CommandCtor(rest, cmd).run();
     });
@@ -71,9 +80,28 @@ program
         new SubCommand(file, combinedOptions).run();
     });
 program
+    .command('spider [url]')
+    .option('--dest <dest>', '下载目标文件夹')
+    .action(async (url, option) => {
+        const SubCommand = (await import('../commands/spider/index.js')).default;
+        new SubCommand(url, option).run();
+    });
+program
     .command('kill [data...]')
     .action(async data => {
         const SubCommand = (await import('../commands/kill.js')).default;
         new SubCommand(data).run();
+    });
+program
+    .command('clear [filename]')
+    .action(async filename => {
+        const SubCommand = (await import('../commands/clear.js')).default;
+        new SubCommand(filename).run();
+    });
+program
+    .command('upload <filename>')
+    .action(async file => {
+        const SubCommand = (await import('../commands/upload.js')).default;
+        new SubCommand(file).run();
     });
 program.parse();
