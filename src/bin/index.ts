@@ -19,7 +19,7 @@ program
         new CommandCtor(rest, cmd).run();
     });
 program
-    .command('git [sub-command] [rest...]')
+    .command('git <sub-command> [rest...]')
     .option('--dir <dir>', '选择安装的目录')
     .option('--open', '在VSCode中打开项目')
     .option('--from <src>', '来源')
@@ -30,7 +30,6 @@ program
         if (subCommand === 'tag') {
             subCommand = 'tag/index';
         }
-        console.log(subCommand);
         const CommandCtor = (await import(`../commands/git/${subCommand}.js`)).default;
         new CommandCtor(rest, cmd).run();
     });
@@ -80,20 +79,20 @@ program
         new SubCommand(file, combinedOptions).run();
     });
 program
-    .command('spider [url]')
+    .command('spider <url>')
     .option('--dest <dest>', '下载目标文件夹')
     .action(async (url, option) => {
         const SubCommand = (await import('../commands/spider/index.js')).default;
         new SubCommand(url, option).run();
     });
 program
-    .command('kill [data...]')
+    .command('kill <data...>')
     .action(async data => {
         const SubCommand = (await import('../commands/kill.js')).default;
         new SubCommand(data).run();
     });
 program
-    .command('clear [filename]')
+    .command('clear <filename>')
     .action(async filename => {
         const SubCommand = (await import('../commands/clear.js')).default;
         new SubCommand(filename).run();

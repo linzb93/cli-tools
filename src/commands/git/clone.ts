@@ -1,10 +1,10 @@
 import path from 'path';
 import ora from 'ora';
 import fs from 'fs-extra';
-import axios, {AxiosResponse} from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import chalk from 'chalk';
-import cheerio, {CheerioAPI, Node as CheerioNode} from 'cheerio';
-import npmPage from '../npm/util/npmPage.js';
+import cheerio from 'cheerio';
+import npmPage, { Npm as NpmCtor } from '../npm/util/npmPage.js';
 import git from '../../util/git.js';
 import getSetting from '../../util/db.js';
 import { pRetry } from '../../util/pFunc.js';
@@ -12,13 +12,13 @@ import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
     dir?: string,
-    open?:boolean,
-    from?:string
+    open?: boolean,
+    from?: string
 }
 export default class extends BaseCommand {
     private pkg: string;
     private options: Options;
-    constructor(pkg:string[], options:Options) {
+    constructor(pkg: string[], options: Options) {
         super();
         this.pkg = pkg[0];
         this.options = options;
@@ -60,7 +60,7 @@ export default class extends BaseCommand {
             return;
         }
         if (options.from === 'github' || options.from === 'gh') {
-            let pageRes:AxiosResponse;
+            let pageRes: AxiosResponse;
             spinner.start();
             try {
                 pageRes = await pRetry(() => axios({
@@ -103,7 +103,7 @@ export default class extends BaseCommand {
             }
             return;
         }
-        let page;
+        let page: NpmCtor;
         try {
             page = await npmPage(pkg);
         } catch (error) {
@@ -146,8 +146,7 @@ export default class extends BaseCommand {
                 }
             });
         } catch (error) {
-            spinner.fail('下载失败');
-            console.log(error.message);
+            spinner.fail('下载失败：' + JSON.stringify(error.message));
             return;
         }
         spinner.succeed('下载成功');

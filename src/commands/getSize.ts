@@ -42,7 +42,7 @@ export default class extends BaseCommand {
             this.logger.error(`文件${filePath}不存在或无法读取`);
             return;
         }
-        console.log(bytes(fileData.size));
+        this.logger.success(bytes(fileData.size));
     }
     async getSize(inputStream: Readable): Promise<number> {
         let len = 0;

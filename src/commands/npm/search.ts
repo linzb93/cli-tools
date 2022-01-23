@@ -1,7 +1,7 @@
 import open from 'open';
 import ora, { Ora } from 'ora';
 import chalk from 'chalk';
-import Table, {VerticalTable} from 'cli-table3';
+import Table, { VerticalTable } from 'cli-table3';
 import npmPage from './util/npmPage.js';
 import BaseCommand from '../../util/BaseCommand.js';
 const table = new Table({
@@ -14,7 +14,7 @@ const table = new Table({
     colAligns: ['center', 'center', 'center', 'center']
 }) as VerticalTable;
 interface Options {
-    open?:boolean
+    open?: boolean
 }
 interface OutputPkgItem {
     name: string,
@@ -26,7 +26,7 @@ export default class extends BaseCommand {
     private args: string[];
     private options: Options;
     private spinner: Ora;
-    constructor(args:string[], options:Options) {
+    constructor(args: string[], options: Options) {
         super();
         this.args = args;
         this.options = options;
@@ -43,8 +43,8 @@ export default class extends BaseCommand {
         }
     }
     // 获取单个包信息
-    private async fetchNpmPackage(packageName:string, isMultiple:boolean, options: Options = {}):Promise<OutputPkgItem> {
-        const {spinner} = this;
+    private async fetchNpmPackage(packageName: string, isMultiple: boolean, options: Options = {}): Promise<OutputPkgItem> {
+        const { spinner } = this;
         if (!isMultiple) {
             spinner.text = `正在查找 ${packageName} 模块`;
             spinner.start();
@@ -66,13 +66,13 @@ export default class extends BaseCommand {
       周下载量：${chalk.green(data.weeklyDl)}
       上次更新：${chalk.green(data.lastPb)}`);
         if (options.open) {
-           await open(`https://npmjs.com/package/${packageName}`);
+            await open(`https://npmjs.com/package/${packageName}`);
         }
         return data;
     }
     // 获取多个包信息并比较
-    private async fetchMulNpmPackage(args:string[]) {
-        const {spinner} = this;
+    private async fetchMulNpmPackage(args: string[]) {
+        const { spinner } = this;
         spinner.text = `正在查找 ${args.join(' ')} 这些模块`;
         spinner.start();
         let resList;
@@ -99,14 +99,14 @@ export default class extends BaseCommand {
         console.log(table.toString());
     }
     // 12,345,678 => 1234万
-    private transformNumberCn(val:string) {
+    private transformNumberCn(val: string) {
         const value = Number(val.replace(/,/g, ''));
         if (value > 10000) {
             return `${parseInt((value / 10000).toString())}万`;
         }
         return value;
     }
-    private lineFeed(str:string, perLineLength = 30) {
+    private lineFeed(str: string, perLineLength = 30) {
         const strArr = str.split(' ');
         let tempArr = [];
         const retArr = [];

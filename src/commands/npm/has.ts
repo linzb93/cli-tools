@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import ora, {Ora} from 'ora';
+import ora, { Ora } from 'ora';
 import getNpmList from './util/getList.js';
 import NpmInstall from './install.js';
 import BaseCommand from '../../util/BaseCommand.js';
@@ -35,7 +35,7 @@ export default class extends BaseCommand {
             console.log(`${text}`);
         });
     }
-    private async handleNotFound(name:string, dev:boolean) {
+    private async handleNotFound(name: string, dev: boolean) {
         const { spinner } = this;
         spinner.stop();
         const { action } = await inquirer.prompt({

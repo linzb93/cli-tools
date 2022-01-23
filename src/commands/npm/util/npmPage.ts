@@ -1,25 +1,25 @@
-import cheerio, {CheerioAPI, Node as CheerioNode} from 'cheerio';
-import axios,{AxiosResponse} from 'axios';
+import cheerio, { CheerioAPI, Node as CheerioNode } from 'cheerio';
+import axios, { AxiosResponse } from 'axios';
 import inquirer from 'inquirer';
 import lodash from 'lodash';
 
 const { get } = lodash;
 interface RegData {
-    description:string
+    description: string
 }
 // 本来CheerioNode上应该有data属性的，但作者没写。
 interface ExtCheerioNode extends CheerioNode {
-    data?:string
+    data?: string
 }
 
-class Npm {
-    private $:CheerioAPI;
-    private regData:RegData;
-    constructor($:CheerioAPI, regData:RegData) {
+export class Npm {
+    private $: CheerioAPI;
+    private regData: RegData;
+    constructor($: CheerioAPI, regData: RegData) {
         this.$ = $;
         this.regData = regData;
     }
-    get(type:string):string {
+    get(type: string): string {
         const { $ } = this;
         if (type === 'repository') {
             return $('#repository').next().find('a')
@@ -37,10 +37,10 @@ class Npm {
         return '';
     }
 }
-export default async (pkg: string) => {
+export default async (pkg: string): Promise<Npm> => {
     let html = '';
     try {
-        const [ htmlRes, registryRes ] = await Promise.all([
+        const [htmlRes, registryRes] = await Promise.all([
             axios.get(`https://www.npmjs.com/package/${pkg}`),
             axios.get(`https://registry.npmjs.com/${pkg}/latest`)
         ]);
