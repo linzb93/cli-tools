@@ -74,7 +74,7 @@ export const getOriginPath = async (rawPath: string): Promise<string> => {
 // 在依赖未安装的时候，异步安装引入依赖
 const requireDynamic = async (moduleName: string): Promise<any> => {
     try {
-        return require(moduleName);
+        return (await import(moduleName)).default;
     } catch {
         await npm.install(moduleName);
         delete require.cache[path.resolve(process.cwd(), 'node_modules', moduleName)];

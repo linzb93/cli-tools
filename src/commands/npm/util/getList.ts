@@ -8,7 +8,7 @@ const shouldUseYarn = () => {
     }
     return true;
 };
-export default async (name:string) => {
+export default async (name: string) => {
     const dirs = await fs.readdir('node_modules');
     try {
         require(`${process.cwd()}/node_modules/${name}/package.json`);
@@ -20,8 +20,8 @@ export default async (name:string) => {
     }
     if (shouldUseYarn()) {
         return {
-            list: [ name ],
-            versionList: [ getVersion[name] ]
+            list: [name],
+            versionList: [getVersion[name]]
         };
     }
     const matches = dirs.filter(dir => dir.startsWith(`_${name.startsWith('@') ? name.replace('/', '_') : name}@`));
@@ -31,6 +31,6 @@ export default async (name:string) => {
     };
 };
 
-export function getVersion(packageName:string) {
+export function getVersion(packageName: string) {
     return packageName.match(/@([0-9a-z\.\-]+)@/)[1];
 }

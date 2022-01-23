@@ -8,14 +8,14 @@ import pMap from 'p-map';
 import { pascalCase } from 'pascal-case';
 import BaseCommand from '../../util/BaseCommand';
 const { camelCase, kebabCase, filter } = lodash;
-const whiteList = [ 'App.vue', '.otf', '.ttf', '1px.scss', 'README.md' ];
+const whiteList = ['App.vue', '.otf', '.ttf', '1px.scss', 'README.md'];
 
 // 对所有命名不规范的文件/文件夹，重新命名，并用 git mv 更新
 export default class extends BaseCommand {
     constructor() {
         super();
     }
-    async run()  {
+    async run() {
         // 只扫描src文件夹里的
         const files = filter(glob.sync('src/**/*'), file => !whiteList.find(item => file.endsWith(item)));
         pMap(files, async file => {

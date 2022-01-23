@@ -2,6 +2,7 @@
 
 import commander from 'commander';
 const program = new commander.Command();
+import logger from '../util/logger.js';
 
 program
     .command('npm <sub-command> [rest...]')
@@ -15,6 +16,9 @@ program
             un: 'uninstall'
         };
         const target = shorthands[subCommand] || subCommand;
+        if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
+            logger.error('命令不存在，请重新输入', true);
+        }
         const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
         new CommandCtor(rest, cmd).run();
     });
@@ -29,6 +33,9 @@ program
     .action(async (subCommand = 'index', rest, cmd) => {
         if (subCommand === 'tag') {
             subCommand = 'tag/index';
+        }
+        if (!['clone', 'deploy', 'rename', 'scan', 'tag'].includes(subCommand)) {
+            logger.error('命令不存在，请重新输入', true);
         }
         const CommandCtor = (await import(`../commands/git/${subCommand}.js`)).default;
         new CommandCtor(rest, cmd).run();

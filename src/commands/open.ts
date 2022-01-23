@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import globalNpm from 'global-modules';
