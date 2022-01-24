@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "esnext",
     "types": ["node"],
     "module": "ESNext",
+    "allowJs": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "strict": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist/",

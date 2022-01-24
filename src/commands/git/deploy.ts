@@ -89,7 +89,7 @@ export default class extends BaseCommand {
                     : [`git checkout ${curBranch}`]
             ]);
         } catch (error) {
-            this.logger.error(error);
+            this.logger.error((error as Error).message);
             return;
         }
         this.logger.success('操作成功');

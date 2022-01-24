@@ -121,7 +121,7 @@ export default class extends BaseCommand {
             shopId = match.testId;
         } else if (input.length === 1) {
             if (isNaN(Number(input[0]))) {
-                match = map[input[0]];
+                match = map[input[0]] as typeof map.jysq;
                 if (!match) {
                     spinner.fail('项目不存在，请重新输入');
                     return;

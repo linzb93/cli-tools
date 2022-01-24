@@ -21,11 +21,11 @@ export default class extends BaseCommand {
                 return;
             }
             const id = Number(args[0]);
-            if (id < 1000 && !await confirm()) {
+            if (id < 1000 && !await this.confirm()) {
                 return;
             }
             try {
-                await killPort(id);
+                await this.killPort(id);
                 this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
                 return;
             } catch {
@@ -48,7 +48,7 @@ export default class extends BaseCommand {
                 }
                 id = Number(idStr);
                 try {
-                    await killPort(id);
+                    await this.killPort(id);
                     this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
                     return;
                 } catch (error) {
@@ -60,7 +60,7 @@ export default class extends BaseCommand {
                     return;
                 }
                 id = Number(idStr);
-                if (id < 1000 && !await confirm()) {
+                if (id < 1000 && !await this.confirm()) {
                     return;
                 }
                 try {
@@ -74,27 +74,27 @@ export default class extends BaseCommand {
                 this.logger.error('命令不正确，请输入进程ID: pid，或者端口号: port');
             }
         }
-    };
-}
-async function confirm():Promise<boolean> {
-    const ans = await inquirer.prompt([{
-        type: 'confirm',
-        message: '您可能要关闭系统进程，确认是否继续？',
-        name: 'data',
-        default: false
-    }]);
-    return ans.data;
-}
-async function killPort(port:number):Promise<void> {
-    return new Promise((resolve, reject) => {
-        rawKillPort(port, 'tcp')
-            .then(data => {
-                if (data.stderr) {
-                    reject(iconv.decode(Buffer.from(data.stderr), 'utf8'));
-                } else {
-                    resolve(null);
-                }
-            })
-            .catch(reject);
-    });
+    }
+    private async confirm():Promise<boolean> {
+        const ans = await inquirer.prompt([{
+            type: 'confirm',
+            message: '您可能要关闭系统进程，确认是否继续？',
+            name: 'data',
+            default: false
+        }]);
+        return ans.data;
+    }
+    private async killPort(port:number):Promise<null> {
+        return new Promise((resolve, reject) => {
+            rawKillPort(port, 'tcp')
+                .then(data => {
+                    if (data.stderr) {
+                        reject(iconv.decode(Buffer.from(data.stderr), 'utf8'));
+                    } else {
+                        resolve(null);
+                    }
+                })
+                .catch(reject);
+        });
+    }
 }

@@ -1,26 +1,31 @@
 #!/usr/bin/env node
 
 import commander from 'commander';
-const program = new commander.Command();
 import logger from '../util/logger.js';
-
+import { isValidKey } from '../util/helper.js';
+if (Number(process.version.slice(1).split('.')[0]) < 16) {
+    logger.error('node版本号低于V16，请先升级', true);
+}
+const program = new commander.Command();
 program
     .command('npm <sub-command> [rest...]')
     .option('-D, --dev', '安装到devDependencies')
     .option('-g, --global', '全局操作')
     .option('--open', '打开页面')
     .allowUnknownOption()
-    .action(async (subCommand, rest, cmd) => {
+    .action(async (subCommand:string, rest, cmd) => {
         const shorthands = {
             i: 'install',
             un: 'uninstall'
         };
-        const target = shorthands[subCommand] || subCommand;
+        if (isValidKey(subCommand, shorthands)) {
+            const target = shorthands[subCommand] || subCommand;
         if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
             logger.error('命令不存在，请重新输入', true);
         }
         const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
         new CommandCtor(rest, cmd).run();
+        }
     });
 program
     .command('git <sub-command> [rest...]')
@@ -53,7 +58,7 @@ program
 program
     .command('getSize <url>')
     .action(async url => {
-        const SubCommand = (await import('../commands/getSize.js')).default;
+        const SubCommand = (await import('../commands/getSize/index.js')).default;
         new SubCommand(url).run();
     });
 
@@ -70,7 +75,7 @@ program
     .option('--token', '获取token')
     .option('--pc', '打开PC端')
     .option('--copy', '复制地址')
-    .option('--search <params>', '高级搜索')
+    .option('--version <type>', '生效版本')
     .allowUnknownOption()
     .action(async (data, options) => {
         const SubCommand = (await import('../commands/occ.js')).default;

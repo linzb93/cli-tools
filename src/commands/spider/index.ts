@@ -1,5 +1,5 @@
-import cheerio, {CheerioAPI, Node as CheerioNode} from 'cheerio';
-import axios, {AxiosResponse} from 'axios';
+import cheerio, { CheerioAPI } from 'cheerio';
+import axios, { AxiosResponse } from 'axios';
 import fs from 'fs-extra';
 import path from 'path';
 import pMap from 'p-map';
@@ -9,19 +9,19 @@ import { watch } from '@vue/runtime-core';
 import { root } from '../../util/helper.js';
 import BaseCommand from '../../util/BaseCommand.js';
 const resolve = (...src: string[]) => path.resolve(root, 'data/spider', ...src);
-const sourceMap = [
-    {
-        pattern: /https:\/\/www.zhihu.com\/question\/\d+\/answer\/\d+/,
-        parser($:CheerioAPI): string[] {
-            const $targets = $('.RichContent-inner').first().find('img');
-            return Array.from($targets.map((index, item) => $(item).attr('data-original')));
-        }
-    }
-];
 
-export default class extends BaseCommand {
+export default class Spider extends BaseCommand {
     private url: string;
     private dest: string
+    private static sourceMap = [
+        {
+            pattern: /https:\/\/www.zhihu.com\/question\/\d+\/answer\/\d+/,
+            parser($: CheerioAPI): string[] {
+                const $targets = $('.RichContent-inner').first().find('img');
+                return Array.from($targets.map((_, item) => $(item).attr('data-original')));
+            }
+        }
+    ];
     constructor(url: string, { dest = '' }) {
         super();
         this.url = url;
@@ -29,13 +29,13 @@ export default class extends BaseCommand {
     }
     async run() {
         const { url, dest } = this;
-        const matchSource = sourceMap.find(item => item.pattern.test(url));
+        const matchSource = Spider.sourceMap.find(item => item.pattern.test(url));
         if (!matchSource) {
             this.logger.error('页面无法解析，任务结束');
             return;
         }
         const spinner = ora('开始爬取页面').start();
-        let res:AxiosResponse;
+        let res: AxiosResponse;
         try {
             res = await axios({
                 method: 'get',
@@ -73,5 +73,4 @@ export default class extends BaseCommand {
         }, { concurrency: 10 });
         spinner.succeed(`下载完成，共下载${downloadedCount.value}张图片`);
     };
-
 }

@@ -21,7 +21,7 @@ export const pRetry = async (input: PromiseFunc, {
     retryTimesCallback(c:number):void
 }) => {
     let c = 0;
-    const retryFunc = async (ipt: PromiseFunc, retriesTime: number) => {
+    const retryFunc = async (ipt: PromiseFunc, retriesTime: number): Promise<any> => {
         try {
             return await ipt();
         } catch (error) {
@@ -59,7 +59,7 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
         } catch (error) {
             if (typeof (commandItem as CommandItem).onError === 'function') {
                 try {
-                    await (commandItem as CommandItem).onError(error.message);
+                    await (commandItem as CommandItem).onError((error as Error).message);
                 } catch (e) {
                     throw e;
                 }

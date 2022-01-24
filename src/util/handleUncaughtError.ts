@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 import boxen from 'boxen';
-import createCallsiteRecord from 'callsite-record';
+import createCallsiteRecord,{CallsiteRecord} from 'callsite-record';
 import path from 'path';
 import chalk from 'chalk';
 import logger from './logger.js';
@@ -31,7 +31,7 @@ async function errorHandler(e: Error, options: {
             margin: 1,
             float: 'left'
         }));
-        console.log(createCallsiteRecord({ forError: e }).renderSync({}));
+        console.log((createCallsiteRecord({ forError: e }) as CallsiteRecord).renderSync({}));
         if (process.cwd() === root) {
             return;
         }
@@ -48,6 +48,6 @@ async function errorHandler(e: Error, options: {
             process.exit(0);
         }
     } catch (error) {
-        logger.error(error.message);
+        logger.error((error as Error).message);
     }
 }

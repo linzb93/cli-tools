@@ -2,7 +2,7 @@ import fs, {Stats as FSStats} from 'fs-extra';
 import bytes from 'bytes';
 import axios, { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 export default class extends BaseCommand {
     private filePath: string;
@@ -44,7 +44,7 @@ export default class extends BaseCommand {
         }
         this.logger.success(bytes(fileData.size));
     }
-    async getSize(inputStream: Readable): Promise<number> {
+    private async getSize(inputStream: Readable): Promise<number> {
         let len = 0;
         return new Promise(resolve => {
             inputStream.on('data', str => {

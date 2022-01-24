@@ -22,13 +22,13 @@ export interface CacheItem {
 }
 interface CacheSaveOption {
     choosed: boolean,
-    projName?: string
+    projName: string
 }
 
 export default class extends BaseCommand {
     private subCommand?: string;
-    private options?: Options;
-    constructor(subCommand?: string, options?: Options) {
+    private options: Options;
+    constructor(subCommand: string, options: Options) {
         super()
         this.helper.validate(options, {
             proxy: [
@@ -108,7 +108,7 @@ export default class extends BaseCommand {
     路由映射至：${chalk.cyan(options.proxy)}`);
                 const items: CacheItem[] = db.get('items').value();
                 const match = items.find(item => item.proxy === options.proxy);
-                match.port = Number(port);
+                (match as CacheItem).port = Number(port);
                 db.set('items', items).write();
                 child.unref();
                 child.disconnect();

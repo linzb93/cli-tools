@@ -51,14 +51,14 @@ export default class extends BaseCommand {
                 await del(`node_modules/${pkg}`);
             }
         } catch (error) {
-            this.logger.error(error);
+            this.logger.error((error as Error).message);
             return;
         }
         this.logger.success('删除成功');
     }
     // 除了删除全局的文件，还要删除全局命令
     private async delGlobal(name: string) {
-        let pkg: NormalizedPackageJson;
+        let pkg: NormalizedPackageJson = {};
         try {
             pkg = await readPkg({
                 cwd: path.resolve(globalNpm, 'node_modules', name)

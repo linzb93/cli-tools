@@ -1,4 +1,4 @@
-import OSS, {OssConfig} from 'ali-oss';
+import OSS, { OssConfig } from 'ali-oss';
 import lodash from 'lodash';
 import clipboard from 'clipboardy';
 import path from 'path';
@@ -31,7 +31,7 @@ export default class extends BaseCommand {
         ${url}`);
         clipboard.writeSync(url);
     }
-    getUploadFileName() {
+    private getUploadFileName() {
         const timeStamp = `${random(Math.pow(10, 6), Math.pow(10, 6) * 2 - 1)}${new Date().getTime()}`;
         return `diankeduo/mdCdn/pic${timeStamp}`;
     }

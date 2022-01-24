@@ -2,6 +2,7 @@ import open from 'open';
 import ora, { Ora } from 'ora';
 import chalk from 'chalk';
 import Table, { VerticalTable } from 'cli-table3';
+import {AxiosError} from 'axios';
 import npmPage from './util/npmPage.js';
 import BaseCommand from '../../util/BaseCommand.js';
 const table = new Table({
@@ -81,8 +82,9 @@ export default class extends BaseCommand {
                 return this.fetchNpmPackage(arg, true);
             }));
         } catch (e) {
-            if (e.response && e.response.statusText === 'Not Found') {
-                spinner.fail(`没有 ${e.config.url.split('/').pop()} 这个模块`);
+            const err = e as AxiosError;
+            if (err.response && err.response.statusText === 'Not Found') {
+                spinner.fail(`没有 ${(err.response.config.url as string).split('/').pop()} 这个模块`);
             } else {
                 spinner.fail('无法访问');
             }
@@ -108,7 +110,7 @@ export default class extends BaseCommand {
     }
     private lineFeed(str: string, perLineLength = 30) {
         const strArr = str.split(' ');
-        let tempArr = [];
+        let tempArr:string[] = [];
         const retArr = [];
         strArr.forEach(s => {
             tempArr.push(s);

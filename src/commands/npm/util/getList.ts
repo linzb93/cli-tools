@@ -21,7 +21,7 @@ export default async (name: string) => {
     if (shouldUseYarn()) {
         return {
             list: [name],
-            versionList: [getVersion[name]]
+            versionList: [getVersion(name)]
         };
     }
     const matches = dirs.filter(dir => dir.startsWith(`_${name.startsWith('@') ? name.replace('/', '_') : name}@`));
@@ -31,6 +31,6 @@ export default async (name: string) => {
     };
 };
 
-export function getVersion(packageName: string) {
-    return packageName.match(/@([0-9a-z\.\-]+)@/)[1];
+export function getVersion(packageName: string):string {
+    return (packageName.match(/@([0-9a-z\.\-]+)@/) as any)[1];
 }

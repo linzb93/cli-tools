@@ -13,9 +13,12 @@ export default class extends BaseCommand {
     }
     async run() {
         const openMap = getSetting('open');
-        const outputList = [];
+        const outputList:{ title: string; children: string[]; }[] = [];
         await pMap(['admin', 'tools', 'mt', 'ele', 'print'], async parentProj => {
-            const cur = {
+            const cur: {
+                title: string,
+                children: string[]
+            } = {
                 title: path.basename(openMap[parentProj]),
                 children: []
             };

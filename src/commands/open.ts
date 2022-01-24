@@ -82,7 +82,7 @@ export default class extends BaseCommand {
         ];
         await this.makeOpenAction(map, name);
     }
-    async makeOpenAction(map: OpenItem[], name: string) {
+    private async makeOpenAction(map: OpenItem[], name: string) {
         const match = map.find(item => item.name === name);
         if (!match) {
             this.logger.error('命令错误');

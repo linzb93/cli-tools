@@ -9,7 +9,7 @@ interface RegData {
 }
 // 本来CheerioNode上应该有data属性的，但作者没写。
 interface ExtCheerioNode extends CheerioNode {
-    data?: string
+    data: string
 }
 
 export class Npm {
@@ -23,7 +23,7 @@ export class Npm {
         const { $ } = this;
         if (type === 'repository') {
             return $('#repository').next().find('a')
-                .attr('href');
+                .attr('href') as string;
         }
         if (type === 'weeklyDl') {
             return $('._9ba9a726').text();
@@ -70,7 +70,7 @@ export default async (pkg: string): Promise<Npm> => {
             res = await axios.get(`https://www.npmjs.com/package/${pkgAns}`);
             html = res.data;
         } else {
-            throw new Error(e);
+            throw e;
         }
     }
 };

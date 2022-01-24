@@ -11,7 +11,7 @@ import { pRetry } from '../../util/pFunc.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
-    dir?: string,
+    dir: string,
     open?: boolean,
     from?: string
 }
@@ -50,7 +50,7 @@ export default class extends BaseCommand {
                 });
             } catch (error) {
                 spinner.fail(`下载失败:
-                ${error.message}`);
+                ${(error as Error).message}`);
                 return;
             }
             spinner.succeed('下载成功');
@@ -94,7 +94,7 @@ export default class extends BaseCommand {
                 });
             } catch (error) {
                 spinner.fail(`下载失败:
-                ${error.message}`);
+                ${(error as Error).message}`);
                 return;
             }
             spinner.succeed('下载成功');
@@ -107,7 +107,7 @@ export default class extends BaseCommand {
         try {
             page = await npmPage(pkg);
         } catch (error) {
-            this.logger.error(error);
+            this.logger.error((error as Error).message);
             return;
         }
         const repo = page.get('repository');
@@ -146,7 +146,7 @@ export default class extends BaseCommand {
                 }
             });
         } catch (error) {
-            spinner.fail('下载失败：' + JSON.stringify(error.message));
+            spinner.fail('下载失败：' + JSON.stringify((error as Error).message));
             return;
         }
         spinner.succeed('下载成功');
@@ -154,13 +154,13 @@ export default class extends BaseCommand {
             await this.helper.openInEditor(path.resolve(cwd, dirName));
         }
     }
-    isGitUrl(url: string): boolean {
+    private isGitUrl(url: string): boolean {
         return this.helper.isURL(url) || this.isGitSSH(url);
     }
-    isGitSSH(url: string): boolean {
+    private isGitSSH(url: string): boolean {
         return url.startsWith('git@') && url.endsWith('.git');
     }
-    toGitUrl(url: string): string {
+    private toGitUrl(url: string): string {
         if (this.helper.isURL(url)) {
             return url.endsWith('.git') ? url : `${url}.git`;
         }

@@ -5,7 +5,6 @@ import logger from './logger.js';
 import lodash from 'lodash';
 import npm from './npm.js';
 import chalk from 'chalk';
-import isClass from 'is-class-function';
 import ValidatorSchema, {
     Rules as ValidatorRules,
     ValidateSource,
@@ -25,7 +24,7 @@ export const validate = (
     obj: ValidateSource,
     descriptor: ValidatorRules
 ): void => {
-    const Schema = isClass(ValidatorSchema) ? ValidatorSchema : (ValidatorSchema as any).default;
+    const Schema = (ValidatorSchema as any).default;
     const validator = new Schema(descriptor);
     validator.validate(obj, (errors:Error, fields:FieldErrorList) => {
         if (!errors) {
@@ -51,6 +50,9 @@ export const openInEditor = async (project: string): Promise<void> => {
         logger.error('打开失败，未检测到有安装VSCode');
     }
 };
+export function isValidKey(key: string | number | symbol, object: object): key is keyof typeof object {
+    return key in object;
+}
 // 获取快捷方式文件夹的真实地址
 interface ShortCutsObject {
     target: string
@@ -98,18 +100,23 @@ export const splitByLine = (str: string): string[] => {
 };
 export const processArgvToFlags = (options: object, isStr?: boolean): string | string[] => {
     const ret = Object.keys(options).map(opt => {
-        if (options[opt] === true) {
-            return `--${opt}`;
+        if (isValidKey(opt, options)) {
+            if (options[opt] === true) {
+                return `--${opt}`;
+            }
+            return `--${opt}=${options[opt]}`;
         }
-        return `--${opt}=${options[opt]}`;
+        
     });
-    return isStr ? ret.join(' ') : ret;
+    return isStr ? ret.join(' ') : ret as unknown as string;
 };
 export const pickAndRename = (src: string, maps: object) => {
-    const rawData = pick(src, Object.keys(maps));
+    const rawData = pick(src, ...Object.keys(maps));
     const data = {};
     for (const key in maps) {
-        data[maps[key]] = rawData[key];
+        if (isValidKey(key, maps) && isValidKey(maps[key], data) && isValidKey(key, rawData)) {
+            data[maps[key]] = rawData[key];
+        }
     }
     return data;
 }

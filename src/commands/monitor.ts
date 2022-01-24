@@ -11,15 +11,17 @@ const { debounce } = lodash;
 export default class extends BaseCommand {
     private filename: string | undefined
     private combinedOptions: string[]
+    private entryFile: string;
+    private subProcess: ChildProcess | undefined;
     constructor(filename: string | undefined, combinedOptions: string[]) {
         super()
         this.filename = filename;
         this.combinedOptions = combinedOptions;
+        this.entryFile = '';
     }
     async run() {
-        const {filename, combinedOptions} = this;
+        const { filename, combinedOptions } = this;
         let watcher: FSWatcher;
-        let entryFile: string = '';
         if (filename === undefined) {
             // 监听整个项目
             watcher = chokidar.watch('**/*.js', {
@@ -29,22 +31,21 @@ export default class extends BaseCommand {
                 this.logger.error('文件路径不正确，请重新输入');
                 process.exit(0);
             }
-            entryFile = 'index.js';
+            this.entryFile = 'index.js';
         } else {
             if (filename.endsWith('.js')) {
                 watcher = chokidar.watch(filename);
-                entryFile = filename;
+                this.entryFile = filename;
             } else {
                 if (await fs.pathExists(filename)) {
                     watcher = chokidar.watch(`${filename}/**/*.js`);
                     if (!await fs.pathExists(path.resolve(filename, 'index.js'))) {
-                        this.logger.error('项目文件夹以index.js作为入口，未检测到index.js');
-                        process.exit(0);
+                        this.logger.error('项目文件夹以index.js作为入口，未检测到index.js', true);
                     }
-                    entryFile = `${filename}/index.js`;
+                    this.entryFile = `${filename}/index.js`;
                 } else if (await fs.pathExists(`${filename}.js`)) {
                     watcher = chokidar.watch(`${filename}.js`);
-                    entryFile = `${filename}.js`;
+                    this.entryFile = `${filename}.js`;
                 } else {
                     this.logger.error('文件路径不正确，请重新输入');
                     process.exit(0);
@@ -53,7 +54,7 @@ export default class extends BaseCommand {
         }
         watcher.on('change', debounce(file => {
             console.log(chalk.green(`${file}更改，node monitor 重启`));
-            restartServer();
+            this.restartServer();
         }, 500));
         console.log(chalk.green('node monitor 已启动'));
         process.on('SIGINT', () => {
@@ -64,28 +65,26 @@ export default class extends BaseCommand {
             const str = data.toString().trim().toLowerCase();
             if (str === 'rs') {
                 console.log(chalk.green('手动重启 node monitor'));
-                restartServer();
+                this.restartServer();
             }
         });
-        let subProcess: ChildProcess;
-        startServer();
-        function startServer() {
-            subProcess = fork(entryFile, combinedOptions, {
-                stdio: [null, 'inherit', null, 'ipc']
-            });
-            subProcess.stderr.pipe(process.stdout);
-            subProcess.on('close', (_, sig) => {
-                if (!sig) {
-                    this.logger.error('检测到服务器出现错误，已关闭');
-                    process.exit(0);
-                }
-            });
-        }
-        function restartServer() {
-            subProcess.removeAllListeners();
-            subProcess.kill();
-            startServer();
-        }
-    };
+        this.startServer();
+    }
+    private startServer() {
+        this.subProcess = fork(this.entryFile, this.combinedOptions, {
+            stdio: [null, 'inherit', null, 'ipc']
+        }) as ChildProcess;
+        this.subProcess.stderr.pipe(process.stdout);
+        this.subProcess.on('close', (_, sig) => {
+            if (!sig) {
+                this.logger.error('检测到服务器出现错误，已关闭', true);
+            }
+        });
+    }
+    private restartServer() {
+        (this.subProcess as ChildProcess).removeAllListeners();
+            (this.subProcess as ChildProcess).kill();
+            this.startServer();
+    }
 }
 
