@@ -32,8 +32,9 @@ export default class extends BaseCommand {
                 this.logger.error('文件地址不存在或无法正常下载');
                 return;
             }
-            this.logger.success(bytes((await this.getSize(res.data))));
-            return;
+            const ret = bytes((await this.getSize(res.data)));
+            this.logger.success(ret);
+            return ret;
         }
         let fileData:FSStats;
         try {
@@ -42,7 +43,9 @@ export default class extends BaseCommand {
             this.logger.error(`文件${filePath}不存在或无法读取`);
             return;
         }
-        this.logger.success(bytes(fileData.size));
+        const ret = bytes(fileData.size);
+        this.logger.success(ret);
+        return ret;
     }
     private async getSize(inputStream: Readable): Promise<number> {
         let len = 0;

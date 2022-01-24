@@ -1,5 +1,5 @@
 import ora, { Ora } from 'ora';
-import semver from 'semver';
+import semver, {SemVer} from 'semver';
 import axios from 'axios';
 import npm from '../../util/npm.js';
 import BaseCommand from '../../util/BaseCommand.js';
@@ -40,7 +40,7 @@ export default class extends BaseCommand {
         let type = 'module';
         while (type === 'module') {
             if (version !== 'latest') {
-                version = semver.coerce(semver.major(version) - 1).version;
+                version = (semver.coerce(semver.major(version) - 1) as SemVer).version;
             }
             const res = await axios.get(`https://registry.npmjs.org/${name}/${version}`);
             type = res.data.type;

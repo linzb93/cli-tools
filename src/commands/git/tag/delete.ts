@@ -23,8 +23,8 @@ export default class extends BaseCommand {
         } as CheckboxQuestion);
         if (selected.length) {
             const spinner = ora('开始删除').start();
-            const successTags = reactive([]);
-            const errorTags = reactive([]);
+            const successTags = reactive([]) as string[];
+            const errorTags = reactive([]) as {tag: string, errorMessage: string}[];
             watch(successTags, value => {
                 spinner.text = `删除成功${value.length}个，失败${errorTags.length}个`;
             });
@@ -40,7 +40,7 @@ export default class extends BaseCommand {
                 } catch (error) {
                     errorTags.push({
                         tag,
-                        errorMessage: error.message
+                        errorMessage: (error as Error).message
                     });
                     return;
                 }

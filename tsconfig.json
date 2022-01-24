@@ -1,14 +1,12 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "types": ["node"],
     "module": "ESNext",
     "allowJs": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "strict": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    "strict": true,
     "outDir": "./dist/",
   },
   "include": ["src/**/*.ts"]

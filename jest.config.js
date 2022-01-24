@@ -1,8 +1,8 @@
-module.exports = {
+export default {
     roots: [
-        "<rootDir>/test"
+        "<rootDir>/dist"
     ],
-    testRegex: 'test/(.+)\\.test\\.(jsx?|tsx?)$',
+    testRegex: 'dist/(.+)\\.test\\.(jsx?|tsx?)$',
     transform: {
         "^.+\\.tsx?$": "ts-jest"
     },
