@@ -37,6 +37,7 @@ const map = {
             list: '',
             login: ''
         },
+        nameKey: '',
         loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
@@ -54,7 +55,7 @@ const map = {
             list: '/order/getOrderInfoList',
             login: '/order/replaceUserLogin'
         },
-
+        nameKey: 'memberName',
         loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
@@ -72,6 +73,7 @@ const map = {
             list: '/order/getOrderInfoList',
             login: '/order/replaceUserLogin'
         },
+        nameKey: 'memberName',
         loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
@@ -91,6 +93,7 @@ const map = {
             list: '/manage/getOrderList',
             login: '/auth/onelogin'
         },
+        nameKey: 'shopName',
         loginKey: (item: EleLoginParams) => ({
             appId: '29665924',
             shopId: item.shopId,
@@ -162,10 +165,12 @@ export default class extends BaseCommand {
             listData = res.data;
         } catch (error) {
             spinner.fail('服务器故障，请稍后再试');
+            console.log(error);
             return;
         }
         if (!listData.result) {
             spinner.fail('服务器故障，请稍后再试');
+            console.log(listData);
             return;
         }
         if (!listData.result.list.length) {
@@ -173,50 +178,31 @@ export default class extends BaseCommand {
             return;
         }
         const shop = listData.result.list[0];
-        if (options.token) {
-            spinner.text = `正在获取token:${shop.shopName}`;
-        } else {
-            spinner.text = `正在打开店铺:${shop.shopName}`;
-        }
-        await this.helper.sleep(1500);
-        const { data: { result } } = await service.post(match.url.login, match.loginKey(shop));
-        if (options.token) {
-            const { hash } = new URL(result);
-            const token = hash.replace('#/login?code=', '');
-            clipboard.writeSync(token);
-            spinner.succeed(`已复制店铺 ${shop.shopName} 的token\n${token}`);
-        } else if (options.copy) {
-            clipboard.writeSync(result);
-            spinner.succeed(`已复制店铺 ${shop.shopName} 的地址`);
-        } else {
-            spinner.succeed('打开成功');
-            if (options.pc && ['4', '36'].includes(match.appKey)) {
-                // 只有美团经营神器和装修神器有PC端
-                open(result.replace('app', ''));
+        if (this.helper.isValidKey(match.nameKey, shop)) {
+            if (options.token) {
+                spinner.text = `正在获取token:${shop[match.nameKey]}`;
             } else {
-                open(result);
+                spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
+            }
+            await this.helper.sleep(1500);
+            const { data: { result } } = await service.post(match.url.login, match.loginKey(shop));
+            if (options.token) {
+                const { hash } = new URL(result);
+                const token = hash.replace('#/login?code=', '');
+                clipboard.writeSync(token);
+                spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的token\n${token}`);
+            } else if (options.copy) {
+                clipboard.writeSync(result);
+                spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);
+            } else {
+                spinner.succeed('打开成功');
+                if (options.pc && ['4', '36'].includes(match.appKey)) {
+                    // 只有美团经营神器和装修神器有PC端
+                    open(result.replace('app', ''));
+                } else {
+                    open(result);
+                }
             }
         }
     };
 }
-
-// function parseSearch(params) {
-//     if (!params) {
-//         return '';
-//     }
-//     // 'date<=10'.match(/(>=)|(<=)|=|>|</)
-
-//     const date = params.slice(5);
-//     if (Number.isInteger(date)) {
-//         return dayjs().subtract(date, 'd').unix();
-//     }
-//     const joinLength = date.split('').filter(char => char === '').length;
-//     if (joinLength === 1) {
-//         return dayjs(`${dayjs().year()}-${date}`).unix();
-//     } else if (joinLength === 2) {
-//         return dayjs(date).unix();
-//     }
-//     return '';
-// }
-// > < = >= <=
-// a b c d e f g

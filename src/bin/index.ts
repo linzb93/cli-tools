@@ -75,7 +75,6 @@ program
     .option('--token', '获取token')
     .option('--pc', '打开PC端')
     .option('--copy', '复制地址')
-    .option('--version <type>', '生效版本')
     .allowUnknownOption()
     .action(async (data, options) => {
         const SubCommand = (await import('../commands/occ.js')).default;
