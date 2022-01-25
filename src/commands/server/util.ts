@@ -30,15 +30,20 @@ class TimeClass {
     }
 }
 export const timejs = (time?: string) => {
-    return new TimeClass(time);
+    return new TimeClass(time as string);
 };
+interface MetaConf {
+    files: {
+        name: string
+    }[]
+}
 export const serverDB = {
     get(key: string) {
-        const data = fs.readJSONSync(resolve('server/meta.json'));
+        const data = fs.readJSONSync(resolve('server/meta.json')) as MetaConf;
         return data.files.find(file => file.name === key);
     },
     set(key: string, entity: any) {
-        const data = fs.readJSONSync(resolve('server/meta.json'));
+        const data = fs.readJSONSync(resolve('server/meta.json')) as MetaConf;
         let match = data.files.find(file => file.name === key);
         // eslint-disable-next-line no-unused-vars
         if (match) {

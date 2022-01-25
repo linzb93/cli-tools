@@ -13,18 +13,18 @@ program
     .option('-g, --global', '全局操作')
     .option('--open', '打开页面')
     .allowUnknownOption()
-    .action(async (subCommand:string, rest, cmd) => {
+    .action(async (subCommand: string, rest, cmd) => {
         const shorthands = {
             i: 'install',
             un: 'uninstall'
         };
         if (isValidKey(subCommand, shorthands)) {
             const target = shorthands[subCommand] || subCommand;
-        if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
-            logger.error('命令不存在，请重新输入', true);
-        }
-        const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
-        new CommandCtor(rest, cmd).run();
+            if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
+                logger.error('命令不存在，请重新输入', true);
+            }
+            const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
+            new CommandCtor(rest, cmd).run();
         }
     });
 program

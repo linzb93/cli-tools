@@ -36,7 +36,7 @@ export default class extends BaseCommand {
     }
 }
 
-function versionInc(version) {
+function versionInc(version:string) {
     if (!version.startsWith('v')) {
         return false;
     }

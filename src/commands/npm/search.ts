@@ -1,7 +1,7 @@
 import open from 'open';
 import ora, { Ora } from 'ora';
 import chalk from 'chalk';
-import Table, { VerticalTable } from 'cli-table3';
+import Table from 'cli-table3';
 import {AxiosError} from 'axios';
 import npmPage from './util/npmPage.js';
 import BaseCommand from '../../util/BaseCommand.js';
@@ -13,7 +13,7 @@ const table = new Table({
         chalk.green('上次更新')
     ],
     colAligns: ['center', 'center', 'center', 'center']
-}) as VerticalTable;
+});
 interface Options {
     open?: boolean
 }
@@ -96,19 +96,19 @@ export default class extends BaseCommand {
                 item.name,
                 this.lineFeed(item.description),
                 item.weeklyDl,
-                item.lastPb,
+                item.lastPb
             ]));
         console.log(table.toString());
     }
     // 12,345,678 => 1234万
-    private transformNumberCn(val: string) {
+    private transformNumberCn(val: string):string {
         const value = Number(val.replace(/,/g, ''));
         if (value > 10000) {
             return `${parseInt((value / 10000).toString())}万`;
         }
-        return value;
+        return val;
     }
-    private lineFeed(str: string, perLineLength = 30) {
+    private lineFeed(str: string, perLineLength = 30):string {
         const strArr = str.split(' ');
         let tempArr:string[] = [];
         const retArr = [];

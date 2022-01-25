@@ -69,6 +69,7 @@ export default async (pkg: string): Promise<Npm> => {
             }]);
             res = await axios.get(`https://www.npmjs.com/package/${pkgAns}`);
             html = res.data;
+            return new Npm(cheerio.load(html), {description: ''});
         } else {
             throw e;
         }

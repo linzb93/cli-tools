@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { timejs, serverDB } from './util';
 import path from 'path';
 import BaseCommand from '../../util/BaseCommand';
-const resolve = src => path.resolve(__dirname, src);
+const resolve = (src:string) => path.resolve(__dirname, src);
 
 // 每日开启服务器
 export default class extends BaseCommand {
@@ -27,7 +27,7 @@ export default class extends BaseCommand {
             }
             // 如果当前时间大于等于任务时间，就执行任务
             arr.forEach(item => {
-                if (!timejs(item.time).isAfter(timejs())) {
+                if (!timejs(item.updateTime.toString()).isAfter(timejs())) {
                     item.content.action();
                     // TODO:不是没用了，是不想处理多参数的问题，先把代码都搬过来再说
                     // serverDB.set({

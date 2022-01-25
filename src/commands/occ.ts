@@ -37,7 +37,6 @@ const map = {
             list: '',
             login: ''
         },
-        nameKey: '',
         loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
@@ -55,7 +54,7 @@ const map = {
             list: '/order/getOrderInfoList',
             login: '/order/replaceUserLogin'
         },
-        nameKey: 'memberName',
+
         loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
@@ -73,7 +72,6 @@ const map = {
             list: '/order/getOrderInfoList',
             login: '/order/replaceUserLogin'
         },
-        nameKey: 'memberName',
         loginKey: (item: MeituanLoginParams) => ({
             appKey: item.appKey,
             memberId: item.memberId,
@@ -93,7 +91,6 @@ const map = {
             list: '/manage/getOrderList',
             login: '/auth/onelogin'
         },
-        nameKey: 'shopName',
         loginKey: (item: EleLoginParams) => ({
             appId: '29665924',
             shopId: item.shopId,
@@ -113,15 +110,15 @@ export default class extends BaseCommand {
     }
     async run() {
         const { input, options } = this;
-        let match: typeof map.jysq;
-        let shopId: string;
+        let match = {} as typeof map.jysq;
+        let shopId = '';
         const spinner = ora('正在搜索店铺').start();
         if (input.length === 0) {
             match = map.default;
             shopId = match.testId;
         } else if (input.length === 1) {
-            if (isNaN(Number(input[0]))) {
-                match = map[input[0]] as typeof map.jysq;
+            if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
+                match = map[input[0]];
                 if (!match) {
                     spinner.fail('项目不存在，请重新输入');
                     return;
@@ -132,14 +129,14 @@ export default class extends BaseCommand {
                 shopId = input[0];
             }
         } else if (input.length === 2) {
-            if (isNaN(Number(input[0]))) {
+            if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
                 match = map[input[0]];
                 if (!match) {
                     spinner.fail('项目不存在，请重新输入');
                     return;
                 }
                 shopId = input[1];
-            } else {
+            } else if (this.helper.isValidKey(input[1], map)) {
                 match = map[input[1]];
                 if (!match) {
                     spinner.fail('项目不存在，请重新输入');
@@ -177,9 +174,9 @@ export default class extends BaseCommand {
         }
         const shop = listData.result.list[0];
         if (options.token) {
-            spinner.text = `正在获取token:${shop[match.nameKey]}`;
+            spinner.text = `正在获取token:${shop.shopName}`;
         } else {
-            spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
+            spinner.text = `正在打开店铺:${shop.shopName}`;
         }
         await this.helper.sleep(1500);
         const { data: { result } } = await service.post(match.url.login, match.loginKey(shop));
@@ -187,10 +184,10 @@ export default class extends BaseCommand {
             const { hash } = new URL(result);
             const token = hash.replace('#/login?code=', '');
             clipboard.writeSync(token);
-            spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的token\n${token}`);
+            spinner.succeed(`已复制店铺 ${shop.shopName} 的token\n${token}`);
         } else if (options.copy) {
             clipboard.writeSync(result);
-            spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);
+            spinner.succeed(`已复制店铺 ${shop.shopName} 的地址`);
         } else {
             spinner.succeed('打开成功');
             if (options.pc && ['4', '36'].includes(match.appKey)) {

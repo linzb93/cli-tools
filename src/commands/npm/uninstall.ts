@@ -58,7 +58,7 @@ export default class extends BaseCommand {
     }
     // 除了删除全局的文件，还要删除全局命令
     private async delGlobal(name: string) {
-        let pkg: NormalizedPackageJson;
+        let pkg = {} as NormalizedPackageJson;
         try {
             pkg = await readPkg({
                 cwd: path.resolve(globalNpm, 'node_modules', name)

@@ -114,7 +114,9 @@ export const pickAndRename = (src: string, maps: object) => {
     const rawData = pick(src, ...Object.keys(maps));
     const data = {};
     for (const key in maps) {
+        // @ts-ignore
         if (isValidKey(key, maps) && isValidKey(maps[key], data) && isValidKey(key, rawData)) {
+            // @ts-ignore
             data[maps[key]] = rawData[key];
         }
     }

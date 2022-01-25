@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import lodash from 'lodash';
 import fs from 'fs-extra';
 import BaseCommand from '../util/BaseCommand.js';
+import {Readable}from 'stream';
 
 const { debounce } = lodash;
 
@@ -74,7 +75,7 @@ export default class extends BaseCommand {
         this.subProcess = fork(this.entryFile, this.combinedOptions, {
             stdio: [null, 'inherit', null, 'ipc']
         }) as ChildProcess;
-        this.subProcess.stderr.pipe(process.stdout);
+        (this.subProcess.stderr as Readable).pipe(process.stdout);
         this.subProcess.on('close', (_, sig) => {
             if (!sig) {
                 this.logger.error('检测到服务器出现错误，已关闭', true);
@@ -83,8 +84,8 @@ export default class extends BaseCommand {
     }
     private restartServer() {
         (this.subProcess as ChildProcess).removeAllListeners();
-            (this.subProcess as ChildProcess).kill();
-            this.startServer();
+        (this.subProcess as ChildProcess).kill();
+        this.startServer();
     }
 }
 
