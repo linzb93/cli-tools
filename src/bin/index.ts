@@ -3,9 +3,7 @@
 import commander from 'commander';
 import logger from '../util/logger.js';
 import { isValidKey } from '../util/helper.js';
-if (Number(process.version.slice(1).split('.')[0]) < 16) {
-    logger.error('node版本号低于V16，请先升级', true);
-}
+
 const program = new commander.Command();
 program
     .command('npm <sub-command> [rest...]')

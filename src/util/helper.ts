@@ -3,23 +3,26 @@ import path from 'path';
 import { execaCommand as execa } from 'execa';
 import logger from './logger.js';
 import lodash from 'lodash';
-import npm from './npm.js';
 import chalk from 'chalk';
+import windowsShortcuts from 'windows-shortcuts';
 import ValidatorSchema, {
     Rules as ValidatorRules,
     ValidateSource,
     FieldErrorList
 } from 'async-validator';
 const { pick } = lodash;
+
 export const isWin = process.platform === 'win32';
 
 export const isURL = (text: string): boolean => {
     return text.startsWith('http://') || text.startsWith('https://');
 };
+
 // 判断一个字符串是否是本地路径
 export const isPath = (value: string): boolean => {
     return value.startsWith('/') || /[CDEFGHI]\:.+/.test(value) || value.startsWith('./') || value.startsWith('../');
 };
+
 export const validate = (
     obj: ValidateSource,
     descriptor: ValidatorRules
@@ -35,8 +38,11 @@ export const validate = (
         process.exit(1);
     });
 };
-export const parseImportUrl = (url: string) => decodeURI(url.replace('file:///', ''));
+
+export const parseImportUrl = (url: string) => decodeURI(url.replace(isWin ? 'file:///' : 'file://', ''));
+
 export const root = path.join(parseImportUrl(import.meta.url), '../../../');
+
 export const openInEditor = async (project: string): Promise<void> => {
     try {
         await execa(`code ${project}`);
@@ -50,18 +56,18 @@ export const openInEditor = async (project: string): Promise<void> => {
         logger.error('打开失败，未检测到有安装VSCode');
     }
 };
+
 export function isValidKey(key: string | number | symbol, object: object): key is keyof typeof object {
+    // is 是类型谓词
     return key in object;
 }
+
 // 获取快捷方式文件夹的真实地址
-interface ShortCutsObject {
-    target: string
-}
 export const getOriginPath = async (rawPath: string): Promise<string> => {
     if (isWin) {
-        const ws = await requireDynamic('windows-shortcuts');
         return await new Promise(resolve => {
-            ws.query(rawPath, (err:Error, lnk: ShortCutsObject) => {
+            // 如果ts编译报错，把shortcut依赖的.ts文件删掉
+            windowsShortcuts.query(rawPath, (err, lnk) => {
                 if (err) {
                     resolve(rawPath);
                 } else {
@@ -73,31 +79,25 @@ export const getOriginPath = async (rawPath: string): Promise<string> => {
     // await requireDynamic('macos-alias');
     return rawPath;
 };
-// 在依赖未安装的时候，异步安装引入依赖
-const requireDynamic = async (moduleName: string): Promise<any> => {
-    try {
-        return (await import(moduleName)).default;
-    } catch {
-        await npm.install(moduleName);
-        delete require.cache[path.resolve(process.cwd(), 'node_modules', moduleName)];
-        return require(moduleName);
-    }
-};
+
 export const isEmptyObject = (value: any) => {
     for (const key of value) {
         return false;
     }
     return true;
 };
+
 export const sleep = (time: number): Promise<number> => {
     return new Promise(resolve => {
         setTimeout(resolve, time);
     });
 };
+
 export const splitByLine = (str: string): string[] => {
     const eol = (str.includes('\r\n') ? '\r\n' : '\n');
     return str === '' ? [] : str.split(eol);
 };
+
 export const processArgvToFlags = (options: object, isStr?: boolean): string | string[] => {
     const ret = Object.keys(options).map(opt => {
         if (isValidKey(opt, options)) {
@@ -110,6 +110,7 @@ export const processArgvToFlags = (options: object, isStr?: boolean): string | s
     });
     return isStr ? ret.join(' ') : ret as unknown as string;
 };
+
 export const pickAndRename = (src: string, maps: object) => {
     const rawData = pick(src, ...Object.keys(maps));
     const data = {};
