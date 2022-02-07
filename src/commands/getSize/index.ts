@@ -11,14 +11,14 @@ export default class extends BaseCommand {
     this.filePath = filePath;
     this.helper.validate(
       {
-        file: filePath,
+        file: filePath
       },
       {
         file: {
           validator: (_, value) =>
             this.helper.isURL(value) || this.helper.isPath(value),
-          message: '请输入图片网址，或本地地址',
-        },
+          message: '请输入图片网址，或本地地址'
+        }
       }
     );
   }
@@ -30,7 +30,7 @@ export default class extends BaseCommand {
       filePath = filePath.replace(/\s/g, ',');
       try {
         res = await axios.get(filePath, {
-          responseType: 'stream',
+          responseType: 'stream'
         });
       } catch (e) {
         this.logger.error('文件地址不存在或无法正常下载');

@@ -27,7 +27,7 @@ program
         axios({
           url: `${options.proxy}${url}`,
           headers: req.headers as AxiosRequestHeaders,
-          responseType: 'stream',
+          responseType: 'stream'
         }).then((sourceRes) => {
           sourceRes.data.pipe(res);
         });
@@ -39,7 +39,7 @@ program
         method: req.method as Method,
         url: `${options.proxy}${url}`,
         ...payload,
-        headers: req.headers as AxiosRequestHeaders,
+        headers: req.headers as AxiosRequestHeaders
       })
         .then((resp) => {
           res.send(resp.data);
@@ -48,14 +48,14 @@ program
           const status = e.response ? e.response.status : 500;
           res.status(status).send(
             e.response || {
-              message: e.message,
+              message: e.message
             }
           );
         });
     });
     const [port, ip] = await Promise.all([
       getPort(options.port || 8080),
-      internalIp.v4(),
+      internalIp.v4()
     ]);
     app.listen(port, () => {
       if (options.copy) {

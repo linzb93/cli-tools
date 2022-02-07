@@ -27,16 +27,16 @@ export default class extends BaseCommand {
     const { pkg, options } = this;
     this.helper.validate(
       {
-        pkg,
+        pkg
       },
       {
         pkg: [
           {
             required: true,
             message:
-              '请输入项目来源，可以是npm包、GitHub搜索关键词，或Git项目地址',
-          },
-        ],
+              '请输入项目来源，可以是npm包、GitHub搜索关键词，或Git项目地址'
+          }
+        ]
       }
     );
     const spinner = ora('正在下载');
@@ -52,7 +52,7 @@ export default class extends BaseCommand {
         dirName = await git.clone({
           url,
           dirName: path.basename(url, '.git'),
-          cwd: openMap[options.dir],
+          cwd: openMap[options.dir]
         });
       } catch (error) {
         spinner.fail(`下载失败:
@@ -75,13 +75,13 @@ export default class extends BaseCommand {
           () =>
             axios({
               url: `https://github.com/search?q=${pkg}`,
-              timeout: 15000,
+              timeout: 15000
             }),
           {
             retries: 5,
             retryTimesCallback: (times) => {
               spinner.text = `第${times}次搜索失败，正在重试`;
-            },
+            }
           }
         );
       } catch {
@@ -101,13 +101,13 @@ export default class extends BaseCommand {
             git.clone({
               url,
               dirName: path.basename(url, '.git'),
-              cwd: openMap[options.dir],
+              cwd: openMap[options.dir]
             }),
           {
             retries: 2,
             retryTimesCallback: (times) => {
               spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
-            },
+            }
           }
         );
       } catch (error) {
@@ -139,13 +139,13 @@ export default class extends BaseCommand {
         await pRetry(
           () =>
             git.pull({
-              cwd: path.join(cwd, path.basename(repo)),
+              cwd: path.join(cwd, path.basename(repo))
             }),
           {
             retries: 5,
             retryTimesCallback: (times) => {
               spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
-            },
+            }
           }
         );
       } catch (error) {
@@ -164,13 +164,13 @@ export default class extends BaseCommand {
           git.clone({
             url: `${repo}.git`,
             shallow: true,
-            cwd,
+            cwd
           }),
         {
           retries: 5,
           retryTimesCallback: (times) => {
             spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
-          },
+          }
         }
       );
     } catch (error) {

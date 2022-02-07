@@ -1,8 +1,8 @@
-import inquirer from "inquirer";
-import rawKillPort from "kill-port";
-import iconv from "iconv-lite";
-import chalk from "chalk";
-import BaseCommand from "../util/BaseCommand.js";
+import inquirer from 'inquirer';
+import rawKillPort from 'kill-port';
+import iconv from 'iconv-lite';
+import chalk from 'chalk';
+import BaseCommand from '../util/BaseCommand.js';
 
 const numberRE = /[1-9][0-9]*/;
 
@@ -17,7 +17,7 @@ export default class extends BaseCommand {
     const { args } = this;
     if (args.length === 1) {
       if (!numberRE.test(args[0])) {
-        this.logger.error("端口号或者进程ID格式不正确，只能输入数字");
+        this.logger.error('端口号或者进程ID格式不正确，只能输入数字');
         return;
       }
       const id = Number(args[0]);
@@ -45,9 +45,9 @@ export default class extends BaseCommand {
     } else if (args.length === 2) {
       const [target, idStr] = args;
       let id;
-      if (target === "port") {
+      if (target === 'port') {
         if (!numberRE.test(idStr)) {
-          this.logger.error("端口号格式不正确，只能输入数字");
+          this.logger.error('端口号格式不正确，只能输入数字');
           return;
         }
         id = Number(idStr);
@@ -58,9 +58,9 @@ export default class extends BaseCommand {
         } catch (error) {
           this.logger.error(`端口 ${chalk.yellow(id)} 不存在`);
         }
-      } else if (target === "pid") {
+      } else if (target === 'pid') {
         if (!numberRE.test(idStr)) {
-          this.logger.error("进程ID格式不正确，只能输入数字");
+          this.logger.error('进程ID格式不正确，只能输入数字');
           return;
         }
         id = Number(idStr);
@@ -75,27 +75,27 @@ export default class extends BaseCommand {
           return;
         }
       } else {
-        this.logger.error("命令不正确，请输入进程ID: pid，或者端口号: port");
+        this.logger.error('命令不正确，请输入进程ID: pid，或者端口号: port');
       }
     }
   }
   private async confirm(): Promise<boolean> {
     const ans = await inquirer.prompt([
       {
-        type: "confirm",
-        message: "您可能要关闭系统进程，确认是否继续？",
-        name: "data",
-        default: false,
-      },
+        type: 'confirm',
+        message: '您可能要关闭系统进程，确认是否继续？',
+        name: 'data',
+        default: false
+      }
     ]);
     return ans.data;
   }
   private async killPort(port: number): Promise<null> {
     return new Promise((resolve, reject) => {
-      rawKillPort(port, "tcp")
+      rawKillPort(port, 'tcp')
         .then((data) => {
           if (data.stderr) {
-            reject(iconv.decode(Buffer.from(data.stderr), "utf8"));
+            reject(iconv.decode(Buffer.from(data.stderr), 'utf8'));
           } else {
             resolve(null);
           }

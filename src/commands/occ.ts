@@ -1,8 +1,8 @@
-import axios from "axios";
-import open from "open";
-import ora from "ora";
-import clipboard from "clipboardy";
-import BaseCommand from "../util/BaseCommand.js";
+import axios from 'axios';
+import open from 'open';
+import ora from 'ora';
+import clipboard from 'clipboardy';
+import BaseCommand from '../util/BaseCommand.js';
 
 interface Options {
   token: string;
@@ -29,78 +29,78 @@ interface ShopListResponse {
 }
 const map = {
   default: {
-    appKey: "",
-    serviceName: "",
+    appKey: '',
+    serviceName: '',
     platform: 0,
     url: {
-      base: "",
-      list: "",
-      login: "",
+      base: '',
+      list: '',
+      login: ''
     },
-    nameKey: "",
+    nameKey: '',
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
       memberId: item.memberId,
       platform: item.platform,
-      specificationId: "v3",
+      specificationId: 'v3'
     }),
-    testId: "",
+    testId: ''
   },
   jysq: {
-    appKey: "4",
-    serviceName: "经营神器-美团",
+    appKey: '4',
+    serviceName: '经营神器-美团',
     platform: 8,
     url: {
-      base: "/occ",
-      list: "/order/getOrderInfoList",
-      login: "/order/replaceUserLogin",
+      base: '/occ',
+      list: '/order/getOrderInfoList',
+      login: '/order/replaceUserLogin'
     },
-    nameKey: "memberName",
+    nameKey: 'memberName',
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
       memberId: item.memberId,
       platform: item.platform,
-      specificationId: "v3",
+      specificationId: 'v3'
     }),
-    testId: "15983528161",
+    testId: '15983528161'
   },
   zx: {
-    appKey: "36",
-    serviceName: "装修神器-美团",
+    appKey: '36',
+    serviceName: '装修神器-美团',
     platform: 8,
     url: {
-      base: "/occ",
-      list: "/order/getOrderInfoList",
-      login: "/order/replaceUserLogin",
+      base: '/occ',
+      list: '/order/getOrderInfoList',
+      login: '/order/replaceUserLogin'
     },
-    nameKey: "memberName",
+    nameKey: 'memberName',
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
       memberId: item.memberId,
       platform: item.platform,
-      specificationId: "v3",
+      specificationId: 'v3'
     }),
-    testId: "16159400501",
+    testId: '16159400501'
   },
   ele: {
-    appId: "29665924",
-    serviceName: "店客多-裂变神器",
-    baseURL: "/eleocc",
-    listUrl: "/manage/getOrderList",
+    appId: '29665924',
+    serviceName: '店客多-裂变神器',
+    baseURL: '/eleocc',
+    listUrl: '/manage/getOrderList',
     platform: 11,
     url: {
-      base: "/eleocc",
-      list: "/manage/getOrderList",
-      login: "/auth/onelogin",
+      base: '/eleocc',
+      list: '/manage/getOrderList',
+      login: '/auth/onelogin'
     },
-    nameKey: "shopName",
+    nameKey: 'shopName',
     loginKey: (item: EleLoginParams) => ({
-      appId: "29665924",
+      appId: '29665924',
       shopId: item.shopId,
-      userId: item.userId,
+      userId: item.userId
     }),
-    testId: "160276429",
-  },
+    testId: '160276429'
+  }
 };
 map.default = map.jysq;
 export default class extends BaseCommand {
@@ -114,8 +114,8 @@ export default class extends BaseCommand {
   async run() {
     const { input, options } = this;
     let match = {} as typeof map.jysq;
-    let shopId = "";
-    const spinner = ora("正在搜索店铺").start();
+    let shopId = '';
+    const spinner = ora('正在搜索店铺').start();
     if (input.length === 0) {
       match = map.default;
       shopId = match.testId;
@@ -123,7 +123,7 @@ export default class extends BaseCommand {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
         match = map[input[0]];
         if (!match) {
-          spinner.fail("项目不存在，请重新输入");
+          spinner.fail('项目不存在，请重新输入');
           return;
         }
         shopId = match.testId;
@@ -135,21 +135,21 @@ export default class extends BaseCommand {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
         match = map[input[0]];
         if (!match) {
-          spinner.fail("项目不存在，请重新输入");
+          spinner.fail('项目不存在，请重新输入');
           return;
         }
         shopId = input[1];
       } else if (this.helper.isValidKey(input[1], map)) {
         match = map[input[1]];
         if (!match) {
-          spinner.fail("项目不存在，请重新输入");
+          spinner.fail('项目不存在，请重新输入');
           return;
         }
         shopId = input[0];
       }
     }
     const service = axios.create({
-      baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`,
+      baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`
     });
     let listData: ShopListResponse;
     try {
@@ -160,21 +160,21 @@ export default class extends BaseCommand {
         param: shopId,
         // startTime: parseDate(options.search),
         platform: match.platform,
-        serviceName: match.serviceName,
+        serviceName: match.serviceName
       });
       listData = res.data;
     } catch (error) {
-      spinner.fail("服务器故障，请稍后再试");
+      spinner.fail('服务器故障，请稍后再试');
       console.log(error);
       return;
     }
     if (!listData.result) {
-      spinner.fail("服务器故障，请稍后再试");
+      spinner.fail('服务器故障，请稍后再试');
       console.log(listData);
       return;
     }
     if (!listData.result.list.length) {
-      spinner.fail("未找到店铺");
+      spinner.fail('未找到店铺');
       return;
     }
     const shop = listData.result.list[0];
@@ -186,21 +186,21 @@ export default class extends BaseCommand {
       }
       await this.helper.sleep(1500);
       const {
-        data: { result },
+        data: { result }
       } = await service.post(match.url.login, match.loginKey(shop));
       if (options.token) {
         const { hash } = new URL(result);
-        const token = hash.replace("#/login?code=", "");
+        const token = hash.replace('#/login?code=', '');
         clipboard.writeSync(token);
         spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的token\n${token}`);
       } else if (options.copy) {
         clipboard.writeSync(result);
         spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);
       } else {
-        spinner.succeed("打开成功");
-        if (options.pc && ["4", "36"].includes(match.appKey)) {
+        spinner.succeed('打开成功');
+        if (options.pc && ['4', '36'].includes(match.appKey)) {
           // 只有美团经营神器和装修神器有PC端
-          open(result.replace("app", ""));
+          open(result.replace('app', ''));
         } else {
           open(result);
         }

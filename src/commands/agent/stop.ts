@@ -4,9 +4,6 @@ import Kill from '../kill.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { CacheItem } from './index';
 export default class extends BaseCommand {
-  constructor() {
-    super();
-  }
   async run() {
     const cacheData = db.get('items').value() as CacheItem[];
     const matches = cacheData.filter((item) => item.port);
@@ -22,9 +19,9 @@ export default class extends BaseCommand {
           name: 'ports',
           choices: matches.map((item) => ({
             name: `${item.name || ''}(port:${item.port})`,
-            value: item.port,
-          })),
-        },
+            value: item.port
+          }))
+        }
       ]);
       for (const port of ports) {
         await new Kill(['port', port]).run();

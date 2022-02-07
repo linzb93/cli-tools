@@ -18,7 +18,7 @@ export default class extends BaseCommand {
       this.logger.info('未发现需要删除的文件');
       return;
     }
-    await pMap(paths, async(file) => del(file), { concurrency: 10 });
+    await pMap(paths, async (file) => del(file), { concurrency: 10 });
     this.logger.success(`操作成功，共删除${len}个文件`);
   }
 }

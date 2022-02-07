@@ -1,11 +1,11 @@
-import inquirer from "inquirer";
-import fs from "fs-extra";
-import path from "path";
-import open from "open";
-import globalNpm from "global-modules";
-import BaseCommand from "../util/BaseCommand.js";
-import { pLocate } from "../util/pFunc.js";
-import getSetting from "../util/db.js";
+import inquirer from 'inquirer';
+import fs from 'fs-extra';
+import path from 'path';
+import open from 'open';
+import globalNpm from 'global-modules';
+import BaseCommand from '../util/BaseCommand.js';
+import { pLocate } from '../util/pFunc.js';
+import getSetting from '../util/db.js';
 
 interface Options {
   name: string;
@@ -26,8 +26,8 @@ export default class extends BaseCommand {
   }
   async run() {
     const { name, options } = this;
-    if (name === "source") {
-      const sourceDir = getSetting("open.source");
+    if (name === 'source') {
+      const sourceDir = getSetting('open.source');
       const dirs = await fs.readdir(sourceDir);
       if (options.name) {
         let matchPath: string;
@@ -35,7 +35,7 @@ export default class extends BaseCommand {
           matchPath = await pLocate(
             [
               path.join(sourceDir, options.name),
-              path.join(sourceDir, `${options.name}.lnk`),
+              path.join(sourceDir, `${options.name}.lnk`)
             ],
             async (file: string) => {
               try {
@@ -47,7 +47,7 @@ export default class extends BaseCommand {
             }
           );
         } catch (error) {
-          this.logger.error("项目不存在");
+          this.logger.error('项目不存在');
           return;
         }
         const path2 = await this.helper.getOriginPath(matchPath);
@@ -55,11 +55,11 @@ export default class extends BaseCommand {
       } else {
         const { source } = await inquirer.prompt([
           {
-            type: "list",
-            name: "source",
-            message: "选择要打开的源码",
-            choices: dirs.map((dir) => path.basename(dir)),
-          },
+            type: 'list',
+            name: 'source',
+            message: '选择要打开的源码',
+            choices: dirs.map((dir) => path.basename(dir))
+          }
         ]);
         const path2 = await this.helper.getOriginPath(
           path.join(sourceDir, source)
@@ -70,27 +70,27 @@ export default class extends BaseCommand {
     }
     const map = [
       {
-        name: "test",
-        setting: "code.tools",
-        isEditor: true,
+        name: 'test',
+        setting: 'code.tools',
+        isEditor: true
       },
       {
-        name: "cli",
-        setting: "code.cli",
-        isEditor: true,
+        name: 'cli',
+        setting: 'code.cli',
+        isEditor: true
       },
       {
-        name: "global",
+        name: 'global',
         target: globalNpm,
-        isEditor: true,
-      },
+        isEditor: true
+      }
     ];
     await this.makeOpenAction(map, name);
   }
   private async makeOpenAction(map: OpenItem[], name: string) {
     const match = map.find((item) => item.name === name);
     if (!match) {
-      this.logger.error("命令错误");
+      this.logger.error('命令错误');
       return;
     }
     if (match.setting && match.isEditor) {
