@@ -1,5 +1,4 @@
 import inquirer from 'inquirer';
-import ora, { Ora } from 'ora';
 import getNpmList from './util/getList.js';
 import NpmInstall from './install.js';
 import BaseCommand from '../../util/BaseCommand.js';
@@ -10,17 +9,15 @@ interface Flag {
 export default class extends BaseCommand {
   private args: string[];
   private flag: Flag;
-  private spinner: Ora;
   constructor(args: string[], flag: Flag) {
     super();
     this.args = args;
     this.flag = flag;
-    this.spinner = ora('正在查找');
   }
   async run() {
     const { args, flag, spinner } = this;
     const name = args[0];
-    spinner.start();
+    this.spinner.text = '正在查找';
     const listRet = await getNpmList(name);
     if (!listRet.list.length) {
       this.handleNotFound(name, flag.dev);

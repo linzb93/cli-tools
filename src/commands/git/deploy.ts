@@ -21,7 +21,7 @@ export default class extends BaseCommand {
     this.options = options;
   }
   async run() {
-    const { data, options } = this;
+    const { data } = this;
     this.helper.validate(
       {
         data: data[0]
@@ -37,32 +37,37 @@ export default class extends BaseCommand {
       }
     );
     if ((await this.git.remote()).includes('github.com')) {
-      const flow: any[] = [
-        {
-          message: 'git pull',
-          retries: 20
-        },
-        {
-          message: 'git push',
-          retries: 20
-        }
-      ];
-      const gitStatus = await this.git.getPushStatus();
-      if (gitStatus === 1) {
-        flow.unshift(
-          'git add .',
-          `git commit -m ${options.commit || 'update'}`
-        );
+      this.deployToGithub();
+    } else {
+      this.deployToWork();
+    }
+  }
+  private async deployToGithub() {
+    const { options } = this;
+    const flow: any[] = [
+      {
+        message: 'git pull',
+        retries: 20
+      },
+      {
+        message: 'git push',
+        retries: 20
       }
-      try {
-        await this.helper.sequenceExec(flow);
-      } catch (error) {
-        this.logger.error((error as Error).message);
-        return;
-      }
-      this.logger.success('部署成功');
+    ];
+    const gitStatus = await this.git.getPushStatus();
+    if (gitStatus === 1) {
+      flow.unshift('git add .', `git commit -m ${options.commit || 'update'}`);
+    }
+    try {
+      await this.helper.sequenceExec(flow);
+    } catch (error) {
+      this.logger.error((error as Error).message);
       return;
     }
+    this.logger.success('部署成功');
+  }
+  private async deployToWork() {
+    const { data, options } = this;
     const env = data[0];
     const curBranch = await this.git.getCurrentBranch();
     const newTag =

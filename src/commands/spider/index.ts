@@ -3,7 +3,6 @@ import axios, { AxiosResponse } from 'axios';
 import fs from 'fs-extra';
 import path from 'path';
 import pMap from 'p-map';
-import ora from 'ora';
 import { ref } from '@vue/reactivity';
 import { watch } from '@vue/runtime-core';
 import { root } from '../../util/helper.js';
@@ -36,7 +35,7 @@ export default class Spider extends BaseCommand {
       this.logger.error('页面无法解析，任务结束');
       return;
     }
-    const spinner = ora('开始爬取页面').start();
+    this.spinner.text = '开始爬取页面';
     let res: AxiosResponse;
     try {
       res = await axios({
@@ -44,7 +43,7 @@ export default class Spider extends BaseCommand {
         url
       });
     } catch (error) {
-      spinner.fail('页面爬取失败，任务结束');
+      this.spinner.fail('页面爬取失败，任务结束');
       return;
     }
     const $ = cheerio.load(res.data);
@@ -53,10 +52,10 @@ export default class Spider extends BaseCommand {
       filename: path.basename(img.split('?')[0])
     }));
     await fs.mkdir(resolve(dest), { recursive: true });
-    spinner.text = '正在下载图片';
+    this.spinner.text = '正在下载图片';
     const downloadedCount = ref(0);
     watch(downloadedCount, (value) => {
-      spinner.text = `已下载图片${value}张`;
+      this.spinner.text = `已下载图片${value}张`;
     });
     await pMap(
       imgs,
@@ -77,6 +76,6 @@ export default class Spider extends BaseCommand {
       },
       { concurrency: 10 }
     );
-    spinner.succeed(`下载完成，共下载${downloadedCount.value}张图片`);
+    this.spinner.succeed(`下载完成，共下载${downloadedCount.value}张图片`);
   }
 }

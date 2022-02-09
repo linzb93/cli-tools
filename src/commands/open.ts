@@ -4,7 +4,6 @@ import path from 'path';
 import open from 'open';
 import globalNpm from 'global-modules';
 import BaseCommand from '../util/BaseCommand.js';
-import { pLocate } from '../util/pFunc.js';
 
 interface Options {
   name: string;
@@ -31,7 +30,7 @@ export default class extends BaseCommand {
       if (options.name) {
         let matchPath: string;
         try {
-          matchPath = await pLocate(
+          matchPath = await this.helper.pLocate(
             [
               path.join(sourceDir, options.name),
               path.join(sourceDir, `${options.name}.lnk`)

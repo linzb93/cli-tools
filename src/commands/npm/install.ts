@@ -1,7 +1,5 @@
-import ora, { Ora } from 'ora';
 import semver, { SemVer } from 'semver';
 import axios from 'axios';
-import npm from '../../util/npm.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
 interface Flag {
@@ -11,20 +9,18 @@ interface Flag {
 export default class extends BaseCommand {
   private pkg: string;
   private flag: Flag;
-  private spinner: Ora;
   constructor(pkgs: string[], flag: Flag) {
     super();
     this.pkg = pkgs[0];
     this.flag = flag;
-    this.spinner = ora('正在下载');
   }
   async run() {
     const { pkg, flag, spinner } = this;
-    spinner.start();
+    this.spinner.text = '正在下载';
     const version = await this.getAvailableVersion(pkg);
     const pkgName = `${pkg}@${version}`;
     try {
-      await npm.install(pkgName, {
+      await this.npm.install(pkgName, {
         dependencies: !flag.dev,
         devDependencies: flag.dev
       });

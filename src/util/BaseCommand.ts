@@ -1,5 +1,5 @@
 import logger from './logger.js';
-// const spinner = require('./spinner');
+import Spinner from './spinner.js';
 import * as rawHelper from './helper.js';
 import * as pFunc from './pFunc.js';
 import git from './git.js';
@@ -13,7 +13,7 @@ const helper = {
 
 export default abstract class {
   protected logger: typeof logger;
-  // protected spinner:any;
+  protected spinner: Spinner;
   protected helper: typeof helper;
   protected db: typeof db;
   protected git: typeof git;
@@ -21,6 +21,7 @@ export default abstract class {
   constructor() {
     this.logger = logger;
     this.helper = helper;
+    this.spinner = new Spinner();
     this.git = git;
     this.npm = npm;
     this.db = db;

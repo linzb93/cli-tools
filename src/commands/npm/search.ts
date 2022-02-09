@@ -1,5 +1,4 @@
 import open from 'open';
-import ora, { Ora } from 'ora';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { AxiosError } from 'axios';
@@ -26,12 +25,10 @@ interface OutputPkgItem {
 export default class extends BaseCommand {
   private args: string[];
   private options: Options;
-  private spinner: Ora;
   constructor(args: string[], options: Options) {
     super();
     this.args = args;
     this.options = options;
-    this.spinner = ora('');
   }
   async run() {
     const { args, options } = this;
@@ -52,7 +49,6 @@ export default class extends BaseCommand {
     const { spinner } = this;
     if (!isMultiple) {
       spinner.text = `正在查找 ${packageName} 模块`;
-      spinner.start();
     }
     const page = await npmPage(packageName);
     const data = {
@@ -79,7 +75,6 @@ export default class extends BaseCommand {
   private async fetchMulNpmPackage(args: string[]) {
     const { spinner } = this;
     spinner.text = `正在查找 ${args.join(' ')} 这些模块`;
-    spinner.start();
     let resList;
     try {
       resList = await Promise.all(

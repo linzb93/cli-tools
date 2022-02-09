@@ -1,6 +1,5 @@
 import axios from 'axios';
 import open from 'open';
-import ora from 'ora';
 import clipboard from 'clipboardy';
 import BaseCommand from '../util/BaseCommand.js';
 
@@ -115,7 +114,7 @@ export default class extends BaseCommand {
     const { input, options } = this;
     let match = {} as typeof map.jysq;
     let shopId = '';
-    const spinner = ora('正在搜索店铺').start();
+    this.spinner.text = '正在搜索店铺';
     if (input.length === 0) {
       match = map.default;
       shopId = match.testId;
@@ -123,7 +122,7 @@ export default class extends BaseCommand {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
         match = map[input[0]];
         if (!match) {
-          spinner.fail('项目不存在，请重新输入');
+          this.spinner.fail('项目不存在，请重新输入');
           return;
         }
         shopId = match.testId;
@@ -135,14 +134,14 @@ export default class extends BaseCommand {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
         match = map[input[0]];
         if (!match) {
-          spinner.fail('项目不存在，请重新输入');
+          this.spinner.fail('项目不存在，请重新输入');
           return;
         }
         shopId = input[1];
       } else if (this.helper.isValidKey(input[1], map)) {
         match = map[input[1]];
         if (!match) {
-          spinner.fail('项目不存在，请重新输入');
+          this.spinner.fail('项目不存在，请重新输入');
           return;
         }
         shopId = input[0];
@@ -164,25 +163,25 @@ export default class extends BaseCommand {
       });
       listData = res.data;
     } catch (error) {
-      spinner.fail('服务器故障，请稍后再试');
+      this.spinner.fail('服务器故障，请稍后再试');
       console.log(error);
       return;
     }
     if (!listData.result) {
-      spinner.fail('服务器故障，请稍后再试');
+      this.spinner.fail('服务器故障，请稍后再试');
       console.log(listData);
       return;
     }
     if (!listData.result.list.length) {
-      spinner.fail('未找到店铺');
+      this.spinner.fail('未找到店铺');
       return;
     }
     const shop = listData.result.list[0];
     if (this.helper.isValidKey(match.nameKey, shop)) {
       if (options.token === true) {
-        spinner.text = `正在获取token:${shop[match.nameKey]}`;
+        this.spinner.text = `正在获取token:${shop[match.nameKey]}`;
       } else if (!options.token) {
-        spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
+        this.spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
       }
       await this.helper.sleep(1500);
       const {
@@ -192,16 +191,18 @@ export default class extends BaseCommand {
         const { hash } = new URL(result);
         const token = hash.replace('#/login?code=', '');
         clipboard.writeSync(token);
-        spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的token\n${token}`);
+        this.spinner.succeed(
+          `已复制店铺 ${shop[match.nameKey]} 的token\n${token}`
+        );
       } else if (options.token) {
         const { origin, pathname } = new URL(result);
-        spinner.succeed('打开成功');
+        this.spinner.succeed('打开成功');
         open(`${origin}${pathname}#/login?code=${options.token}`);
       } else if (options.copy) {
         clipboard.writeSync(result);
-        spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);
+        this.spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);
       } else {
-        spinner.succeed('打开成功');
+        this.spinner.succeed('打开成功');
         if (options.pc && ['4', '36'].includes(match.appKey)) {
           // 只有美团经营神器和装修神器有PC端
           open(result.replace('app', ''));
