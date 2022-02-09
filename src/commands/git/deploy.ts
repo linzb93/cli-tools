@@ -3,12 +3,11 @@
  * eg:
  * mycli git deploy 测试环境
  * mycli git deploy prod 生产环境
+ * 也可以部署github的
  */
 import BaseCommand from '../../util/BaseCommand.js';
 import inquirer from 'inquirer';
-import git from '../../util/git.js';
 import GitTag from './tag/index.js';
-import { sequenceExec } from '../../util/pFunc.js';
 
 interface Options {
   commit?: string;
@@ -37,8 +36,33 @@ export default class extends BaseCommand {
         ]
       }
     );
+    if ((await this.git.remote()).includes('github.com')) {
+      const flow: any[] = [
+        {
+          message: 'git pull',
+          retries: 20
+        },
+        {
+          message: 'git push',
+          retries: 20
+        }
+      ];
+      const gitStatus = await this.git.getPushStatus();
+      if (gitStatus === 1) {
+        flow.unshift(
+          'git add .',
+          `git commit -m ${options.commit || 'update'}`
+        );
+      }
+      try {
+        await this.helper.sequenceExec(flow);
+      } catch (error) {
+        this.logger.error((error as Error).message);
+        return;
+      }
+    }
     const env = data[0];
-    const curBranch = await git.getCurrentBranch();
+    const curBranch = await this.git.getCurrentBranch();
     const newTag =
       env === 'prod' || curBranch === 'master'
         ? await new GitTag({ silent: true }).run()
@@ -49,7 +73,7 @@ export default class extends BaseCommand {
     }
     if (curBranch === 'master') {
       try {
-        await sequenceExec([
+        await this.helper.sequenceExec([
           'git add .',
           {
             message: `git commit -m ${options.commit || 'update'}`,
@@ -71,7 +95,7 @@ export default class extends BaseCommand {
       }
     } else {
       try {
-        await sequenceExec([
+        await this.helper.sequenceExec([
           'git add .',
           {
             message: `git commit -m ${options.commit || 'update'}`,
@@ -85,8 +109,8 @@ export default class extends BaseCommand {
           },
           {
             message: 'git push',
-            async onError() {
-              await git.push({
+            onError: async () => {
+              await this.git.push({
                 branch: curBranch
               });
             }
@@ -94,7 +118,7 @@ export default class extends BaseCommand {
           `git checkout ${env === 'prod' ? 'release' : 'master'}`,
           {
             message: `git merge ${curBranch}`,
-            async onError() {
+            onError: async () => {
               const ans = await inquirer.prompt([
                 {
                   message: '代码合并失败，检测到代码有冲突，是否已解决？',
@@ -106,7 +130,10 @@ export default class extends BaseCommand {
               if (!ans.resolved) {
                 throw new Error('exit');
               }
-              await sequenceExec(['git add .', 'git commit -m conflict-fixed']);
+              await this.helper.sequenceExec([
+                'git add .',
+                'git commit -m conflict-fixed'
+              ]);
             }
           },
           'git pull',

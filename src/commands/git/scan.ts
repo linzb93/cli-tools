@@ -2,14 +2,12 @@ import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import pMap from 'p-map';
-import git from '../../util/git.js';
-import getSetting from '../../util/db.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
 // 扫描所有工作项目文件夹，有未提交、推送的git就提醒。
 export default class extends BaseCommand {
   async run() {
-    const openMap = getSetting('open');
+    const openMap = this.db.get('open');
     const outputList: { title: string; children: string[] }[] = [];
     await pMap(
       ['admin', 'tools', 'mt', 'ele', 'print'],
@@ -25,7 +23,7 @@ export default class extends BaseCommand {
         await pMap(
           dirs,
           async (dir) => {
-            const status = await git.getPushStatus({
+            const status = await this.git.getPushStatus({
               cwd: path.join(openMap[parentProj], dir)
             });
             let str = '';

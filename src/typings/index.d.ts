@@ -1,6 +1,6 @@
 declare module 'kill-port' {
   export default function killPort(
-    str: number,
+    port: string,
     type: string
   ): Promise<{
     stderr: string;
@@ -37,9 +37,3 @@ declare module 'windows-shortcuts' {
   }
   export function query(pathName: string, callback: QueryCallback): void;
 }
-
-interface Jquery {
-  text: string;
-}
-
-declare const $: Jquery;

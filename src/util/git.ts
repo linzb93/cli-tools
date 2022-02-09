@@ -69,7 +69,7 @@ export default {
     return (data.split('\n')[0].match(/http.+\.git/) as any[])[0];
   },
   // 获取代码提交状态，分为未提交 1；未推送 2；已推送 3；不在master分支上 4；状态未知 0
-  async getPushStatus({ cwd = process.cwd() }): Promise<PushStatus> {
+  async getPushStatus({ cwd = process.cwd() } = {}): Promise<PushStatus> {
     let stdout = '';
     try {
       const data = await execa('git status', {

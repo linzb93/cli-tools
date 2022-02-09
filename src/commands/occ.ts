@@ -5,7 +5,7 @@ import clipboard from 'clipboardy';
 import BaseCommand from '../util/BaseCommand.js';
 
 interface Options {
-  token: string;
+  token: string | boolean;
   pc: boolean;
   copy: boolean;
 }
@@ -179,20 +179,24 @@ export default class extends BaseCommand {
     }
     const shop = listData.result.list[0];
     if (this.helper.isValidKey(match.nameKey, shop)) {
-      if (options.token) {
+      if (options.token === true) {
         spinner.text = `正在获取token:${shop[match.nameKey]}`;
-      } else {
+      } else if (!options.token) {
         spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
       }
       await this.helper.sleep(1500);
       const {
         data: { result }
       } = await service.post(match.url.login, match.loginKey(shop));
-      if (options.token) {
+      if (options.token === true) {
         const { hash } = new URL(result);
         const token = hash.replace('#/login?code=', '');
         clipboard.writeSync(token);
         spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的token\n${token}`);
+      } else if (options.token) {
+        const { origin, pathname } = new URL(result);
+        spinner.succeed('打开成功');
+        open(`${origin}${pathname}#/login?code=${options.token}`);
       } else if (options.copy) {
         clipboard.writeSync(result);
         spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);

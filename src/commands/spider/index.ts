@@ -15,7 +15,7 @@ export default class Spider extends BaseCommand {
   private dest: string;
   private static sourceMap = [
     {
-      pattern: /https:\/\/www.zhihu.com\/question\/\d+\/answer\/\d+/,
+      pattern: /^https:\/\/www.zhihu.com\/question\/\d+\/answer\/\d+$/,
       parser($: CheerioAPI): string[] {
         const $targets = $('.RichContent-inner').first().find('img');
         return Array.from(

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import commander from 'commander';
+import '../util/handleUncaughtError.js';
 import logger from '../util/logger.js';
 import { isValidKey } from '../util/helper.js';
 
@@ -10,7 +11,6 @@ program
   .option('-D, --dev', '安装到devDependencies')
   .option('-g, --global', '全局操作')
   .option('--open', '打开页面')
-  .allowUnknownOption()
   .action(async (subCommand: string, rest, cmd) => {
     const shorthands = {
       i: 'install',
@@ -33,7 +33,6 @@ program
   .option('--from <src>', '来源')
   .option('-d, --delete', '删除')
   .option('--commit <msg>', '提交信息')
-  .allowUnknownOption()
   .action(async (subCommand = 'index', rest, cmd) => {
     if (subCommand === 'tag') {
       subCommand = 'tag/index';
@@ -57,22 +56,23 @@ program
     const CommandCtor = (await import(`../commands/agent/index.js`)).default;
     new CommandCtor(subCommand, options).run();
   });
-program.command('getSize <url>').action(async (url) => {
-  const SubCommand = (await import('../commands/getSize/index.js')).default;
-  new SubCommand(url).run();
-});
-
+program
+  .command('size <url>')
+  .option('--rect', '获取宽高')
+  .action(async (filename, options) => {
+    const SubCommand = (await import('../commands/size.js')).default;
+    new SubCommand(filename, options).run();
+  });
 program
   .command('open <name>')
-  .option('--name <name>', '打开的对象')
+  .option('--name <name>', '打开的文件夹')
   .action(async (url, cmd) => {
     const SubCommand = (await import('../commands/open.js')).default;
     new SubCommand(url, cmd).run();
   });
-
 program
   .command('occ [data...]')
-  .option('--token', '获取token')
+  .option('--token [token]', '获取token或根据token跳转')
   .option('--pc', '打开PC端')
   .option('--copy', '复制地址')
   .allowUnknownOption()
@@ -80,7 +80,6 @@ program
     const SubCommand = (await import('../commands/occ.js')).default;
     new SubCommand(data, options).run();
   });
-
 program
   .command('mon [filename]')
   .allowUnknownOption()
@@ -108,4 +107,5 @@ program.command('upload <filename>').action(async (file) => {
   const SubCommand = (await import('../commands/upload.js')).default;
   new SubCommand(file).run();
 });
+
 program.parse();

@@ -17,10 +17,12 @@ export default {
       process.exit(1);
     }
   },
-  clearConsole(start: number = 0) {
+  clearConsole(start = 0, clearAll?: boolean) {
     if (process.stdout.isTTY) {
-      const blank = '\n'.repeat(process.stdout.rows);
-      console.log(blank);
+      if (!clearAll) {
+        const blank = '\n'.repeat(process.stdout.rows);
+        console.log(blank);
+      }
       readline.cursorTo(process.stdout, 0, start);
       readline.clearScreenDown(process.stdout);
     }

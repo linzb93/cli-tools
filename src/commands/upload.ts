@@ -2,7 +2,6 @@ import OSS, { OssConfig } from 'ali-oss';
 import lodash from 'lodash';
 import clipboard from 'clipboardy';
 import path from 'path';
-import getSetting from '../util/db.js';
 import BaseCommand from '../util/BaseCommand.js';
 const { random } = lodash;
 
@@ -14,7 +13,7 @@ export default class extends BaseCommand {
   }
   async run() {
     const { pic } = this;
-    const ossConfig = getSetting('oss') as Omit<OssConfig, 'timeout'>;
+    const ossConfig = this.db.get('oss') as Omit<OssConfig, 'timeout'>;
     const oss = new OSS({
       ...ossConfig,
       timeout: 15000

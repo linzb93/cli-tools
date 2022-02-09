@@ -119,8 +119,9 @@ export const processArgvToFlags = (
       }
       return `--${opt}=${options[opt]}`;
     }
+    return '';
   });
-  return isStr ? ret.join(' ') : (ret as unknown as string);
+  return isStr ? ret.join(' ') : ret;
 };
 
 export const pickAndRename = (src: string, maps: object) => {

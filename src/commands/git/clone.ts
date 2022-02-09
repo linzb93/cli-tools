@@ -6,7 +6,6 @@ import chalk from 'chalk';
 import cheerio from 'cheerio';
 import npmPage, { Npm as NpmCtor } from '../npm/util/npmPage.js';
 import git from '../../util/git.js';
-import getSetting from '../../util/db.js';
 import { pRetry } from '../../util/pFunc.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
@@ -41,7 +40,7 @@ export default class extends BaseCommand {
     );
     const spinner = ora('正在下载');
     let dirName: string;
-    const openMap = await getSetting('open');
+    const openMap = this.db.get('open');
     if (!openMap[options.dir]) {
       options.dir = 'source';
     }
@@ -132,7 +131,7 @@ export default class extends BaseCommand {
     }
     const repo = page.get('repository');
     spinner.start();
-    const cwd = getSetting('open.source');
+    const cwd = this.db.get('open.source');
     if (await fs.pathExists(path.join(cwd, path.basename(repo)))) {
       spinner.text = '正在拉取最新代码';
       try {

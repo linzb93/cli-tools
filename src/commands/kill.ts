@@ -25,7 +25,7 @@ export default class extends BaseCommand {
         return;
       }
       try {
-        await this.killPort(id);
+        await this.killPort(id.toString());
         this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
         return;
       } catch {
@@ -52,7 +52,7 @@ export default class extends BaseCommand {
         }
         id = Number(idStr);
         try {
-          await this.killPort(id);
+          await this.killPort(id.toString());
           this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
           return;
         } catch (error) {
@@ -90,7 +90,7 @@ export default class extends BaseCommand {
     ]);
     return ans.data;
   }
-  private async killPort(port: number): Promise<null> {
+  private async killPort(port: string): Promise<null> {
     return new Promise((resolve, reject) => {
       rawKillPort(port, 'tcp')
         .then((data) => {

@@ -5,7 +5,6 @@ import open from 'open';
 import globalNpm from 'global-modules';
 import BaseCommand from '../util/BaseCommand.js';
 import { pLocate } from '../util/pFunc.js';
-import getSetting from '../util/db.js';
 
 interface Options {
   name: string;
@@ -27,7 +26,7 @@ export default class extends BaseCommand {
   async run() {
     const { name, options } = this;
     if (name === 'source') {
-      const sourceDir = getSetting('open.source');
+      const sourceDir = this.db.get('open.source');
       const dirs = await fs.readdir(sourceDir);
       if (options.name) {
         let matchPath: string;
@@ -94,7 +93,7 @@ export default class extends BaseCommand {
       return;
     }
     if (match.setting && match.isEditor) {
-      await this.helper.openInEditor(getSetting(match.setting));
+      await this.helper.openInEditor(this.db.get(match.setting));
     } else if (match.target) {
       await open(match.target);
     }

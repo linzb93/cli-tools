@@ -23,9 +23,9 @@ export const pRetry = async (
     retryTimesCallback
   }: {
     retries: number;
-    retryTimesCallback(c: number): void;
+    retryTimesCallback?(c: number, message?: string): void;
   }
-) => {
+): Promise<any> => {
   let c = 0;
   const retryFunc = async (
     ipt: PromiseFunc,
@@ -35,7 +35,8 @@ export const pRetry = async (
       return await ipt();
     } catch (error) {
       c++;
-      typeof retryTimesCallback === 'function' && retryTimesCallback(c);
+      typeof retryTimesCallback === 'function' &&
+        retryTimesCallback(c, (error as Error).message);
       if (c === retriesTime) {
         throw error;
       } else {
@@ -54,7 +55,8 @@ export const pRetry = async (
 
 interface CommandItem {
   message: string;
-  onError: Function;
+  retries?: number;
+  onError?: Function;
 }
 export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
   for (const commandItem of commandList) {
@@ -65,14 +67,29 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
     }
     console.log(`${chalk.cyan('actions:')} ${chalk.yellow(command)}`);
     try {
-      const { stdout } = await execa(command);
-      if (stdout) {
-        console.log(stdout);
+      if ((commandItem as CommandItem).retries) {
+        const { stdout } = await pRetry(() => execa(command), {
+          retries: (commandItem as CommandItem).retries as number,
+          retryTimesCallback: (times, errorMessage) => {
+            console.log(errorMessage);
+            console.log(`第${times}次重复`);
+          }
+        });
+        if (stdout) {
+          console.log(stdout);
+        }
+      } else {
+        const { stdout } = await execa(command);
+        if (stdout) {
+          console.log(stdout);
+        }
       }
     } catch (error) {
       if (typeof (commandItem as CommandItem).onError === 'function') {
         try {
-          await (commandItem as CommandItem).onError((error as Error).message);
+          await ((commandItem as CommandItem).onError as Function)(
+            (error as Error).message
+          );
         } catch (e) {
           throw e;
         }

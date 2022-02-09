@@ -18,7 +18,7 @@ interface Options {
 export interface CacheItem {
   proxy: string;
   name: string;
-  port?: number;
+  port?: string;
 }
 interface CacheSaveOption {
   choosed: boolean;
@@ -124,7 +124,7 @@ export default class extends BaseCommand {
     路由映射至：${chalk.cyan(options.proxy)}`);
           const items: CacheItem[] = db.get('items').value();
           const match = items.find((item) => item.proxy === options.proxy);
-          (match as CacheItem).port = Number(port);
+          (match as CacheItem).port = port;
           db.set('items', items).write();
           child.unref();
           child.disconnect();
