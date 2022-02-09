@@ -60,6 +60,7 @@ export default class extends BaseCommand {
         this.logger.error((error as Error).message);
         return;
       }
+      this.logger.success('部署成功');
       return;
     }
     const env = data[0];

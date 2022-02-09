@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import commander from 'commander';
-import '../util/handleUncaughtError.js';
+import handleUncaughtError from '../util/handleUncaughtError.js';
 import logger from '../util/logger.js';
 import { isValidKey } from '../util/helper.js';
-
+handleUncaughtError();
 const program = new commander.Command();
 program
   .command('npm <sub-command> [rest...]')
