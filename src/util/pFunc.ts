@@ -71,8 +71,11 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
         const { stdout } = await pRetry(() => execa(command), {
           retries: (commandItem as CommandItem).retries as number,
           retryTimesCallback: (times, errorMessage) => {
-            console.log(errorMessage);
-            console.log(`第${times}次重复`);
+            console.log(
+              `${chalk.cyan('actions:')} ${chalk.yellow(
+                command
+              )} 第${chalk.magenta(times)}次重复。错误信息：${errorMessage}`
+            );
           }
         });
         if (stdout) {

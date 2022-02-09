@@ -60,6 +60,7 @@ export default class extends BaseCommand {
         this.logger.error((error as Error).message);
         return;
       }
+      return;
     }
     const env = data[0];
     const curBranch = await this.git.getCurrentBranch();
