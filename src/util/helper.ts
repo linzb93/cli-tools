@@ -142,6 +142,19 @@ export const pickAndRename = (src: string, maps: object) => {
   return data;
 };
 
+export const showWeakenTips = (mainTitle: string, tips: string): string => {
+  const tipsSeg = tips.split(/\n/);
+  const formattedTips = tipsSeg
+    .map((line, index) => {
+      if (index === tipsSeg.length - 1) {
+        return `└─ ${line}`;
+      }
+      return `├─ ${line}`;
+    })
+    .join('\n');
+  return `${mainTitle}\n${chalk.gray(formattedTips)}`;
+};
+
 // // 异步循环操作，直到满足条件退出。（不要删掉，目前还没用到，我不知道代码能放哪里）
 // exports.until = async function until(
 //     params, // 异步函数的参数

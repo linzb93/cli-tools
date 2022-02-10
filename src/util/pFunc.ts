@@ -1,5 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import chalk from 'chalk';
+import { showWeakenTips } from './helper.js';
 
 // 按顺序执行异步函数，返回第一个成功的结果
 export const pLocate = async (
@@ -72,11 +73,12 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
           retries: (commandItem as CommandItem).retries as number,
           retryTimesCallback: (times, errorMessage) => {
             console.log(
-              `${chalk.cyan('actions:')} ${chalk.yellow(
-                command
-              )} 第${chalk.magenta(times)}次重复。\n ${chalk.gray(
-                `└─ ${errorMessage}`
-              )}`
+              showWeakenTips(
+                `${chalk.cyan('actions:')} ${chalk.yellow(
+                  command
+                )} 第${chalk.magenta(times)}次重复。`,
+                errorMessage as string
+              )
             );
           }
         });
