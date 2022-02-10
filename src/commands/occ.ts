@@ -1,8 +1,12 @@
 import axios from 'axios';
 import open from 'open';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
 import clipboard from 'clipboardy';
 import BaseCommand from '../util/BaseCommand.js';
-
+import fs from 'fs-extra';
+import path from 'path';
+import del from 'del';
 interface Options {
   token: string | boolean;
   pc: boolean;
@@ -25,6 +29,7 @@ interface ShopListResponse {
   result: {
     list: ShopItem[];
   };
+  code: number;
 }
 const map = {
   default: {
@@ -148,7 +153,10 @@ export default class extends BaseCommand {
       }
     }
     const service = axios.create({
-      baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`
+      baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`,
+      headers: {
+        token: this.db.get('occ.token')
+      }
     });
     let listData: ShopListResponse;
     try {
@@ -165,6 +173,11 @@ export default class extends BaseCommand {
     } catch (error) {
       this.spinner.fail('服务器故障，请稍后再试');
       console.log(error);
+      return;
+    }
+    if (listData.code === 401) {
+      await this.login();
+      await this.run();
       return;
     }
     if (!listData.result) {
@@ -211,5 +224,36 @@ export default class extends BaseCommand {
         }
       }
     }
+  }
+  private async login() {
+    // 获取验证码
+    const {
+      data: { img, uuid }
+    } = await axios.post('https://api.diankeduo.cn/zhili/captchaImage');
+    const picBuffer = Buffer.from(img, 'base64');
+    const target = path.resolve(this.helper.root, '.temp/vrCode.png');
+    await fs.writeFile(target, picBuffer);
+    this.spinner.text = `${chalk.yellow(
+      '!'
+    )} token失效，需重新登录，请先输入验证码`;
+    await this.helper.openInEditor(target);
+    const answer = await inquirer.prompt({
+      type: 'input',
+      message: '请输入验证码',
+      name: 'vrCode'
+    });
+    const { username, password } = this.db.get('occ') as any;
+    const {
+      data: { token }
+    } = await axios.post('https://api.diankeduo.cn/zhili/login', {
+      username,
+      password,
+      uuid,
+      code: answer.vrCode
+    });
+    this.db.set('occ.token', token);
+    await del(target);
+    this.spinner.text = '登录成功';
+    this.helper.sleep(1500);
   }
 }

@@ -16,15 +16,17 @@ program
       i: 'install',
       un: 'uninstall'
     };
+    let target = '';
     if (isValidKey(subCommand, shorthands)) {
-      const target = shorthands[subCommand] || subCommand;
-      if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
-        logger.error('命令不存在，请重新输入', true);
-      }
-      const CommandCtor = (await import(`../commands/npm/${target}.js`))
-        .default;
-      new CommandCtor(rest, cmd).run();
+      target = shorthands[subCommand];
+    } else {
+      target = subCommand;
     }
+    if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
+      logger.error('命令不存在，请重新输入', true);
+    }
+    const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
+    new CommandCtor(rest, cmd).run();
   });
 program
   .command('git <sub-command> [rest...]')
