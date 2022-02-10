@@ -77,6 +77,7 @@ program
   .option('--token [token]', '获取token或根据token跳转')
   .option('--pc', '打开PC端')
   .option('--copy', '复制地址')
+  .option('--user', '根据token获取用户信息')
   .allowUnknownOption()
   .action(async (data, options) => {
     const SubCommand = (await import('../commands/occ.js')).default;

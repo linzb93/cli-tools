@@ -3,7 +3,7 @@ import { execaCommand as execa } from 'execa';
 import lodash from 'lodash';
 import cheerio, { CheerioAPI, Node as CheerioNode } from 'cheerio';
 import axios from 'axios';
-import inquirer from 'inquirer';
+import inquirer from './inquirer.js';
 import fs from 'fs-extra';
 import readPkg from 'read-pkg';
 

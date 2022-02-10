@@ -66,7 +66,7 @@ export default {
   },
   async remote(): Promise<string> {
     const { stdout: data } = await execa('git remote -v');
-    return (data.split('\n')[0].match(/http.+\.git/) as any[])[0];
+    return (data.split(/\n/)[0].match(/http\S+/) as any[])[0];
   },
   /**
    * 获取代码提交状态

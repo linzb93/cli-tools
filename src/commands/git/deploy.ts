@@ -7,6 +7,10 @@
  */
 import BaseCommand from '../../util/BaseCommand.js';
 import GitTag from './tag/index.js';
+import lodash from 'lodash';
+import readPkg from 'read-pkg';
+import {CommandItem} from '../../util/pFunc';
+const {get: objectGet} = lodash;
 
 interface Options {
   commit?: string;
@@ -43,7 +47,7 @@ export default class extends BaseCommand {
   }
   private async deployToGithub() {
     const { options } = this;
-    const flow: any[] = [
+    const flow: (string | CommandItem)[] = [
       {
         message: 'git pull',
         retries: 20
@@ -56,6 +60,15 @@ export default class extends BaseCommand {
     const gitStatus = await this.git.getPushStatus();
     if (gitStatus === 1) {
       flow.unshift('git add .', `git commit -m ${options.commit || 'update'}`);
+    } else if (gitStatus === 2) {
+        // 已推送，直接拉取，并安装依赖，编译
+        const pkgData = await readPkg();
+        if (objectGet(pkgData, 'scripts.postpull')) {
+            flow.push({
+                message: 'npm run postpull',
+                suffix: objectGet(pkgData, 'scripts.postpull')
+            });
+        }
     }
     try {
       await this.helper.sequenceExec(flow);

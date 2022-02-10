@@ -23,6 +23,16 @@ export class Spinner {
   get isSpinning() {
     return this.spinner.isSpinning;
   }
+  start() {
+      this.spinner.start();
+  }
+  warning(text: string) {
+    this.spinner.text = text;
+    this.spinner.spinner = {
+        interval: 100,
+        frames: [logSymbols.warning]
+      };
+  }
   succeed(text?: string, notEnd?: boolean) {
     if (notEnd) {
       if (!this.spinner.isSpinning) {
@@ -37,8 +47,11 @@ export class Spinner {
       this.spinner.succeed(text);
     }
   }
-  fail(text: string) {
+  fail(text: string, needExit?: boolean) {
     this.spinner.fail(text);
+    if (needExit) {
+        process.exit(1);
+      }
   }
   stop() {
     this.spinner.stop();

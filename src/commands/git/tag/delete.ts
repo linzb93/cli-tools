@@ -1,4 +1,4 @@
-import inquirer, { CheckboxQuestion } from 'inquirer';
+import { CheckboxQuestion } from 'inquirer';
 import pMap from 'p-map';
 import BaseCommand from '../../../util/BaseCommand.js';
 import { reactive } from '@vue/reactivity';
@@ -12,7 +12,7 @@ export default class extends BaseCommand {
       return;
     }
     this.logger.clearConsole();
-    const { selected } = await inquirer.prompt({
+    const { selected } = await this.helper.inquirer.prompt({
       message: '请选择需要删除的tag',
       name: 'selected',
       type: 'checkbox',

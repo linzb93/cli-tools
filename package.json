@@ -10,7 +10,8 @@
   "scripts": {
     "start": "tsc --watch",
     "build": "tsc",
-    "lint": "eslint ./src/**/*.ts --fix"
+    "lint": "eslint ./src/**/*.ts --fix",
+    "postpull": "npm i && npm run build"
   },
   "repository": {
     "type": "git",

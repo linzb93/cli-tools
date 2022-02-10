@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import inquirer from 'inquirer';
 import path from 'path';
 import { fork } from 'child_process';
 import lodash, { CollectionChain } from 'lodash';
@@ -10,10 +9,10 @@ import Stop from './stop.js';
 
 const { pick } = lodash;
 interface Options {
-  proxy?: string;
-  port?: string;
-  debug?: boolean;
-  copy?: boolean;
+  proxy: string;
+  port: string;
+  debug: boolean;
+  copy: boolean;
 }
 export interface CacheItem {
   proxy: string;
@@ -60,7 +59,7 @@ export default class extends BaseCommand {
     const match = cacheData.find((item) => item.proxy === options.proxy);
     if (!match) {
       if (!options.proxy) {
-        const { server }: { server: string } = await inquirer.prompt([
+        const { server } = await this.helper.inquirer.prompt([
           {
             message: '请选择要开启的代理服务器',
             type: 'list',
@@ -73,7 +72,7 @@ export default class extends BaseCommand {
         ]);
         options.proxy = server;
       } else {
-        const ans: CacheSaveOption = await inquirer.prompt([
+        const ans = await this.helper.inquirer.prompt([
           {
             type: 'confirm',
             message: '是否将服务器数据存入缓存？',
@@ -85,7 +84,7 @@ export default class extends BaseCommand {
             name: 'projName',
             when: (answer) => answer.choosed
           }
-        ]);
+        ]) as CacheSaveOption;
         if (ans.choosed) {
           (db.get('items') as CollectionChain<CacheItem>)
             .push({
