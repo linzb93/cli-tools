@@ -43,5 +43,8 @@ export class Spinner {
   stop() {
     this.spinner.stop();
   }
+  stopAndPersist() {
+    this.spinner.stopAndPersist();
+  }
 }
 export default new Spinner();

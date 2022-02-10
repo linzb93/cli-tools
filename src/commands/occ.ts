@@ -1,6 +1,5 @@
 import axios from 'axios';
 import open from 'open';
-import chalk from 'chalk';
 import clipboard from 'clipboardy';
 import BaseCommand from '../util/BaseCommand.js';
 import fs from 'fs-extra';
@@ -165,9 +164,10 @@ export default class extends BaseCommand {
       listData = res.data;
     } catch (error) {
       this.spinner.fail(
-        `服务器故障，请稍后再试\n ${chalk.gray(
-          `└─ ${(error as Error).message}`
-        )}`
+        this.helper.showWeakenTips(
+          '服务器故障，请稍后再试。',
+          (error as Error).message
+        )
       );
       return;
     }
@@ -178,9 +178,10 @@ export default class extends BaseCommand {
     }
     if (!listData.result) {
       this.spinner.fail(
-        `服务器故障，请稍后再试\n ${chalk.gray(
-          `└─ ${JSON.stringify(listData)}`
-        )}`
+        this.helper.showWeakenTips(
+          '服务器故障，请稍后再试。',
+          JSON.stringify(listData)
+        )
       );
       return;
     }
