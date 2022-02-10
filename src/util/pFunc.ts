@@ -75,7 +75,7 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
               `${chalk.cyan('actions:')} ${chalk.yellow(
                 command
               )} 第${chalk.magenta(times)}次重复。\n ${chalk.gray(
-                `├─ ${errorMessage}`
+                `└─ ${errorMessage}`
               )}`
             );
           }

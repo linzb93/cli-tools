@@ -6,7 +6,6 @@
  * 也可以部署github的
  */
 import BaseCommand from '../../util/BaseCommand.js';
-import inquirer from 'inquirer';
 import GitTag from './tag/index.js';
 
 interface Options {
@@ -126,7 +125,7 @@ export default class extends BaseCommand {
           {
             message: `git merge ${curBranch}`,
             onError: async () => {
-              const ans = await inquirer.prompt([
+              const ans = await this.helper.inquirer.prompt([
                 {
                   message: '代码合并失败，检测到代码有冲突，是否已解决？',
                   type: 'confirm',

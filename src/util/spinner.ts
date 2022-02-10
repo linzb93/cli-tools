@@ -1,21 +1,41 @@
 import ora, { Ora } from 'ora';
+import logSymbols from 'log-symbols';
 
-export default class {
+export class Spinner {
   private spinner: Ora;
   constructor() {
-    this.spinner = ora();
+    this.spinner = ora({
+      interval: 100
+    });
   }
   get text() {
     return this.spinner.text;
   }
   set text(value) {
-    if (this.spinner.text === '') {
+    if (this.spinner.text === '' || !this.spinner.isSpinning) {
       this.spinner.start();
     }
     this.spinner.text = value;
+    if (this.spinner.spinner !== 'dots') {
+      this.spinner.spinner = 'dots';
+    }
   }
-  succeed(text?: string) {
-    this.spinner.succeed(text);
+  get isSpinning() {
+    return this.spinner.isSpinning;
+  }
+  succeed(text?: string, notEnd?: boolean) {
+    if (notEnd) {
+      if (!this.spinner.isSpinning) {
+        this.spinner.start();
+      }
+      this.spinner.text = text as string;
+      this.spinner.spinner = {
+        interval: 100,
+        frames: [logSymbols.success]
+      };
+    } else {
+      this.spinner.succeed(text);
+    }
   }
   fail(text: string) {
     this.spinner.fail(text);
@@ -24,60 +44,4 @@ export default class {
     this.spinner.stop();
   }
 }
-
-// import Helper from './helper';
-// const createProxy = require('./proxy');
-// const { isWin } = new Helper();
-// const defaults = {
-//   timeWarning: 3000,
-//   timeout: 5000,
-//   exitText: '运行超时，进程已自动退出'
-// };
-// let options = { ...defaults };
-// const rawSpinner = ora({
-//   interval: isWin ? 1000 : 100
-// });
-// let counter = 0; // 计时器数字
-// let timer = null; // 计时器
-// let outerText = '';
-// const spinner = createProxy(rawSpinner, {
-//   start() {
-//     timer = setInterval(() => {
-//       counter++;
-//       if (
-//         counter > options.timeWarning / 1000 &&
-//         counter <= options.timeout / 1000
-//       ) {
-//         rawSpinner.text = outerText + counter;
-//       } else if (counter > options.timeout / 1000) {
-//         spinner.fail(options.exitText);
-//         process.exit(1);
-//       }
-//     }, 1000);
-//   },
-//   succeed() {
-//     clearInterval(timer);
-//   },
-//   stop() {
-//     clearInterval(timer);
-//   },
-//   stopAndPersist() {
-//     clearInterval(timer);
-//   },
-//   fail() {
-//     clearInterval(timer);
-//   },
-//   text: {
-//     set(value) {
-//       if (outerText === '' || !rawSpinner.isSpinning) {
-//         spinner.start();
-//       }
-//       outerText = value;
-//     }
-//   }
-// });
-// spinner.set = (opt = {}) => {
-//   options = { ...defaults, ...opt };
-// };
-
-// module.exports = spinner;
+export default new Spinner();

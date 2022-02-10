@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
@@ -51,7 +50,7 @@ export default class extends BaseCommand {
         const path2 = await this.helper.getOriginPath(matchPath);
         await this.helper.openInEditor(path2);
       } else {
-        const { source } = await inquirer.prompt([
+        const { source } = await this.helper.inquirer.prompt([
           {
             type: 'list',
             name: 'source',

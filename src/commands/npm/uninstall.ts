@@ -1,9 +1,7 @@
-import inquirer from 'inquirer';
 import del from 'del';
 import path from 'path';
 import globalNpm from 'global-modules';
 import readPkg, { NormalizedPackageJson } from 'read-pkg';
-import getNpmList, { getVersion } from './util/getList.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
@@ -27,7 +25,7 @@ export default class extends BaseCommand {
       this.logger.success('删除成功');
       return;
     }
-    const listRet = await getNpmList(name);
+    const listRet = await this.npm.getList(name);
     if (!listRet.list.length) {
       this.logger.error('没找到，无法删除');
       return;
@@ -37,13 +35,13 @@ export default class extends BaseCommand {
       this.logger.success('删除成功');
       return;
     }
-    const ans = await inquirer.prompt([
+    const ans = await this.helper.inquirer.prompt([
       {
         message: '发现有多个符合条件的依赖，请选择其中需要删除的',
         type: 'checkbox',
         name: 'ret',
         choices: listRet.list.map((item) => ({
-          name: getVersion(item),
+          name: this.npm.getVersion(item),
           value: item
         }))
       }
@@ -68,7 +66,7 @@ export default class extends BaseCommand {
     } catch (error) {
       const similarNpm = await this.getSimilar(name);
       if ((similarNpm as SimilarOption).name) {
-        const { action } = await inquirer.prompt([
+        const { action } = await this.helper.inquirer.prompt([
           {
             type: 'confirm',
             message: `${name}不存在，你想删除的是${

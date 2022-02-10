@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import axios, { AxiosResponse } from 'axios';
 import chalk from 'chalk';
 import cheerio from 'cheerio';
-import npmPage, { Npm as NpmCtor } from '../npm/util/npmPage.js';
+import { Npm } from '../../util/npm.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
@@ -117,9 +117,9 @@ export default class extends BaseCommand {
       }
       return;
     }
-    let page: NpmCtor;
+    let page: Npm;
     try {
-      page = await npmPage(pkg);
+      page = await this.npm.getPage(pkg);
     } catch (error) {
       this.logger.error((error as Error).message);
       return;

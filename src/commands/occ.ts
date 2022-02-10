@@ -1,12 +1,13 @@
 import axios from 'axios';
 import open from 'open';
-import inquirer from 'inquirer';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
 import BaseCommand from '../util/BaseCommand.js';
 import fs from 'fs-extra';
 import path from 'path';
 import del from 'del';
+import { SecretDB } from '../util/types';
+
 interface Options {
   token: string | boolean;
   pc: boolean;
@@ -14,7 +15,7 @@ interface Options {
 }
 interface MeituanLoginParams {
   appKey: string;
-  memberId: string;
+  shopId: string;
   platform: number;
 }
 interface EleLoginParams {
@@ -41,12 +42,10 @@ const map = {
       list: '',
       login: ''
     },
-    nameKey: '',
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.memberId,
-      platform: item.platform,
-      specificationId: 'v3'
+      memberId: item.shopId,
+      platform: item.platform
     }),
     testId: ''
   },
@@ -55,16 +54,14 @@ const map = {
     serviceName: '经营神器-美团',
     platform: 8,
     url: {
-      base: '/occ',
-      list: '/order/getOrderInfoList',
-      login: '/order/replaceUserLogin'
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin'
     },
-    nameKey: 'memberName',
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.memberId,
-      platform: item.platform,
-      specificationId: 'v3'
+      memberId: item.shopId,
+      platform: item.platform
     }),
     testId: '15983528161'
   },
@@ -73,16 +70,14 @@ const map = {
     serviceName: '装修神器-美团',
     platform: 8,
     url: {
-      base: '/occ',
-      list: '/order/getOrderInfoList',
-      login: '/order/replaceUserLogin'
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin'
     },
-    nameKey: 'memberName',
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.memberId,
-      platform: item.platform,
-      specificationId: 'v3'
+      memberId: item.shopId,
+      platform: item.platform
     }),
     testId: '16159400501'
   },
@@ -97,7 +92,6 @@ const map = {
       list: '/manage/getOrderList',
       login: '/auth/onelogin'
     },
-    nameKey: 'shopName',
     loginKey: (item: EleLoginParams) => ({
       appId: '29665924',
       shopId: item.shopId,
@@ -117,7 +111,7 @@ export default class extends BaseCommand {
   }
   async run() {
     const { input, options } = this;
-    let match = {} as typeof map.jysq;
+    let match = {} as typeof map.default;
     let shopId = '';
     this.spinner.text = '正在搜索店铺';
     if (input.length === 0) {
@@ -163,16 +157,18 @@ export default class extends BaseCommand {
       const res = await service.post(match.url.list, {
         appKey: match.appKey,
         pageIndex: 1,
-        pageSize: 2,
+        pageSize: 1,
         param: shopId,
-        // startTime: parseDate(options.search),
         platform: match.platform,
         serviceName: match.serviceName
       });
       listData = res.data;
     } catch (error) {
-      this.spinner.fail('服务器故障，请稍后再试');
-      console.log(error);
+      this.spinner.fail(
+        `服务器故障，请稍后再试\n ${chalk.gray(
+          `└─ ${(error as Error).message}`
+        )}`
+      );
       return;
     }
     if (listData.code === 401) {
@@ -181,8 +177,11 @@ export default class extends BaseCommand {
       return;
     }
     if (!listData.result) {
-      this.spinner.fail('服务器故障，请稍后再试');
-      console.log(listData);
+      this.spinner.fail(
+        `服务器故障，请稍后再试\n ${chalk.gray(
+          `└─ ${JSON.stringify(listData)}`
+        )}`
+      );
       return;
     }
     if (!listData.result.list.length) {
@@ -190,59 +189,61 @@ export default class extends BaseCommand {
       return;
     }
     const shop = listData.result.list[0];
-    if (this.helper.isValidKey(match.nameKey, shop)) {
-      if (options.token === true) {
-        this.spinner.text = `正在获取token:${shop[match.nameKey]}`;
-      } else if (!options.token) {
-        this.spinner.text = `正在打开店铺:${shop[match.nameKey]}`;
+    if (options.token === true) {
+      this.spinner.text = `正在获取token:${shop.shopName}`;
+    } else if (!options.token) {
+      this.spinner.text = `正在打开店铺:${shop.shopName}`;
+    }
+    await this.helper.sleep(1500);
+    const {
+      data: { result }
+    } = await service.post(match.url.login, match.loginKey(shop), {
+      headers: {
+        token: this.db.get('occ.token')
       }
-      await this.helper.sleep(1500);
-      const {
-        data: { result }
-      } = await service.post(match.url.login, match.loginKey(shop));
-      if (options.token === true) {
-        const { hash } = new URL(result);
-        const token = hash.replace('#/login?code=', '');
-        clipboard.writeSync(token);
-        this.spinner.succeed(
-          `已复制店铺 ${shop[match.nameKey]} 的token\n${token}`
-        );
-      } else if (options.token) {
-        const { origin, pathname } = new URL(result);
-        this.spinner.succeed('打开成功');
-        open(`${origin}${pathname}#/login?code=${options.token}`);
-      } else if (options.copy) {
-        clipboard.writeSync(result);
-        this.spinner.succeed(`已复制店铺 ${shop[match.nameKey]} 的地址`);
+    });
+    if (options.token === true) {
+      // token无值，就只是复制token
+      const { hash } = new URL(result);
+      const token = hash.replace('#/login?code=', '');
+      clipboard.writeSync(token);
+      this.spinner.succeed(`已复制店铺 ${shop.shopName} 的token\n${token}`);
+    } else if (options.token) {
+      // token有值，就是根据token登录
+      const { origin, pathname } = new URL(result);
+      this.spinner.succeed('打开成功');
+      open(`${origin}${pathname}#/login?code=${options.token}`);
+    } else if (options.copy) {
+      clipboard.writeSync(result);
+      this.spinner.succeed(`已复制店铺 ${shop.shopName} 的地址`);
+    } else {
+      this.spinner.succeed(`店铺 ${shop.shopName} 打开成功`);
+      if (options.pc && ['4', '36'].includes(match.appKey)) {
+        // 只有美团经营神器和装修神器有PC端
+        open(result.replace('app', ''));
       } else {
-        this.spinner.succeed('打开成功');
-        if (options.pc && ['4', '36'].includes(match.appKey)) {
-          // 只有美团经营神器和装修神器有PC端
-          open(result.replace('app', ''));
-        } else {
-          open(result);
-        }
+        open(result);
       }
     }
   }
   private async login() {
     // 获取验证码
+    this.spinner.text = `token失效，需重新登录，请先输入验证码`;
     const {
       data: { img, uuid }
-    } = await axios.post('https://api.diankeduo.cn/zhili/captchaImage');
+    } = await axios.get('https://api.diankeduo.cn/zhili/captchaImage');
     const picBuffer = Buffer.from(img, 'base64');
     const target = path.resolve(this.helper.root, '.temp/vrCode.png');
     await fs.writeFile(target, picBuffer);
-    this.spinner.text = `${chalk.yellow(
-      '!'
-    )} token失效，需重新登录，请先输入验证码`;
     await this.helper.openInEditor(target);
-    const answer = await inquirer.prompt({
+    const answer = await this.helper.inquirer.prompt({
       type: 'input',
       message: '请输入验证码',
       name: 'vrCode'
     });
-    const { username, password } = this.db.get('occ') as any;
+    this.logger.backwardConsole();
+    this.spinner.text = '正在登录';
+    const { username, password } = this.db.get('occ') as SecretDB['occ'];
     const {
       data: { token }
     } = await axios.post('https://api.diankeduo.cn/zhili/login', {
@@ -252,8 +253,9 @@ export default class extends BaseCommand {
       code: answer.vrCode
     });
     this.db.set('occ.token', token);
-    await del(target);
-    this.spinner.text = '登录成功';
-    this.helper.sleep(1500);
+    // TODO: 在VSCode中打开后无法删除
+    del.sync(target);
+    this.spinner.succeed('登录成功', true);
+    await this.helper.sleep(1500);
   }
 }

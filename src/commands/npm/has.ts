@@ -1,5 +1,3 @@
-import inquirer from 'inquirer';
-import getNpmList from './util/getList.js';
 import NpmInstall from './install.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
@@ -18,7 +16,7 @@ export default class extends BaseCommand {
     const { args, flag, spinner } = this;
     const name = args[0];
     this.spinner.text = '正在查找';
-    const listRet = await getNpmList(name);
+    const listRet = await this.npm.getList(name);
     if (!listRet.list.length) {
       this.handleNotFound(name, flag.dev);
       return;
@@ -33,9 +31,7 @@ export default class extends BaseCommand {
     });
   }
   private async handleNotFound(name: string, dev?: boolean) {
-    const { spinner } = this;
-    spinner.stop();
-    const { action } = await inquirer.prompt({
+    const { action } = await this.helper.inquirer.prompt({
       type: 'confirm',
       name: 'action',
       message: `${name} 不存在，是否安装？`

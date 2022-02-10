@@ -1,14 +1,16 @@
 import logger from './logger.js';
-import Spinner from './spinner.js';
+import spinner, { Spinner } from './spinner.js';
 import * as rawHelper from './helper.js';
 import * as pFunc from './pFunc.js';
 import git from './git.js';
 import npm from './npm.js';
 import db from './db.js';
+import inquirer from './inquirer.js';
 
 const helper = {
   ...rawHelper,
-  ...pFunc
+  ...pFunc,
+  inquirer
 };
 
 export default abstract class {
@@ -21,7 +23,7 @@ export default abstract class {
   constructor() {
     this.logger = logger;
     this.helper = helper;
-    this.spinner = new Spinner();
+    this.spinner = spinner;
     this.git = git;
     this.npm = npm;
     this.db = db;

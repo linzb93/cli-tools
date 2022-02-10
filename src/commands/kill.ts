@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import rawKillPort from 'kill-port';
 import iconv from 'iconv-lite';
 import chalk from 'chalk';
@@ -80,7 +79,7 @@ export default class extends BaseCommand {
     }
   }
   private async confirm(): Promise<boolean> {
-    const ans = await inquirer.prompt([
+    const ans = await this.helper.inquirer.prompt([
       {
         type: 'confirm',
         message: '您可能要关闭系统进程，确认是否继续？',

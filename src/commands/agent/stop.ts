@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import { db } from './util/index.js';
 import Kill from '../kill.js';
 import BaseCommand from '../../util/BaseCommand.js';
@@ -13,7 +12,7 @@ export default class extends BaseCommand {
       delete (matches[0] as CacheItem).port;
       db.set('items', cacheData).write();
     } else if (matches.length > 1) {
-      const { ports } = await inquirer.prompt([
+      const { ports } = await this.helper.inquirer.prompt([
         {
           type: 'checkbox',
           message: '请选择要关闭的进程',

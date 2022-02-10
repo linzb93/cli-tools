@@ -2,7 +2,6 @@ import open from 'open';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { AxiosError } from 'axios';
-import npmPage from './util/npmPage.js';
 import BaseCommand from '../../util/BaseCommand.js';
 const table = new Table({
   head: [
@@ -50,7 +49,7 @@ export default class extends BaseCommand {
     if (!isMultiple) {
       spinner.text = `正在查找 ${packageName} 模块`;
     }
-    const page = await npmPage(packageName);
+    const page = await this.npm.getPage(packageName);
     const data = {
       name: packageName,
       description: page.get('description'),
