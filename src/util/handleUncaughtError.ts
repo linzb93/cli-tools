@@ -8,11 +8,14 @@ import { openInEditor, root } from './helper.js';
 
 export default async () => {
   process.on('uncaughtException', async (e) => {
-    errorHandler(e);
+    errorHandler(e, {
+      type: 'Uncaught Exception'
+    });
   });
   process.on('unhandledRejection', async (e) => {
     errorHandler(e as Error, {
-      async: true
+      async: true,
+      type: 'Unhandled Rejection'
     });
   });
 };
@@ -22,12 +25,13 @@ async function errorHandler(
   e: Error,
   options: {
     async?: boolean;
+    type?: string;
   } = {}
 ): Promise<void> {
   logger.clearConsole(1);
   try {
     console.log(
-      boxen(`${chalk.bold.red('UNCAUGHTED ERROR!')}\n${e.message}`, {
+      boxen(`${chalk.bold.red(`${options.type}!`)}\n${e.message}`, {
         align: 'center',
         borderColor: 'red',
         dimBorder: true,
@@ -52,7 +56,7 @@ async function errorHandler(
       open: boolean;
     };
     if (ans.open) {
-      openInEditor(path.resolve(__dirname, '../../'));
+      openInEditor(path.resolve(root));
     } else {
       process.exit(0);
     }
