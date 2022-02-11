@@ -63,6 +63,8 @@ export default class extends BaseCommand {
     } else if (gitStatus === 2) {
       // 已推送，直接拉取，并安装依赖，编译
       const pkgData = await readPkg();
+      console.log(objectGet(pkgData, 'scripts.postpull'));
+      return;
       if (objectGet(pkgData, 'scripts.postpull')) {
         flow.push({
           message: 'npm run postpull',
