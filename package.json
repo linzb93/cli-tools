@@ -11,7 +11,8 @@
     "start": "tsc --watch",
     "build": "tsc",
     "lint": "eslint ./src/**/*.ts --fix",
-    "postpull": "npm i && npm run build"
+    "postpull": "npm i && npm run build",
+    "analyse": "node ./scripts/code-analyse"
   },
   "repository": {
     "type": "git",

@@ -78,9 +78,26 @@ program
   .option('--pc', '打开PC端')
   .option('--copy', '复制地址')
   .option('--user', '根据token获取用户信息')
+  .option('--buyDate <cond>', '订购时间')
+  .option('--endDate <cond>', '到期时间')
+  .option('--version <v>', '版本')
   .allowUnknownOption()
   .action(async (data, options) => {
     const SubCommand = (await import('../commands/occ.js')).default;
+    new SubCommand(data, options).run();
+  });
+program
+  .command('test [data...]')
+  .option('--token [token]', '获取token或根据token跳转')
+  .option('--pc', '打开PC端')
+  .option('--copy', '复制地址')
+  .option('--user', '根据token获取用户信息')
+  .option('--buyDate <cond>', '订购时间')
+  .option('--endDate <cond>', '到期时间')
+  .option('--version <v>', '版本')
+  .allowUnknownOption()
+  .action(async (data, options) => {
+    const SubCommand = (await import('../commands/test.js')).default;
     new SubCommand(data, options).run();
   });
 program

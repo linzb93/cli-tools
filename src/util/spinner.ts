@@ -24,14 +24,14 @@ export class Spinner {
     return this.spinner.isSpinning;
   }
   start() {
-      this.spinner.start();
+    this.spinner.start();
   }
   warning(text: string) {
     this.spinner.text = text;
     this.spinner.spinner = {
-        interval: 100,
-        frames: [logSymbols.warning]
-      };
+      interval: 100,
+      frames: [logSymbols.warning]
+    };
   }
   succeed(text?: string, notEnd?: boolean) {
     if (notEnd) {
@@ -50,8 +50,8 @@ export class Spinner {
   fail(text: string, needExit?: boolean) {
     this.spinner.fail(text);
     if (needExit) {
-        process.exit(1);
-      }
+      process.exit(1);
+    }
   }
   stop() {
     this.spinner.stop();

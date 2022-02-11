@@ -67,7 +67,13 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
     if (!command) {
       return;
     }
-    console.log(`${chalk.cyan('actions:')} ${chalk.yellow(command)}${(commandItem as CommandItem).suffix ? ` ${chalk.gray(`-> ${(commandItem as CommandItem).suffix}`)}` : ''}`);
+    console.log(
+      `${chalk.cyan('actions:')} ${chalk.yellow(command)}${
+        (commandItem as CommandItem).suffix
+          ? ` ${chalk.gray(`-> ${(commandItem as CommandItem).suffix}`)}`
+          : ''
+      }`
+    );
     try {
       if ((commandItem as CommandItem).retries) {
         const { stdout } = await pRetry(() => execa(command), {

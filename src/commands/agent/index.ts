@@ -72,7 +72,7 @@ export default class extends BaseCommand {
         ]);
         options.proxy = server;
       } else {
-        const ans = await this.helper.inquirer.prompt([
+        const ans = (await this.helper.inquirer.prompt([
           {
             type: 'confirm',
             message: '是否将服务器数据存入缓存？',
@@ -84,7 +84,7 @@ export default class extends BaseCommand {
             name: 'projName',
             when: (answer) => answer.choosed
           }
-        ]) as CacheSaveOption;
+        ])) as CacheSaveOption;
         if (ans.choosed) {
           (db.get('items') as CollectionChain<CacheItem>)
             .push({
