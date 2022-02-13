@@ -38,16 +38,16 @@ export default class extends BaseCommand {
         watcher = chokidar.watch(filename);
         this.entryFile = filename;
       } else {
-        if (await fs.pathExists(filename)) {
+        if (fs.existsSync(filename)) {
           watcher = chokidar.watch(`${filename}/**/*.js`);
-          if (!(await fs.pathExists(path.resolve(filename, 'index.js')))) {
+          if (!fs.existsSync(path.resolve(filename, 'index.js'))) {
             this.logger.error(
               '项目文件夹以index.js作为入口，未检测到index.js',
               true
             );
           }
           this.entryFile = `${filename}/index.js`;
-        } else if (await fs.pathExists(`${filename}.js`)) {
+        } else if (fs.existsSync(`${filename}.js`)) {
           watcher = chokidar.watch(`${filename}.js`);
           this.entryFile = `${filename}.js`;
         } else {

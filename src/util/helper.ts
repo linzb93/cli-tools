@@ -125,17 +125,14 @@ export const processArgvToFlags = (
 };
 
 export const pickAndRename = (src: string, maps: object) => {
-  const rawData = pick(src, ...Object.keys(maps));
+  const rawData = pick(src, ...Object.keys(maps)) as unknown as object;
   const data = {};
   for (const key in maps) {
-    // @ts-ignore
     if (
       isValidKey(key, maps) &&
       isValidKey(maps[key], data) &&
-      // @ts-ignore
       isValidKey(key, rawData)
     ) {
-      // @ts-ignore
       data[maps[key]] = rawData[key];
     }
   }

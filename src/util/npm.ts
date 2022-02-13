@@ -154,8 +154,7 @@ const shouldUseYarn = () => {
 
 function getVersion(packageName: string): string {
   const match = packageName.match(/@([0-9a-z\.\-]+)@/);
-  // @ts-ignore
-  return match ? match[1] : '';
+  return match ? (match as RegExpMatchArray)[1] : '';
 }
 
 async function getList(name: string) {

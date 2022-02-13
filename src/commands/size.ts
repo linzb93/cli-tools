@@ -47,8 +47,7 @@ export default class extends BaseCommand {
       if (this.options.rect) {
         const extname = this.getExtname(filePath);
         const targetName = `.temp/getSizeImage${extname}`;
-        const tempDirExists = await fs.pathExists('.temp');
-        if (!tempDirExists) {
+        if (!fs.existsSync('.temp')) {
           await fs.mkdir('.temp');
         }
         const ws = fs.createWriteStream(targetName);

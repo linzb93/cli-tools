@@ -126,7 +126,7 @@ export default class extends BaseCommand {
     }
     const repo = page.get('repository');
     const cwd = this.db.get('open.source');
-    if (await fs.pathExists(path.join(cwd, path.basename(repo)))) {
+    if (fs.existsSync(path.join(cwd, path.basename(repo)))) {
       this.spinner.text = '正在拉取最新代码';
       try {
         await this.helper.pRetry(

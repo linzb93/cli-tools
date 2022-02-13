@@ -8,7 +8,6 @@ import dayjs from 'dayjs';
 import del from 'del';
 import { SecretDB } from '../util/types';
 
-type NotEqualOprators = '<' | '>' | '<=' | '>=';
 interface Options {
   token: string | boolean;
   pc: boolean;
@@ -42,6 +41,7 @@ interface ShopListResponse {
 }
 const map = {
   default: {
+    name: '',
     appKey: '',
     serviceName: '',
     platform: 0,
@@ -64,6 +64,7 @@ const map = {
     testId: ''
   },
   jysq: {
+    name: 'jysq',
     appKey: '4',
     serviceName: '经营神器-美团',
     platform: 8,
@@ -86,6 +87,7 @@ const map = {
     testId: '15983528161'
   },
   zx: {
+    name: 'zx',
     appKey: '36',
     serviceName: '装修神器-美团',
     platform: 8,
@@ -108,6 +110,7 @@ const map = {
     testId: '16159400501'
   },
   ele: {
+    name: 'ele',
     appId: '29665924',
     serviceName: '店客多-裂变神器',
     baseURL: '/eleocc',
@@ -126,7 +129,7 @@ const map = {
     }),
     searchSupport: {
       buyDate: true,
-      endDate: (item: ShopItem) => dayjs(item.endTime).diff(dayjs(), 'd'),
+      endDate: false,
       version: (item: ShopItem) => (item.price === '0.0' ? 0 : 1)
     },
     testId: '160276429'
@@ -184,7 +187,7 @@ export default class extends BaseCommand {
     }
   }
   private getMatch(): { match: typeof map.default; shopId: string } {
-    const { input } = this;
+    const { input, options } = this;
     let match = {} as typeof map.default;
     let shopId = '';
     this.spinner.text = '正在搜索店铺';
@@ -217,6 +220,12 @@ export default class extends BaseCommand {
         shopId = input[0];
       }
     }
+    if (options.buyDate || options.endDate || options.version) {
+      return {
+        match,
+        shopId: ''
+      };
+    }
     return {
       match,
       shopId
@@ -237,17 +246,28 @@ export default class extends BaseCommand {
       }
     });
     let listData: ShopListResponse;
+    const listSearchParams = {
+      appKey: match.appKey,
+      pageIndex: 1,
+      pageSize: 1,
+      param: shopId,
+      platform: match.platform,
+      version: options.version ? Number(options.version) : null,
+      serviceName: match.serviceName,
+      ...this.getSearchDate(match)
+    };
+    // 针对项目不满足搜索条件而采取的hacker
+    if (
+      Object.keys(match.searchSupport).some(
+        // @ts-ignore
+        (item) => typeof match.searchSupport[item] === 'function'
+      )
+    ) {
+      listSearchParams.pageSize = 30;
+    }
+    this.logger.debug(listSearchParams);
     try {
-      const res = await service.post(match.url.list, {
-        appKey: match.appKey,
-        pageIndex: 1,
-        pageSize: 1,
-        param: shopId,
-        platform: match.platform,
-        version: options.version ? Number(options.version) : null,
-        serviceName: match.serviceName,
-        ...this.getSearchDate(match)
-      });
+      const res = await service.post(match.url.list, listSearchParams);
       listData = res.data;
     } catch (error) {
       this.spinner.fail(
@@ -271,7 +291,22 @@ export default class extends BaseCommand {
     } else if (!listData.result.list.length) {
       this.spinner.fail('未找到店铺');
     }
-    const shop = listData.result.list[0];
+    let shop = {} as ShopItem;
+    if (
+      Object.keys(match.searchSupport).some(
+        // @ts-ignore
+        (item) => typeof match.searchSupport[item] === 'function'
+      )
+    ) {
+      const callback = Object.keys(match.searchSupport).find(
+        // @ts-ignore
+        (item) => typeof match.searchSupport[item] === 'function'
+      );
+      // @ts-ignore
+      shop = listData.result.list.find((item) => callback(item)) as ShopItem;
+    } else {
+      shop = listData.result.list[0];
+    }
     if (options.token === true) {
       this.spinner.text = `正在获取token:${shop.shopName}`;
     } else if (!options.token) {
@@ -329,8 +364,7 @@ export default class extends BaseCommand {
         ...this.getParsedDate('buyDate')
       };
     }
-    // TODO:搞错了！！endDate是当前时间之后的，现在和buyDate一样是当前时间之前的了。
-    if (this.options.buyDate && match.searchSupport.endDate === true) {
+    if (this.options.endDate && match.searchSupport.endDate === true) {
       return {
         timeType: 2,
         ...this.getParsedDate('endDate')
@@ -338,130 +372,73 @@ export default class extends BaseCommand {
     }
     return {};
   }
-  private getParsedDate(key: 'buyDate' | 'endDate') {
-    const { options } = this;
-    if (options[key]) {
-      const match = options[key].match(/<=|>=|<|>/);
-      if (match && (match as RegExpMatchArray)[0]) {
-        const opr = (match as RegExpMatchArray)[0] as NotEqualOprators;
-        const dataStr = options[key].replace(opr, '');
-        let data = dataStr;
-        let dataisDate = false;
-        if (isNaN(Number(dataStr))) {
-          dataisDate = true;
-          data = this.fillDate(dataStr);
-        }
-        let startTime = '';
-        let endTime = '';
-        if (opr === '<') {
-          if (dataisDate) {
-            startTime = dayjs(data)
-              .subtract(1, 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs(data)
-              .subtract(1, 'd')
-              .format('YYYY-MM-DD 23:59:59');
-          } else {
-            startTime = dayjs()
-              .subtract(Number(data) - 1, 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs().format('YYYY-MM-DD 23:59:59');
-          }
-        } else if (opr === '>') {
-          if (dataisDate) {
-            startTime = dayjs(data).add(1, 'd').format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs().format('YYYY-MM-DD 23:59:59');
-          } else {
-            startTime = dayjs()
-              .subtract(Number(data) + 1, 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs()
-              .subtract(Number(data) + 1, 'd')
-              .format('YYYY-MM-DD 23:59:59');
-          }
-        } else if (opr === '<=') {
-          if (dataisDate) {
-            startTime = dayjs(data)
-              .subtract(1, 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs(data).format('YYYY-MM-DD 23:59:59');
-          } else {
-            startTime = dayjs()
-              .subtract(Number(data), 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs().format('YYYY-MM-DD 23:59:59');
-          }
-        } else if (opr === '>=') {
-          if (dataisDate) {
-            startTime = `${data} 00:00:00`;
-            endTime = dayjs().format('YYYY-MM-DD 23:59:59');
-          } else {
-            startTime = dayjs()
-              .subtract(Number(data) + 1, 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            endTime = dayjs()
-              .subtract(Number(data), 'd')
-              .format('YYYY-MM-DD 23:59:59');
-          }
-        }
-        return {
-          startTime,
-          endTime
-        };
-      }
-      if (!match) {
-        if (options[key].includes('~')) {
-          if (options[key].split('~').every((item) => !isNaN(Number(item)))) {
-            const [start, end] = options[key].split('~');
-            const startTime = dayjs()
-              .subtract(Number(end), 'd')
-              .format('YYYY-MM-DD 00:00:00');
-            const endTime = dayjs()
-              .subtract(Number(start), 'd')
-              .format('YYYY-MM-DD 23:59:59');
-            return {
-              startTime,
-              endTime
-            };
-          }
-          const [start, end] = options[key].split('~');
-          const startTime = `${this.fillDate(start)} 00:00:00`;
-          const endTime = `${this.fillDate(end)} 23:59:59`;
-          return {
-            startTime,
-            endTime
-          };
-        }
-        if (!isNaN(Number(options[key]))) {
-          const startTime = dayjs()
-            .subtract(Number(options[key]), 'd')
-            .format('YYYY-MM-DD 00:00:00');
-          const endTime = dayjs()
-            .subtract(Number(options[key]), 'd')
-            .format('YYYY-MM-DD 23:59:59');
-          return {
-            startTime,
-            endTime
-          };
-        }
-        const startTime = `${this.fillDate(options[key])} 00:00:00`;
-        const endTime = `${this.fillDate(options[key])} 23:59:59`;
-        return {
-          startTime,
-          endTime
-        };
-      }
+  private getParsedDate(type: 'buyDate' | 'endDate'): {
+    startTime: string;
+    endTime: string;
+  } {
+    let datas = [0, 0];
+    if (type === 'buyDate') {
+      datas = this.parseOpr(this.options.buyDate, true);
+    } else if (type === 'endDate') {
+      datas = this.parseOpr(this.options.endDate);
     }
+    return {
+      startTime: dayjs().add(datas[0]).format('YYYY-MM-DD 00:00:00'),
+      endTime: dayjs().add(datas[1]).format('YYYY-MM-DD 23:59:59')
+    };
   }
-  private fillDate(dateStr: string): string {
-    const thisYear = dayjs().year();
-    if (dayjs(dateStr, 'YYYY-MM-DD').isValid()) {
-      return dateStr;
+  private parseOpr(dateStr: string, isNegative?: boolean): number[] {
+    const output = {
+      lt: false,
+      gt: false,
+      eq: false,
+      datas: [] as number[],
+      isRange: false
+    };
+    const sign = isNegative ? -1 : 1;
+    if (dateStr.startsWith('<=')) {
+      output.lt = true;
+      output.eq = true;
+    } else if (dateStr.startsWith('>=')) {
+      output.gt = true;
+      output.eq = true;
+    } else if (dateStr.startsWith('<')) {
+      output.lt = true;
+    } else if (dateStr.startsWith('>')) {
+      output.gt = true;
+    } else if (dateStr.includes('~')) {
+      output.isRange = true;
+    } else {
+      output.eq = true;
     }
-    if (dayjs(dateStr, 'MM-DD').isValid()) {
-      return `${thisYear}-${dateStr}`;
+    const match = dateStr.match(/<=|>=|<|>/);
+    if (match) {
+      const data = Number(dateStr.replace(match[0], ''));
+      if (output.lt) {
+        output.datas = [0, (output.eq ? data : data - 1) * sign];
+      }
+      if (output.gt) {
+        output.datas = [
+          (output.eq ? data : data + 1) * sign,
+          (data + 1) * sign
+        ];
+      }
+      if (output.eq && !output.lt && !output.gt) {
+        output.datas = [data * sign, data * sign];
+      }
+    } else {
+      if (output.isRange) {
+        const seg = dateStr.split('~');
+        output.datas = [Number(seg[0]) * sign, Number(seg[1]) * sign];
+      } else {
+        output.datas = [Number(dateStr) * sign, Number(dateStr) * sign];
+      }
     }
-    this.logger.error('日期格式不合法，请重新输入');
-    return '';
+    if (output.datas[0] > output.datas[1]) {
+      const temp = output.datas[0];
+      output.datas[0] = output.datas[1];
+      output.datas[1] = temp;
+    }
+    return output.datas;
   }
 }

@@ -1,6 +1,9 @@
 import consola from 'consola';
 import readline from 'readline';
 import spinner from './spinner.js';
+import lodash from 'lodash';
+
+const { isPlainObject } = lodash;
 
 function hook() {
   if (spinner.isSpinning) {
@@ -26,6 +29,19 @@ export default {
     consola.error(text);
     if (needExit) {
       process.exit(1);
+    }
+  },
+  debug(content: any) {
+    if (process.argv.includes('--debug')) {
+      let str = '';
+      if (isPlainObject(content)) {
+        try {
+          str = JSON.stringify(content);
+        } catch (error) {}
+      } else {
+        str = content.toString();
+      }
+      console.log(`debug：${str}`);
     }
   },
   clearConsole(start = 0, clearAll?: boolean) {

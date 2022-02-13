@@ -6,6 +6,7 @@ import logger from '../util/logger.js';
 import { isValidKey } from '../util/helper.js';
 handleUncaughtError();
 const program = new commander.Command();
+program.version('2.0.0');
 program
   .command('npm <sub-command> [rest...]')
   .option('-D, --dev', '安装到devDependencies')
@@ -81,7 +82,7 @@ program
   .option('--buyDate <cond>', '订购时间')
   .option('--endDate <cond>', '到期时间')
   .option('--version <v>', '版本')
-  .allowUnknownOption()
+  .option('--debug', '调试模式')
   .action(async (data, options) => {
     const SubCommand = (await import('../commands/occ.js')).default;
     new SubCommand(data, options).run();
