@@ -245,6 +245,7 @@ export default class extends BaseCommand {
         token: this.db.get('occ.token')
       }
     });
+    this.logger.debug(this.db.get('occ.token'));
     let listData: ShopListResponse;
     const listSearchParams = {
       appKey: match.appKey,
@@ -280,7 +281,7 @@ export default class extends BaseCommand {
     }
     if (listData.code === 401) {
       await this.login();
-      await this.run();
+      return await this.getShop(match, shopId);
     } else if (!listData.result) {
       this.spinner.fail(
         this.helper.showWeakenTips(
@@ -291,6 +292,7 @@ export default class extends BaseCommand {
     } else if (!listData.result.list.length) {
       this.spinner.fail('未找到店铺');
     }
+    this.logger.debug(listData);
     let shop = {} as ShopItem;
     if (
       Object.keys(match.searchSupport).some(

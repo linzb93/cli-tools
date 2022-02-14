@@ -2,7 +2,7 @@ import fs, { Stats as FSStats } from 'fs-extra';
 import bytes from 'bytes';
 import axios, { AxiosResponse } from 'axios';
 import sizeOf from 'image-size';
-import { Readable } from 'stream';
+import through from 'through2';
 import del from 'del';
 import BaseCommand from '../util/BaseCommand.js';
 
@@ -13,6 +13,7 @@ interface Options {
 export default class extends BaseCommand {
   private filePath: string;
   private options: Options;
+  private size = 0;
   constructor(filePath: string, options: Options) {
     super();
     this.filePath = filePath;
@@ -44,30 +45,38 @@ export default class extends BaseCommand {
         this.logger.error('文件地址不存在或无法正常下载');
         return;
       }
-      if (this.options.rect) {
-        const extname = this.getExtname(filePath);
-        const targetName = `.temp/getSizeImage${extname}`;
-        if (!fs.existsSync('.temp')) {
-          await fs.mkdir('.temp');
-        }
-        const ws = fs.createWriteStream(targetName);
-        res.data.pipe(ws);
-        await new Promise((resolve) => {
-          ws.on('finish', () => {
+      const ctx = this;
+      const extname = this.getExtname(filePath);
+      const targetName = `.temp/getSizeImage${extname}`;
+      await new Promise((resolve) => {
+        res.data
+          .pipe(
+            through(function (data, _, callback) {
+              ctx.size += data.toString().length;
+              this.push(data);
+              callback();
+            })
+          )
+          .pipe(
+            this.options.rect
+              ? fs.createWriteStream(targetName)
+              : this.helper.emptyWritableStream
+          )
+          .on('finish', () => {
             resolve(null);
           });
-        });
-        const ret = bytes((await fs.stat(targetName)).size);
+      });
+      const size = bytes(this.size);
+      if (this.options.rect) {
         const dimensions = sizeOf(targetName);
         this.logger.success(
-          `大小：${ret}，尺寸：${dimensions.width} X ${dimensions.height}`
+          `大小：${size}，尺寸：${dimensions.width} X ${dimensions.height}`
         );
         await del(targetName);
-        return ret;
+      } else {
+        this.logger.success(size);
       }
-      const ret = bytes(await this.getSize(res.data));
-      this.logger.success(ret);
-      return ret;
+      return size;
     }
     let fileData: FSStats;
     try {
@@ -87,17 +96,17 @@ export default class extends BaseCommand {
     }
     return ret;
   }
-  private async getSize(inputStream: Readable): Promise<number> {
-    let len = 0;
-    return new Promise((resolve) => {
-      inputStream.on('data', (str) => {
-        len += str.length;
-      });
-      inputStream.on('end', () => {
-        resolve(len);
-      });
-    });
-  }
+  //   private async getSize(inputStream: Readable): Promise<number> {
+  //     let len = 0;
+  //     return new Promise((resolve) => {
+  //       inputStream.on('data', (str) => {
+  //         len += str.length;
+  //       });
+  //       inputStream.on('end', () => {
+  //         resolve(len);
+  //       });
+  //     });
+  //   }
   private getExtname(filename: string) {
     const exts = ['.jpg', '.png', '.webp', '.gif'];
     for (const ext of exts) {

@@ -4,7 +4,9 @@ import commander from 'commander';
 import handleUncaughtError from '../util/handleUncaughtError.js';
 import logger from '../util/logger.js';
 import { isValidKey } from '../util/helper.js';
+import init from '../util/init.js';
 handleUncaughtError();
+init();
 const program = new commander.Command();
 program.version('2.0.0');
 program
@@ -36,6 +38,8 @@ program
   .option('--from <src>', '来源')
   .option('-d, --delete', '删除')
   .option('--commit <msg>', '提交信息')
+  .option('--latest', '获取最新版的')
+  .option('--type <type>', '类型')
   .action(async (subCommand = 'index', rest, cmd) => {
     if (subCommand === 'tag') {
       subCommand = 'tag/index';

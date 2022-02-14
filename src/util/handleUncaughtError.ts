@@ -40,6 +40,7 @@ async function errorHandler(
         float: 'left'
       })
     );
+    console.log(e.stack);
     console.log(
       (createCallsiteRecord({ forError: e }) as CallsiteRecord).renderSync({})
     );

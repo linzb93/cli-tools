@@ -21,6 +21,29 @@ export default class extends BaseCommand {
     this.entryFile = '';
   }
   async run() {
+    const watcher = this.createWatcher();
+    watcher.on(
+      'change',
+      debounce((file) => {
+        console.log(chalk.green(`${file}更改，node monitor 重启`));
+        this.restartServer();
+      }, 500)
+    );
+    console.log(chalk.green('node monitor 已启动'));
+    process.on('SIGINT', () => {
+      console.log(chalk.yellow('关闭进程'));
+      process.exit(0);
+    });
+    process.stdin.on('data', (data) => {
+      const str = data.toString().trim().toLowerCase();
+      if (str === 'rs') {
+        console.log(chalk.green('手动重启 node monitor'));
+        this.restartServer();
+      }
+    });
+    this.startServer();
+  }
+  private createWatcher(): FSWatcher {
     const { filename } = this;
     let watcher: FSWatcher;
     if (filename === undefined) {
@@ -56,26 +79,7 @@ export default class extends BaseCommand {
         }
       }
     }
-    watcher.on(
-      'change',
-      debounce((file) => {
-        console.log(chalk.green(`${file}更改，node monitor 重启`));
-        this.restartServer();
-      }, 500)
-    );
-    console.log(chalk.green('node monitor 已启动'));
-    process.on('SIGINT', () => {
-      console.log(chalk.yellow('关闭进程'));
-      process.exit(0);
-    });
-    process.stdin.on('data', (data) => {
-      const str = data.toString().trim().toLowerCase();
-      if (str === 'rs') {
-        console.log(chalk.green('手动重启 node monitor'));
-        this.restartServer();
-      }
-    });
-    this.startServer();
+    return watcher;
   }
   private startServer() {
     this.subProcess = fork(this.entryFile, this.combinedOptions, {

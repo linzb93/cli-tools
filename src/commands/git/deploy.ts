@@ -14,6 +14,7 @@ const { get: objectGet } = lodash;
 
 interface Options {
   commit?: string;
+  type?: string;
 }
 export default class extends BaseCommand {
   private data: string[];
@@ -82,10 +83,15 @@ export default class extends BaseCommand {
     const { data, options } = this;
     const env = data[0];
     const curBranch = await this.git.getCurrentBranch();
-    const newTag =
-      env === 'prod' || curBranch === 'master'
-        ? await new GitTag({ silent: true }).run()
-        : '';
+    let newTag = '';
+    if (env === 'prod') {
+      newTag = await new GitTag({
+        silent: true,
+        patch: options.type === 'patch'
+      }).run();
+    } else if (curBranch === 'master') {
+      newTag = await new GitTag({ silent: true }).run();
+    }
     if (curBranch === 'release' && env === 'prod') {
       this.logger.warn('不能从release部署到生产环境，请切换回开发分支');
       return;
@@ -128,11 +134,7 @@ export default class extends BaseCommand {
           },
           {
             message: 'git push',
-            onError: async () => {
-              await this.git.push({
-                branch: curBranch
-              });
-            }
+            onError: async () => this.git.push({ branch: curBranch })
           },
           `git checkout ${env === 'prod' ? 'release' : 'master'}`,
           {

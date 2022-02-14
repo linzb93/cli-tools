@@ -2,46 +2,59 @@ import consola from 'consola';
 import readline from 'readline';
 import spinner from './spinner.js';
 import lodash from 'lodash';
+import chalk from 'chalk';
 
 const { isPlainObject } = lodash;
 
-function hook() {
+function hook(callback: () => void) {
+  let isStop = false;
   if (spinner.isSpinning) {
     spinner.stop();
+    isStop = true;
+  }
+  callback();
+  if (isStop) {
+    spinner.start();
   }
 }
 
 export default {
   success(text: string | number): void {
-    hook();
-    consola.success(text);
+    hook(() => {
+      consola.success(text);
+    });
   },
   info(text: string | number): void {
-    hook();
-    consola.info(text);
+    hook(() => {
+      consola.info(text);
+    });
   },
   warn(text: string | number): void {
-    hook();
-    consola.warn(text);
+    hook(() => {
+      consola.warn(text);
+    });
   },
   error(text: string | number, needExit?: boolean): void {
-    hook();
-    consola.error(text);
+    hook(() => {
+      consola.error(text);
+    });
     if (needExit) {
       process.exit(1);
     }
   },
   debug(content: any) {
     if (process.argv.includes('--debug')) {
-      let str = '';
-      if (isPlainObject(content)) {
-        try {
-          str = JSON.stringify(content);
-        } catch (error) {}
-      } else {
-        str = content.toString();
-      }
-      console.log(`debug：${str}`);
+      hook(() => {
+        let str = '';
+        if (isPlainObject(content)) {
+          try {
+            str = JSON.stringify(content);
+          } catch (error) {}
+        } else {
+          str = content.toString();
+        }
+        console.log(`${chalk.cyan('[debug]')} ${str}`);
+      });
     }
   },
   clearConsole(start = 0, clearAll?: boolean) {

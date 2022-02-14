@@ -3,12 +3,19 @@ import path from 'path';
 import chalk from 'chalk';
 import pMap from 'p-map';
 import BaseCommand from '../../util/BaseCommand.js';
+import { ref } from '@vue/reactivity';
+import { watch } from '@vue/runtime-core';
 
 // 扫描所有工作项目文件夹，有未提交、推送的git就提醒。
 export default class extends BaseCommand {
   async run() {
     const openMap = this.db.get('open');
     const outputList: { title: string; children: string[] }[] = [];
+    this.spinner.text = '开始扫描';
+    const counter = ref(0);
+    watch(counter, (value) => {
+      this.spinner.text = `已扫描${value}个项目`;
+    });
     await pMap(
       ['admin', 'tools', 'mt', 'ele', 'print'],
       async (parentProj) => {
@@ -37,6 +44,7 @@ export default class extends BaseCommand {
             if (str) {
               cur.children.push(str);
             }
+            counter.value++;
           },
           { concurrency: 3 }
         );

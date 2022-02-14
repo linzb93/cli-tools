@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import { Writable } from 'stream';
 import path from 'path';
 import { execaCommand as execa } from 'execa';
 import logger from './logger.js';
@@ -151,6 +152,12 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
     .join('\n');
   return `${mainTitle}\n${chalk.gray(formattedTips)}`;
 };
+
+export const emptyWritableStream = new Writable({
+  write(data, enc, callback) {
+    callback();
+  }
+});
 
 // 异步循环操作，直到满足条件退出。（不要删掉，目前还没用到，我不知道代码能放哪里）
 // exports.until = async function until(

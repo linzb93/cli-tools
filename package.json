@@ -65,6 +65,7 @@
     "prettier": "^2.5.1",
     "read-pkg": "^5.2.0",
     "semver": "^7.3.5",
+    "through2": "^4.0.2",
     "windows-shortcuts": "^0.1.6"
   },
   "devDependencies": {
@@ -83,6 +84,7 @@
     "@types/node-notifier": "^8.0.2",
     "@types/prettier": "^2.4.3",
     "@types/semver": "^7.3.9",
+    "@types/through2": "^2.0.36",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^7.28.0",

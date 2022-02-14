@@ -6,10 +6,45 @@ import { watch } from '@vue/runtime-core';
 
 export default class extends BaseCommand {
   async run() {
+    const selected = await this.getSelectedTags();
+    this.spinner.text = '开始删除';
+    const successTags = reactive([]) as string[];
+    const errorTags = reactive([]) as { tag: string; errorMessage: string }[];
+    watch(successTags, (value) => {
+      this.spinner.text = `删除成功${value.length}个，失败${errorTags.length}个`;
+    });
+    watch(errorTags, (value) => {
+      this.spinner.text = `删除成功${successTags.length}个，失败${value.length}个`;
+    });
+    await pMap(
+      selected,
+      async (tag: string) => {
+        try {
+          await Promise.all([
+            this.git.deleteTag(tag),
+            this.git.deleteTag(tag, { includeRemote: true })
+          ]);
+        } catch (error) {
+          errorTags.push({
+            tag,
+            errorMessage: (error as Error).message
+          });
+          return;
+        }
+        successTags.push(tag);
+      },
+      { concurrency: 5 }
+    );
+    this.spinner.succeed();
+    if (errorTags.length) {
+      this.logger.error(errorTags.join(','));
+    }
+  }
+  private async getSelectedTags(): Promise<string[]> {
     const tags = await this.git.tag();
     if (!tags.length) {
       this.logger.info('没有tag可以删除');
-      return;
+      process.exit(1);
     }
     this.logger.clearConsole();
     const { selected } = await this.helper.inquirer.prompt({
@@ -19,41 +54,10 @@ export default class extends BaseCommand {
       choices: tags,
       c1: 2
     } as CheckboxQuestion);
-    if (selected.length) {
-      this.spinner.text = '开始删除';
-      const successTags = reactive([]) as string[];
-      const errorTags = reactive([]) as { tag: string; errorMessage: string }[];
-      watch(successTags, (value) => {
-        this.spinner.text = `删除成功${value.length}个，失败${errorTags.length}个`;
-      });
-      watch(errorTags, (value) => {
-        this.spinner.text = `删除成功${successTags.length}个，失败${value.length}个`;
-      });
-      await pMap(
-        selected,
-        async (tag: string) => {
-          try {
-            await Promise.all([
-              this.git.deleteTag(tag),
-              this.git.deleteTag(tag, { includeRemote: true })
-            ]);
-          } catch (error) {
-            errorTags.push({
-              tag,
-              errorMessage: (error as Error).message
-            });
-            return;
-          }
-          successTags.push(tag);
-        },
-        { concurrency: 5 }
-      );
-      this.spinner.succeed();
-      if (errorTags.length) {
-        this.logger.error(errorTags.join(','));
-      }
-      return;
+    if (!selected.length) {
+      this.logger.info('未选中需要删除的tag');
+      process.exit(1);
     }
-    this.logger.info('未选中需要删除的tag');
+    return selected;
   }
 }

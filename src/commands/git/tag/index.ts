@@ -6,6 +6,8 @@ import DeleteTag from './delete.js';
 interface Options {
   delete?: boolean;
   silent?: boolean;
+  latest?: boolean;
+  patch?: boolean;
 }
 
 export default class extends BaseCommand {
@@ -14,44 +16,55 @@ export default class extends BaseCommand {
     super();
     this.options = options;
   }
-  async run() {
+  async run(): Promise<string> {
     const { options } = this;
     if (options.delete) {
       new DeleteTag().run();
-      return;
+      return '';
     }
     const tags = await this.git.tag();
     const last = tags[tags.length - 1];
-    const ret = versionInc(last);
-    if (options.silent) {
-      return ret;
-    }
-    if (ret) {
-      this.logger.success(`${chalk.green('[已复制]')}新的tag：${ret}`);
-      clipboard.write(ret);
+    if (options.latest) {
+      this.logger.success(last);
+      return '';
     } else {
-      this.logger.info(`上一个版本是${last}，请自行命名新tag`);
+      const ret = this.versionInc(last, options.patch ? 'patch' : 'minor');
+      if (options.silent) {
+        return '';
+      }
+      if (ret) {
+        this.logger.success(`${chalk.green('[已复制]')}新的tag：${ret}`);
+        clipboard.write(ret);
+      } else {
+        this.logger.info(`上一个版本是${last}，请自行命名新tag`);
+      }
     }
+    return '';
   }
-}
-
-function versionInc(version: string) {
-  if (!version.startsWith('v')) {
+  private versionInc(version: string, type: string) {
+    if (!version.startsWith('v')) {
+      return false;
+    }
+    const versionNum = version.slice(1);
+    if (!/[1-9\.][0-9\.]{1,2}[1-9]/.test(versionNum)) {
+      return false;
+    }
+    const versionNumSeg = versionNum.split('.');
+    if (type === 'minor') {
+      return `v${versionNumSeg[0]}.${Number(versionNumSeg[1]) + 1}.0`;
+    } else if (type === 'patch') {
+      return `v${versionNumSeg[0]}.${versionNumSeg[1]}.${
+        Number(versionNumSeg[2]) + 1
+      }`;
+    } else if (versionNumSeg.length === 3) {
+      return `v${versionNum}.1`;
+    } else if (versionNumSeg.length === 4) {
+      return `v${versionNumSeg
+        .map((n, index) =>
+          index === versionNumSeg.length - 1 ? Number(n) + 1 : n
+        )
+        .join('.')}`;
+    }
     return false;
   }
-  const versionNum = version.slice(1);
-  if (!/[1-9\.][0-9\.]{1,2}[1-9]/.test(versionNum)) {
-    return false;
-  }
-  const versionNumSeg = versionNum.split('.');
-  if (versionNumSeg.length === 3) {
-    return `v${versionNum}.1`;
-  } else if (versionNumSeg.length === 4) {
-    return `v${versionNumSeg
-      .map((n, index) =>
-        index === versionNumSeg.length - 1 ? Number(n) + 1 : n
-      )
-      .join('.')}`;
-  }
-  return false;
 }

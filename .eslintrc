@@ -124,7 +124,7 @@
         "one-var": [2, {
             "initialized": "never"
         }],
-        "operator-linebreak": [2, "after", {
+        "operator-linebreak": [0, "after", {
             "overrides": {
                 "?": "before",
                 ":": "before"
