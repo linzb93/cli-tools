@@ -10,7 +10,7 @@ interface Options {
   rect: boolean;
 }
 
-export default class extends BaseCommand {
+class GetSize extends BaseCommand {
   private filePath: string;
   private options: Options;
   private size = 0;
@@ -117,3 +117,7 @@ export default class extends BaseCommand {
     return '.png';
   }
 }
+
+export default (filePath: string, options: Options) => {
+  new GetSize(filePath, options).run();
+};

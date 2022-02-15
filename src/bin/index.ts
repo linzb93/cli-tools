@@ -67,15 +67,15 @@ program
   .command('size <url>')
   .option('--rect', '获取宽高')
   .action(async (filename, options) => {
-    const SubCommand = (await import('../commands/size.js')).default;
-    new SubCommand(filename, options).run();
+    const getSize = (await import('../commands/size.js')).default;
+    getSize(filename, options);
   });
 program
   .command('open <name>')
   .option('--name <name>', '打开的文件夹')
   .action(async (url, cmd) => {
-    const SubCommand = (await import('../commands/open.js')).default;
-    new SubCommand(url, cmd).run();
+    const open = (await import('../commands/open.js')).default;
+    open(url, cmd);
   });
 program
   .command('occ [data...]')
@@ -88,8 +88,8 @@ program
   .option('--version <v>', '版本')
   .option('--debug', '调试模式')
   .action(async (data, options) => {
-    const SubCommand = (await import('../commands/occ.js')).default;
-    new SubCommand(data, options).run();
+    const occ = (await import('../commands/occ.js')).default;
+    occ(data, options);
   });
 program
   .command('test [data...]')
@@ -102,8 +102,8 @@ program
   .option('--version <v>', '版本')
   .allowUnknownOption()
   .action(async (data, options) => {
-    const SubCommand = (await import('../commands/test.js')).default;
-    new SubCommand(data, options).run();
+    const test = (await import('../commands/test.js')).default;
+    test(data, options);
   });
 program
   .command('mon [filename]')
@@ -125,12 +125,12 @@ program.command('kill <data...>').action(async (data) => {
   new SubCommand(data).run();
 });
 program.command('clear <filename>').action(async (filename) => {
-  const SubCommand = (await import('../commands/clear.js')).default;
-  new SubCommand(filename).run();
+  const clear = (await import('../commands/clear.js')).default;
+  clear(filename);
 });
 program.command('upload <filename>').action(async (file) => {
-  const SubCommand = (await import('../commands/upload.js')).default;
-  new SubCommand(file).run();
+  const upload = (await import('../commands/upload.js')).default;
+  upload(file);
 });
 
 program.parse();

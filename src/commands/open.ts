@@ -13,7 +13,7 @@ interface OpenItem {
   isEditor: boolean;
   target?: string;
 }
-export default class extends BaseCommand {
+class Open extends BaseCommand {
   private name: string;
   private options: Options;
   constructor(name: string, options: Options) {
@@ -97,3 +97,7 @@ export default class extends BaseCommand {
     }
   }
 }
+
+export default (name: string, options: Options) => {
+  new Open(name, options);
+};

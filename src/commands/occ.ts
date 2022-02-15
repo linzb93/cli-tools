@@ -136,7 +136,7 @@ const map = {
   }
 };
 map.default = map.jysq;
-export default class extends BaseCommand {
+class OCC extends BaseCommand {
   private input: string[];
   private options: Options;
   constructor(input: string[], options: Options) {
@@ -444,3 +444,7 @@ export default class extends BaseCommand {
     return output.datas;
   }
 }
+
+export default (input: string[], options: Options) => {
+  new OCC(input, options).run();
+};

@@ -7,22 +7,7 @@ import inquirer from './inquirer.js';
 import fs from 'fs-extra';
 import readPkg from 'read-pkg';
 
-const { memoize, isPlainObject, get } = lodash;
-
-let npmBin = '';
-const getNpmBin = memoize(async () => {
-  if (npmBin) {
-    return npmBin;
-  }
-  try {
-    await execa('cnpm');
-    npmBin = 'cnpm';
-    return 'cnpm';
-  } catch (e) {
-    npmBin = 'npm';
-    return 'npm';
-  }
-});
+const { isPlainObject, get } = lodash;
 
 /**
  * npm public API: https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
@@ -55,7 +40,6 @@ async function install(...args: any[]) {
     global: optGlobal,
     ...restOpts
   } = options;
-  const bin = await getNpmBin();
   const params = ['install'];
   if (pkgName) {
     params.push(pkgName);
@@ -67,7 +51,7 @@ async function install(...args: any[]) {
       params.push('-g');
     }
   }
-  await execa(`${bin} ${params.join(' ')}`, restOpts);
+  await execa(`npm ${params.join(' ')}`, restOpts);
 }
 
 interface RegData {

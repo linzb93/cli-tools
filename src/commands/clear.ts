@@ -4,7 +4,7 @@ import pMap from 'p-map';
 import BaseCommand from '../util/BaseCommand.js';
 
 // 主要是来清理Windows上被Git同步过来的 macOS 的 .DS_Store
-export default class extends BaseCommand {
+class Clear extends BaseCommand {
   private filename: string;
   constructor(filename: string) {
     super();
@@ -22,3 +22,7 @@ export default class extends BaseCommand {
     this.logger.success(`操作成功，共删除${len}个文件`);
   }
 }
+
+export default (filename: string) => {
+  new Clear(filename);
+};

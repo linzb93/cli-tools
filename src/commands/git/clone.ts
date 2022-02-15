@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import cheerio from 'cheerio';
 import { Npm } from '../../util/npm.js';
 import BaseCommand from '../../util/BaseCommand.js';
+import { SecretDB } from '../../util/types';
 
 interface Options {
   dir: string;
@@ -37,7 +38,7 @@ export default class extends BaseCommand {
     );
     this.spinner.text = '正在下载';
     let dirName: string;
-    const openMap = this.db.get('open');
+    const openMap = this.db.get('open') as SecretDB['open'];
     if (!openMap[options.dir]) {
       options.dir = 'source';
     }
