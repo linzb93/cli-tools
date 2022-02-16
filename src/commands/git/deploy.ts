@@ -125,7 +125,9 @@ export default class extends BaseCommand {
           {
             message: `git commit -m ${options.commit || 'update'}`,
             onError() {
-              throw new Error('没有需要提交的代码');
+              if (env !== 'prod') {
+                throw new Error('没有需要提交的代码');
+              }
             }
           },
           {

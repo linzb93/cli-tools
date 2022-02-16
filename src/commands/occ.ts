@@ -294,21 +294,22 @@ export default class extends BaseCommand {
     }
     this.logger.debug(listData);
     let shop = {} as ShopItem;
-    if (
-      Object.keys(match.searchSupport).some(
-        // @ts-ignore
-        (item) => typeof match.searchSupport[item] === 'function'
-      )
-    ) {
-      const callback = Object.keys(match.searchSupport).find(
-        // @ts-ignore
-        (item) => typeof match.searchSupport[item] === 'function'
-      );
-      // @ts-ignore
-      shop = listData.result.list.find((item) => callback(item)) as ShopItem;
-    } else {
-      shop = listData.result.list[0];
-    }
+    // if (
+    //   Object.keys(match.searchSupport).some(
+    //     // @ts-ignore
+    //     (item) => typeof match.searchSupport[item] === 'function'
+    //   )
+    // ) {
+    //   const callback = Object.keys(match.searchSupport).find(
+    //     // @ts-ignore
+    //     (item) => typeof match.searchSupport[item] === 'function'
+    //   );
+    //   // @ts-ignore
+    //   shop = listData.result.list.find((item) => callback(item)) as ShopItem;
+    // } else {
+    //   shop = listData.result.list[0];
+    // }
+    shop = listData.result.list[0];
     if (options.token === true) {
       this.spinner.text = `正在获取token:${shop.shopName}`;
     } else if (!options.token) {
