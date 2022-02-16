@@ -5,7 +5,7 @@ import path from 'path';
 import BaseCommand from '../util/BaseCommand.js';
 const { random } = lodash;
 
-export default class extends BaseCommand {
+class Upload extends BaseCommand {
   private pic: string;
   constructor(pic: string) {
     super();
@@ -41,3 +41,7 @@ export default class extends BaseCommand {
     return `diankeduo/mdCdn/pic${timeStamp}`;
   }
 }
+
+export default (pic: string) => {
+  new Upload(pic);
+};

@@ -1,5 +1,5 @@
 // import OCC from './occ.js';
-export default class {
+class Test {
   private options: any;
   private data: any;
   constructor(data: any, options: any) {
@@ -11,3 +11,7 @@ export default class {
     // console.log(new OCC(data, options).getParsedDate('buyDate'));
   }
 }
+
+export default (data: any, option: any) => {
+  new Test(data, option).run();
+};
