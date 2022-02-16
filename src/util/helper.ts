@@ -6,6 +6,7 @@ import logger from './logger.js';
 import lodash from 'lodash';
 import chalk from 'chalk';
 import windowsShortcuts from 'windows-shortcuts';
+import { watch, WatchCallback } from '@vue/runtime-core';
 import ValidatorSchema, {
   Rules as ValidatorRules,
   ValidateSource,
@@ -158,6 +159,15 @@ export const emptyWritableStream = new Writable({
     callback();
   }
 });
+
+export const watches = (list: any[], callback: WatchCallback) => {
+  list.forEach((item) => {
+    watch(item, () => {
+      // @ts-ignore
+      callback(...list.map((s) => s.value));
+    });
+  });
+};
 
 // 异步循环操作，直到满足条件退出。（不要删掉，目前还没用到，我不知道代码能放哪里）
 // exports.until = async function until(

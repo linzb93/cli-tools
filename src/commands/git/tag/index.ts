@@ -26,11 +26,11 @@ export default class extends BaseCommand {
     const last = tags[tags.length - 1];
     if (options.latest) {
       this.logger.success(last);
-      return '';
+      return last;
     } else {
       const ret = this.versionInc(last, options.patch ? 'patch' : 'minor');
       if (options.silent) {
-        return '';
+        return ret;
       }
       if (ret) {
         this.logger.success(`${chalk.green('[已复制]')}新的tag：${ret}`);
@@ -41,13 +41,13 @@ export default class extends BaseCommand {
     }
     return '';
   }
-  private versionInc(version: string, type: string) {
+  private versionInc(version: string, type: string): string {
     if (!version.startsWith('v')) {
-      return false;
+      return '';
     }
     const versionNum = version.slice(1);
     if (!/[1-9\.][0-9\.]{1,2}[1-9]/.test(versionNum)) {
-      return false;
+      return '';
     }
     const versionNumSeg = versionNum.split('.');
     if (type === 'minor') {
@@ -65,6 +65,6 @@ export default class extends BaseCommand {
         )
         .join('.')}`;
     }
-    return false;
+    return '';
   }
 }

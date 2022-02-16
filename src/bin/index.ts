@@ -60,8 +60,8 @@ program
   .option('-c, --copy', '复制网络地址')
   .option('--debug', '调试模式')
   .action(async (subCommand, options) => {
-    const CommandCtor = (await import(`../commands/agent/index.js`)).default;
-    new CommandCtor(subCommand, options).run();
+    const agent = (await import(`../commands/agent/index.js`)).default;
+    agent(subCommand, options);
   });
 program
   .command('size <url>')
@@ -110,19 +110,19 @@ program
   .allowUnknownOption()
   .action(async (file, _, options) => {
     const combinedOptions = options.args.slice(1);
-    const SubCommand = (await import('../commands/monitor.js')).default;
-    new SubCommand(file, combinedOptions).run();
+    const monitor = (await import('../commands/monitor.js')).default;
+    monitor(file, combinedOptions);
   });
 program
   .command('spider <url>')
   .option('--dest <dest>', '下载目标文件夹')
   .action(async (url, option) => {
-    const SubCommand = (await import('../commands/spider/index.js')).default;
-    new SubCommand(url, option).run();
+    const spider = (await import('../commands/spider/index.js')).default;
+    spider(url, option);
   });
 program.command('kill <data...>').action(async (data) => {
-  const SubCommand = (await import('../commands/kill.js')).default;
-  new SubCommand(data).run();
+  const kill = (await import('../commands/kill.js')).default;
+  kill(data);
 });
 program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;

@@ -1,5 +1,5 @@
 import { db } from './util/index.js';
-import Kill from '../kill.js';
+import kill from '../kill.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { CacheItem } from './index';
 
@@ -8,7 +8,7 @@ export default class extends BaseCommand {
     const cacheData = db.get('items').value() as Required<CacheItem>[];
     const matches = cacheData.filter((item) => item.port);
     if (matches.length === 1) {
-      await new Kill(['port', matches[0].port]).run();
+      await kill(['port', matches[0].port]);
       delete (matches[0] as CacheItem).port;
       db.set('items', cacheData).write();
     } else if (matches.length > 1) {
@@ -24,7 +24,7 @@ export default class extends BaseCommand {
         }
       ]);
       for (const port of ports) {
-        await new Kill(['port', port]).run();
+        kill(['port', port]);
         cacheData.forEach((item) => {
           if (item.port === port) {
             delete (item as CacheItem).port;

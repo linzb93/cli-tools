@@ -61,6 +61,7 @@ class Open extends BaseCommand {
         const path2 = await this.helper.getOriginPath(
           path.join(sourceDir, source)
         );
+        // console.log(path2);
         await this.helper.openInEditor(path2);
       }
       return;
@@ -99,5 +100,5 @@ class Open extends BaseCommand {
 }
 
 export default (name: string, options: Options) => {
-  new Open(name, options);
+  new Open(name, options).run();
 };

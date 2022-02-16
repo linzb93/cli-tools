@@ -46,13 +46,13 @@ export default class extends BaseCommand {
             }
             counter.value++;
           },
-          { concurrency: 3 }
+          { concurrency: 1 }
         );
         outputList.push(cur);
       },
       { concurrency: 1 }
     );
-    console.log('\n');
+    this.spinner.succeed('扫描完成');
     for (const item of outputList) {
       if (!item.children.length) {
         continue;

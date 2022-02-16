@@ -3,7 +3,7 @@ import path from 'path';
 import { fork } from 'child_process';
 import lodash, { CollectionChain } from 'lodash';
 import { db } from './util/index.js';
-import Monitor from '../monitor.js';
+import monitor from '../monitor.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import Stop from './stop.js';
 
@@ -24,11 +24,23 @@ interface CacheSaveOption {
   projName: string;
 }
 
-export default class extends BaseCommand {
+class Agent extends BaseCommand {
   private subCommand?: string;
   private options: Options;
   constructor(subCommand: string, options: Options) {
     super();
+    this.subCommand = subCommand;
+    this.options = options;
+  }
+  async run() {
+    const { subCommand, options } = this;
+    if (subCommand === 'stop') {
+      new Stop().run();
+      return;
+    } else if (subCommand !== undefined) {
+      this.logger.error('命令不存在，请重新输入');
+      return;
+    }
     this.helper.validate(options, {
       proxy: [
         {
@@ -43,18 +55,6 @@ export default class extends BaseCommand {
         }
       ]
     });
-    this.subCommand = subCommand;
-    this.options = options;
-  }
-  async run() {
-    const { subCommand, options } = this;
-    if (subCommand === 'stop') {
-      new Stop().run();
-      return;
-    } else if (subCommand !== undefined) {
-      this.logger.error('命令不存在，请重新输入');
-      return;
-    }
     const cacheData = db.get('items').value() as CacheItem[];
     const match = cacheData.find((item) => item.proxy === options.proxy);
     if (!match) {
@@ -97,10 +97,7 @@ export default class extends BaseCommand {
     }
     if (!options.debug) {
       const child = fork(
-        path.resolve(
-          this.helper.parseImportUrl(import.meta.url),
-          '../server.js'
-        ),
+        path.resolve(this.helper.root, 'dist/commands/agent/server.js'),
         [
           ...this.helper.processArgvToFlags(
             pick(options, ['proxy', 'port', 'debug', 'copy'])
@@ -131,7 +128,7 @@ export default class extends BaseCommand {
         }
       );
     } else {
-      new Monitor(
+      monitor(
         path.resolve(
           this.helper.parseImportUrl(import.meta.url),
           '../server.js'
@@ -139,7 +136,11 @@ export default class extends BaseCommand {
         this.helper.processArgvToFlags(
           pick(options, ['proxy', 'port', 'debug', 'copy'])
         ) as string[]
-      ).run();
+      );
     }
   }
 }
+
+export default (subCommand: string, options: Options) => {
+  new Agent(subCommand, options).run();
+};

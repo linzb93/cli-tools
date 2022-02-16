@@ -6,7 +6,7 @@ import BaseCommand from '../util/BaseCommand.js';
 const numberRE = /[1-9][0-9]*/;
 
 type Params = [string] | [string, string];
-export default class extends BaseCommand {
+class Kill extends BaseCommand {
   private args: Params;
   constructor(args: Params) {
     super();
@@ -103,3 +103,7 @@ export default class extends BaseCommand {
     });
   }
 }
+
+export default async (args: Params) => {
+  await new Kill(args).run();
+};

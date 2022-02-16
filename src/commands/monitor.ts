@@ -9,7 +9,7 @@ import { Readable } from 'stream';
 
 const { debounce } = lodash;
 
-export default class extends BaseCommand {
+class Monitor extends BaseCommand {
   private filename: string | undefined;
   private combinedOptions: string[];
   private entryFile: string;
@@ -98,3 +98,7 @@ export default class extends BaseCommand {
     this.startServer();
   }
 }
+
+export default (filename: string | undefined, combinedOptions: string[]) => {
+  new Monitor(filename, combinedOptions);
+};

@@ -9,7 +9,7 @@ import { root } from '../../util/helper.js';
 import BaseCommand from '../../util/BaseCommand.js';
 const resolve = (...src: string[]) => path.resolve(root, 'data/spider', ...src);
 
-export default class Spider extends BaseCommand {
+class Spider extends BaseCommand {
   private url: string;
   private dest: string;
   private static sourceMap = [
@@ -79,3 +79,7 @@ export default class Spider extends BaseCommand {
     this.spinner.succeed(`下载完成，共下载${downloadedCount.value}张图片`);
   }
 }
+
+export default (url: string, options: any) => {
+  new Spider(url, options).run();
+};

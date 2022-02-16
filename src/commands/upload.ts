@@ -26,9 +26,9 @@ class Upload extends BaseCommand {
       );
       url = `https://oss.fjdaze.com/${res.name}`;
     } catch (error) {
-      this.logger.error('上传失败');
-      return;
+      this.logger.error('上传失败', true);
     }
+    // 为了适配Typora的图片上传功能，url要另起一行
     this.logger.success(`图片上传成功，地址是：
         ${url}`);
     clipboard.writeSync(url);
@@ -43,5 +43,5 @@ class Upload extends BaseCommand {
 }
 
 export default (pic: string) => {
-  new Upload(pic);
+  new Upload(pic).run();
 };

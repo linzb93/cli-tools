@@ -89,14 +89,13 @@ export default class extends BaseCommand {
         silent: true,
         patch: options.type === 'patch'
       }).run();
-    } else if (curBranch === 'master') {
-      newTag = await new GitTag({ silent: true }).run();
     }
     if (curBranch === 'release' && env === 'prod') {
       this.logger.warn('不能从release部署到生产环境，请切换回开发分支');
       return;
     }
     if (curBranch === 'master') {
+      newTag = await new GitTag({ silent: true }).run();
       try {
         await this.helper.sequenceExec([
           'git add .',
@@ -136,7 +135,7 @@ export default class extends BaseCommand {
           },
           {
             message: 'git push',
-            onError: async () => this.git.push({ branch: curBranch })
+            onError() {}
           },
           `git checkout ${env === 'prod' ? 'release' : 'master'}`,
           {

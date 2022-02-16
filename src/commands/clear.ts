@@ -24,5 +24,5 @@ class Clear extends BaseCommand {
 }
 
 export default (filename: string) => {
-  new Clear(filename);
+  new Clear(filename).run();
 };

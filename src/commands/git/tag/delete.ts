@@ -2,7 +2,6 @@ import { CheckboxQuestion } from 'inquirer';
 import pMap from 'p-map';
 import BaseCommand from '../../../util/BaseCommand.js';
 import { reactive } from '@vue/reactivity';
-import { watch } from '@vue/runtime-core';
 
 export default class extends BaseCommand {
   async run() {
@@ -10,11 +9,8 @@ export default class extends BaseCommand {
     this.spinner.text = '开始删除';
     const successTags = reactive([]) as string[];
     const errorTags = reactive([]) as { tag: string; errorMessage: string }[];
-    watch(successTags, (value) => {
-      this.spinner.text = `删除成功${value.length}个，失败${errorTags.length}个`;
-    });
-    watch(errorTags, (value) => {
-      this.spinner.text = `删除成功${successTags.length}个，失败${value.length}个`;
+    this.helper.watches([successTags, errorTags], (sValue, eValue) => {
+      this.spinner.text = `删除成功${sValue.length}个，失败${eValue.length}个`;
     });
     await pMap(
       selected,
