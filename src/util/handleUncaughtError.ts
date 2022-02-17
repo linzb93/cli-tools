@@ -47,16 +47,16 @@ async function errorHandler(
     if (process.cwd() === root) {
       return;
     }
-    const ans = (await inquirer.prompt({
+    const { openEditor } = (await inquirer.prompt({
       type: 'confirm',
       message: `发现未处理的${
         options.async ? '异步' : ''
       }错误，是否打开编辑器修复bug？`,
-      name: 'open'
+      name: 'openEditor'
     })) as {
-      open: boolean;
+      openEditor: boolean;
     };
-    if (ans.open) {
+    if (openEditor) {
       openInEditor(path.resolve(root));
     } else {
       process.exit(0);

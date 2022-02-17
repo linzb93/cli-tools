@@ -95,6 +95,7 @@ class Deploy extends BaseCommand {
       return;
     }
     if (curBranch === 'master') {
+      this.logger.warn('检查下有没有测试代码没删掉！！！');
       newTag = await gitTag({ silent: true, type: 'update' });
       try {
         const flow = [
