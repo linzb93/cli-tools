@@ -12,7 +12,7 @@ interface Options {
   open?: boolean;
   from?: string;
 }
-export default class extends BaseCommand {
+class Clone extends BaseCommand {
   private pkg: string;
   private options: Options;
   constructor(pkg: string[], options: Options) {
@@ -193,3 +193,7 @@ export default class extends BaseCommand {
       .replace(/[^\.git]$/, '.git');
   }
 }
+
+export default (pkg: string[], options: Options) => {
+  new Clone(pkg, options).run();
+};

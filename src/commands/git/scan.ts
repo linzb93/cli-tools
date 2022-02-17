@@ -7,7 +7,7 @@ import { ref } from '@vue/reactivity';
 import { watch } from '@vue/runtime-core';
 
 // 扫描所有工作项目文件夹，有未提交、推送的git就提醒。
-export default class extends BaseCommand {
+class Scan extends BaseCommand {
   async run() {
     const openMap = this.db.get('open');
     const outputList: { title: string; children: string[] }[] = [];
@@ -65,3 +65,7 @@ export default class extends BaseCommand {
     }
   }
 }
+
+export default () => {
+  new Scan().run();
+};

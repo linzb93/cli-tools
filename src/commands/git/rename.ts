@@ -11,7 +11,7 @@ const { camelCase, kebabCase, filter } = lodash;
 const whiteList = ['App.vue', '.otf', '.ttf', '1px.scss', 'README.md'];
 
 // 对所有命名不规范的文件/文件夹，重新命名，并用 git mv 更新
-export default class extends BaseCommand {
+class Rename extends BaseCommand {
   async run() {
     // 只扫描src文件夹里的
     const files = filter(
@@ -109,3 +109,7 @@ export default class extends BaseCommand {
     return file.includes(`/${dirname}/`);
   }
 }
+
+export default () => {
+  new Rename().run();
+};

@@ -3,7 +3,7 @@ import kill from '../kill.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { CacheItem } from './index';
 
-export default class extends BaseCommand {
+class Stop extends BaseCommand {
   async run() {
     const cacheData = db.get('items').value() as Required<CacheItem>[];
     const matches = cacheData.filter((item) => item.port);
@@ -38,3 +38,7 @@ export default class extends BaseCommand {
     }
   }
 }
+
+export default () => {
+  new Stop().run();
+};

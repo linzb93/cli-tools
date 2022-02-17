@@ -1,10 +1,10 @@
-import NpmInstall from './install.js';
+import npmInstall from './install.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
 interface Flag {
   dev?: boolean;
 }
-export default class extends BaseCommand {
+class Has extends BaseCommand {
   private args: string[];
   private flag: Flag;
   constructor(args: string[], flag: Flag) {
@@ -37,7 +37,11 @@ export default class extends BaseCommand {
       message: `${name} 不存在，是否安装？`
     });
     if (action) {
-      await new NpmInstall([name], { dev }).run();
+      await npmInstall([name], { dev });
     }
   }
 }
+
+export default (args: string[], flag: Flag) => {
+  new Has(args, flag).run();
+};

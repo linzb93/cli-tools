@@ -3,7 +3,7 @@ import pMap from 'p-map';
 import BaseCommand from '../../../util/BaseCommand.js';
 import { reactive } from '@vue/reactivity';
 
-export default class extends BaseCommand {
+class DeleteTag extends BaseCommand {
   async run() {
     const selected = await this.getSelectedTags();
     this.spinner.text = '开始删除';
@@ -57,3 +57,7 @@ export default class extends BaseCommand {
     return selected;
   }
 }
+
+export default () => {
+  new DeleteTag().run();
+};

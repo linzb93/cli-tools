@@ -21,7 +21,7 @@ interface OutputPkgItem {
   weeklyDl: string;
   lastPb: string;
 }
-export default class extends BaseCommand {
+class Search extends BaseCommand {
   private args: string[];
   private options: Options;
   constructor(args: string[], options: Options) {
@@ -131,3 +131,7 @@ export default class extends BaseCommand {
     return retArr.join('\n');
   }
 }
+
+export default async (args: string[], options: Options) => {
+  new Search(args, options).run();
+};

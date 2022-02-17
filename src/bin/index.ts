@@ -28,8 +28,8 @@ program
     if (!['install', 'uninstall', 'has', 'search'].includes(target)) {
       logger.error('命令不存在，请重新输入', true);
     }
-    const CommandCtor = (await import(`../commands/npm/${target}.js`)).default;
-    new CommandCtor(rest, cmd).run();
+    const func = (await import(`../commands/npm/${target}.js`)).default;
+    func(rest, cmd);
   });
 program
   .command('git <sub-command> [rest...]')
@@ -49,9 +49,8 @@ program
     ) {
       logger.error('命令不存在，请重新输入', true);
     }
-    const CommandCtor = (await import(`../commands/git/${subCommand}.js`))
-      .default;
-    new CommandCtor(rest, cmd).run();
+    const func = (await import(`../commands/git/${subCommand}.js`)).default;
+    func(rest, cmd);
   });
 program
   .command('agent [sub-command]')

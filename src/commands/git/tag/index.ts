@@ -1,16 +1,16 @@
 import clipboard from 'clipboardy';
 import chalk from 'chalk';
 import BaseCommand from '../../../util/BaseCommand.js';
-import DeleteTag from './delete.js';
+import deleteTag from './delete.js';
 
 interface Options {
   delete?: boolean;
   silent?: boolean;
   latest?: boolean;
-  patch?: boolean;
+  type: string;
 }
 
-export default class extends BaseCommand {
+class Tag extends BaseCommand {
   private options: Options;
   constructor(options: Options) {
     super();
@@ -19,7 +19,7 @@ export default class extends BaseCommand {
   async run(): Promise<string> {
     const { options } = this;
     if (options.delete) {
-      new DeleteTag().run();
+      deleteTag();
       return '';
     }
     const tags = await this.git.tag();
@@ -28,7 +28,10 @@ export default class extends BaseCommand {
       this.logger.success(last);
       return last;
     } else {
-      const ret = this.versionInc(last, options.patch ? 'patch' : 'minor');
+      if (tags.length === 0 && options.silent) {
+        return '';
+      }
+      const ret = this.versionInc(last, options.type || 'update');
       if (options.silent) {
         return ret;
       }
@@ -42,6 +45,7 @@ export default class extends BaseCommand {
     return '';
   }
   private versionInc(version: string, type: string): string {
+    console.log(type);
     if (!version.startsWith('v')) {
       return '';
     }
@@ -56,15 +60,29 @@ export default class extends BaseCommand {
       return `v${versionNumSeg[0]}.${versionNumSeg[1]}.${
         Number(versionNumSeg[2]) + 1
       }`;
-    } else if (versionNumSeg.length === 3) {
-      return `v${versionNum}.1`;
-    } else if (versionNumSeg.length === 4) {
-      return `v${versionNumSeg
-        .map((n, index) =>
-          index === versionNumSeg.length - 1 ? Number(n) + 1 : n
-        )
-        .join('.')}`;
+    } else if (type === 'update') {
+      if (versionNumSeg.length === 3) {
+        return `v${versionNum}.1`;
+      } else if (versionNumSeg.length === 4) {
+        return `v${versionNumSeg
+          .map((n, index) =>
+            index === versionNumSeg.length - 1 ? Number(n) + 1 : n
+          )
+          .join('.')}`;
+      }
     }
     return '';
   }
 }
+/* eslint-disable no-redeclare */
+function deploy(_: any, option: Options): Promise<string>;
+function deploy(options: Options): Promise<string>;
+function deploy(...data: any[]): Promise<string> {
+  if (data.length === 2) {
+    return new Tag(data[1]).run();
+  } else {
+    return new Tag(data[0]).run();
+  }
+}
+
+export default deploy;

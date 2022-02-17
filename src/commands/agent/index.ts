@@ -5,7 +5,7 @@ import lodash, { CollectionChain } from 'lodash';
 import { db } from './util/index.js';
 import monitor from '../monitor.js';
 import BaseCommand from '../../util/BaseCommand.js';
-import Stop from './stop.js';
+import stop from './stop.js';
 
 const { pick } = lodash;
 interface Options {
@@ -35,7 +35,7 @@ class Agent extends BaseCommand {
   async run() {
     const { subCommand, options } = this;
     if (subCommand === 'stop') {
-      new Stop().run();
+      stop();
       return;
     } else if (subCommand !== undefined) {
       this.logger.error('命令不存在，请重新输入');

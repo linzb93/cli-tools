@@ -10,7 +10,7 @@ interface Options {
 interface SimilarOption {
   name: string;
 }
-export default class extends BaseCommand {
+class Uninstall extends BaseCommand {
   private name: string;
   private options: Options;
   constructor(args: string[], options: Options) {
@@ -126,3 +126,7 @@ export default class extends BaseCommand {
     }
   }
 }
+
+export default async (args: string[], options: Options) => {
+  new Uninstall(args, options).run();
+};

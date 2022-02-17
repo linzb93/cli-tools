@@ -6,17 +6,17 @@
  * 也可以部署github的
  */
 import BaseCommand from '../../util/BaseCommand.js';
-import GitTag from './tag/index.js';
+import gitTag from './tag/index.js';
 import lodash from 'lodash';
 import readPkg from 'read-pkg';
 import { CommandItem } from '../../util/pFunc';
 const { get: objectGet } = lodash;
 
 interface Options {
-  commit?: string;
-  type?: string;
+  commit: string;
+  type: string;
 }
-export default class extends BaseCommand {
+class Deploy extends BaseCommand {
   private data: string[];
   private options: Options;
   constructor(data: string[], options: Options) {
@@ -85,19 +85,19 @@ export default class extends BaseCommand {
     const curBranch = await this.git.getCurrentBranch();
     let newTag = '';
     if (env === 'prod') {
-      newTag = await new GitTag({
+      newTag = await gitTag({
         silent: true,
-        patch: options.type === 'patch'
-      }).run();
+        type: options.type as string
+      });
     }
     if (curBranch === 'release' && env === 'prod') {
       this.logger.warn('不能从release部署到生产环境，请切换回开发分支');
       return;
     }
     if (curBranch === 'master') {
-      newTag = await new GitTag({ silent: true }).run();
+      newTag = await gitTag({ silent: true, type: 'update' });
       try {
-        await this.helper.sequenceExec([
+        const flow = [
           'git add .',
           {
             message: `git commit -m ${options.commit || 'update'}`,
@@ -109,17 +109,19 @@ export default class extends BaseCommand {
             message: 'git pull',
             onError() {}
           },
-          'git push',
-          `git tag ${newTag}`,
-          `git push origin ${newTag}`
-        ]);
+          'git push'
+        ];
+        if (newTag !== '') {
+          flow.push(`git tag ${newTag}`, `git push origin ${newTag}`);
+        }
+        await this.helper.sequenceExec(flow);
       } catch (error) {
         this.logger.error((error as Error).message);
         return;
       }
     } else {
       try {
-        await this.helper.sequenceExec([
+        const flow = [
           'git add .',
           {
             message: `git commit -m ${options.commit || 'update'}`,
@@ -159,17 +161,23 @@ export default class extends BaseCommand {
             }
           },
           'git pull',
-          'git push',
-          ...(env === 'prod'
-            ? [`git tag ${newTag}`, `git push origin ${newTag}`]
-            : [`git checkout ${curBranch}`])
-        ]);
+          'git push'
+        ];
+        if (env === 'prod') {
+          flow.push(`git tag ${newTag}`, `git push origin ${newTag}`);
+        } else {
+          flow.push(`git checkout ${curBranch}`);
+        }
+        await this.helper.sequenceExec(flow);
       } catch (error) {
         this.logger.error((error as Error).message);
         return;
       }
     }
-
     this.logger.success('操作成功');
   }
 }
+
+export default (data: string[], options: Options) => {
+  new Deploy(data, options).run();
+};

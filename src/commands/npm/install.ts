@@ -6,7 +6,7 @@ interface Flag {
   dev?: boolean;
 }
 // 安装本地依赖至项目中
-export default class extends BaseCommand {
+class Install extends BaseCommand {
   private pkg: string;
   private flag: Flag;
   constructor(pkgs: string[], flag: Flag) {
@@ -53,3 +53,7 @@ export default class extends BaseCommand {
     return semver.major(version);
   }
 }
+
+export default async (pkgs: string[], flag: Flag) => {
+  new Install(pkgs, flag).run();
+};
