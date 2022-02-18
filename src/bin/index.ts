@@ -73,7 +73,7 @@ program
   .command('open <name>')
   .option('--name <name>', '打开的文件夹')
   .action(async (url, cmd) => {
-    const open = (await import('../commands/open.js')).default;
+    const open = (await import('../commands/open/index.js')).default;
     open(url, cmd);
   });
 program

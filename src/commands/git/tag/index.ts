@@ -45,7 +45,6 @@ class Tag extends BaseCommand {
     return '';
   }
   private versionInc(version: string, type: string): string {
-    console.log(type);
     if (!version.startsWith('v')) {
       return '';
     }
