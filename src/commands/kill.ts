@@ -56,7 +56,6 @@ class Kill extends BaseCommand {
           return;
         } catch (error) {
           this.logger.error(`端口 ${chalk.yellow(id)} 不存在`);
-          console.log(error);
         }
       } else if (target === 'pid') {
         if (!numberRE.test(idStr)) {

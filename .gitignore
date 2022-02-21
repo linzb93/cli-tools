@@ -8,3 +8,4 @@ lib/commands/spider/images/
 dist
 data/
 .temp
+*.txt

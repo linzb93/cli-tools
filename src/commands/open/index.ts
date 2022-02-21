@@ -1,7 +1,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
-import { fork } from 'child_process';
+// import { fork } from 'child_process';
+import { execaCommand as execa } from 'execa';
 import globalNpm from 'global-modules';
 import BaseCommand from '../../util/BaseCommand.js';
 import low from 'lowdb';
@@ -108,19 +109,17 @@ class Open extends BaseCommand {
   }
   private async openServer() {
     const items = db.get('items').value() as VueServerInfo[];
-    const child = fork(
-      path.resolve(this.helper.root, 'dist/commands/open/server.js'),
-      [`--cwd=${items[0].cwd}`],
-      {
-        cwd: this.helper.root
-      }
-    );
+    const child = execa('npx vue-cli-service serve --open', {
+      cwd: items[0].cwd,
+      stdio: 'pipe'
+    });
+    child.stdout?.pipe(fs.createWriteStream('vue.txt'));
     console.log('服务已启动');
     await this.helper.sleep(1000);
     process.nextTick(() => {
       child.unref();
-      child.disconnect();
-      process.exitCode = 1;
+      //   child.disconnect();
+      process.exit(1);
     });
   }
   private async makeOpenAction(map: OpenItem[], name: string) {

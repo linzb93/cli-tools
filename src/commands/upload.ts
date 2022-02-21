@@ -12,7 +12,8 @@ class Upload extends BaseCommand {
     this.pic = pic;
   }
   async run() {
-    const { pic } = this;
+    const rawPic = this.pic;
+    const pic = rawPic.replace(/\\/g, '/');
     const ossConfig = this.db.get('oss') as Omit<OssConfig, 'timeout'>;
     const oss = new OSS({
       ...ossConfig,
