@@ -56,7 +56,7 @@
     "kill-port": "^1.6.1",
     "listr": "^0.14.2",
     "log-symbols": "^5.1.0",
-    "lowdb": "^1.0.0",
+    "lowdb": "^3.0.0",
     "node-notifier": "^10.0.0",
     "open": "^8.4.0",
     "ora": "^6.0.1",
@@ -66,6 +66,7 @@
     "read-pkg": "^5.2.0",
     "semver": "^7.3.5",
     "through2": "^4.0.2",
+    "uuid": "^8.3.2",
     "windows-shortcuts": "^0.1.6"
   },
   "devDependencies": {

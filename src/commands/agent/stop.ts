@@ -1,16 +1,17 @@
-import { db } from './util/index.js';
 import kill from '../kill.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { CacheItem } from './index';
 
 class Stop extends BaseCommand {
   async run() {
-    const cacheData = db.get('items').value() as Required<CacheItem>[];
+    const db = this.helper.createDB('agent');
+    const cacheData = (db.data as any).items as Required<CacheItem>[];
     const matches = cacheData.filter((item) => item.port);
     if (matches.length === 1) {
       await kill(['port', matches[0].port]);
       delete (matches[0] as CacheItem).port;
-      db.set('items', cacheData).write();
+      (db.data as any).items = cacheData;
+      await db.write();
     } else if (matches.length > 1) {
       const { ports } = await this.helper.inquirer.prompt([
         {
@@ -30,8 +31,11 @@ class Stop extends BaseCommand {
             delete (item as CacheItem).port;
           }
         });
+        await db.write();
       }
-      db.set('items', cacheData).write();
+      // @ts-ignore
+      (db.data as any).items = cacheData;
+      await db.write();
     } else {
       this.logger.info('没有要关闭的进程');
       return;

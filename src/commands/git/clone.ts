@@ -38,7 +38,7 @@ class Clone extends BaseCommand {
     );
     this.spinner.text = '正在下载';
     let dirName: string;
-    const openMap = this.db.get('open') as SecretDB['open'];
+    const openMap = this.ls.get('open') as SecretDB['open'];
     if (!openMap[options.dir]) {
       options.dir = 'source';
     }
@@ -126,7 +126,7 @@ class Clone extends BaseCommand {
       return;
     }
     const repo = page.get('repository');
-    const cwd = this.db.get('open.source');
+    const cwd = this.ls.get('open.source');
     if (fs.existsSync(path.join(cwd, path.basename(repo)))) {
       this.spinner.text = '正在拉取最新代码';
       try {

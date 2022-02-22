@@ -1,7 +1,9 @@
 import * as fs from 'fs-extra';
 import { Writable } from 'stream';
 import path from 'path';
+import { Low, JSONFile } from 'lowdb';
 import { execaCommand as execa } from 'execa';
+import { fileURLToPath } from 'url';
 import logger from './logger.js';
 import lodash from 'lodash';
 import chalk from 'chalk';
@@ -46,10 +48,7 @@ export const validate = (
   });
 };
 
-export const parseImportUrl = (url: string) =>
-  decodeURI(url.replace(isWin ? 'file:///' : 'file://', ''));
-
-export const root = path.join(parseImportUrl(import.meta.url), '../../../');
+export const root = path.join(fileURLToPath(import.meta.url), '../../../');
 
 export const openInEditor = async (project: string): Promise<void> => {
   try {
@@ -169,6 +168,10 @@ export const watches = (list: any[], callback: WatchCallback) => {
   });
 };
 
+export const createDB = (pathName: string) => {
+  const adapter = new JSONFile(path.resolve(root, `data/${pathName}.json`));
+  return new Low(adapter);
+};
 // 异步循环操作，直到满足条件退出。（不要删掉，目前还没用到，我不知道代码能放哪里）
 // exports.until = async function until(
 //     params, // 异步函数的参数

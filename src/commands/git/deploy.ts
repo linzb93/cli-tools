@@ -140,7 +140,7 @@ class Deploy extends BaseCommand {
             message: 'git push',
             onError() {}
           },
-          `git checkout ${env === 'prod' ? 'release' : 'master'}`,
+          `git checkout ${env === 'prod' ? 'master' : 'release'}`,
           {
             message: `git merge ${curBranch}`,
             onError: async () => {

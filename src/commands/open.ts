@@ -1,15 +1,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
-// import { fork } from 'child_process';
-import { execaCommand as execa } from 'execa';
 import globalNpm from 'global-modules';
-import BaseCommand from '../../util/BaseCommand.js';
-import low from 'lowdb';
-import FileSync from 'lowdb/adapters/FileSync.js';
-import { root } from '../../util/helper.js';
-const adapter = new FileSync(path.resolve(root, 'data/openServer.json'));
-const db = low(adapter);
+import BaseCommand from '../util/BaseCommand.js';
 
 interface Options {
   name: string;
@@ -19,12 +12,6 @@ interface OpenItem {
   setting?: string;
   isEditor: boolean;
   target?: string;
-}
-
-interface VueServerInfo {
-  cwd: string;
-  name: string;
-  port: string;
 }
 
 class Open extends BaseCommand {
@@ -39,10 +26,6 @@ class Open extends BaseCommand {
     const { name } = this;
     if (name === 'source') {
       this.openSource();
-      return;
-    }
-    if (name === 'server') {
-      this.openServer();
       return;
     }
     const map = [
@@ -66,7 +49,7 @@ class Open extends BaseCommand {
   }
   private async openSource() {
     const { options } = this;
-    const sourceDir = this.db.get('open.source');
+    const sourceDir = this.ls.get('open.source');
     const dirs = await fs.readdir(sourceDir);
     if (options.name) {
       let matchPath: string;
@@ -107,21 +90,6 @@ class Open extends BaseCommand {
       await this.helper.openInEditor(path2);
     }
   }
-  private async openServer() {
-    const items = db.get('items').value() as VueServerInfo[];
-    const child = execa('npx vue-cli-service serve --open', {
-      cwd: items[0].cwd,
-      stdio: 'pipe'
-    });
-    child.stdout?.pipe(fs.createWriteStream('vue.txt'));
-    console.log('服务已启动');
-    await this.helper.sleep(1000);
-    process.nextTick(() => {
-      child.unref();
-      //   child.disconnect();
-      process.exit(1);
-    });
-  }
   private async makeOpenAction(map: OpenItem[], name: string) {
     const match = map.find((item) => item.name === name);
     if (!match) {
@@ -129,7 +97,7 @@ class Open extends BaseCommand {
       return;
     }
     if (match.setting && match.isEditor) {
-      await this.helper.openInEditor(this.db.get(match.setting));
+      await this.helper.openInEditor(this.ls.get(match.setting));
     } else if (match.target) {
       await open(match.target);
     }

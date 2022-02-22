@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import path from 'path';
 import { fork } from 'child_process';
-import lodash, { CollectionChain } from 'lodash';
-import { db } from './util/index.js';
+import { fileURLToPath } from 'url';
+import lodash from 'lodash';
 import monitor from '../monitor.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import stop from './stop.js';
@@ -55,7 +55,10 @@ class Agent extends BaseCommand {
         }
       ]
     });
-    const cacheData = db.get('items').value() as CacheItem[];
+    const db = this.helper.createDB('agent');
+    await db.read();
+    db.data = db.data || {};
+    const cacheData = (db.data as any).items as CacheItem[];
     const match = cacheData.find((item) => item.proxy === options.proxy);
     if (!match) {
       if (!options.proxy) {
@@ -86,12 +89,11 @@ class Agent extends BaseCommand {
           }
         ])) as CacheSaveOption;
         if (ans.choosed) {
-          (db.get('items') as CollectionChain<CacheItem>)
-            .push({
-              name: ans.projName,
-              proxy: options.proxy
-            })
-            .write();
+          (db.data as any).items.push({
+            name: ans.projName,
+            proxy: options.proxy
+          });
+          await db.write();
         }
       }
     }
@@ -118,10 +120,11 @@ class Agent extends BaseCommand {
     - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
     - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
     路由映射至：${chalk.cyan(options.proxy)}`);
-          const items: CacheItem[] = db.get('items').value();
+          const items: CacheItem[] = this.ls.get('items').value();
           const match = items.find((item) => item.proxy === options.proxy);
           (match as CacheItem).port = port;
-          db.set('items', items).write();
+          (db.data as any).items = items;
+          await db.write();
           child.unref();
           child.disconnect();
           process.exit(0);
@@ -129,10 +132,7 @@ class Agent extends BaseCommand {
       );
     } else {
       monitor(
-        path.resolve(
-          this.helper.parseImportUrl(import.meta.url),
-          '../server.js'
-        ),
+        path.resolve(fileURLToPath(import.meta.url), '../server.js'),
         this.helper.processArgvToFlags(
           pick(options, ['proxy', 'port', 'debug', 'copy'])
         ) as string[]

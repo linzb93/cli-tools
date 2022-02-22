@@ -70,10 +70,17 @@ program
     getSize(filename, options);
   });
 program
+  .command('vue [data...]')
+  .option('-c, --copy', '复制地址')
+  .action(async (data, options) => {
+    const vue = (await import('../commands/vue/index.js')).default;
+    vue(data, options);
+  });
+program
   .command('open <name>')
   .option('--name <name>', '打开的文件夹')
   .action(async (url, cmd) => {
-    const open = (await import('../commands/open/index.js')).default;
+    const open = (await import('../commands/open.js')).default;
     open(url, cmd);
   });
 program

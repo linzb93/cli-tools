@@ -242,10 +242,10 @@ class OCC extends BaseCommand {
     const service = axios.create({
       baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`,
       headers: {
-        token: this.db.get('occ.token')
+        token: this.ls.get('occ.token')
       }
     });
-    this.logger.debug(this.db.get('occ.token'));
+    this.logger.debug(this.ls.get('occ.token'));
     let listData: ShopListResponse;
     const listSearchParams = {
       appKey: match.appKey,
@@ -320,7 +320,7 @@ class OCC extends BaseCommand {
       data: { result }
     } = await service.post(match.url.login, match.loginKey(shop), {
       headers: {
-        token: this.db.get('occ.token')
+        token: this.ls.get('occ.token')
       }
     });
     return {
@@ -345,7 +345,7 @@ class OCC extends BaseCommand {
       name: 'vrCode'
     });
     this.spinner.text = '正在登录';
-    const { username, password } = this.db.get('occ') as SecretDB['occ'];
+    const { username, password } = this.ls.get('occ') as SecretDB['occ'];
     const {
       data: { token }
     } = await axios.post('https://api.diankeduo.cn/zhili/login', {
@@ -354,7 +354,7 @@ class OCC extends BaseCommand {
       uuid,
       code: answer.vrCode
     });
-    this.db.set('occ.token', token);
+    this.ls.set('occ.token', token);
     // TODO: 在VSCode中打开后无法删除
     del.sync(target);
     this.spinner.succeed('登录成功', true);

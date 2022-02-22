@@ -26,7 +26,7 @@ module.exports = async ([code]) => {
         default: 15
       }
     ]);
-    db.setting.set('*', answer);
+    ls.setting.set('*', answer);
     return;
   }
   try {
@@ -36,7 +36,7 @@ module.exports = async ([code]) => {
     return;
   }
   await checkDownloadCode(code);
-  const setting = db.setting.get('coverRate,saleRate');
+  const setting = ls.setting.get('coverRate,saleRate');
   const answer = await inquirer.prompt([
     {
       type: 'input',

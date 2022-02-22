@@ -9,7 +9,7 @@ import { watch } from '@vue/runtime-core';
 // 扫描所有工作项目文件夹，有未提交、推送的git就提醒。
 class Scan extends BaseCommand {
   async run() {
-    const openMap = this.db.get('open');
+    const openMap = this.ls.get('open');
     const outputList: { title: string; children: string[] }[] = [];
     this.spinner.text = '开始扫描';
     const counter = ref(0);

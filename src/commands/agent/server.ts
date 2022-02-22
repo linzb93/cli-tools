@@ -62,7 +62,7 @@ program
         clipboard.writeSync(`http://${ip}:${port}/proxy`);
       }
       if (!options.debug) {
-        (process.send as Function)({ port, ip });
+        process.send?.({ port, ip });
       } else {
         console.log(`
 代理服务器已在 ${chalk.yellow(port)} 端口启动：

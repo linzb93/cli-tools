@@ -26,13 +26,13 @@ export default class extends BaseCommand {
         if (!timejs(item.updateTime.toString()).isAfter(timejs())) {
           item.content.action();
           // TODO:不是没用了，是不想处理多参数的问题，先把代码都搬过来再说
-          // serverDB.set({
+          // serverls.set({
           //     name: item.filename,
           //     finished: true
           // });
           notifier.notify('请查看今日信息');
         } else {
-          // serverDB.set({
+          // serverls.set({
           //     name: item.filename,
           //     finished: false
           // });
@@ -48,7 +48,7 @@ export default class extends BaseCommand {
       //             item.content = require(item.filename);
       //             if (!timejs(item.time).isAfter(timejs())) {
       //                 item.content.action();
-      //                 serverDB.set({
+      //                 serverls.set({
       //                     name: item.filename,
       //                     finished: true
       //                 });
@@ -56,7 +56,7 @@ export default class extends BaseCommand {
       //             }
       //         } else if (!timejs(item.time).isAfter(timejs())) {
       //             item.content.action();
-      //             serverDB.set({
+      //             serverls.set({
       //                 name: item.filename,
       //                 finished: true
       //             });

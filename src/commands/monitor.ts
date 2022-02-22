@@ -100,5 +100,5 @@ class Monitor extends BaseCommand {
 }
 
 export default (filename: string | undefined, combinedOptions: string[]) => {
-  new Monitor(filename, combinedOptions);
+  new Monitor(filename, combinedOptions).run();
 };

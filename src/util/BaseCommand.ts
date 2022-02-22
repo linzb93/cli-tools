@@ -4,7 +4,7 @@ import * as rawHelper from './helper.js';
 import * as pFunc from './pFunc.js';
 import git from './git.js';
 import npm from './npm.js';
-import db from './db.js';
+import ls from './ls.js';
 import inquirer from './inquirer.js';
 
 const helper = {
@@ -17,7 +17,7 @@ export default abstract class {
   protected logger: typeof logger;
   protected spinner: Spinner;
   protected helper: typeof helper;
-  protected db: typeof db;
+  protected ls: typeof ls;
   protected git: typeof git;
   protected npm: typeof npm;
   constructor() {
@@ -26,7 +26,7 @@ export default abstract class {
     this.spinner = spinner;
     this.git = git;
     this.npm = npm;
-    this.db = db;
+    this.ls = ls;
   }
   abstract run(): void;
 }
