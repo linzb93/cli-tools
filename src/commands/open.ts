@@ -86,7 +86,6 @@ class Open extends BaseCommand {
       const path2 = await this.helper.getOriginPath(
         path.join(sourceDir, source)
       );
-      // console.log(path2);
       await this.helper.openInEditor(path2);
     }
   }

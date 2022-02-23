@@ -5,7 +5,6 @@ import BaseCommand from '../util/BaseCommand.js';
 import fs from 'fs-extra';
 import path from 'path';
 import dayjs from 'dayjs';
-import del from 'del';
 import { SecretDB } from '../util/types';
 
 interface Options {
@@ -355,8 +354,7 @@ class OCC extends BaseCommand {
       code: answer.vrCode
     });
     this.ls.set('occ.token', token);
-    // TODO: 在VSCode中打开后无法删除
-    del.sync(target);
+    await fs.remove(target);
     this.spinner.succeed('登录成功', true);
     await this.helper.sleep(1500);
   }
