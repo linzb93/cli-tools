@@ -14,7 +14,6 @@ const { get: objectGet } = lodash;
 
 interface Options {
   commit: string;
-  type: string;
 }
 class Deploy extends BaseCommand {
   private data: string[];
@@ -62,7 +61,7 @@ class Deploy extends BaseCommand {
     if (gitStatus === 1) {
       flow.unshift('git add .', `git commit -m ${options.commit || 'update'}`);
     } else if (gitStatus === 3) {
-      // 已推送，直接拉取，并安装依赖，编译
+      flow.pop();
       const pkgData = await readPkg();
       if (objectGet(pkgData, 'scripts.postpull')) {
         flow.push({
@@ -87,7 +86,7 @@ class Deploy extends BaseCommand {
     if (env === 'prod') {
       newTag = await gitTag({
         silent: true,
-        type: options.type as string
+        type: 'update'
       });
     }
     if (curBranch === 'release' && env === 'prod') {
@@ -96,7 +95,10 @@ class Deploy extends BaseCommand {
     }
     if (curBranch === 'master') {
       this.logger.warn('检查下有没有测试代码没删掉！！！');
-      newTag = await gitTag({ silent: true, type: 'update' });
+      newTag = await gitTag({
+        silent: true,
+        type: 'patch'
+      });
       try {
         const flow = [
           'git add .',

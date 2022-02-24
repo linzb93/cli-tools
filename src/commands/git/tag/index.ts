@@ -7,7 +7,7 @@ interface Options {
   delete?: boolean;
   silent?: boolean;
   latest?: boolean;
-  type: string;
+  type: 'update' | 'patch';
 }
 
 class Tag extends BaseCommand {
@@ -31,7 +31,7 @@ class Tag extends BaseCommand {
       if (tags.length === 0 && options.silent) {
         return '';
       }
-      const ret = this.versionInc(last, options.type || 'update');
+      const ret = this.versionInc(last, options.type);
       if (options.silent) {
         return ret;
       }
@@ -44,7 +44,7 @@ class Tag extends BaseCommand {
     }
     return '';
   }
-  private versionInc(version: string, type: string): string {
+  private versionInc(version: string, type: Options['type']): string {
     if (!version.startsWith('v')) {
       return '';
     }
@@ -53,22 +53,12 @@ class Tag extends BaseCommand {
       return '';
     }
     const versionNumSeg = versionNum.split('.');
-    if (type === 'minor') {
+    if (type === 'update') {
       return `v${versionNumSeg[0]}.${Number(versionNumSeg[1]) + 1}.0`;
     } else if (type === 'patch') {
       return `v${versionNumSeg[0]}.${versionNumSeg[1]}.${
         Number(versionNumSeg[2]) + 1
       }`;
-    } else if (type === 'update') {
-      if (versionNumSeg.length === 3) {
-        return `v${versionNum}.1`;
-      } else if (versionNumSeg.length === 4) {
-        return `v${versionNumSeg
-          .map((n, index) =>
-            index === versionNumSeg.length - 1 ? Number(n) + 1 : n
-          )
-          .join('.')}`;
-      }
     }
     return '';
   }
