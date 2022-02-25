@@ -1,24 +1,24 @@
 import npmInstall from './install.js';
 import BaseCommand from '../../util/BaseCommand.js';
 
-interface Flag {
+interface Options {
   dev?: boolean;
 }
 class Has extends BaseCommand {
   private args: string[];
-  private flag: Flag;
-  constructor(args: string[], flag: Flag) {
+  private options: Options;
+  constructor(args: string[], options: Options) {
     super();
     this.args = args;
-    this.flag = flag;
+    this.options = options;
   }
   async run() {
-    const { args, flag, spinner } = this;
+    const { args, options, spinner } = this;
     const name = args[0];
     this.spinner.text = '正在查找';
     const listRet = await this.npm.getList(name);
     if (!listRet.list.length) {
-      await this.handleNotFound(name, flag.dev);
+      await this.handleNotFound(name, options.dev);
       return;
     }
     if (listRet.list.length === 1) {
@@ -43,6 +43,6 @@ class Has extends BaseCommand {
   }
 }
 
-export default (args: string[], flag: Flag) => {
-  new Has(args, flag).run();
+export default (args: string[], options: Options) => {
+  new Has(args, options).run();
 };

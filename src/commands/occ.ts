@@ -38,6 +38,9 @@ interface ShopListResponse {
   };
   code: number;
 }
+interface HackCallback {
+  (item: any): any;
+}
 const map = {
   default: {
     name: '',
@@ -248,6 +251,9 @@ class OCC extends BaseCommand {
     });
     this.logger.debug(this.ls.get('oa.token'));
     let listData: ShopListResponse;
+    this.logger.debug(
+      `高级搜索参数：${JSON.stringify(this.getSearchDate(match))}`
+    );
     const listSearchParams = {
       appKey: match.appKey,
       pageIndex: 1,
@@ -260,10 +266,12 @@ class OCC extends BaseCommand {
     };
     // 针对项目不满足搜索条件而采取的hacker
     if (
-      Object.keys(match.searchSupport).some(
-        // @ts-ignore
-        (item) => typeof match.searchSupport[item] === 'function'
-      )
+      Object.keys(match.searchSupport).some((item) => {
+        if (this.helper.isValidKey(item, match.searchSupport)) {
+          return typeof match.searchSupport[item] === 'function';
+        }
+        return false;
+      })
     ) {
       listSearchParams.pageSize = 30;
     }
@@ -284,6 +292,7 @@ class OCC extends BaseCommand {
       await this.login();
       return await this.getShop(match, shopId);
     } else if (!listData.result) {
+      this.logger.debug(listData);
       this.spinner.fail(
         this.helper.showWeakenTips(
           '服务器故障，请稍后再试。',
@@ -291,25 +300,39 @@ class OCC extends BaseCommand {
         )
       );
     } else if (!listData.result.list.length) {
+      this.logger.debug(listData);
       this.spinner.fail('未找到店铺');
     }
-    this.logger.debug(listData);
     let shop = {} as ShopItem;
-    // if (
-    //   Object.keys(match.searchSupport).some(
-    //     // @ts-ignore
-    //     (item) => typeof match.searchSupport[item] === 'function'
-    //   )
-    // ) {
-    //   const callback = Object.keys(match.searchSupport).find(
-    //     // @ts-ignore
-    //     (item) => typeof match.searchSupport[item] === 'function'
-    //   );
-    //   // @ts-ignore
-    //   shop = listData.result.list.find((item) => callback(item)) as ShopItem;
-    // } else {
-    //   shop = listData.result.list[0];
-    // }
+    if (
+      Object.keys(match.searchSupport).some((item) => {
+        if (this.helper.isValidKey(item, match.searchSupport)) {
+          return typeof match.searchSupport[item] === 'function';
+        }
+        return false;
+      })
+    ) {
+      const callbackStr = Object.keys(match.searchSupport).find((item) => {
+        if (this.helper.isValidKey(item, match.searchSupport)) {
+          return typeof match.searchSupport[item] === 'function';
+        }
+        return false;
+      }) as string;
+      let callback: HackCallback;
+      if (this.helper.isValidKey(callbackStr, match.searchSupport)) {
+        callback = match.searchSupport[callbackStr];
+      }
+      if (this.helper.isValidKey(callbackStr, options)) {
+        shop = listData.result.list.find((item) => {
+          return (
+            callback(item) === options[callbackStr] ||
+            callback(item) === Number(options[callbackStr])
+          );
+        }) as ShopItem;
+      }
+    } else {
+      shop = listData.result.list[0];
+    }
     shop = listData.result.list[0];
     if (options.token === true) {
       this.spinner.text = `正在获取token:${shop.shopName || shop.shopId}`;
@@ -386,8 +409,8 @@ class OCC extends BaseCommand {
       datas = this.parseOpr(this.options.endDate);
     }
     return {
-      startTime: dayjs().add(datas[0]).format('YYYY-MM-DD 00:00:00'),
-      endTime: dayjs().add(datas[1]).format('YYYY-MM-DD 23:59:59')
+      startTime: dayjs().add(datas[0], 'd').format('YYYY-MM-DD 00:00:00'),
+      endTime: dayjs().add(datas[1], 'd').format('YYYY-MM-DD 23:59:59')
     };
   }
   private parseOpr(dateStr: string, isNegative?: boolean): number[] {

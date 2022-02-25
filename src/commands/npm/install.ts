@@ -2,27 +2,27 @@ import semver, { SemVer } from 'semver';
 import axios from 'axios';
 import BaseCommand from '../../util/BaseCommand.js';
 
-interface Flag {
+interface Options {
   dev?: boolean;
 }
 // 安装本地依赖至项目中
 class Install extends BaseCommand {
   private pkg: string;
-  private flag: Flag;
-  constructor(pkgs: string[], flag: Flag) {
+  private options: Options;
+  constructor(pkgs: string[], options: Options) {
     super();
     this.pkg = pkgs[0];
-    this.flag = flag;
+    this.options = options;
   }
   async run() {
-    const { pkg, flag, spinner } = this;
+    const { pkg, options, spinner } = this;
     this.spinner.text = '正在下载';
     const version = await this.getAvailableVersion(pkg);
     const pkgName = `${pkg}@${version}`;
     try {
       await this.npm.install(pkgName, {
-        dependencies: !flag.dev,
-        devDependencies: flag.dev
+        dependencies: !options.dev,
+        devDependencies: options.dev
       });
     } catch {
       spinner.fail('无法下载，请检查名称是否有误');
@@ -54,6 +54,6 @@ class Install extends BaseCommand {
   }
 }
 
-export default async (pkgs: string[], flag: Flag) => {
-  new Install(pkgs, flag).run();
+export default async (pkgs: string[], options: Options) => {
+  new Install(pkgs, options).run();
 };
