@@ -18,7 +18,7 @@ export interface SecretDB {
     bucket: string;
   };
   debug: boolean;
-  occ: {
+  oa: {
     username: string;
     password: string;
     token: string;

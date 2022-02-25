@@ -53,6 +53,7 @@ class Vue extends BaseCommand {
     child.on('message', async (data: any) => {
       if (data.message) {
         this.spinner.fail(`项目${match.name}启动失败：\n${data.message}`);
+        process.exit(0);
       } else {
         this.spinner.succeed(`项目${match.name}启动成功，地址是：${data.url}`);
       }

@@ -152,7 +152,9 @@ class OCC extends BaseCommand {
       const { hash } = new URL(url);
       const token = hash.replace('#/login?code=', '');
       clipboard.writeSync(token);
-      this.spinner.succeed(`已复制店铺 ${shop.shopName} 的token\n${token}`);
+      this.spinner.succeed(
+        `已复制店铺 ${shop.shopName || shop.shopId} 的token\n${token}`
+      );
     } else if (options.token) {
       // token有值，就是根据token登录
       const { origin, pathname } = new URL(url);
@@ -160,7 +162,7 @@ class OCC extends BaseCommand {
       open(`${origin}${pathname}#/login?code=${options.token}`);
     } else if (options.copy) {
       clipboard.writeSync(url);
-      this.spinner.succeed(`已复制店铺 ${shop.shopName} 的地址`);
+      this.spinner.succeed(`已复制店铺 ${shop.shopName || shop.shopId} 的地址`);
     } else if (options.user) {
       const { hash } = new URL(url);
       const token = hash.replace('#/login?code=', '');
@@ -173,7 +175,7 @@ class OCC extends BaseCommand {
           }
         }
       );
-      this.spinner.succeed(`获取店铺 ${shop.shopName} 信息成功`);
+      this.spinner.succeed(`获取店铺 ${shop.shopName || shop.shopId} 信息成功`);
       console.log(data.result);
     } else {
       if (options.pc && ['4', '36'].includes(match.appKey)) {
@@ -182,7 +184,7 @@ class OCC extends BaseCommand {
       } else {
         open(url);
       }
-      this.spinner.succeed(`店铺 ${shop.shopName} 打开成功`);
+      this.spinner.succeed(`店铺 ${shop.shopName || shop.shopId} 打开成功`);
     }
   }
   private getMatch(): { match: typeof map.default; shopId: string } {
@@ -241,10 +243,10 @@ class OCC extends BaseCommand {
     const service = axios.create({
       baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`,
       headers: {
-        token: this.ls.get('occ.token')
+        token: this.ls.get('oa.token')
       }
     });
-    this.logger.debug(this.ls.get('occ.token'));
+    this.logger.debug(this.ls.get('oa.token'));
     let listData: ShopListResponse;
     const listSearchParams = {
       appKey: match.appKey,
@@ -310,16 +312,16 @@ class OCC extends BaseCommand {
     // }
     shop = listData.result.list[0];
     if (options.token === true) {
-      this.spinner.text = `正在获取token:${shop.shopName}`;
+      this.spinner.text = `正在获取token:${shop.shopName || shop.shopId}`;
     } else if (!options.token) {
-      this.spinner.text = `正在打开店铺:${shop.shopName}`;
+      this.spinner.text = `正在打开店铺:${shop.shopName || shop.shopId}`;
     }
     await this.helper.sleep(1500);
     const {
       data: { result }
     } = await service.post(match.url.login, match.loginKey(shop), {
       headers: {
-        token: this.ls.get('occ.token')
+        token: this.ls.get('oa.token')
       }
     });
     return {
@@ -344,7 +346,7 @@ class OCC extends BaseCommand {
       name: 'vrCode'
     });
     this.spinner.text = '正在登录';
-    const { username, password } = this.ls.get('occ') as SecretDB['occ'];
+    const { username, password } = this.ls.get('oa') as SecretDB['oa'];
     const {
       data: { token }
     } = await axios.post('https://api.diankeduo.cn/zhili/login', {
@@ -353,7 +355,7 @@ class OCC extends BaseCommand {
       uuid,
       code: answer.vrCode
     });
-    this.ls.set('occ.token', token);
+    this.ls.set('oa.token', token);
     await fs.remove(target);
     this.spinner.succeed('登录成功', true);
     await this.helper.sleep(1500);

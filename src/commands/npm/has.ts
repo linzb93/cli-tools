@@ -18,7 +18,7 @@ class Has extends BaseCommand {
     this.spinner.text = '正在查找';
     const listRet = await this.npm.getList(name);
     if (!listRet.list.length) {
-      this.handleNotFound(name, flag.dev);
+      await this.handleNotFound(name, flag.dev);
       return;
     }
     if (listRet.list.length === 1) {
@@ -39,6 +39,7 @@ class Has extends BaseCommand {
     if (action) {
       await npmInstall([name], { dev });
     }
+    this.spinner.stop();
   }
 }
 

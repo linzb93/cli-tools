@@ -78,7 +78,7 @@ class Agent extends BaseCommand {
         const ans = (await this.helper.inquirer.prompt([
           {
             type: 'confirm',
-            message: '是否将服务器数据存入缓存？',
+            message: '是否将项目数据存入缓存？',
             name: 'choosed'
           },
           {

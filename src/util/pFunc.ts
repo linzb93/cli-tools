@@ -68,7 +68,7 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
       return;
     }
     console.log(
-      `${chalk.cyan('actions:')} ${chalk.yellow(command)}${
+      `${chalk.cyan('>')} ${chalk.yellow(command)}${
         (commandItem as CommandItem).suffix
           ? ` ${chalk.gray(`-> ${(commandItem as CommandItem).suffix}`)}`
           : ''
@@ -81,9 +81,9 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
           retryTimesCallback: (times, errorMessage) => {
             console.log(
               showWeakenTips(
-                `${chalk.cyan('actions:')} ${chalk.yellow(
-                  command
-                )} 第${chalk.magenta(times)}次重复。`,
+                `${chalk.cyan('>')} ${chalk.yellow(command)} 第${chalk.magenta(
+                  times
+                )}次重复。`,
                 errorMessage as string
               )
             );

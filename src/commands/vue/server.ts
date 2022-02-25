@@ -18,7 +18,7 @@ child.stdout
           });
         } else {
           process.send?.({
-            message: 'not found'
+            message: 'url not found'
           });
         }
       }
@@ -27,4 +27,21 @@ child.stdout
     })
   )
   .pipe(emptyWritableStream);
-child.stderr && child.stderr.pipe(emptyWritableStream);
+child.stderr
+  ?.pipe(
+    through(function (data, enc, callback) {
+      if (data.toString().includes('Error:')) {
+        process.send?.({
+          message: data.toString()
+        });
+      }
+      this.push(data);
+      callback();
+    })
+  )
+  .pipe(emptyWritableStream);
+process.on('unhandledRejection', (e) => {
+  process.send?.({
+    message: (e as Error).message
+  });
+});
