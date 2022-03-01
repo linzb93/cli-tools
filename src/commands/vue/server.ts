@@ -30,7 +30,11 @@ child.stdout
 child.stderr
   ?.pipe(
     through(function (data, enc, callback) {
-      if (data.toString().includes('Error:')) {
+      if (
+        ['Error:', 'ERROR'].some((text: string) =>
+          data.toString().includes(text)
+        )
+      ) {
         process.send?.({
           message: data.toString()
         });

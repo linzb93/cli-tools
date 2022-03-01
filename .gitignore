@@ -9,3 +9,4 @@ dist
 data/
 .temp
 *.txt
+*.log

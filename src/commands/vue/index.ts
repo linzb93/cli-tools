@@ -2,7 +2,7 @@ import path from 'path';
 import clipboard from 'clipboardy';
 import { fork } from 'child_process';
 import BaseCommand from '../../util/BaseCommand.js';
-import { getMatch } from './utils.js';
+import { getMatches } from './utils.js';
 
 import setProject from './set.js';
 import stopProject from './stop.js';
@@ -16,6 +16,7 @@ export interface VueServerInfo {
   name: string;
   servePort: string;
   buildPort: string;
+  root: string;
   id: string;
 }
 
@@ -38,13 +39,17 @@ class Vue extends BaseCommand {
       return;
     }
     if (datas[0] === 'build') {
-      buildServe();
+      buildServe({ force: false });
       return;
     }
     const db = this.helper.createDB('vueServer');
     await db.read();
     const items = (db.data as any).items as VueServerInfo[];
-    const match = await getMatch(items, '选择要开启的项目');
+    const match = (await getMatches({
+      source: items,
+      tip: '请选择要开启的项目',
+      isServe: true
+    })) as VueServerInfo;
     this.spinner.text = `正在启动项目${match.name}`;
     const child = fork(
       path.resolve(this.helper.root, 'dist/commands/vue/server.js'),

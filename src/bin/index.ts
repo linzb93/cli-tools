@@ -72,6 +72,7 @@ program
 program
   .command('vue [data...]')
   .option('-c, --copy', '复制地址')
+  .option('-f, --force', '强制覆盖')
   .action(async (data, options) => {
     const vue = (await import('../commands/vue/index.js')).default;
     vue(data, options);
