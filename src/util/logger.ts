@@ -1,9 +1,8 @@
-import consola from 'consola';
 import readline from 'readline';
 import spinner from './spinner.js';
 import lodash from 'lodash';
 import chalk from 'chalk';
-
+import logSymbols from 'log-symbols';
 const { isPlainObject } = lodash;
 
 function hook(callback: () => void) {
@@ -21,22 +20,22 @@ function hook(callback: () => void) {
 export default {
   success(text: string | number): void {
     hook(() => {
-      consola.success(text);
+      console.log(`${logSymbols.success} ${text}`);
     });
   },
   info(text: string | number): void {
     hook(() => {
-      consola.info(text);
+      console.log(`${logSymbols.info} ${text}`);
     });
   },
   warn(text: string | number): void {
     hook(() => {
-      consola.warn(text);
+      console.log(`${logSymbols.warning} ${text}`);
     });
   },
   error(text: string | number, needExit?: boolean): void {
     hook(() => {
-      consola.error(text);
+      console.log(`${logSymbols.error} ${text}`);
     });
     if (needExit) {
       process.exit(1);

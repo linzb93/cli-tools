@@ -1,17 +1,17 @@
-// import OCC from './occ.js';
-class Test {
-  private options: any;
-  private data: any;
-  constructor(data: any, options: any) {
-    this.data = data;
-    this.options = options;
-  }
+import BaseCommand from '../util/BaseCommand.js';
+class Test extends BaseCommand {
   run() {
     // const { data, options } = this;
     // console.log(new OCC(data, options).getParsedDate('buyDate'));
+    this.helper.inquirer.prompt({
+      message: '请选择',
+      type: 'list',
+      name: 'list',
+      choices: ['1', '2']
+    });
   }
 }
 
 export default (data: any, option: any) => {
-  new Test(data, option).run();
+  new Test().run();
 };

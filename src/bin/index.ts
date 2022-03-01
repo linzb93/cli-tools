@@ -40,6 +40,7 @@ program
   .option('--commit <msg>', '提交信息')
   .option('--latest', '获取最新版的')
   .option('--type <type>', '类型')
+  .option('--tag <name>', 'tag名称')
   .action(async (subCommand = 'index', rest, cmd) => {
     if (subCommand === 'tag') {
       subCommand = 'tag/index';
@@ -139,5 +140,8 @@ program.command('upload <filename>').action(async (file) => {
   const upload = (await import('../commands/upload.js')).default;
   upload(file);
 });
-
+program.command('ip').action(async (file) => {
+  const ip = (await import('../commands/ip.js')).default;
+  ip();
+});
 program.parse();

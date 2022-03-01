@@ -13,21 +13,21 @@ interface Options {
   from?: string;
 }
 class Clone extends BaseCommand {
-  private pkg: string;
+  private source: string;
   private options: Options;
-  constructor(pkg: string[], options: Options) {
+  constructor(source: string[], options: Options) {
     super();
-    this.pkg = pkg[0];
+    this.source = source[0];
     this.options = options;
   }
   async run() {
-    const { pkg, options } = this;
+    const { source, options } = this;
     this.helper.validate(
       {
-        pkg
+        source
       },
       {
-        pkg: [
+        source: [
           {
             required: true,
             message:
@@ -42,8 +42,8 @@ class Clone extends BaseCommand {
     if (!openMap[options.dir]) {
       options.dir = 'source';
     }
-    if (this.isGitUrl(pkg)) {
-      const url = this.toGitUrl(pkg);
+    if (this.isGitUrl(source)) {
+      const url = this.toGitUrl(source);
       try {
         dirName = await this.git.clone({
           url,
@@ -69,7 +69,7 @@ class Clone extends BaseCommand {
         pageRes = await this.helper.pRetry(
           () =>
             axios({
-              url: `https://github.com/search?q=${pkg}`,
+              url: `https://github.com/search?q=${source}`,
               timeout: 15000
             }),
           {
@@ -120,7 +120,7 @@ class Clone extends BaseCommand {
     }
     let page: Npm;
     try {
-      page = await this.npm.getPage(pkg);
+      page = await this.npm.getPage(source);
     } catch (error) {
       this.logger.error((error as Error).message);
       return;
@@ -194,6 +194,6 @@ class Clone extends BaseCommand {
   }
 }
 
-export default (pkg: string[], options: Options) => {
-  new Clone(pkg, options).run();
+export default (source: string[], options: Options) => {
+  new Clone(source, options).run();
 };

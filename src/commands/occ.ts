@@ -362,6 +362,7 @@ class OCC extends BaseCommand {
     const picBuffer = Buffer.from(img, 'base64');
     const target = path.resolve(this.helper.root, '.temp/vrCode.png');
     await fs.writeFile(target, picBuffer);
+    await this.helper.sleep(500);
     await this.helper.openInEditor(target);
     const answer = await this.helper.inquirer.prompt({
       type: 'input',

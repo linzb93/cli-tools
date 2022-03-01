@@ -14,6 +14,7 @@ const { get: objectGet } = lodash;
 
 interface Options {
   commit: string;
+  tag: string;
 }
 class Deploy extends BaseCommand {
   private data: string[];
@@ -88,6 +89,8 @@ class Deploy extends BaseCommand {
         silent: true,
         type: 'update'
       });
+    } else {
+      newTag = options.tag;
     }
     if (curBranch === 'release' && env === 'prod') {
       this.logger.warn('不能从release部署到生产环境，请切换回开发分支');
@@ -95,10 +98,6 @@ class Deploy extends BaseCommand {
     }
     if (curBranch === 'master') {
       this.logger.warn('检查下有没有测试代码没删掉！！！');
-      newTag = await gitTag({
-        silent: true,
-        type: 'patch'
-      });
       try {
         const flow = [
           'git add .',
