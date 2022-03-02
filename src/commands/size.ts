@@ -13,7 +13,6 @@ interface Options {
 class GetSize extends BaseCommand {
   private filePath: string;
   private options: Options;
-  private size = 0;
   constructor(filePath: string, options: Options) {
     super();
     this.filePath = filePath;
@@ -45,14 +44,14 @@ class GetSize extends BaseCommand {
         this.logger.error('文件地址不存在或无法正常下载');
         return;
       }
-      const ctx = this;
+      let size = 0;
       const extname = this.getExtname(filePath);
       const targetName = `.temp/getSizeImage${extname}`;
       await new Promise((resolve) => {
         res.data
           .pipe(
             through(function (data, _, callback) {
-              ctx.size += data.toString().length;
+              size += data.toString().length;
               this.push(data);
               callback();
             })
@@ -66,17 +65,17 @@ class GetSize extends BaseCommand {
             resolve(null);
           });
       });
-      const size = bytes(this.size);
+      const bytesSize = bytes(size);
       if (this.options.rect) {
         const dimensions = sizeOf(targetName);
         this.logger.success(
-          `大小：${size}，尺寸：${dimensions.width} X ${dimensions.height}`
+          `大小：${bytesSize}，尺寸：${dimensions.width} X ${dimensions.height}`
         );
         await del(targetName);
       } else {
-        this.logger.success(size);
+        this.logger.success(bytesSize);
       }
-      return size;
+      return bytesSize;
     }
     let fileData: FSStats;
     try {
@@ -96,17 +95,6 @@ class GetSize extends BaseCommand {
     }
     return ret;
   }
-  //   private async getSize(inputStream: Readable): Promise<number> {
-  //     let len = 0;
-  //     return new Promise((resolve) => {
-  //       inputStream.on('data', (str) => {
-  //         len += str.length;
-  //       });
-  //       inputStream.on('end', () => {
-  //         resolve(len);
-  //       });
-  //     });
-  //   }
   private getExtname(filename: string) {
     const exts = ['.jpg', '.png', '.webp', '.gif'];
     for (const ext of exts) {

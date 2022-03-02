@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import chokidar, { FSWatcher } from 'chokidar';
 import { fork, ChildProcess } from 'child_process';
 import path from 'path';
@@ -5,7 +6,6 @@ import chalk from 'chalk';
 import lodash from 'lodash';
 import fs from 'fs-extra';
 import BaseCommand from '../util/BaseCommand.js';
-import { Readable } from 'stream';
 
 const { debounce } = lodash;
 
@@ -99,6 +99,6 @@ class Monitor extends BaseCommand {
   }
 }
 
-export default (filename: string | undefined, combinedOptions: string[]) => {
+export default (filename: string, combinedOptions: string[]) => {
   new Monitor(filename, combinedOptions).run();
 };

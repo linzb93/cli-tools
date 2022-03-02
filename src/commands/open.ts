@@ -79,7 +79,7 @@ class Open extends BaseCommand {
         {
           type: 'list',
           name: 'source',
-          message: '选择要打开的源码',
+          message: '选择要打开的项目',
           choices: dirs.map((dir) => path.basename(dir))
         }
       ]);

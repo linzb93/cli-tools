@@ -5,15 +5,25 @@ import path from 'path';
 import BaseCommand from '../util/BaseCommand.js';
 const { random } = lodash;
 
+interface Options {
+  markdown: true;
+}
+
 class Upload extends BaseCommand {
   private pic: string;
-  constructor(pic: string) {
+  private options: Options;
+  constructor(pic: string, options: Options) {
     super();
     this.pic = pic;
+    this.options = options;
   }
   async run() {
+    const { options } = this;
     const rawPic = this.pic;
     const pic = rawPic.replace(/\\/g, '/');
+    if (!this.ls.get('oss')) {
+      this.logger.error('没有配置OSS config，无法上传图片', true);
+    }
     const ossConfig = this.ls.get('oss') as Omit<OssConfig, 'timeout'>;
     const oss = new OSS({
       ...ossConfig,
@@ -32,7 +42,11 @@ class Upload extends BaseCommand {
     // 为了适配Typora的图片上传功能，url要另起一行
     this.logger.success(`图片上传成功，地址是：
         ${url}`);
-    clipboard.writeSync(url);
+    if (options.markdown) {
+      clipboard.writeSync(`![](${url})`);
+    } else {
+      clipboard.writeSync(url);
+    }
   }
   private getUploadFileName() {
     const timeStamp = `${random(
@@ -43,6 +57,6 @@ class Upload extends BaseCommand {
   }
 }
 
-export default (pic: string) => {
-  new Upload(pic).run();
+export default (pic: string, options: Options) => {
+  new Upload(pic, options).run();
 };

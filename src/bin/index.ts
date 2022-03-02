@@ -136,10 +136,13 @@ program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;
   clear(filename);
 });
-program.command('upload <filename>').action(async (file) => {
-  const upload = (await import('../commands/upload.js')).default;
-  upload(file);
-});
+program
+  .command('upload <filename>')
+  .option('-m,--markdown', '复制markdown语法')
+  .action(async (file, options) => {
+    const upload = (await import('../commands/upload.js')).default;
+    upload(file, options);
+  });
 program.command('ip').action(async (file) => {
   const ip = (await import('../commands/ip.js')).default;
   ip();

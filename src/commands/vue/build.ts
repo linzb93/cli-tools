@@ -59,8 +59,7 @@ class BuildServe extends BaseCommand {
             const local = `http://localhost:${port}`;
             clipboard.writeSync(url);
             if (matches.length === 1) {
-              this.spinner.succeed(`
-打包完成，服务器已启动：
+              this.spinner.succeed(`打包完成，服务器已启动：
 - 本地：${chalk.magenta(`${local}${beforeData[0].root}`)}
 - 网络：${chalk.magenta(`${url}${beforeData[0].root}`)}`);
             } else {
@@ -69,10 +68,8 @@ ${item.name}:
 - 本地：${chalk.magenta(`${local}${item.root}`)}
 - 网络：${chalk.magenta(`${url}${item.root}`)}
                 `;
-              this.spinner.succeed(`
-打包完成，服务器已启动：
-${beforeData.map(callback).join('\n')}
-                `);
+              this.spinner.succeed(`打包完成，服务器已启动：
+${beforeData.map(callback).join('\n')}`);
             }
             matches.forEach((match) => {
               match.buildPort = port.toString();
