@@ -6,7 +6,6 @@ import BaseCommand from '../util/BaseCommand.js';
 const numberRE = /[1-9][0-9]*/;
 
 type Params = [string] | [string, string];
-// 测试回退
 class Kill extends BaseCommand {
   private args: Params;
   constructor(args: Params) {
