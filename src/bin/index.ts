@@ -46,7 +46,7 @@ program
       subCommand = 'tag/index';
     }
     if (
-      !['clone', 'deploy', 'rename', 'scan', 'revert', 'tag/index'].includes(
+      !['clone', 'deploy', 'rename', 'scan', 'reset', 'tag/index'].includes(
         subCommand
       )
     ) {

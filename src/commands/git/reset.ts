@@ -8,10 +8,10 @@ class Revert extends BaseCommand {
   }
   async run() {
     const { filename } = this;
-    const firstCommitId = await this.git.firstCommit();
-    await this.git.revert({
+    const headSecondCommit = await this.git.getHeadSecondCommit();
+    await this.git.reset({
       filename,
-      id: firstCommitId
+      id: headSecondCommit
     });
     this.logger.success('回退成功');
   }

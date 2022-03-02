@@ -103,11 +103,11 @@ export default {
     const { stdout } = await execa('git branch --show-current');
     return stdout;
   },
-  async firstCommit(): Promise<string> {
-    const { stdout } = await execa('git log --format=oneline -1');
-    return stdout.split(' ')[0];
+  async getHeadSecondCommit(): Promise<string> {
+    const { stdout } = await execa('git log --format=oneline -2');
+    return stdout.split('\n')[1].split(' ')[0];
   },
-  async revert({
+  async reset({
     filename,
     id
   }: {
