@@ -103,6 +103,19 @@ export default {
     const { stdout } = await execa('git branch --show-current');
     return stdout;
   },
+  async firstCommit(): Promise<string> {
+    const { stdout } = await execa('git log --format=oneline -1');
+    return stdout.split(' ')[0];
+  },
+  async revert({
+    filename,
+    id
+  }: {
+    filename: string;
+    id: string;
+  }): Promise<void> {
+    await execa(`git revert ${id} ${filename}`);
+  },
   async tag(): Promise<string[]> {
     const { stdout } = await execa('git tag');
     return stdout === '' ? [] : stdout.split('\n');

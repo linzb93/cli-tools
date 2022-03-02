@@ -46,7 +46,9 @@ program
       subCommand = 'tag/index';
     }
     if (
-      !['clone', 'deploy', 'rename', 'scan', 'tag/index'].includes(subCommand)
+      !['clone', 'deploy', 'rename', 'scan', 'revert', 'tag/index'].includes(
+        subCommand
+      )
     ) {
       logger.error('命令不存在，请重新输入', true);
     }
