@@ -114,7 +114,8 @@ export default {
     filename: string;
     id: string;
   }): Promise<void> {
-    await execa(`git revert ${id} ${filename}`);
+    await execa(`git reset ${id} ${filename}`);
+    await execa(`git checkout ${id} ${filename}`);
   },
   async tag(): Promise<string[]> {
     const { stdout } = await execa('git tag');
