@@ -55,6 +55,9 @@ class Deploy extends BaseCommand {
   }
   private async deployToGithub() {
     const { options } = this;
+    if (!options.commit) {
+      this.logger.warn('不建议不写提交信息，请认真填写');
+    }
     const flow: (string | CommandItem)[] = [
       {
         message: 'git pull',
@@ -90,7 +93,9 @@ class Deploy extends BaseCommand {
     const { data, options } = this;
     const env = data[0];
     const curBranch = await this.git.getCurrentBranch();
-    const newTag = options.tag;
+    if (!options.commit) {
+      this.logger.warn('不建议不写提交信息，请认真填写');
+    }
     if (curBranch === 'release' && env === 'prod') {
       this.logger.warn('不能从release部署到生产环境，请切换回开发分支');
       return;
@@ -117,8 +122,8 @@ class Deploy extends BaseCommand {
           },
           'git push'
         ];
-        if (newTag !== '') {
-          flow.push(`git tag ${newTag}`, `git push origin ${newTag}`);
+        if (options.tag !== '') {
+          flow.push(`git tag ${options.tag}`, `git push origin ${options.tag}`);
         }
         await this.helper.sequenceExec(flow);
         clipboard.writeSync(
@@ -173,7 +178,7 @@ class Deploy extends BaseCommand {
           'git push'
         ];
         if (env === 'prod') {
-          flow.push(`git tag ${newTag}`, `git push origin ${newTag}`);
+          flow.push(`git tag ${options.tag}`, `git push origin ${options.tag}`);
         } else {
           flow.push(`git checkout ${curBranch}`);
         }
