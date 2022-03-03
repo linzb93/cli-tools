@@ -244,7 +244,7 @@ class OCC extends BaseCommand {
   }> {
     const { options } = this;
     const service = axios.create({
-      baseURL: `https://api.diankeduo.cn/zhili${match.url.base}`,
+      baseURL: `${this.ls.get('oa.apiPrefix')}${match.url.base}`,
       headers: {
         token: this.ls.get('oa.token')
       }
