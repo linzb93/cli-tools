@@ -70,7 +70,10 @@ class Deploy extends BaseCommand {
     ];
     const gitStatus = await this.git.getPushStatus();
     if (gitStatus === 1) {
-      flow.unshift('git add .', `git commit -m ${options.commit || 'update'}`);
+      flow.unshift('git add .', {
+        message: `git commit -m ${options.commit || 'update'}`,
+        onError: () => {}
+      });
     } else if (gitStatus === 3) {
       flow.pop();
       const pkgData = await readPkg();
