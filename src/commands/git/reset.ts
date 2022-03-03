@@ -4,7 +4,7 @@ class Revert extends BaseCommand {
   private filename: string;
   constructor(filename: string) {
     super();
-    this.filename = filename;
+    this.filename = filename.replace(/\\/g, '/');
   }
   async run() {
     const { filename } = this;
