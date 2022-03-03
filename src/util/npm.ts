@@ -17,6 +17,7 @@ interface InstallOptions {
   devDependencies?: boolean;
   dependencies?: boolean;
   global?: boolean;
+  cwd?: string;
 }
 async function install(name: string): Promise<void>;
 async function install(name: string, options: InstallOptions): Promise<void>;

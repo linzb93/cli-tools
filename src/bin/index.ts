@@ -41,6 +41,7 @@ program
   .option('--latest', '获取最新版的')
   .option('--type <type>', '类型')
   .option('--tag <name>', 'tag名称')
+  .option('-i,--install', '安装')
   .action(async (subCommand = 'index', rest, cmd) => {
     if (subCommand === 'tag') {
       subCommand = 'tag/index';

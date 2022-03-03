@@ -11,6 +11,7 @@ interface Options {
   dir: string;
   open?: boolean;
   from?: string;
+  install?: boolean;
 }
 class Clone extends BaseCommand {
   private source: string;
@@ -54,6 +55,12 @@ class Clone extends BaseCommand {
         this.spinner.fail(`下载失败:
                 ${(error as Error).message}`);
         return;
+      }
+      if (options.install) {
+        this.spinner.text = '正在安装依赖';
+        await this.npm.install({
+          cwd: path.join(openMap[options.dir], path.basename(url, '.git'))
+        });
       }
       this.spinner.succeed('下载成功');
       if (options.open) {
@@ -109,6 +116,12 @@ class Clone extends BaseCommand {
         this.spinner.fail(`下载失败:
                 ${(error as Error).message}`);
         return;
+      }
+      if (options.install) {
+        this.spinner.text = '正在安装依赖';
+        await this.npm.install({
+          cwd: path.join(openMap[options.dir], path.basename(url, '.git'))
+        });
       }
       this.spinner.succeed('下载成功');
       if (options.open) {
@@ -174,6 +187,12 @@ class Clone extends BaseCommand {
       return;
     }
     this.spinner.succeed('下载成功');
+    if (options.install) {
+      this.spinner.text = '正在安装依赖';
+      await this.npm.install({
+        cwd: path.join(openMap[options.dir], path.basename(repo, '.git'))
+      });
+    }
     if (options.open) {
       await this.helper.openInEditor(path.resolve(cwd, dirName));
     }
