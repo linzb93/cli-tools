@@ -4,6 +4,7 @@ import createCallsiteRecord, { CallsiteRecord } from 'callsite-record';
 import path from 'path';
 import chalk from 'chalk';
 import logger from './logger.js';
+import spinner from './spinner.js';
 import { openInEditor, root } from './helper.js';
 
 export default async () => {
@@ -44,6 +45,7 @@ async function errorHandler(
     console.log(
       (createCallsiteRecord({ forError: e }) as CallsiteRecord).renderSync({})
     );
+    spinner.stop();
     if (process.cwd() === root) {
       return;
     }

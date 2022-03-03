@@ -140,6 +140,13 @@ program.command('clear <filename>').action(async (filename) => {
   clear(filename);
 });
 program
+  .command('eng <text>')
+  .option('-e,--example', '显示范例')
+  .action(async (text, options) => {
+    const translate = (await import('../commands/translate.js')).default;
+    translate(text, options);
+  });
+program
   .command('upload <filename>')
   .option('-m,--markdown', '复制markdown语法')
   .action(async (file, options) => {
