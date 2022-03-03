@@ -5,16 +5,23 @@
  * mycli git deploy prod 生产环境
  * 也可以部署github的
  */
-import BaseCommand from '../../util/BaseCommand.js';
-import gitTag from './tag/index.js';
 import lodash from 'lodash';
+import clipboard from 'clipboardy';
+import fs from 'fs-extra';
+import open from 'open';
 import readPkg from 'read-pkg';
 import { CommandItem } from '../../util/pFunc';
+import BaseCommand from '../../util/BaseCommand.js';
+import { AnyObject } from '../../util/types.js';
 const { get: objectGet } = lodash;
 
 interface Options {
   commit: string;
   tag: string;
+}
+interface JenkinsProject {
+  name: string;
+  id: string;
 }
 class Deploy extends BaseCommand {
   private data: string[];
@@ -83,18 +90,15 @@ class Deploy extends BaseCommand {
     const { data, options } = this;
     const env = data[0];
     const curBranch = await this.git.getCurrentBranch();
-    let newTag = '';
-    if (env === 'prod') {
-      newTag = await gitTag({
-        silent: true,
-        type: 'update'
-      });
-    } else {
-      newTag = options.tag;
-    }
+    const newTag = options.tag;
     if (curBranch === 'release' && env === 'prod') {
       this.logger.warn('不能从release部署到生产环境，请切换回开发分支');
       return;
+    }
+    const projectConf = await this.getProjectConfig();
+    let jenkins;
+    if (projectConf) {
+      jenkins = projectConf.jenkins as JenkinsProject;
     }
     if (curBranch === 'master') {
       this.logger.warn('检查下有没有测试代码没删掉！！！');
@@ -117,6 +121,9 @@ class Deploy extends BaseCommand {
           flow.push(`git tag ${newTag}`, `git push origin ${newTag}`);
         }
         await this.helper.sequenceExec(flow);
+        clipboard.writeSync(
+          `${jenkins?.name} 的 ${jenkins?.id}_online。tag:${options.tag}`
+        );
       } catch (error) {
         this.logger.error((error as Error).message);
         return;
@@ -176,7 +183,30 @@ class Deploy extends BaseCommand {
         return;
       }
     }
-    this.logger.success('操作成功');
+    if (env === 'prod') {
+      clipboard.writeSync(
+        `${jenkins?.name} 的 ${jenkins?.id}_online。tag:${options.tag}`
+      );
+    }
+    if (jenkins) {
+      const { name, id } = jenkins;
+      await open(
+        `http://192.168.0.32:8080/view/${name}/job/${id}_${
+          env === 'prod' ? 'online' : 'test'
+        }/`
+      );
+    }
+    this.logger.success(
+      `操作成功${env === 'prod' ? '，已复制部署信息' : '。'}`
+    );
+  }
+  private async getProjectConfig(): Promise<AnyObject | null> {
+    try {
+      const data = await fs.readJSON('project.config.json');
+      return data;
+    } catch (error) {
+      return null;
+    }
   }
 }
 

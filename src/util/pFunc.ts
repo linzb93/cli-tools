@@ -81,9 +81,7 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
           retryTimesCallback: (times, errorMessage) => {
             console.log(
               showWeakenTips(
-                `${chalk.cyan('>')} ${chalk.yellow(command)} 第${chalk.magenta(
-                  times
-                )}次重复。`,
+                `${chalk.yellow(command)} 第${chalk.magenta(times)}次重复。`,
                 errorMessage as string
               )
             );
