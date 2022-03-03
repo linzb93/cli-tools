@@ -10,8 +10,6 @@ interface Options {
   example: boolean;
 }
 const { chunk } = lodash;
-const { stdout } = process;
-const termWidth = stdout.getWindowSize()[0];
 
 class Translate extends BaseCommand {
   private text: string;
@@ -36,11 +34,7 @@ class Translate extends BaseCommand {
         .children('ul')
         .children()
         .map((_, item) => {
-          const strArr = chunk(
-            $(item).text().replace(/\s/g, '').split(''),
-            Math.floor(termWidth / 4)
-          );
-          const typeRet = strArr.map((item) => item.join('')).join('\n');
+          const typeRet = this.chunk($(item).text().replace(/\s/g, ''));
           if (typeRet.includes('.')) {
             const type = typeRet.split('.')[0];
             return `${chalk.gray(type)} ${typeRet.split('.')[1]}`;
@@ -57,13 +51,17 @@ class Translate extends BaseCommand {
         .each((_, item) => {
           const $list = $(item).children('p');
           const $en = isC2E ? $list.eq(1) : $list.first();
-          const enText = Array.from(
-            $en.children('span').map((_, sub) => $(sub).text())
-          ).join('');
+          const enText = this.chunk(
+            Array.from(
+              $en.children('span').map((_, sub) => $(sub).text())
+            ).join('')
+          );
           const $cn = isC2E ? $list.first() : $list.eq(1);
-          const cnText = Array.from(
-            $cn.children('span').map((_, sub) => $(sub).text())
-          ).join('');
+          const cnText = this.chunk(
+            Array.from(
+              $cn.children('span').map((_, sub) => $(sub).text())
+            ).join('')
+          );
           if (isC2E) {
             arrs.push({
               en: enText,
@@ -109,6 +107,12 @@ class Translate extends BaseCommand {
         })
       );
     }
+  }
+  chunk(str: string): string {
+    const data = str.split('');
+    return chunk(data, 30)
+      .map((item) => item.join(''))
+      .join('\n');
   }
 }
 
