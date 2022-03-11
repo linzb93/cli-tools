@@ -104,7 +104,7 @@ ${beforeData.map(callback).join('\n')}
     const { options } = this;
     const data = options.force
       ? matches
-      : matches.filter((item) => item.buildPort);
+      : matches.filter((item) => !item.buildPort);
     return await pMap(
       data,
       async (item) => {

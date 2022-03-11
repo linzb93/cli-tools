@@ -196,7 +196,7 @@ class Deploy extends BaseCommand {
         `${jenkins?.name} 的 ${jenkins?.id}_online。tag:${options.tag}`
       );
     }
-    if (jenkins) {
+    if (jenkins && curBranch !== 'master') {
       const { name, id } = jenkins;
       await open(
         `http://192.168.0.32:8080/view/${name}/job/${id}_${

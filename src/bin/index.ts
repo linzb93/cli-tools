@@ -153,6 +153,10 @@ program
     const translate = (await import('../commands/translate.js')).default;
     translate(text, options);
   });
+program.command('color <text>').action(async (data) => {
+  const color = (await import('../commands/color.js')).default;
+  color(data);
+});
 program
   .command('upload <filename>')
   .option('-m,--markdown', '复制markdown语法')

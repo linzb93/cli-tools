@@ -6,9 +6,8 @@ class Ip extends BaseCommand {
   async run() {
     const iIp = await internalIp.v4();
     const pIp = await publicIp.v4();
-    this.logger.success(
-      `内网IP: ${chalk.cyan(iIp)}\n  公网IP: ${chalk.cyan(pIp)}`
-    );
+    this.logger.success(`内网IP: ${chalk.cyan(iIp)}
+  公网IP: ${chalk.cyan(pIp)}`);
   }
 }
 

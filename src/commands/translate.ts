@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import boxen from 'boxen';
 import axios from 'axios';
 import chalk from 'chalk';
@@ -9,7 +9,7 @@ import BaseCommand from '../util/BaseCommand.js';
 interface Options {
   example: boolean;
 }
-const { chunk } = lodash;
+const { last } = lodash;
 
 class Translate extends BaseCommand {
   private text: string;
@@ -109,10 +109,24 @@ class Translate extends BaseCommand {
     }
   }
   chunk(str: string): string {
-    const data = str.split('');
-    return chunk(data, 30)
-      .map((item) => item.join(''))
-      .join('\n');
+    // 30个字母一行，不隔断一个单词
+    const isEn = /^[a-zA-Z0-9,\.\?\s\']+$/.test(str);
+    const lineLength = isEn ? 40 : 20;
+    const data = str.split(isEn ? ' ' : '');
+    const result: string[] = [''];
+    for (let index = 0; index < data.length; index++) {
+      const item = last(result) as string;
+      if (item.length < lineLength) {
+        result[result.length - 1] += data[index] + (isEn ? ' ' : '');
+      } else {
+        result.push(data[index] + (isEn ? ' ' : ''));
+      }
+    }
+    return result.join('\n');
+    // const data = str.split('');
+    // return chunk(data, 30)
+    //   .map((item) => item.join(''))
+    //   .join('\n');
   }
 }
 

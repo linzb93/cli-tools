@@ -41,7 +41,7 @@ class Upload extends BaseCommand {
     }
     // 为了适配Typora的图片上传功能，url要另起一行
     this.logger.success(`图片上传成功，地址是：
-        ${url}`);
+${url}`);
     if (options.markdown) {
       clipboard.writeSync(`![](${url})`);
     } else {
