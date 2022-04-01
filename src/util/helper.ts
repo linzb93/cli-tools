@@ -50,9 +50,12 @@ export const validate = (
 
 export const root = path.join(fileURLToPath(import.meta.url), '../../../');
 
-export const openInEditor = async (project: string): Promise<void> => {
+export const openInEditor = async (
+  project: string,
+  isGoto?: boolean
+): Promise<void> => {
   try {
-    await execa(`code ${project}`);
+    await execa(`code ${isGoto ? '-g' : ''} ${project}`);
   } catch (cmdError) {
     try {
       await fs.access(project);

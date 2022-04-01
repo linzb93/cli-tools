@@ -1,5 +1,6 @@
 import path from 'path';
 import clipboard from 'clipboardy';
+import chalk from 'chalk';
 import { fork } from 'child_process';
 import BaseCommand from '../../util/BaseCommand.js';
 import { getMatches } from './utils.js';
@@ -57,10 +58,14 @@ class Vue extends BaseCommand {
     );
     child.on('message', async (data: any) => {
       if (data.message) {
-        this.spinner.fail(`项目${match.name}启动失败：\n${data.message}`);
+        this.spinner.fail(
+          `项目${chalk.gray(match.name)}启动失败：\n${data.message}`
+        );
         process.exit(0);
       } else {
-        this.spinner.succeed(`项目${match.name}启动成功，地址是：${data.url}`);
+        this.spinner.succeed(
+          `项目${chalk.green(match.name)}启动成功，地址是：${data.url}`
+        );
       }
       const port = data.url.match(/\:(\d+)/)[1];
       match.servePort = port;

@@ -131,6 +131,10 @@ program
     const spider = (await import('../commands/spider/index.js')).default;
     spider(url, option);
   });
+program.command('bug [source]').action(async (source) => {
+  const bug = (await import('../commands/bug.js')).default;
+  bug(source);
+});
 program.command('kill <data...>').action(async (data) => {
   const kill = (await import('../commands/kill.js')).default;
   kill(data);

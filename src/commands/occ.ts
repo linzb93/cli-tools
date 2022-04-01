@@ -47,6 +47,7 @@ const map = {
     appKey: '',
     serviceName: '',
     platform: 0,
+    appKeyName: 'appKey',
     url: {
       base: '',
       list: '',
@@ -70,6 +71,7 @@ const map = {
     appKey: '4',
     serviceName: '经营神器-美团',
     platform: 8,
+    appKeyName: 'appKey',
     url: {
       base: '/',
       list: '/query/businessInfoList',
@@ -93,6 +95,7 @@ const map = {
     appKey: '36',
     serviceName: '装修神器-美团',
     platform: 8,
+    appKeyName: 'appKey',
     url: {
       base: '/',
       list: '/query/businessInfoList',
@@ -118,6 +121,7 @@ const map = {
     baseURL: '/eleocc',
     listUrl: '/manage/getOrderList',
     platform: 11,
+    appKeyName: 'appId',
     url: {
       base: '/eleocc',
       list: '/manage/getOrderList',
@@ -255,7 +259,8 @@ class OCC extends BaseCommand {
       `高级搜索参数：${JSON.stringify(this.getSearchDate(match))}`
     );
     const listSearchParams = {
-      appKey: match.appKey,
+      // @ts-ignore
+      [match.appKeyName]: match[match.appKeyName],
       pageIndex: 1,
       pageSize: 1,
       param: shopId,
