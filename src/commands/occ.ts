@@ -152,7 +152,7 @@ class OCC extends BaseCommand {
   }
   async run() {
     const { options } = this;
-    const { match, shopId } = this.getMatch();
+    const { match, shopId } = this.getMatchProj();
     const { shop, url } = await this.getShop(match, shopId);
     if (options.token === true) {
       // token无值，就只是复制token
@@ -194,7 +194,7 @@ class OCC extends BaseCommand {
       this.spinner.succeed(`店铺 ${shop.shopName || shop.shopId} 打开成功`);
     }
   }
-  private getMatch(): { match: typeof map.default; shopId: string } {
+  private getMatchProj(): { match: typeof map.default; shopId: string } {
     const { input, options } = this;
     let match = {} as typeof map.default;
     let shopId = '';
@@ -357,8 +357,8 @@ class OCC extends BaseCommand {
       shop
     };
   }
+  // 通过用户输入的验证码登录，将token存入本地之后再次调用获取店铺信息的接口。
   private async login() {
-    // 获取验证码
     this.spinner.warning('token失效，需重新登录，请先输入验证码');
     await this.helper.sleep(1000);
     const {
