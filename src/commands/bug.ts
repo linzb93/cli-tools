@@ -15,18 +15,22 @@ class Bug extends BaseCommand {
     const target = path.resolve(this.helper.root, `.temp/${filename}`);
     const lineText = seg.slice(2).join(':');
     const isEditorPath = `${target}:${lineText}`;
-    const ws = fs.createWriteStream(target);
-    axios({
-      url: filePath,
-      responseType: 'stream'
-    }).then((res) => {
-      res.data.pipe(ws);
-    });
-    await new Promise((resolve) => {
-      ws.on('finish', () => {
-        resolve(null);
+    if (!fs.existsSync(target)) {
+      const ws = fs.createWriteStream(target);
+      this.spinner.text = '正在下载';
+      axios({
+        url: filePath,
+        responseType: 'stream'
+      }).then((res) => {
+        res.data.pipe(ws);
       });
-    });
+      await new Promise((resolve) => {
+        ws.on('finish', () => {
+          resolve(null);
+        });
+      });
+      this.spinner.succeed('打开文件');
+    }
     this.helper.openInEditor(isEditorPath, true);
   }
 }
