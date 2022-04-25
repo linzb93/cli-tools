@@ -3,11 +3,17 @@ import chalk from 'chalk';
 import clipboard from 'clipboardy';
 import BaseCommand from '../util/BaseCommand.js';
 
+interface Options {
+  get: boolean;
+}
+
 class ColorConvert extends BaseCommand {
   private text: string;
-  constructor(text: string) {
+  private options: Options;
+  constructor(text: string, options: Options) {
     super();
     this.text = text;
+    this.options = options;
   }
   run() {
     let { text } = this;
@@ -27,7 +33,10 @@ class ColorConvert extends BaseCommand {
       ret = `#${convert.rgb.hex(arr)}`;
       blockColor = ret;
     }
-    console.log(blockColor);
+    if (this.options.get) {
+      this.logger.success(`${chalk.hex(blockColor).bold('示例文字')}`);
+      return;
+    }
     this.logger.success(
       `${chalk.green('[已复制]')}${chalk.hex(blockColor).bold(ret)}`
     );
@@ -35,6 +44,6 @@ class ColorConvert extends BaseCommand {
   }
 }
 
-export default (text: string) => {
-  new ColorConvert(text).run();
+export default (text: string, options: Options) => {
+  new ColorConvert(text, options).run();
 };

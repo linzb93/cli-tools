@@ -77,6 +77,7 @@ program
   .command('vue [data...]')
   .option('-c, --copy', '复制地址')
   .option('-f, --force', '强制覆盖')
+  .option('--prod', '生产版')
   .action(async (data, options) => {
     const vue = (await import('../commands/vue/index.js')).default;
     vue(data, options);
@@ -151,10 +152,13 @@ program
     const translate = (await import('../commands/translate.js')).default;
     translate(text, options);
   });
-program.command('color <text>').action(async (data) => {
-  const color = (await import('../commands/color.js')).default;
-  color(data);
-});
+program
+  .command('color <text>')
+  .option('--get')
+  .action(async (data, options) => {
+    const color = (await import('../commands/color.js')).default;
+    color(data, options);
+  });
 program
   .command('upload <filename>')
   .option('-m,--markdown', '复制markdown语法')

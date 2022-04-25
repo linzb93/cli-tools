@@ -10,6 +10,7 @@ import internalIp from 'internal-ip';
 import path from 'path';
 import chalk from 'chalk';
 import pMap from 'p-map';
+import readPkg from 'read-pkg';
 
 interface PrepareData {
   root: string;
@@ -18,6 +19,7 @@ interface PrepareData {
 }
 interface Options {
   force: boolean;
+  prod: boolean;
 }
 
 class BuildServe extends BaseCommand {
@@ -92,8 +94,7 @@ ${item.name}:
 - 本地：${chalk.magenta(`http://localhost:${port}${item.root}`)}
 - 网络：${chalk.magenta(`${url}${item.root}`)}
                 `;
-      this.spinner.succeed(`
-打包完成，服务器已启动：
+      this.spinner.succeed(`打包完成，服务器已启动：
 ${beforeData.map(callback).join('\n')}
                 `);
     }
@@ -110,9 +111,16 @@ ${beforeData.map(callback).join('\n')}
       async (item) => {
         const root = await this.getProjectRoot(item.cwd);
         await fs.remove(path.resolve(this.helper.root, `data/vue/${item.id}`));
-        await execa('npm run build:test', {
-          cwd: item.cwd
-        });
+        const pkg = await readPkg({ cwd: item.cwd });
+        if ((pkg.scripts as any)['build:test'] && !options.prod) {
+          await execa('npm run build:test', {
+            cwd: item.cwd
+          });
+        } else {
+          await execa('npm run build', {
+            cwd: item.cwd
+          });
+        }
         await fs.copy(
           `${item.cwd}/dist`,
           path.resolve(this.helper.root, `data/vue/${item.id}`),

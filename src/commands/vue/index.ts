@@ -9,7 +9,8 @@ import setProject from './set.js';
 import stopProject from './stop.js';
 import buildServe from './build.js';
 interface Options {
-  copy: Boolean;
+  copy: boolean;
+  prod: boolean;
 }
 
 export interface VueServerInfo {
@@ -40,7 +41,7 @@ class Vue extends BaseCommand {
       return;
     }
     if (datas[0] === 'build') {
-      buildServe({ force: false });
+      buildServe({ force: false, prod: options.prod });
       return;
     }
     const db = this.helper.createDB('vueServer');
