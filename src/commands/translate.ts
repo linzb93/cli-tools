@@ -123,10 +123,6 @@ class Translate extends BaseCommand {
       }
     }
     return result.join('\n');
-    // const data = str.split('');
-    // return chunk(data, 30)
-    //   .map((item) => item.join(''))
-    //   .join('\n');
   }
 }
 

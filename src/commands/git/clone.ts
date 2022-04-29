@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import axios, { AxiosResponse } from 'axios';
 import chalk from 'chalk';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { Npm } from '../../util/npm.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { SecretDB } from '../../util/types';
@@ -40,17 +40,39 @@ class Clone extends BaseCommand {
     this.spinner.text = '正在下载';
     let dirName: string;
     const openMap = this.ls.get('open') as SecretDB['open'];
-    if (!openMap[options.dir]) {
+    if (!options.dir) {
       options.dir = 'source';
+    } else if (!openMap[options.dir]) {
+      const answer = await this.helper.inquirer.prompt({
+        message: '文件夹可能输入有误，请从以下文件夹中选择一个',
+        name: 'folder',
+        type: 'list',
+        choices: Object.keys(openMap).map((folder) => {
+          return {
+            name: openMap[folder],
+            value: folder
+          };
+        })
+      });
+      options.dir = answer.folder;
     }
     if (this.isGitUrl(source)) {
       const url = this.toGitUrl(source);
       try {
-        dirName = await this.git.clone({
-          url,
-          dirName: path.basename(url, '.git'),
-          cwd: openMap[options.dir]
-        });
+        dirName = await this.helper.pRetry(
+          () =>
+            this.git.clone({
+              url,
+              dirName: path.basename(url, '.git'),
+              cwd: openMap[options.dir]
+            }),
+          {
+            retries: 10,
+            retryTimesCallback: (times) => {
+              this.spinner.text = `第${times}次下载失败，正在重试`;
+            }
+          }
+        );
       } catch (error) {
         this.spinner.fail(`下载失败:
                 ${(error as Error).message}`);

@@ -78,8 +78,6 @@ ${beforeData.map(callback).join('\n')}`);
               match.root = beforeData[0].root;
             });
             await db.write();
-          } else if (message) {
-            // 错误
           }
           child.unref();
           child.disconnect();
