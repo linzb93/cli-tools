@@ -60,19 +60,8 @@ class Spider extends BaseCommand {
     await pMap(
       imgs,
       async (img) => {
-        const { data } = await axios({
-          method: 'get',
-          url: img.source,
-          responseType: 'stream'
-        });
-        const ws = fs.createWriteStream(resolve(dest, img.filename));
-        data.pipe(ws);
-        await new Promise((resolve) => {
-          ws.on('finish', () => {
-            downloadedCount.value++;
-            resolve(null);
-          });
-        });
+        await this.helper.download(img.source, resolve(dest, img.filename));
+        downloadedCount.value++;
       },
       { concurrency: 10 }
     );

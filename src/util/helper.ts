@@ -8,6 +8,7 @@ import logger from './logger.js';
 import lodash from 'lodash';
 import chalk from 'chalk';
 import windowsShortcuts from 'windows-shortcuts';
+import axios from 'axios';
 import ValidatorSchema, {
   Rules as ValidatorRules,
   ValidateSource,
@@ -49,6 +50,20 @@ export const validate = (
 
 export const root = path.join(fileURLToPath(import.meta.url), '../../../');
 
+export const download = (src: string, dest: string) => {
+  const ws = fs.createWriteStream(dest);
+  return new Promise((resolve) => {
+    axios({
+      url: src,
+      responseType: 'stream'
+    }).then((res) => {
+      res.data.pipe(ws);
+    });
+    ws.on('finish', () => {
+      resolve(null);
+    });
+  });
+};
 export const openInEditor = async (
   project: string,
   isGoto?: boolean
