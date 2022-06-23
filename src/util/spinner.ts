@@ -1,6 +1,5 @@
 import ora, { Ora } from 'ora';
 import logSymbols from 'log-symbols';
-// import { watch } from '@vue/runtime-core';
 import { ref, Ref } from '@vue/reactivity';
 
 interface Setting {

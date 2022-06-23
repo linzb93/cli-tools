@@ -46,7 +46,7 @@ class Kill extends BaseCommand {
       let id;
       if (target === 'port') {
         if (!numberRE.test(idStr)) {
-          this.logger.error('端口号格式不正确，只能输入数字');
+          this.logger.error('端口号格式不正确，只能输入数字', true);
           return;
         }
         id = Number(idStr);

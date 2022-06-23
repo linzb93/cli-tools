@@ -138,6 +138,10 @@ program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;
   clear(filename);
 });
+program.command('cg [action]').action(async (action) => {
+  const cg = (await import('../commands/cg/index.js')).default;
+  cg(action);
+});
 program
   .command('http [data...]')
   .option('-e,--extra', '其他选项')
