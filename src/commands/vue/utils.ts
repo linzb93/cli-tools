@@ -4,11 +4,10 @@ import inquirer from '../../util/inquirer.js';
 interface Params {
   source: any[];
   tip: string;
-  isServe: boolean;
 }
 
-export const getMatches = async (params: Params): Promise<any> => {
-  const { source, tip, isServe } = params;
+export const getMatch = async (params: Params): Promise<any> => {
+  const { source, tip } = params;
   if (source.length > 1) {
     const answer = await inquirer.prompt({
       name: 'cwd',
@@ -17,13 +16,9 @@ export const getMatches = async (params: Params): Promise<any> => {
         value: item.cwd,
         name: `${item.name}(${chalk.gray(item.cwd)})`
       })),
-      type: isServe ? 'list' : 'checkbox'
+      type: 'list'
     });
-    if (isServe) {
-      return source.find((item) => item.cwd === answer.cwd);
-    } else {
-      return source.filter((item) => answer.cwd.includes(item.cwd));
-    }
+    return source.find((item) => item.cwd === answer.cwd);
   }
   return source[0];
 };

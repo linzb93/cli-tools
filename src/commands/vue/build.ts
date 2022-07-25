@@ -2,15 +2,15 @@ import BaseCommand from '../../util/BaseCommand.js';
 import clipboard from 'clipboardy';
 import { fork } from 'child_process';
 import { execaCommand as execa } from 'execa';
-import { getMatches } from './utils.js';
+import { getMatch } from './utils.js';
 import { pathToFileURL } from 'url';
 import { VueServerInfo } from './index.js';
 import fs from 'fs-extra';
 import internalIp from 'internal-ip';
 import path from 'path';
 import chalk from 'chalk';
-import pMap from 'p-map';
 import readPkg from 'read-pkg';
+import getPort from 'detect-port';
 
 interface PrepareData {
   root: string;
@@ -20,6 +20,7 @@ interface PrepareData {
 interface Options {
   force: boolean;
   prod: boolean;
+  start?: Boolean;
 }
 
 class BuildServe extends BaseCommand {
@@ -32,113 +33,92 @@ class BuildServe extends BaseCommand {
     const db = this.helper.createDB('vueServer');
     await db.read();
     const items = (db.data as any).items as VueServerInfo[];
-    const matches = (await getMatches({
+    const match = (await getMatch({
       source: items,
-      tip: '请选择要打包的项目',
-      isServe: false
-    })) as VueServerInfo[];
+      tip: '请选择要打包的项目'
+    })) as VueServerInfo;
     const ip = await internalIp.v4();
     this.spinner.text = '正在打包';
-    const beforeData = await this.beforeOpenServe(matches);
-    if (beforeData.length) {
-      const child = fork(
-        path.resolve(this.helper.root, 'dist/commands/vue/build-server.js'),
-        [
-          `--static=${beforeData.map((item) => item.id).join(',')}`,
-          `--root=${beforeData.map((item) => item.root).join(',')}`
-        ],
-        {
-          cwd: this.helper.root,
-          detached: true,
-          stdio: [null, null, null, 'ipc']
-        }
-      );
-      child.on(
-        'message',
-        async ({ port, message }: { port: string; message: string }) => {
-          if (port) {
-            const url = `http://${ip}:${port}`;
-            const local = `http://localhost:${port}`;
-            clipboard.writeSync(url);
-            if (matches.length === 1) {
-              this.spinner.succeed(`打包完成，服务器已启动：
-- 本地：${chalk.magenta(`${local}${beforeData[0].root}`)}
-- 网络：${chalk.magenta(`${url}${beforeData[0].root}`)}`);
-            } else {
-              const callback = (item: PrepareData) => `
-${item.name}:
-- 本地：${chalk.magenta(`${local}${item.root}`)}
-- 网络：${chalk.magenta(`${url}${item.root}`)}
-                `;
-              this.spinner.succeed(`打包完成，服务器已启动：
-${beforeData.map(callback).join('\n')}`);
-            }
-            matches.forEach((match) => {
-              match.buildPort = port.toString();
-              match.root = beforeData[0].root;
-            });
-            await db.write();
-          }
-          child.unref();
-          child.disconnect();
-          process.exit(0);
-        }
-      );
-    } else {
-      const port = matches[0].buildPort;
-      const url = `http://${ip}:${port}`;
-      const callback = (item: PrepareData) => `
-${item.name}:
-- 本地：${chalk.magenta(`http://localhost:${port}${item.root}`)}
-- 网络：${chalk.magenta(`${url}${item.root}`)}
-                `;
-      this.spinner.succeed(`打包完成，服务器已启动：
-${beforeData.map(callback).join('\n')}
-                `);
+    let beforeData: any;
+    if (!this.options.start) {
+      beforeData = await this.beforeOpenServe(match);
     }
-  }
-  private async beforeOpenServe(
-    matches: VueServerInfo[]
-  ): Promise<PrepareData[]> {
-    const { options } = this;
-    const data = options.force
-      ? matches
-      : matches.filter((item) => !item.buildPort);
-    return await pMap(
-      data,
-      async (item) => {
-        const root = await this.getProjectRoot(item.cwd);
-        await fs.remove(path.resolve(this.helper.root, `data/vue/${item.id}`));
-        const pkg = await readPkg({ cwd: item.cwd });
-        if ((pkg.scripts as any)['build:test'] && !options.prod) {
-          await execa('npm run build:test', {
-            cwd: item.cwd
-          });
-        } else {
-          await execa('npm run build', {
-            cwd: item.cwd
-          });
-        }
-        await fs.copy(
-          `${item.cwd}/dist`,
-          path.resolve(this.helper.root, `data/vue/${item.id}`),
-          {
-            recursive: true
-          }
-        );
-        return {
-          root,
-          id: item.id,
-          name: item.name
-        };
-      },
-      { concurrency: 2 }
+    if (this.options.force || this.options.start) {
+      // 强制模式下服务器不需要启动
+      const url = `http://${ip}:${match.buildPort}`;
+      const local = `http://localhost:${match.buildPort}`;
+      clipboard.writeSync(url);
+      this.spinner.succeed(`打包完成，服务器已启动：
+    - 本地：${chalk.magenta(`${local}${beforeData.root}`)}
+    - 网络：${chalk.magenta(`${url}${beforeData.root}`)}`);
+      return;
+    }
+    const child = fork(
+      path.resolve(this.helper.root, 'dist/commands/vue/build-server.js'),
+      [`--static=${beforeData.id}`, `--root=${beforeData.root}`],
+      {
+        cwd: this.helper.root,
+        detached: true,
+        stdio: [null, null, null, 'ipc']
+      }
     );
+    child.on('message', async ({ port }: { port: string; message: string }) => {
+      if (port) {
+        const url = `http://${ip}:${port}`;
+        const local = `http://localhost:${port}`;
+        clipboard.writeSync(url);
+        this.spinner.succeed(`打包完成，服务器已启动：
+- 本地：${chalk.magenta(`${local}${beforeData.root}`)}
+- 网络：${chalk.magenta(`${url}${beforeData.root}`)}`);
+        match.buildPort = port.toString();
+        match.root = beforeData.root;
+        await db.write();
+      }
+      child.unref();
+      child.disconnect();
+      process.exit(0);
+    });
+  }
+  private async beforeOpenServe(match: VueServerInfo): Promise<PrepareData> {
+    const { options } = this;
+    if (!options.force && match.buildPort) {
+      this.spinner.fail(
+        `项目已在端口${chalk.magenta(match.buildPort)}启动，无需重新部署`,
+        true
+      );
+    }
+    const root = await this.getProjectRoot(match.cwd);
+    await fs.remove(path.resolve(this.helper.root, `data/vue/${match.id}`));
+    const pkg = await readPkg({ cwd: match.cwd });
+    if ((pkg.scripts as any)['build:test'] && !options.prod) {
+      await execa('npm run build:test', {
+        cwd: match.cwd
+      });
+    } else {
+      await execa('npm run build', {
+        cwd: match.cwd
+      });
+    }
+    await fs.copy(
+      `${match.cwd}/dist`,
+      path.resolve(this.helper.root, `data/vue/${match.id}`),
+      {
+        recursive: true
+      }
+    );
+    return {
+      root,
+      id: match.id,
+      name: match.name
+    };
   }
   private async getProjectRoot(cwd: string): Promise<string> {
     const config = (await import(pathToFileURL(`${cwd}/vue.config.js`).href))
       .default;
-    return config.publicPath;
+    return config.publicPath || '';
+  }
+  private async portOccupied(port: number) {
+    return (await getPort(port)) === port;
   }
 }
 
