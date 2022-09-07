@@ -157,7 +157,8 @@ class OCC extends BaseCommand {
     if (options.token === true) {
       // token无值，就只是复制token
       const { hash } = new URL(url);
-      const token = hash.replace('#/login?code=', '');
+      const fullToken = hash.replace('#/login?code=', '');
+      const token = fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
       clipboard.writeSync(token);
       this.spinner.succeed(
         `已复制店铺 ${shop.shopName || shop.shopId} 的token\n${token}`

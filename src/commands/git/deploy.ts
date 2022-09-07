@@ -198,11 +198,7 @@ class Deploy extends BaseCommand {
     }
     if (jenkins && curBranch !== 'master') {
       const { name, id } = jenkins;
-      await open(
-        `http://192.168.0.32:8080/view/${name}/job/${id}_${
-          env === 'prod' ? 'online' : 'test'
-        }/`
-      );
+      await open(`http://192.168.0.32:8080/view/${name}/job/${id}/`);
     }
     this.logger.success(
       `操作成功${env === 'prod' ? '，已复制部署信息' : '。'}`
