@@ -90,6 +90,54 @@ const map = {
     },
     testId: '15983528161'
   },
+  pj: {
+    name: 'pj',
+    appKey: '73',
+    serviceName: '评价神器-美团',
+    platform: 8,
+    appKeyName: 'appKey',
+    url: {
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin',
+      userApi: '//api'
+    },
+    loginKey: (item: MeituanLoginParams) => ({
+      appKey: item.appKey,
+      memberId: item.shopId,
+      platform: item.platform
+    }),
+    searchSupport: {
+      buyDate: true,
+      endDate: true,
+      version: true
+    },
+    testId: '15983528161'
+  },
+  im: {
+    name: 'im',
+    appKey: '4',
+    serviceName: 'IM神器-美团',
+    platform: 8,
+    appKeyName: 'appKey',
+    url: {
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin',
+      userApi: '//api'
+    },
+    loginKey: (item: MeituanLoginParams) => ({
+      appKey: item.appKey,
+      memberId: item.shopId,
+      platform: item.platform
+    }),
+    searchSupport: {
+      buyDate: true,
+      endDate: true,
+      version: true
+    },
+    testId: '15983528161'
+  },
   zx: {
     name: 'zx',
     appKey: '36',

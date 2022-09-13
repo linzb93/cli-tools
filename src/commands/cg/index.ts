@@ -6,11 +6,9 @@ import chalk from 'chalk';
 
 class Cg extends BaseCommand {
   private action: string;
-  private port: string;
   constructor(action: string) {
     super();
     this.action = action;
-    this.port = '';
   }
   async run() {
     if (this.action === 'get') {
@@ -27,8 +25,7 @@ class Cg extends BaseCommand {
       }
     );
     child.on('message', async ({ port }: { port: string }) => {
-      this.spinner.succeed(`冲高日业绩监控服务已启动：${port}`);
-      this.port = port;
+      this.spinner.succeed(`今日业绩监控服务已启动：${port}端口`);
       child.unref();
       child.disconnect();
       process.exit(0);
@@ -36,11 +33,15 @@ class Cg extends BaseCommand {
   }
   async getTodayResults() {
     this.spinner.text = '正在获取今日业绩';
-    const { data } = await axios.post(
-      'http://wxdp.fjdaze.com/AppApi/GetDkdData'
-    );
-    const res = data.Result.Total.TodayTurnover;
-    this.spinner.succeed(`今日业绩：${chalk.yellow(res)}`);
+    try {
+      const { data } = await axios.post(
+        'http://wxdp.fjdaze.com/AppApi/GetDkdData'
+      );
+      const res = data.Result.Total.TodayTurnover;
+      this.spinner.succeed(`今日业绩：${chalk.yellow(res)}`);
+    } catch (error) {
+      this.spinner.fail('获取今日业绩失败，请稍后再试');
+    }
   }
 }
 
