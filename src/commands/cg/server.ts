@@ -5,25 +5,21 @@ import axios from 'axios';
 
 (async () => {
   const app = express();
-  const users = [
+  const targets = [
     {
-      name: '程麟',
-      target: 5000,
+      data: 5000,
       loaded: false
     },
     {
-      name: '林志斌',
-      target: 11000,
+      data: 10000,
       loaded: false
     },
     {
-      name: '练继録',
-      target: 15000,
+      data: 15000,
       loaded: false
     },
     {
-      name: '曾小雨',
-      target: 21000,
+      data: 20000,
       loaded: false
     }
   ];
@@ -32,10 +28,10 @@ import axios from 'axios';
       'http://wxdp.fjdaze.com/AppApi/GetDkdData'
     );
     const res = data.Result.Total.TodayTurnover;
-    for (const user of users) {
-      if (res >= user.target && !user.loaded) {
-        notifier.notify(`今日业绩已过${user.target}，请通知${user.name}`);
-        user.loaded = true;
+    for (const target of targets) {
+      if (res >= target.data && !target.loaded) {
+        notifier.notify(`今日业绩已过${target.data}`);
+        target.loaded = true;
         return;
       }
     }

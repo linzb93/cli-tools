@@ -3,7 +3,7 @@ import { fork } from 'child_process';
 import path from 'path';
 import axios from 'axios';
 import chalk from 'chalk';
-
+import dayjs from 'dayjs';
 class Cg extends BaseCommand {
   private action: string;
   private port: string;
@@ -40,7 +40,11 @@ class Cg extends BaseCommand {
       'http://wxdp.fjdaze.com/AppApi/GetDkdData'
     );
     const res = data.Result.Total.TodayTurnover;
-    this.spinner.succeed(`今日业绩：${chalk.yellow(res)}`);
+    this.spinner.succeed(
+      `今日业绩：${chalk.yellow(res)} ${chalk.gray(
+        `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`
+      )}`
+    );
   }
 }
 
