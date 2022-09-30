@@ -6,11 +6,9 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 class Cg extends BaseCommand {
   private action: string;
-  private port: string;
   constructor(action: string) {
     super();
     this.action = action;
-    this.port = '';
   }
   async run() {
     if (this.action === 'get') {
@@ -27,8 +25,7 @@ class Cg extends BaseCommand {
       }
     );
     child.on('message', async ({ port }: { port: string }) => {
-      this.spinner.succeed(`冲高日业绩监控服务已启动：${port}`);
-      this.port = port;
+      this.spinner.succeed(`今日业绩监控服务已启动：${port}端口`);
       child.unref();
       child.disconnect();
       process.exit(0);

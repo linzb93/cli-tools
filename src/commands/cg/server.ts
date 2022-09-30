@@ -38,7 +38,6 @@ import axios from 'axios';
   }, 1000 * 60);
   const port = await getPort(6000);
   app.listen(port, () => {
-    console.log(`项目已启动，端口号${port}`);
     process.send?.({
       port
     });
