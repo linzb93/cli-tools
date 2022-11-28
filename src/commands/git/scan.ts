@@ -17,7 +17,7 @@ class Scan extends BaseCommand {
       this.spinner.text = `已扫描${value}个项目`;
     });
     await pMap(
-      ['admin', 'tools', 'mt', 'ele', 'print'],
+      ['admin', 'tools', 'mt', 'ele'],
       async (parentProj) => {
         const cur: {
           title: string;
@@ -53,6 +53,7 @@ class Scan extends BaseCommand {
       { concurrency: 1 }
     );
     this.spinner.succeed('扫描完成');
+    console.log('-------分割线-------');
     for (const item of outputList) {
       if (!item.children.length) {
         continue;

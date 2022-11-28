@@ -1,7 +1,7 @@
 import { execaCommand as execa } from 'execa';
-type PushStatus = 0 | 1 | 2 | 3 | 4;
 
 export default {
+  // 判断是否是Git项目
   async isGit({ cwd = process.cwd() }): Promise<boolean> {
     try {
       await execa('git rev-parse --is-inside-work-tree', {
@@ -12,6 +12,7 @@ export default {
       return false;
     }
   },
+  // git clone
   async clone({
     url,
     branch,
@@ -40,6 +41,7 @@ export default {
     }
     return dirName || url.split('/').slice(-1)[0].slice(0, -4);
   },
+  // git pull
   async pull({ cwd = process.cwd() } = {}): Promise<void> {
     try {
       await execa('git pull', {
@@ -49,6 +51,7 @@ export default {
       throw error;
     }
   },
+  // git push
   async push({
     cwd = process.cwd(),
     branch = ''
@@ -64,6 +67,7 @@ export default {
       await execa(`git push --set-upstream origin ${branch}`);
     }
   },
+  // 获取远端地址
   async remote(): Promise<string> {
     const { stdout: data } = await execa('git remote -v');
     return (data.split(/\n/)[0].match(/http\S+/) as any[])[0];
@@ -72,7 +76,9 @@ export default {
    * 获取代码提交状态
    * @return { number } 未提交 1；未推送 2；已推送 3；不在master分支上 4；状态未知 0
    */
-  async getPushStatus({ cwd = process.cwd() } = {}): Promise<PushStatus> {
+  async getPushStatus({ cwd = process.cwd() } = {}): Promise<
+    0 | 1 | 2 | 3 | 4
+  > {
     let stdout = '';
     try {
       const data = await execa('git status', {
@@ -99,14 +105,17 @@ export default {
     }
     return 0;
   },
+  // 获取当前分支名称
   async getCurrentBranch(): Promise<string> {
     const { stdout } = await execa('git branch --show-current');
     return stdout;
   },
+  // 获取最近一次提交
   async getHeadSecondCommit(): Promise<string> {
     const { stdout } = await execa('git log --format=oneline -2');
     return stdout.split('\n')[1].split(' ')[0];
   },
+  // 代码重置
   async reset({
     filename,
     id
@@ -117,10 +126,12 @@ export default {
     await execa(`git reset ${id} ${filename}`);
     await execa(`git checkout ${id} ${filename}`);
   },
+  // 获取所有tag
   async tag(): Promise<string[]> {
     const { stdout } = await execa('git tag');
     return stdout === '' ? [] : stdout.split('\n');
   },
+  // 删除tag
   async deleteTag(
     tag: string,
     {

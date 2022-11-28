@@ -21,6 +21,7 @@ class Tag extends BaseCommand {
     const { options } = this;
     if (options.delete) {
       deleteTag();
+      return;
     }
     const tags = await this.git.tag();
     const last = tags[tags.length - 1];
