@@ -6,8 +6,13 @@ class SetProject extends BaseCommand {
   private name: string;
   constructor(datas: any[]) {
     super();
-    this.url = datas[0].replace(/\\/g, '/');
-    this.name = datas[1];
+    if (datas.length === 1) {
+      this.name = datas[0];
+      this.url = process.cwd().replace(/\\/g, '/');
+    } else {
+      this.url = datas[0].replace(/\\/g, '/');
+      this.name = datas[1];
+    }
   }
   async run() {
     const { url, name } = this;

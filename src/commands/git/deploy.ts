@@ -198,7 +198,11 @@ class Deploy extends BaseCommand {
     }
     if (jenkins && curBranch !== 'master') {
       const { name, id } = jenkins;
-      await open(`http://218.66.91.50:13379/view/${name}/job/${id}/`);
+      await open(
+        `http://${
+          this.helper.isWin ? '192.168.0.32:8080' : '218.66.91.50:13379'
+        }/view/${name}/job/${id}/`
+      );
     }
     this.logger.success(
       `操作成功${env === 'prod' ? '，已复制部署信息' : '。'}`
