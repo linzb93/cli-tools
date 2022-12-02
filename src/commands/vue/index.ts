@@ -8,10 +8,13 @@ import { getMatch } from './utils.js';
 import setProject from './set.js';
 import stopProject from './stop.js';
 import buildServe from './build.js';
+import help from './help.js';
 interface Options {
   copy: boolean;
   prod: boolean;
   force: boolean;
+  all: boolean;
+  help: boolean;
 }
 
 export interface VueServerInfo {
@@ -33,12 +36,16 @@ class Vue extends BaseCommand {
   }
   async run() {
     const { options, datas } = this;
+    if (options.help) {
+      help(datas[0]);
+      return;
+    }
     if (datas[0] === 'set') {
       setProject(datas.slice(1));
       return;
     }
     if (datas[0] === 'stop') {
-      stopProject();
+      stopProject(options.all);
       return;
     }
     if (datas[0] === 'build') {

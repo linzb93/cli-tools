@@ -43,6 +43,7 @@ program
   .option('--type <type>', '类型')
   .option('--tag <name>', 'tag名称')
   .option('-i,--install', '安装')
+  .option('--last <len>', '最近几次')
   .action(async (subCommand = 'index', rest, cmd) => {
     if (subCommand === 'tag') {
       subCommand = 'tag/index';
@@ -79,6 +80,8 @@ program
   .option('-c, --copy', '复制地址')
   .option('-f, --force', '强制覆盖')
   .option('--prod', '生产版')
+  .option('--all', '全部')
+  .option('--help', '查看帮助文档')
   .action(async (data, options) => {
     const vue = (await import('../commands/vue/index.js')).default;
     vue(data, options);

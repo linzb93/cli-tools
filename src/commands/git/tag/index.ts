@@ -4,7 +4,7 @@ import deleteTag from './delete.js';
 interface Options {
   delete?: boolean;
   silent?: boolean;
-  latest?: boolean;
+  last?: boolean;
   get?: boolean;
   type: 'update' | 'patch';
 }
@@ -21,6 +21,15 @@ class Tag extends BaseCommand {
     const { options } = this;
     if (options.delete) {
       deleteTag();
+      return;
+    }
+    if (options.last) {
+      const gitTags = await this.git.tag();
+      this.logger.success(
+        `找到最近${options.last}个：\n${gitTags
+          .slice(-Number(options.last))
+          .join('\n')}`
+      );
       return;
     }
     const tags = await this.git.tag();

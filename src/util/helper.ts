@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import fs from 'fs-extra';
 import { Writable } from 'stream';
 import path from 'path';
@@ -9,6 +10,7 @@ import lodash from 'lodash';
 import chalk from 'chalk';
 import windowsShortcuts from 'windows-shortcuts';
 import axios from 'axios';
+import boxen from 'boxen';
 import ValidatorSchema, {
   Rules as ValidatorRules,
   ValidateSource,
@@ -180,6 +182,53 @@ export const createDB = (pathName: string) => {
   const adapter = new JSONFile(path.resolve(root, `data/${pathName}.json`));
   return new Low(adapter);
 };
+
+interface HelpDocSubTitle {
+  title: string;
+  description: string;
+  options?: {
+    title: string;
+    description: string;
+  }[];
+}
+export const generateHelpDoc = (
+  title: string,
+  subTitle: string,
+  config: HelpDocSubTitle[]
+) => {
+  const boxenOptions = {
+    borderColor: 'red',
+    dimBorder: true,
+    padding: 1,
+    margin: 1
+  };
+  if (subTitle) {
+    const match = config.find((item) => item.title === subTitle);
+    console.log(
+      boxen(
+        `
+${chalk.bold.green(`${title} ${subTitle}: ${match?.description}`)}
+${match?.options
+  ?.map((sub) => `${sub.title}: ${sub.description}`, boxenOptions)
+  .join('\n')}    
+    `,
+        boxenOptions
+      )
+    );
+    return;
+  }
+  console.log(
+    boxen(
+      `
+${chalk.bold.green(`这里是${title}的帮助文档`)}
+${title}命令包括以下子命令：
+${config.map((sub) => `${sub.title}:${sub.description}`).join('\n')}
+  `,
+      boxenOptions
+    )
+  );
+};
+
 // 异步循环操作，直到满足条件退出。（不要删掉，目前还没用到，我不知道代码能放哪里）
 // exports.until = async function until(
 //     params, // 异步函数的参数
