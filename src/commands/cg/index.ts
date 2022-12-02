@@ -6,9 +6,11 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 class Cg extends BaseCommand {
   private action: string;
-  constructor(action: string) {
+  private data: string;
+  constructor(action: string, data: string) {
     super();
     this.action = action;
+    this.data = data;
   }
   async run() {
     if (this.action === 'get') {
@@ -102,11 +104,7 @@ class Cg extends BaseCommand {
     });
   }
   async setForecast() {
-    const { performance } = await this.helper.inquirer.prompt({
-      message: '请输入你预测的业绩',
-      name: 'performance',
-      type: 'input'
-    });
+    const performance = this.data;
     const { data } = await axios.post(
       'http://api.diankeduo.cn/zhili/dkd/ad/forecast/insert',
       {
@@ -123,6 +121,6 @@ class Cg extends BaseCommand {
   }
 }
 
-export default (action: string) => {
-  new Cg(action).run();
+export default (action: string, data: string) => {
+  new Cg(action, data).run();
 };

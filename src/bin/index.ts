@@ -142,9 +142,9 @@ program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;
   clear(filename);
 });
-program.command('cg [action]').action(async (action) => {
+program.command('cg [action] [...rest]').action(async (action, rest) => {
   const cg = (await import('../commands/cg/index.js')).default;
-  cg(action);
+  cg(action, rest);
 });
 program
   .command('http [data...]')
