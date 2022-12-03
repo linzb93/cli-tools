@@ -63,38 +63,16 @@ class Cg extends BaseCommand {
         .post('http://api.diankeduo.cn//zhili/dkd/ad/forecast/query')
         .then(({ data }) => data.result)
     ]).then(([currentPerformance, list]) => {
-      let idx = 0;
-      for (let index = 0; index < list.length; index++) {
-        if (index === 0 && currentPerformance <= list[index].amount) {
-          break;
-        } else if (
-          index === list.length - 1 &&
-          currentPerformance >= list[index].amount
-        ) {
-          idx = list.length - 1;
-          break;
-        } else if (
-          currentPerformance >= list[index].amount &&
-          currentPerformance <= list[index + 1].amount
-        ) {
-          if (
-            list[index + 1].amount - currentPerformance >
-            currentPerformance - list[index].amount
-          ) {
-            idx = index;
-            break;
-          } else {
-            idx = index + 1;
-            break;
-          }
-        }
+      if (list.length === 0) {
+        this.spinner.succeed(`当前业绩：${currentPerformance}。预测还未开始。`);
+        return;
       }
       this.spinner.succeed(`当前业绩：${currentPerformance}。预测结果如下：`);
       console.log(
         list
           .map((user: any, index: number) => {
             const output = `${index + 1}. ${user.name}: ${user.amount}`;
-            if (index === idx) {
+            if (index === 0) {
               return chalk.bold.yellow(output);
             }
             return output;
