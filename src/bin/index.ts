@@ -44,6 +44,7 @@ program
   .option('--tag <name>', 'tag名称')
   .option('-i,--install', '安装')
   .option('--last <len>', '最近几次')
+  .option('--debug', '调试模式')
   .action(async (subCommand = 'index', rest, cmd) => {
     if (subCommand === 'tag') {
       subCommand = 'tag/index';

@@ -6,16 +6,15 @@ interface Options {
   silent?: boolean;
   last?: boolean;
   get?: boolean;
-  type: 'update' | 'patch';
 }
 
 class Tag extends BaseCommand {
   private options: Options;
-  private data: string;
-  constructor(data: string[], options: Options) {
+  private datas: string[];
+  constructor(datas: string[], options: Options) {
     super();
     this.options = options;
-    this.data = data[0];
+    this.datas = datas;
   }
   async run(): Promise<void> {
     const { options } = this;
@@ -23,8 +22,9 @@ class Tag extends BaseCommand {
       deleteTag();
       return;
     }
+    const gitTags = await this.git.tag();
+    // 输出最近几个
     if (options.last) {
-      const gitTags = await this.git.tag();
       this.logger.success(
         `找到最近${options.last}个：\n${gitTags
           .slice(-Number(options.last))
@@ -32,10 +32,9 @@ class Tag extends BaseCommand {
       );
       return;
     }
-    const tags = await this.git.tag();
-    const last = tags[tags.length - 1];
+    const last = gitTags.slice(-1)?.[0];
     if (options.get) {
-      if (!last) {
+      if (!gitTags.length) {
         this.logger.success('该项目没有tag');
       } else {
         this.logger.success(last);
@@ -43,10 +42,14 @@ class Tag extends BaseCommand {
       }
     } else {
       let output = '';
-      if (!this.data) {
-        output = this.detectTag(last, tags);
+      const input = this.datas[0];
+      if (!input) {
+        output = await this.getNewestTag({
+          major: this.datas[0] === 'major',
+          minor: this.datas[0] === 'minor'
+        });
       } else {
-        output = this.detectTag(this.data, tags);
+        output = input.startsWith('v') ? input : `v${input}`;
       }
       const { ans } = await this.helper.inquirer.prompt({
         message: `请确认是否打tag：${output}`,
@@ -62,35 +65,43 @@ class Tag extends BaseCommand {
       }
     }
   }
-  private detectTag(tagName: string, tags: string[]): string {
-    let index = tags.findIndex((tag) => tag === tagName);
-    // let tag = tagName;
-    const reg = /v[\d\.]{2,}\d/;
-    if (tagName.match(reg) === null) {
-      // 表示tag名称不合法
-      index -= 1;
-      while (tags[index].match(reg) === null) {
-        index -= 1;
+  async getNewestTag(opt?: {
+    major: boolean;
+    minor: boolean;
+  }): Promise<string> {
+    const gitTags = await this.git.tag();
+    const matchTag = gitTags.slice(-1)[0];
+    const firstNum = Number(matchTag.slice(1, 2)[0]);
+    const secondNum = Number((matchTag.match(/v\d\.(\d)/) as string[])[1]);
+    const thirdNum = Number((matchTag.match(/v(\d\.){2}(\d)/) as string[])[2]);
+    const lastNum = Number((matchTag.match(/v[\d\.]{2,}(\d)/) as string[])[1]);
+    if (opt?.major) {
+      // 第二位数字+1，第三位置为0，保留三位数
+      if (secondNum === 9) {
+        return `${firstNum + 1}.0.0`;
       }
+      return `${firstNum}.${secondNum + 1}.0`;
     }
-    const matchTag = tags[index];
-    let lastNum = Number((matchTag.match(/v[\d\.]{2,}(\d)/) as string[])[1]);
-    while (
-      tags.find(
-        (tag) =>
-          tag === `${matchTag.split('.').slice(0, -1).join('.')}.${lastNum + 1}`
-      )
-    ) {
-      lastNum += 1;
+    if (opt?.minor) {
+      // 第三位数字+1，保留三位数
+      return `${firstNum}.${secondNum}.${thirdNum + 1}`;
     }
-    return `${matchTag.split('.').slice(0, -1).join('.')}.${lastNum + 1}`;
+    if (matchTag.split('.').length === 3) {
+      return `${matchTag}.1`;
+    }
+    return `${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
   }
 }
-/* eslint-disable no-redeclare */
-function tag(_: any, option: Options): void;
-function tag(options: Options): void;
-function tag(...data: any[]): void {
-  new Tag(data[0], data[1]).run();
+
+function tag(datas: any[], options: Options): void {
+  new Tag(datas, options).run();
 }
 
 export default tag;
+
+export const getNewestTag = (data: string) => {
+  return new Tag([], {}).getNewestTag({
+    minor: data === 'minor',
+    major: data === 'major'
+  });
+};
