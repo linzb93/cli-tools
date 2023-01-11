@@ -71,12 +71,17 @@ class Deploy extends BaseCommand {
       {
         condition: targetBranch === curBranch && curBranch === 'release', // release -> release
         action: () => {
-          this.helper.sequenceExec([
-            'git add ',
-            `git commit -m ${this.options.commit || 'update'}`,
-            `git pull`,
-            `git push`
-          ]);
+          this.helper.sequenceExec(
+            [
+              'git add .',
+              `git commit -m ${this.options.commit || 'update'}`,
+              `git pull`,
+              `git push`
+            ],
+            {
+              debug: this.options.debug
+            }
+          );
         }
       },
       {
@@ -155,6 +160,10 @@ class Deploy extends BaseCommand {
           onError() {}
         },
         'git push',
+        'git checkout master',
+        'git merge release',
+        'git pull',
+        'git push',
         `git tag ${newestTag}`,
         `git push origin ${newestTag}`
       ];
@@ -168,7 +177,14 @@ class Deploy extends BaseCommand {
   }
   private async deployDevToProduction() {
     const { options, data } = this;
-    const newestTag = await getNewestTag(data[0]);
+    let input = '';
+    if (data.includes('major')) {
+      input = 'major';
+    }
+    if (data.includes('minor')) {
+      input = 'minor';
+    }
+    const newestTag = await getNewestTag(input);
     try {
       const flow = [
         'git add .',
@@ -265,7 +281,28 @@ class Deploy extends BaseCommand {
       }
     }
   }
-  private async deployToProduction() {}
+  private async deployToProduction() {
+    const { options, data } = this;
+    let input = '';
+    if (data.includes('major')) {
+      input = 'major';
+    }
+    if (data.includes('minor')) {
+      input = 'minor';
+    }
+    const newestTag = await getNewestTag(input);
+    const flow = [
+      'git add .',
+      `git commit -m ${options.commit || 'update'}`,
+      'git pull',
+      'git push',
+      `git tag ${newestTag}`,
+      `git push origin ${newestTag}`
+    ];
+    await this.helper.sequenceExec(flow, {
+      debug: options.debug
+    });
+  }
   private async openDeployPage() {
     const projectConf = await this.getProjectConfig();
     let jenkins;

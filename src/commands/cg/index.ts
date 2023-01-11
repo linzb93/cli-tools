@@ -62,28 +62,34 @@ class Cg extends BaseCommand {
       axios
         .post('http://api.diankeduo.cn//zhili/dkd/ad/forecast/query')
         .then(({ data }) => data.result)
-    ]).then(([currentPerformance, list]) => {
-      if (list.length === 0) {
-        this.spinner.succeed(`当前业绩：${currentPerformance}。预测还未开始。`);
-        return;
-      }
-      this.spinner.succeed(
-        `${chalk.gray(
-          `[${dayjs().format('HH:mm:ss')}]`
-        )}当前业绩：${currentPerformance}。预测结果如下：`
-      );
-      console.log(
-        list
-          .map((user: any, index: number) => {
-            const output = `${index + 1}. ${user.name}: ${user.amount}`;
-            if (index === 0) {
-              return chalk.bold.yellow(output);
-            }
-            return output;
-          })
-          .join('\n')
-      );
-    });
+    ])
+      .then(([currentPerformance, list]) => {
+        if (list.length === 0) {
+          this.spinner.succeed(
+            `当前业绩：${currentPerformance}。预测还未开始。`
+          );
+          return;
+        }
+        this.spinner.succeed(
+          `${chalk.gray(
+            `[${dayjs().format('HH:mm:ss')}]`
+          )}当前业绩：${currentPerformance}。预测结果如下：`
+        );
+        console.log(
+          list
+            .map((user: any, index: number) => {
+              const output = `${index + 1}. ${user.name}: ${user.amount}`;
+              if (index === 0) {
+                return chalk.bold.yellow(output);
+              }
+              return output;
+            })
+            .join('\n')
+        );
+      })
+      .catch(() => {
+        this.spinner.fail('服务器故障，请稍后再试');
+      });
   }
   private async setForecast() {
     const performance = this.data;

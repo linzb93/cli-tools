@@ -70,7 +70,7 @@ class Tag extends BaseCommand {
     minor: boolean;
   }): Promise<string> {
     const gitTags = await this.git.tag();
-    const matchTag = gitTags.slice(-1)[0];
+    const matchTag = this.getSimilarTag(gitTags);
     const firstNum = Number(matchTag.slice(1, 2)[0]);
     const secondNum = Number((matchTag.match(/v\d\.(\d)/) as string[])[1]);
     const thirdNum = Number((matchTag.match(/v(\d\.){2}(\d)/) as string[])[2]);
@@ -78,18 +78,26 @@ class Tag extends BaseCommand {
     if (opt?.major) {
       // 第二位数字+1，第三位置为0，保留三位数
       if (secondNum === 9) {
-        return `${firstNum + 1}.0.0`;
+        return `v${firstNum + 1}.0.0`;
       }
-      return `${firstNum}.${secondNum + 1}.0`;
+      return `v${firstNum}.${secondNum + 1}.0`;
     }
     if (opt?.minor) {
       // 第三位数字+1，保留三位数
-      return `${firstNum}.${secondNum}.${thirdNum + 1}`;
+      return `v${firstNum}.${secondNum}.${thirdNum + 1}`;
     }
     if (matchTag.split('.').length === 3) {
       return `${matchTag}.1`;
     }
-    return `${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
+    return `v${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
+  }
+  private getSimilarTag(tags: string[]): string {
+    for (let i = tags.length - 1; i >= 0; i--) {
+      if (tags[i].match(/^v\d\./)) {
+        return tags[i];
+      }
+    }
+    return '';
   }
 }
 
