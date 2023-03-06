@@ -179,4 +179,8 @@ program.command('ip').action(async (file) => {
   const ip = (await import('../commands/ip.js')).default;
   ip();
 });
+program.command('mock [action]').action(async (action) => {
+  const mock = (await import('../commands/mock/index.js')).default;
+  mock(action);
+});
 program.parse();

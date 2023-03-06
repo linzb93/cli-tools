@@ -43,15 +43,19 @@ class Cg extends BaseCommand {
   }
   private async getTodayResults() {
     this.spinner.text = '正在获取今日业绩';
-    const { data } = await axios.post(
-      'http://wxdp.fjdaze.com/AppApi/GetDkdData'
-    );
-    const res = data.Result.Total.TodayTurnover;
-    this.spinner.succeed(
-      `今日业绩：${chalk.yellow(res)} ${chalk.gray(
-        `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`
-      )}`
-    );
+    try {
+      const { data } = await axios.post(
+        'http://wxdp.fjdaze.com/AppApi/GetDkdData'
+      );
+      const res = data.Result.Total.TodayTurnover;
+      this.spinner.succeed(
+        `今日业绩：${chalk.yellow(res)} ${chalk.gray(
+          `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`
+        )}`
+      );
+    } catch (error) {
+      this.spinner.fail('服务器故障，请稍后再试', true);
+    }
   }
   private async getForecast() {
     this.spinner.text = '正在获取预测数据';

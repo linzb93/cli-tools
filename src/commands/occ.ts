@@ -112,7 +112,7 @@ const map = {
       endDate: true,
       version: true
     },
-    testId: '15983528161'
+    testId: '16499283381'
   },
   im: {
     name: 'im',
@@ -355,7 +355,7 @@ class OCC extends BaseCommand {
       );
     } else if (!listData.result.list.length) {
       this.logger.debug(listData);
-      this.spinner.fail('未找到店铺');
+      this.spinner.fail('未找到店铺', true);
     }
     let shop = {} as ShopItem;
     if (

@@ -179,7 +179,10 @@ export const emptyWritableStream = new Writable({
 });
 
 export const createDB = (pathName: string) => {
-  const adapter = new JSONFile(path.resolve(root, `data/${pathName}.json`));
+  const url = pathName.includes('.')
+    ? `data/${pathName.replace(/\./g, '/')}.json`
+    : `data/${pathName}.json`;
+  const adapter = new JSONFile(path.resolve(root, url));
   return new Low(adapter);
 };
 

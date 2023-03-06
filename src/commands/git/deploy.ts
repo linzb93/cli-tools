@@ -177,6 +177,7 @@ class Deploy extends BaseCommand {
   }
   private async deployDevToProduction() {
     const { options, data } = this;
+    const curBranch = await this.git.getCurrentBranch();
     let input = '';
     if (data.includes('major')) {
       input = 'major';
@@ -193,7 +194,7 @@ class Deploy extends BaseCommand {
           onError() {}
         },
         `git checkout master`,
-        `git merge release`,
+        `git merge ${curBranch}`,
         {
           message: 'git pull',
           onError() {}

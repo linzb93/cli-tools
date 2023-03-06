@@ -1,10 +1,11 @@
 import { Readable } from 'stream';
 import chokidar, { FSWatcher } from 'chokidar';
-import { fork, ChildProcess } from 'child_process';
+import { fork, exec, ChildProcess } from 'child_process';
 import path from 'path';
 import chalk from 'chalk';
 import lodash from 'lodash';
 import fs from 'fs-extra';
+import dayjs from 'dayjs';
 import BaseCommand from '../util/BaseCommand.js';
 
 const { debounce } = lodash;
@@ -25,11 +26,15 @@ class Monitor extends BaseCommand {
     watcher.on(
       'change',
       debounce((file) => {
-        console.log(chalk.green(`${file}更改，node monitor 重启`));
+        console.log(
+          `文件 ${chalk.green(file)} 更改，node monitor 重新启动。${chalk.gray(
+            `[${dayjs().format('HH:mm:ss')}]`
+          )}`
+        );
         this.restartServer();
       }, 500)
     );
-    console.log(chalk.green('node monitor 已启动'));
+
     process.on('SIGINT', () => {
       console.log(chalk.yellow('关闭进程'));
       process.exit(0);
@@ -42,6 +47,11 @@ class Monitor extends BaseCommand {
       }
     });
     this.startServer();
+    await this.helper.sleep(1000);
+    const port = await this.getPortFromPid(this.subProcess?.pid as number);
+    console.log(
+      chalk.green(`node monitor 已启动，端口号：${chalk.yellow(port)}`)
+    );
   }
   private createWatcher(): FSWatcher {
     const { filename } = this;
@@ -96,6 +106,21 @@ class Monitor extends BaseCommand {
     (this.subProcess as ChildProcess).removeAllListeners();
     (this.subProcess as ChildProcess).kill();
     this.startServer();
+  }
+  private async getPortFromPid(pid: number) {
+    return new Promise((resolve) => {
+      exec('netstat -ano', {}, (err, stdout) => {
+        const match = stdout
+          .split('\n')
+          .find((line) => line.includes(`${pid}\r`)) as string;
+        if (!match) {
+          resolve(null);
+          return;
+        }
+        const ret = /0\.0\.0\.0\:(\d+)/.exec(match) as RegExpExecArray;
+        resolve(ret[1]);
+      });
+    });
   }
 }
 
