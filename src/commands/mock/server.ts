@@ -24,7 +24,6 @@ program
         path.resolve(helper.root, `data/yapi/${options.id}.json`)
       );
       const url = req.url.replace(options.prefix, '');
-      await fs.writeFile('debug.txt', `debug:${123}\n`);
       const match = map.items.find((item: any) => item.path === url);
       if (!match) {
         res.send({
@@ -32,6 +31,16 @@ program
           data: null,
           msg: '接口不存在',
           result: null
+        });
+        return;
+      }
+      if (!match.json.msg) {
+        // 忘记包裹了
+        res.send({
+          code: 404,
+          data: null,
+          msg: '接口不存在',
+          result: Mock.mock(match.json)
         });
         return;
       }

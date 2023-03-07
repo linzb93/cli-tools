@@ -10,6 +10,11 @@ import { watch } from '@vue/runtime-core';
 import pMap from 'p-map';
 import path from 'path';
 
+interface Options {
+  force: boolean;
+  debug: boolean;
+}
+
 const { flatten } = lodash;
 const service = axios.create({
   baseURL: 'http://192.168.0.107:3000/api'
@@ -27,9 +32,11 @@ service.interceptors.response.use(
 class Mock extends BaseCommand {
   action: string;
   private cookie: string;
-  constructor(action: string) {
+  private options: Options;
+  constructor(action: string, options: Options) {
     super();
     this.action = action;
+    this.options = options;
     this.cookie = '';
     this.genCooie();
   }
@@ -66,7 +73,7 @@ class Mock extends BaseCommand {
         name: 'project'
       })) as { project: string; id: string; prefix: string };
     }
-    if (this.action === 'debug') {
+    if (this.options.debug) {
       await this.createServer(answer);
       return;
     }
@@ -109,7 +116,7 @@ class Mock extends BaseCommand {
             json: await this.updateMock(item.id)
           };
         }
-        if (match.updateTime < item.up_time) {
+        if (match.updateTime < item.up_time || this.options.force) {
           counter.update++;
           return {
             ...item,
@@ -212,8 +219,8 @@ class Mock extends BaseCommand {
   }
 }
 
-export default (action: string) => {
-  new Mock(action).run();
+export default (action: string, options: Options) => {
+  new Mock(action, options).run();
 };
 
 function render(src: any) {

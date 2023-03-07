@@ -179,8 +179,12 @@ program.command('ip').action(async (file) => {
   const ip = (await import('../commands/ip.js')).default;
   ip();
 });
-program.command('mock [action]').action(async (action) => {
-  const mock = (await import('../commands/mock/index.js')).default;
-  mock(action);
-});
+program
+  .command('mock [action]')
+  .option('--force', '强制更新所有接口')
+  .option('--debug', '调试模式')
+  .action(async (action, options) => {
+    const mock = (await import('../commands/mock/index.js')).default;
+    mock(action, options);
+  });
 program.parse();
