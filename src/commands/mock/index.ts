@@ -1,5 +1,3 @@
-import BaseCommand from '../../util/BaseCommand.js';
-import set from './set.js';
 import chalk from 'chalk';
 import axios from 'axios';
 import { fork } from 'child_process';
@@ -9,10 +7,41 @@ import { reactive } from '@vue/reactivity';
 import { watch } from '@vue/runtime-core';
 import pMap from 'p-map';
 import path from 'path';
+import BaseCommand from '../../util/BaseCommand.js';
+import set from './set.js';
+import { AnyObject } from '../../util/types';
 
 interface Options {
   force: boolean;
   debug: boolean;
+}
+
+interface ProjectList {
+  items: {
+    prefix: string;
+    id: string;
+    name: string;
+  }[];
+}
+
+type FetchList = {
+  list: {
+    path: string;
+    title: string;
+    // eslint-disable-next-line camelcase
+    up_time: string;
+    _id: string;
+  }[];
+}[];
+
+interface ApiList {
+  items: {
+    path: string;
+    title: string;
+    updateTime: string;
+    id: string;
+    json: AnyObject;
+  }[];
 }
 
 const { flatten } = lodash;
@@ -52,11 +81,11 @@ class Mock extends BaseCommand {
       prefix: '',
       id: ''
     };
-    if ((db.data as any).items.length === 0) {
+    if ((db.data as ProjectList).items.length === 0) {
       this.logger.error('没有项目可以选择');
       return;
     }
-    if ((db.data as any).items.length === 1) {
+    if ((db.data as ProjectList).items.length === 1) {
       const target = (db.data as any).items[0];
       answer = {
         ...target,
@@ -66,7 +95,7 @@ class Mock extends BaseCommand {
       answer = (await this.helper.inquirer.prompt({
         message: '请选择项目',
         type: 'list',
-        choices: (db.data as any).items.map((item: any) => ({
+        choices: (db.data as ProjectList).items.map((item) => ({
           value: item.id,
           name: `${chalk.yellow(item.name)}: ${chalk.green(item.prefix)}`
         })),
@@ -82,8 +111,8 @@ class Mock extends BaseCommand {
     db = this.helper.createDB(`yapi.${answer.project}`);
     await db.read();
     const result = flatten(
-      list.map((item: any) => {
-        return item.list.map((sub: any) => ({
+      list.map((item) => {
+        return item.list.map((sub) => ({
           path: sub.path,
           title: sub.title,
           updateTime: sub.up_time,
@@ -91,7 +120,7 @@ class Mock extends BaseCommand {
         }));
       })
     );
-    const source = (db.data as any).items;
+    const source = (db.data as ApiList).items;
     const counter = reactive({
       add: 0,
       update: 0,
@@ -104,23 +133,23 @@ class Mock extends BaseCommand {
         data.update
       )}个`;
     });
-    (db.data as any).items = await pMap(
+    (db.data as ApiList).items = await pMap(
       result,
       async (item: any) => {
-        const match = source.find((s: any) => s.id === item.id);
+        const match = source.find((s) => s.id === item.id);
         counter.total++;
         if (!match) {
           counter.add++;
           return {
             ...item,
-            json: await this.updateMock(item.id)
+            json: await this.update(item.id)
           };
         }
         if (match.updateTime < item.up_time || this.options.force) {
           counter.update++;
           return {
             ...item,
-            json: await this.updateMock(item.id)
+            json: await this.update(item.id)
           };
         }
         return match;
@@ -142,34 +171,22 @@ class Mock extends BaseCommand {
         stdio: [null, null, null, 'ipc']
       }
     );
-    child.on(
-      'message',
-      async ({
-        port,
-        ip,
-        info
-      }: {
-        port: string;
-        ip: string;
-        info?: string;
-      }) => {
-        console.log(`info:${info}`);
-        console.log(`代理服务器已在 ${chalk.yellow(port)} 端口启动：
-      - 本地：${chalk.magenta(`http://localhost:${port}${prefix}`)}
-      - 网络：${chalk.magenta(`http://${ip}:${port}${prefix}`)}
+    child.on('message', async ({ port, ip }: { port: string; ip: string }) => {
+      console.log(`代理服务器已在 ${chalk.yellow(port)} 端口启动：
+  - 本地：${chalk.magenta(`http://localhost:${port}${prefix}`)}
+  - 网络：${chalk.magenta(`http://${ip}:${port}${prefix}`)}
       `);
-        child.unref();
-        child.disconnect();
-        process.exit(0);
-      }
-    );
+      child.unref();
+      child.disconnect();
+      process.exit(0);
+    });
   }
   private genCooie() {
     this.cookie = `_yapi_uid=${this.ls.get(
       'mock.uid'
     )}; _yapi_token=${this.ls.get('mock.token')}`;
   }
-  async getApiList(id: string): Promise<any[]> {
+  private async getApiList(id: string): Promise<FetchList> {
     try {
       return (await service({
         method: 'GET',
@@ -187,7 +204,7 @@ class Mock extends BaseCommand {
       return await this.getApiList(id);
     }
   }
-  async login() {
+  private async login() {
     const { is } = await this.helper.inquirer.prompt({
       type: 'confirm',
       name: 'is',
@@ -199,12 +216,12 @@ class Mock extends BaseCommand {
     this.ls.set('mock.token', clipboardy.readSync());
     this.genCooie();
   }
-  async updateMock(id: number) {
+  private async update(id: string) {
     const res = (await service({
       method: 'GET',
       url: `/interface/get`,
       params: {
-        id
+        id: Number(id)
       },
       headers: {
         Cookie: this.cookie
