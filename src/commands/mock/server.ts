@@ -46,9 +46,10 @@ program
           if (match.json.root) {
             return Mock.mock(match.json).root;
           }
-          return match.json[`array|1-3`]
-            ? Mock.mock(match.json).array
-            : Mock.mock(match.json);
+          if (Object.keys(match.json).find((key) => key.startsWith('root'))) {
+            return Mock.mock(match.json).root;
+          }
+          return Mock.mock(match.json);
         })()
       });
     });

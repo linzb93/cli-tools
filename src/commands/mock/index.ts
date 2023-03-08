@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import axios from 'axios';
-import { fork } from 'child_process';
+import { fork, ChildProcess } from 'child_process';
 import lodash from 'lodash';
 import clipboardy from 'clipboardy';
 import { reactive } from '@vue/reactivity';
@@ -13,17 +13,18 @@ import { AnyObject } from '../../util/types';
 
 interface Options {
   force: boolean;
-  debug: boolean;
   single: boolean | string;
   update: boolean;
 }
+interface ProjectItem {
+  prefix: string;
+  id: string;
+  name: string;
+  project: string;
+}
 
 interface ProjectList {
-  items: {
-    prefix: string;
-    id: string;
-    name: string;
-  }[];
+  items: ProjectItem[];
 }
 
 type FetchList = {
@@ -63,6 +64,8 @@ service.interceptors.response.use(
 class Mock extends BaseCommand {
   action: string;
   private cookie: string;
+  private subProcess: ChildProcess | undefined;
+  private current: any | undefined;
   private options: Options;
   constructor(action: string, options: Options) {
     super();
@@ -74,6 +77,10 @@ class Mock extends BaseCommand {
   async run() {
     if (this.action === 'set') {
       set();
+      return;
+    }
+    if (this.action === 'restart') {
+      await this.restart();
       return;
     }
     let db = this.helper.createDB('yapi');
@@ -99,14 +106,10 @@ class Mock extends BaseCommand {
         type: 'list',
         choices: (db.data as ProjectList).items.map((item) => ({
           value: item.id,
-          name: `${chalk.yellow(item.name)}: ${chalk.green(item.prefix)}`
+          name: `${chalk.yellow(item.name)}(${chalk.green(item.prefix)})`
         })),
         name: 'project'
-      })) as { project: string; id: string; prefix: string };
-    }
-    if (this.options.debug) {
-      await this.createServer(answer);
-      return;
+      })) as ProjectItem;
     }
     db = this.helper.createDB(`yapi.${answer.project}`);
     await db.read();
@@ -163,11 +166,11 @@ class Mock extends BaseCommand {
       total: 0
     });
     watch(counter, (data) => {
-      this.spinner.text = `已扫描${chalk.cyan(
+      this.spinner.text = `已扫描 ${chalk.cyan(
         data.total
-      )}个，其中新增${chalk.green(data.add)}个，更新${chalk.yellow(
+      )} 个，其中新增 ${chalk.green(data.add)} 个，更新 ${chalk.yellow(
         data.update
-      )}个`;
+      )} 个`;
     });
     (db.data as ApiList).items = await pMap(
       result,
@@ -199,9 +202,11 @@ class Mock extends BaseCommand {
     }
     this.logger.info('正在启动服务器...');
     await this.helper.sleep(500);
-    await this.createServer(answer);
+    this.current = answer;
+    await this.createServer();
   }
-  private async createServer({ prefix, id }: { prefix: string; id: string }) {
+  private async createServer() {
+    const { prefix, id }: { prefix: string; id: string } = this.current;
     const child = fork(
       path.resolve(this.helper.root, 'dist/commands/mock/server.js'),
       [`--prefix=${prefix}`, `--id=${id}`],
@@ -220,6 +225,11 @@ class Mock extends BaseCommand {
       child.disconnect();
       process.exit(0);
     });
+  }
+  private async restart() {
+    (this.subProcess as ChildProcess).removeAllListeners();
+    (this.subProcess as ChildProcess).kill();
+    this.createServer();
   }
   private genCooie() {
     this.cookie = `_yapi_uid=${this.ls.get(
@@ -284,11 +294,11 @@ class Mock extends BaseCommand {
         if (result.type === 'array') {
           if (result.items.type === 'string') {
             return {
-              array: ['1', '2', '3']
+              root: ['1', '2', '3']
             };
           }
           return {
-            [`array|1-3`]: [render(result.items)]
+            [`root|3-7`]: [render(result.items)]
           };
         }
         return render(result);
@@ -330,7 +340,7 @@ function render(src: any) {
       ret[key] = render(p[key]);
     } else if (p[key].type === 'array') {
       if (!['string', 'number'].includes(p[key].items.type)) {
-        ret[`${key}|1-3`] = [render(p[key].items)];
+        ret[`${key}|3-7`] = [render(p[key].items)];
       } else {
         if (p[key].items.type === 'string') {
           ret[key] = ['1', '2', '3'];
