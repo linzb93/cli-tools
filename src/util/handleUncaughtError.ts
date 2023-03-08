@@ -41,12 +41,13 @@ async function errorHandler(
         float: 'left'
       })
     );
-    console.log(e.stack);
-    console.log(
-      (createCallsiteRecord({ forError: e }) as CallsiteRecord).renderSync({})
-    );
+    if (createCallsiteRecord({ forError: e })) {
+      console.log(
+        (createCallsiteRecord({ forError: e }) as CallsiteRecord).renderSync({})
+      );
+    }
     spinner.stop();
-    if (process.cwd() === root) {
+    if (`${process.cwd()}\\` === root) {
       return;
     }
     const { openEditor } = (await inquirer.prompt({

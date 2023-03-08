@@ -181,8 +181,10 @@ program.command('ip').action(async (file) => {
 });
 program
   .command('mock [action]')
-  .option('--force', '强制更新所有接口')
+  .option('--force', '强制更新所有接口并启动服务器')
   .option('--debug', '调试模式')
+  .option('--single [path]', '更新单一接口')
+  .option('--update', '只更新接口')
   .action(async (action, options) => {
     const mock = (await import('../commands/mock/index.js')).default;
     mock(action, options);

@@ -34,17 +34,23 @@ program
         });
         return;
       }
-      if (!match.json.msg) {
-        // 忘记包裹了
-        res.send({
-          code: 404,
-          data: null,
-          msg: '接口不存在',
-          result: Mock.mock(match.json)
-        });
-        return;
-      }
-      res.send(Mock.mock(match.json));
+      res.send({
+        code: 200,
+        data: null,
+        msg: 'success',
+        success: true,
+        result: (() => {
+          if (match.json === null) {
+            return null;
+          }
+          if (match.json.root) {
+            return Mock.mock(match.json).root;
+          }
+          return match.json[`array|1-3`]
+            ? Mock.mock(match.json).array
+            : Mock.mock(match.json);
+        })()
+      });
     });
     const [port, ip] = await Promise.all([
       getPort(options.port || 8080),
@@ -55,3 +61,7 @@ program
     });
   });
 program.parse(process.argv);
+
+process.on('unhandledRejection', async (err: Error) => {
+  await fs.appendFile('debug.txt', err.message);
+});

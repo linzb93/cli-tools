@@ -14,6 +14,8 @@ import { AnyObject } from '../../util/types';
 interface Options {
   force: boolean;
   debug: boolean;
+  single: boolean | string;
+  update: boolean;
 }
 
 interface ProjectList {
@@ -106,10 +108,44 @@ class Mock extends BaseCommand {
       await this.createServer(answer);
       return;
     }
-    // 同步api
-    const list = await this.getApiList(answer.project);
     db = this.helper.createDB(`yapi.${answer.project}`);
     await db.read();
+    if (this.options.single) {
+      let target = '';
+      if (typeof this.options.single === 'string') {
+        const match = (db.data as ApiList).items.find(
+          (item) => item.path === this.options.single
+        );
+        if (match) {
+          target = match.id;
+        }
+      } else {
+        // 更新单一接口
+        const answer = await this.helper.inquirer.prompt({
+          type: 'list',
+          choices: (db.data as ApiList).items.map((item) => ({
+            value: item.id,
+            name: `${chalk.green(item.title)}: ${chalk.gray(item.path)}`
+          })),
+          name: 'target',
+          message: '请选择要更新的接口'
+        });
+        target = answer.target;
+      }
+      const json = await this.update(target);
+      const match = (db.data as ApiList).items.find(
+        (item) => item.id === target
+      );
+      if (match) {
+        match.json = json;
+      }
+      await db.write();
+      this.logger.success(`接口更新成功`);
+      return;
+    }
+    // 同步api
+    const list = await this.getApiList(answer.project);
+
     const result = flatten(
       list.map((item) => {
         return item.list.map((sub) => ({
@@ -127,9 +163,9 @@ class Mock extends BaseCommand {
       total: 0
     });
     watch(counter, (data) => {
-      this.spinner.text = `已扫描${chalk.green(
+      this.spinner.text = `已扫描${chalk.cyan(
         data.total
-      )}个，其中新增${chalk.green(data.add)}个，更新${chalk.green(
+      )}个，其中新增${chalk.green(data.add)}个，更新${chalk.yellow(
         data.update
       )}个`;
     });
@@ -145,7 +181,7 @@ class Mock extends BaseCommand {
             json: await this.update(item.id)
           };
         }
-        if (match.updateTime < item.up_time || this.options.force) {
+        if (match.updateTime < item.updateTime || this.options.force) {
           counter.update++;
           return {
             ...item,
@@ -158,7 +194,11 @@ class Mock extends BaseCommand {
     );
     await db.write();
     this.spinner.succeed();
-    await this.helper.sleep(1500);
+    if (this.options.update) {
+      return;
+    }
+    this.logger.info('正在启动服务器...');
+    await this.helper.sleep(500);
     await this.createServer(answer);
   }
   private async createServer({ prefix, id }: { prefix: string; id: string }) {
@@ -229,6 +269,30 @@ class Mock extends BaseCommand {
     })) as any;
     if (res.res_body) {
       const responseBody = JSON.parse(res.res_body);
+      const p = responseBody.properties;
+      if (p.code && p.msg) {
+        // 有包裹，去掉包裹内容
+        const { result } = responseBody.properties;
+        if (result.type === 'null') {
+          return null;
+        }
+        if (result.type === 'number') {
+          return {
+            root: '@integer(1,100)'
+          };
+        }
+        if (result.type === 'array') {
+          if (result.items.type === 'string') {
+            return {
+              array: ['1', '2', '3']
+            };
+          }
+          return {
+            [`array|1-3`]: [render(result.items)]
+          };
+        }
+        return render(result);
+      }
       return render(responseBody);
     } else {
       return {};
@@ -249,15 +313,15 @@ function render(src: any) {
     } else if (isArea(key)) {
       ret[key] = '@city';
     } else if (isMobile(key)) {
-      ret[key] = 13433332123; // 目前没有电话号码的mock
+      ret[key] = '@integer(13000000000,13999999999)'; // 目前没有电话号码的mock
     } else if (isTime(key)) {
-      ret[key] = `@date(YYYY-MM-DD HH:mm:ss)`;
+      ret[key] = `@date(yyyy-mm-dd HH:mm:ss)`;
     } else if (isId(key)) {
       ret[`${key}|+1`] = 1;
     } else if (isEnum(p[key])) {
-      ret[`${key}|1`] = getEnum(p[key].description);
+      ret[`${key}|1`] = getEnum(p[key]);
     } else if (p[key].type === 'string') {
-      ret[key] = '@title(5)';
+      ret[key] = '@ctitle(5)';
     } else if (p[key].type === 'number') {
       ret[key] = '@integer(20, 100)';
     } else if (p[key].type === 'boolean') {
@@ -265,7 +329,15 @@ function render(src: any) {
     } else if (p[key].type === 'object') {
       ret[key] = render(p[key]);
     } else if (p[key].type === 'array') {
-      ret[`${key}|1-3`] = [render(p[key].items)];
+      if (!['string', 'number'].includes(p[key].items.type)) {
+        ret[`${key}|1-3`] = [render(p[key].items)];
+      } else {
+        if (p[key].items.type === 'string') {
+          ret[key] = ['1', '2', '3'];
+        } else {
+          ret[key] = [1, 2, 3];
+        }
+      }
     }
   }
   return ret;
@@ -296,19 +368,30 @@ function isTime(key: string) {
 
 function isEnum(object: any): boolean {
   const { description = '' } = object;
-  return isEnumInclude(description, '0,1') || isEnumInclude(description, '1,2');
-}
-
-function isEnumInclude(description: string, numList: string): boolean {
-  const seg = numList.split(',');
-  const includes = seg.every((item) => description.includes(item));
-  if (!includes) {
+  const seg = description.split(' ');
+  const numList = seg
+    .map((item: string) => {
+      const match = /^\d+/.exec(item);
+      return match ? Number(match[0]) : null;
+    })
+    .filter((item: any) => item !== null);
+  if (!numList.length) {
     return false;
   }
-  const indexes = seg.map((item) => description.indexOf(item));
-  const max = Math.max.call(indexes);
-  return max === indexes[indexes.length - 1];
+  for (let i = 1; i < numList.length; i++) {
+    if (numList[i] - numList[i - 1] !== 1) {
+      return false;
+    }
+  }
+  return true;
 }
-function getEnum(description: string) {
-  return description.replace(/\D/g, '').split('');
+function getEnum(object: any) {
+  const { description = '' } = object;
+  const seg = description.split(' ');
+  return seg
+    .map((item: any) => {
+      const match = /^\d+/.exec(item);
+      return match ? Number(match[0]) : null;
+    })
+    .filter((item: any) => item !== null);
 }
