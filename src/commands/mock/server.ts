@@ -54,11 +54,11 @@ program
       });
     });
     const [port, ip] = await Promise.all([
-      getPort(options.port || 8080),
+      getPort(options.port || 6500),
       internalIp.v4()
     ]);
     app.listen(port, () => {
-      process.send?.({ port, ip, info: options.prefix });
+      process.send?.({ port, ip });
     });
   });
 program.parse(process.argv);

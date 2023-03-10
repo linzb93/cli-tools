@@ -322,6 +322,9 @@ function render(src: any) {
       ret[key] = '@province';
     } else if (isArea(key)) {
       ret[key] = '@city';
+    } else if (isPic(key)) {
+      ret[key] =
+        'https://cdn.sspai.com/2023/3/3/article/87fbabf2-9152-1fcd-0f47-d564b160013b.png'; // 目前没有图片的mock
     } else if (isMobile(key)) {
       ret[key] = '@integer(13000000000,13999999999)'; // 目前没有电话号码的mock
     } else if (isTime(key)) {
@@ -331,7 +334,7 @@ function render(src: any) {
     } else if (isEnum(p[key])) {
       ret[`${key}|1`] = getEnum(p[key]);
     } else if (p[key].type === 'string') {
-      ret[key] = '@ctitle(5)';
+      ret[key] = '@cword(5)';
     } else if (p[key].type === 'number') {
       ret[key] = '@integer(20, 100)';
     } else if (p[key].type === 'boolean') {
@@ -343,9 +346,9 @@ function render(src: any) {
         ret[`${key}|3-7`] = [render(p[key].items)];
       } else {
         if (p[key].items.type === 'string') {
-          ret[key] = ['1', '2', '3'];
+          ret[`${key}|2-4`] = ['@cword(2,4)'];
         } else {
-          ret[key] = [1, 2, 3];
+          ret[`${key}|2-4`] = ['@integer(5,15)'];
         }
       }
     }
@@ -360,7 +363,12 @@ function isProvince(key: string) {
 
 function isArea(key: string) {
   const data = key.toLowerCase();
-  return data.endsWith('city') || data.endsWith('area');
+  return data.endsWith('city') || data.endsWith('area') || data === 'cityname';
+}
+
+function isPic(key: string) {
+  const data = key.toLowerCase();
+  return data.includes('pic') || data.includes('img');
 }
 
 function isMobile(key: string) {

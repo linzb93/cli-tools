@@ -175,7 +175,7 @@ program
     const upload = (await import('../commands/upload.js')).default;
     upload(file, options);
   });
-program.command('ip').action(async (file) => {
+program.command('ip').action(async () => {
   const ip = (await import('../commands/ip.js')).default;
   ip();
 });
@@ -188,4 +188,8 @@ program
     const mock = (await import('../commands/mock/index.js')).default;
     mock(action, options);
   });
+program.command('shortcut [name]').action(async (name) => {
+  const shortcut = (await import('../commands/shortcut.js')).default;
+  shortcut(name);
+});
 program.parse();
