@@ -148,13 +148,6 @@ program.command('cg [action] [...rest]').action(async (action, rest) => {
   cg(action, rest);
 });
 program
-  .command('http [data...]')
-  .option('-e,--extra', '其他选项')
-  .action(async (data, options) => {
-    const http = (await import('../commands/http.js')).default;
-    http(data, options);
-  });
-program
   .command('eng <text>')
   .option('-e,--example', '显示范例')
   .action(async (text, options) => {
