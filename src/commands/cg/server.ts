@@ -30,7 +30,7 @@ import axios from 'axios';
     const res = data.Result.Total.TodayTurnover;
     for (const target of targets) {
       if (res >= target.data && !target.loaded) {
-        notifier.notify(`今日业绩已过${target.data}`);
+        notifier.notify(`今日业绩突破${target.data}，目前已到达${res}`);
         target.loaded = true;
         return;
       }
