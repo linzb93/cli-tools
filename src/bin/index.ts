@@ -179,6 +179,10 @@ program.command('ip').action(async () => {
   const ip = (await import('../commands/ip.js')).default;
   ip();
 });
+program.command('fork <filename>').action(async (file) => {
+  const fork = (await import('../commands/fork.js')).default;
+  fork(file);
+});
 program
   .command('mock [action]')
   .option('--force', '强制更新所有接口并启动服务器')

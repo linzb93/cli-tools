@@ -47,7 +47,7 @@ interface ApiList {
   }[];
 }
 
-const { flatten } = lodash;
+const { flatten, omit } = lodash;
 const service = axios.create({
   baseURL: 'http://192.168.0.107:3000/api'
 });
@@ -277,6 +277,9 @@ class Mock extends BaseCommand {
         Cookie: this.cookie
       }
     })) as any;
+    if (res.req_body_other) {
+      return this.getReqBody(res.req_body_other);
+    }
     if (res.res_body) {
       const responseBody = JSON.parse(res.res_body);
       const p = responseBody.properties;
@@ -307,6 +310,17 @@ class Mock extends BaseCommand {
     } else {
       return {};
     }
+  }
+  private getReqBody(content: string) {
+    const data = JSON.parse(content);
+    const { required } = data;
+    const p = data.items.properties;
+    for (const key in p) {
+      if (required.includes(key)) {
+        p[key].required = true;
+      }
+    }
+    return omit(data, ['$schema']);
   }
 }
 
