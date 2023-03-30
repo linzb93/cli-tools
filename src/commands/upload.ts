@@ -3,7 +3,7 @@ import lodash from 'lodash';
 import clipboard from 'clipboardy';
 import path from 'path';
 import BaseCommand from '../util/BaseCommand.js';
-const { random } = lodash;
+const { random, omit } = lodash;
 
 interface Options {
   markdown: true;
@@ -24,10 +24,13 @@ class Upload extends BaseCommand {
     if (!this.ls.get('oss')) {
       this.logger.error('没有配置OSS config，无法上传图片', true);
     }
-    const ossConfig = this.ls.get('oss') as Omit<OssConfig, 'timeout'>;
+    const ossConfig = omit(this.ls.get('oss'), ['domain']) as Omit<
+      OssConfig,
+      'timeout'
+    >;
     const oss = new OSS({
       ...ossConfig,
-      timeout: 15000
+      timeout: 1500
     });
     let url = '';
     try {
@@ -35,7 +38,7 @@ class Upload extends BaseCommand {
         `${this.getUploadFileName()}${path.extname(pic)}`,
         pic
       );
-      url = `https://oss.fjdaze.com/${res.name}`;
+      url = this.ls.get('oss.domain') + `/${res.name}`;
     } catch (error) {
       this.logger.error('上传失败', true);
     }
