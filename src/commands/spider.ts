@@ -5,8 +5,8 @@ import path from 'path';
 import pMap from 'p-map';
 import { ref } from '@vue/reactivity';
 import { watch } from '@vue/runtime-core';
-import { root } from '../../util/helper.js';
-import BaseCommand from '../../util/BaseCommand.js';
+import { root } from '../util/helper.js';
+import BaseCommand from '../util/BaseCommand.js';
 const resolve = (...src: string[]) => path.resolve(root, 'data/spider', ...src);
 
 class Spider extends BaseCommand {

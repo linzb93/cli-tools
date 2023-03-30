@@ -76,7 +76,7 @@ const map = {
       base: '/',
       list: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
-      userApi: '//api'
+      userApi: '/api'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
@@ -100,7 +100,7 @@ const map = {
       base: '/',
       list: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
-      userApi: '//api'
+      userApi: '/api'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
@@ -116,7 +116,7 @@ const map = {
   },
   im: {
     name: 'im',
-    appKey: '4',
+    appKey: '75',
     serviceName: 'IM神器-美团',
     platform: 8,
     appKeyName: 'appKey',
@@ -124,7 +124,7 @@ const map = {
       base: '/',
       list: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
-      userApi: '//api'
+      userApi: '/api'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
@@ -136,7 +136,55 @@ const map = {
       endDate: true,
       version: true
     },
-    testId: '15983528161'
+    testId: '16505256214'
+  },
+  yx: {
+    name: 'yx',
+    appKey: '76',
+    serviceName: '营销神器-美团',
+    platform: 8,
+    appKeyName: 'appKey',
+    url: {
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin',
+      userApi: '/api'
+    },
+    loginKey: (item: MeituanLoginParams) => ({
+      appKey: item.appKey,
+      memberId: item.shopId,
+      platform: item.platform
+    }),
+    searchSupport: {
+      buyDate: true,
+      endDate: true,
+      version: true
+    },
+    testId: '16505284824'
+  },
+  dj: {
+    name: 'dj',
+    appKey: '85',
+    serviceName: '点金大师-美团',
+    platform: 8,
+    appKeyName: 'appKey',
+    url: {
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin',
+      userApi: '/api'
+    },
+    loginKey: (item: MeituanLoginParams) => ({
+      appKey: item.appKey,
+      memberId: item.shopId,
+      platform: item.platform
+    }),
+    searchSupport: {
+      buyDate: true,
+      endDate: true,
+      version: true
+    },
+    testId: '16668523733'
   },
   zx: {
     name: 'zx',
@@ -148,7 +196,7 @@ const map = {
       base: '/',
       list: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
-      userApi: '//api'
+      userApi: '/api'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
@@ -165,7 +213,7 @@ const map = {
   ele: {
     name: 'ele',
     appId: '29665924',
-    serviceName: '店客多-裂变神器',
+    serviceName: '店客多-饿了么经营神器',
     baseURL: '/eleocc',
     listUrl: '/manage/getOrderList',
     platform: 11,
@@ -412,7 +460,7 @@ class OCC extends BaseCommand {
     await this.helper.sleep(1000);
     const {
       data: { img, uuid }
-    } = await axios.get('https://api.diankeduo.cn/zhili/captchaImage');
+    } = await axios.get(this.ls.get('oa.apiPrefix') + '/captchaImage');
     const picBuffer = Buffer.from(img, 'base64');
     const target = path.resolve(this.helper.root, '.temp/vrCode.png');
     await fs.writeFile(target, picBuffer);
@@ -427,7 +475,7 @@ class OCC extends BaseCommand {
     const { username, password } = this.ls.get('oa') as SecretDB['oa'];
     const {
       data: { token }
-    } = await axios.post('https://api.diankeduo.cn/zhili/login', {
+    } = await axios.post(this.ls.get('oa.apiPrefix') + '/login', {
       username,
       password,
       uuid,

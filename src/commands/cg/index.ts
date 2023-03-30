@@ -45,7 +45,7 @@ class Cg extends BaseCommand {
     this.spinner.text = '正在获取今日业绩';
     try {
       const { data } = await axios.post(
-        'http://wxdp.fjdaze.com/AppApi/GetDkdData'
+        this.ls.get('cg.oldPrefix') + '/AppApi/GetDkdData'
       );
       const res = data.Result.Total.TodayTurnover;
       this.spinner.succeed(
@@ -61,10 +61,10 @@ class Cg extends BaseCommand {
     this.spinner.text = '正在获取预测数据';
     Promise.all([
       axios
-        .post('http://wxdp.fjdaze.com/AppApi/GetDkdData')
+        .post(this.ls.get('cg.oldPrefix') + '/AppApi/GetDkdData')
         .then(({ data }) => data.Result.Total.TodayTurnover),
       axios
-        .post('http://api.diankeduo.cn//zhili/dkd/ad/forecast/query')
+        .post(this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/query')
         .then(({ data }) => data.result)
     ])
       .then(([currentPerformance, list]) => {
@@ -99,7 +99,7 @@ class Cg extends BaseCommand {
     const performance = this.data;
     const cgData = this.ls.get('cg');
     const { data } = await axios.post(
-      'http://api.diankeduo.cn/zhili/dkd/ad/forecast/insert',
+      this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/insert',
       {
         name: cgData.author,
         nameId: cgData.nameId,
@@ -110,6 +110,21 @@ class Cg extends BaseCommand {
       this.logger.error(`预测输入失败: ${data.msg}`);
     } else {
       this.logger.success('预测输入成功');
+      const res = await axios.post(
+        this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/query'
+      );
+      const list = res.data.result;
+      console.log(
+        list
+          .map((user: any, index: number) => {
+            const output = `${index + 1}. ${user.name}: ${user.amount}`;
+            if (user.name === cgData.author) {
+              return chalk.bold.yellow(output);
+            }
+            return output;
+          })
+          .join('\n')
+      );
     }
   }
 }

@@ -2,7 +2,7 @@ import getPort from 'detect-port';
 import express from 'express';
 import notifier from 'node-notifier';
 import axios from 'axios';
-
+import ls from '../../util/ls.js';
 (async () => {
   const app = express();
   const targets = [
@@ -25,7 +25,7 @@ import axios from 'axios';
   ];
   setInterval(async () => {
     const { data } = await axios.post(
-      'http://wxdp.fjdaze.com/AppApi/GetDkdData'
+      ls.get('cg.oldPrefix') + '/AppApi/GetDkdData'
     );
     const res = data.Result.Total.TodayTurnover;
     for (const target of targets) {

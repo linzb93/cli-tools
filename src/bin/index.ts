@@ -99,6 +99,7 @@ program
   .option('--token [token]', '获取token或根据token跳转')
   .option('--pc', '打开PC端')
   .option('--copy', '复制地址')
+  .option('--test', '测试环境')
   .option('--user', '根据token获取用户信息')
   .option('--buyDate <cond>', '订购时间')
   .option('--endDate <cond>', '到期时间')
@@ -128,7 +129,7 @@ program
   .command('spider <url>')
   .option('--dest <dest>', '下载目标文件夹')
   .action(async (url, option) => {
-    const spider = (await import('../commands/spider/index.js')).default;
+    const spider = (await import('../commands/spider.js')).default;
     spider(url, option);
   });
 program.command('bug [source]').action(async (source) => {
