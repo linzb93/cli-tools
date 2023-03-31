@@ -49,9 +49,9 @@ class Cg extends BaseCommand {
       );
       const res = data.Result.Total.TodayTurnover;
       this.spinner.succeed(
-        `今日业绩：${chalk.yellow(res)} ${chalk.gray(
-          `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`
-        )}`
+        `今日业绩：${chalk.yellow(res)}，本月业绩：${chalk.yellow(
+          data.Result.Total.MonthTurnover
+        )} ${chalk.gray(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}`
       );
     } catch (error) {
       this.spinner.fail('服务器故障，请稍后再试', true);
