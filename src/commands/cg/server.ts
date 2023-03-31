@@ -5,25 +5,14 @@ import axios from 'axios';
 import ls from '../../util/ls.js';
 (async () => {
   const app = express();
-  const targets = [
-    {
-      data: 5000,
+  const targets = 'a'
+    .repeat(20)
+    .split('')
+    .map((_: any, index) => ({
+      data: (index + 1) * 5000,
       loaded: false
-    },
-    {
-      data: 10000,
-      loaded: false
-    },
-    {
-      data: 15000,
-      loaded: false
-    },
-    {
-      data: 20000,
-      loaded: false
-    }
-  ];
-  setInterval(async () => {
+    }));
+  async function init() {
     const { data } = await axios.post(
       ls.get('cg.oldPrefix') + '/AppApi/GetDkdData'
     );
@@ -35,7 +24,11 @@ import ls from '../../util/ls.js';
         return;
       }
     }
-  }, 1000 * 60);
+  }
+  init();
+  setInterval(async () => {
+    init();
+  }, 1000 * 60 * 3);
   const port = await getPort(6000);
   app.listen(port, () => {
     process.send?.({
