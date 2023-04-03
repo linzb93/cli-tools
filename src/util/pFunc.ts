@@ -27,7 +27,7 @@ export const pRetry = async (
     retryTimesCallback?(c: number, message?: string): void;
   }
 ): Promise<any> => {
-  let c = 0;
+  let count = 0;
   const retryFunc = async (
     ipt: PromiseFunc,
     retriesTime: number
@@ -35,10 +35,10 @@ export const pRetry = async (
     try {
       return await ipt();
     } catch (error) {
-      c++;
+      count++;
       typeof retryTimesCallback === 'function' &&
-        retryTimesCallback(c, (error as Error).message);
-      if (c === retriesTime) {
+        retryTimesCallback(count, (error as Error).message);
+      if (count === retriesTime) {
         throw error;
       } else {
         return retryFunc(ipt, retriesTime);

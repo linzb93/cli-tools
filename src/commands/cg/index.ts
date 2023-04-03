@@ -4,13 +4,22 @@ import path from 'path';
 import axios from 'axios';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
+
+interface Options {
+  realtime: boolean;
+  debug: boolean;
+  publish: boolean;
+}
+
 class Cg extends BaseCommand {
   private action: string;
   private data: string;
-  constructor(action: string, data: string) {
+  private options: Options;
+  constructor(action: string, data: string, options: Options) {
     super();
     this.action = action;
     this.data = data;
+    this.options = options;
   }
   async run() {
     if (this.action === 'get') {
@@ -25,21 +34,47 @@ class Cg extends BaseCommand {
       this.setForecast();
       return;
     }
+    this.spinner.text = '正在启动服务器';
     const child = fork(
       path.resolve(this.helper.root, 'dist/commands/cg/server.js'),
-      [],
+      [...this.helper.processArgvToFlags(this.options)],
       {
         cwd: this.helper.root,
         detached: true,
         stdio: [null, null, null, 'ipc']
       }
     );
-    child.on('message', async ({ port }: { port: string }) => {
-      this.spinner.succeed(`今日业绩监控服务已启动：${port}端口`);
-      child.unref();
-      child.disconnect();
-      process.exit(0);
-    });
+    child.on(
+      'message',
+      async ({
+        port,
+        currentPerformance
+      }: {
+        port: string;
+        currentPerformance: number;
+        msg: string;
+      }) => {
+        const db = this.helper.createDB('cg');
+        await db.read();
+        const { data } = db as any;
+        this.spinner.succeed(
+          `今日业绩监控服务已启动：${chalk.yellow(port)}端口。\n${
+            currentPerformance !== 0
+              ? `最新业绩：${chalk.magenta(currentPerformance)}元`
+              : '服务器故障，无法获取最新业绩'
+          }。\n服务将每过${chalk.cyan(
+            this.options.realtime ? '3分钟' : '1小时'
+          )}获取一次最新业绩。${
+            !data.forecast
+              ? `\n${chalk.red('今日预测还未提交，请尽快提交')}`
+              : ''
+          }`
+        );
+        child.unref();
+        child.disconnect();
+        process.exit(0);
+      }
+    );
   }
   private async getTodayResults() {
     this.spinner.text = '正在获取今日业绩';
@@ -97,37 +132,30 @@ class Cg extends BaseCommand {
   }
   private async setForecast() {
     const performance = this.data;
-    const cgData = this.ls.get('cg');
-    const { data } = await axios.post(
-      this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/insert',
-      {
-        name: cgData.author,
-        nameId: cgData.nameId,
-        amount: performance
+    if (this.options.publish) {
+      const cgData = this.ls.get('cg');
+      const { data: fetchData } = await axios.post(
+        this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/insert',
+        {
+          name: cgData.author,
+          nameId: cgData.nameId,
+          amount: performance
+        }
+      );
+      if (fetchData.code === 200) {
+        this.logger.success('今日预测推送成功');
       }
-    );
-    if (data.code !== 200) {
-      this.logger.error(`预测输入失败: ${data.msg}`);
-    } else {
-      this.logger.success('预测输入成功');
-      const res = await axios.post(
-        this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/query'
-      );
-      const list = res.data.result;
-      console.log(
-        list
-          .map((user: any, index: number) => {
-            const output = `${index + 1}. ${user.name}: ${user.amount}`;
-            if (user.name === cgData.author) {
-              return chalk.bold.yellow(output);
-            }
-            return output;
-          })
-          .join('\n')
-      );
+      return;
     }
+    // 将设置结果保存在本地，定时发送。
+    const db = this.helper.createDB('cg');
+    await db.read();
+    const { data } = db as any;
+    data.forecast = performance;
+    this.logger.success(`预测已提交，将在${chalk.cyan(data.publishTime)}推送`);
+    await db.write();
   }
 }
-export default (action: string, data: string) => {
-  new Cg(action, data).run();
+export default (action: string, data: string, options: Options) => {
+  new Cg(action, data, options).run();
 };

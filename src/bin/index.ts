@@ -144,10 +144,15 @@ program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;
   clear(filename);
 });
-program.command('cg [action] [...rest]').action(async (action, rest) => {
-  const cg = (await import('../commands/cg/index.js')).default;
-  cg(action, rest);
-});
+program
+  .command('cg [action] [...rest]')
+  .option('--realtime', '实时更新')
+  .option('--debug', '调试')
+  .option('--publish', '推送')
+  .action(async (action, rest, options) => {
+    const cg = (await import('../commands/cg/index.js')).default;
+    cg(action, rest, options);
+  });
 program
   .command('eng <text>')
   .option('-e,--example', '显示范例')
