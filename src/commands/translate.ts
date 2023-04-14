@@ -3,13 +3,11 @@ import boxen from 'boxen';
 import axios from 'axios';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import lodash from 'lodash';
 import BaseCommand from '../util/BaseCommand.js';
-
+import open from 'open';
 interface Options {
   example: boolean;
 }
-const { last } = lodash;
 
 class Translate extends BaseCommand {
   private text: string;
@@ -34,7 +32,7 @@ class Translate extends BaseCommand {
         .children('ul')
         .children()
         .map((_, item) => {
-          const typeRet = this.chunk($(item).text().replace(/\s/g, ''));
+          const typeRet = $(item).text().replace(/\s/g, '');
           if (typeRet.includes('.')) {
             const type = typeRet.split('.')[0];
             return `${chalk.gray(type)} ${typeRet.split('.')[1]}`;
@@ -43,6 +41,10 @@ class Translate extends BaseCommand {
         })
     );
     this.spinner.stop();
+    if (!meanings.length) {
+      await open(`https://youdao.com/w/eng/${encodeURIComponent(text)}`);
+      return;
+    }
     if (options.example) {
       const arrs: { en: string; cn: string }[] = [];
       $('#bilingual')
@@ -51,17 +53,13 @@ class Translate extends BaseCommand {
         .each((_, item) => {
           const $list = $(item).children('p');
           const $en = isC2E ? $list.eq(1) : $list.first();
-          const enText = this.chunk(
-            Array.from(
-              $en.children('span').map((_, sub) => $(sub).text())
-            ).join('')
-          );
+          const enText = Array.from(
+            $en.children('span').map((_, sub) => $(sub).text())
+          ).join('');
           const $cn = isC2E ? $list.first() : $list.eq(1);
-          const cnText = this.chunk(
-            Array.from(
-              $cn.children('span').map((_, sub) => $(sub).text())
-            ).join('')
-          );
+          const cnText = Array.from(
+            $cn.children('span').map((_, sub) => $(sub).text())
+          ).join('');
           if (isC2E) {
             arrs.push({
               en: enText,
@@ -107,22 +105,6 @@ class Translate extends BaseCommand {
         })
       );
     }
-  }
-  chunk(str: string): string {
-    // 30个字母一行，不隔断一个单词
-    const isEn = /^[a-zA-Z0-9,\.\?\s\']+$/.test(str);
-    const lineLength = isEn ? 40 : 20;
-    const data = str.split(isEn ? ' ' : '');
-    const result: string[] = [''];
-    for (let index = 0; index < data.length; index++) {
-      const item = last(result) as string;
-      if (item.length < lineLength) {
-        result[result.length - 1] += data[index] + (isEn ? ' ' : '');
-      } else {
-        result.push(data[index] + (isEn ? ' ' : ''));
-      }
-    }
-    return result.join('\n');
   }
 }
 

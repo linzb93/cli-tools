@@ -154,6 +154,14 @@ program
     cg(action, rest, options);
   });
 program
+  .command('token <data>')
+  .option('-o --origin', '原始数据')
+  .option('-c --complete', '完整数据')
+  .action(async (data, options) => {
+    const token = (await import('../commands/token.js')).default;
+    token(data, options);
+  });
+program
   .command('eng <text>')
   .option('-e,--example', '显示范例')
   .action(async (text, options) => {
