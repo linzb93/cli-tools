@@ -13,6 +13,7 @@ import { CommandItem } from '../../util/pFunc';
 import BaseCommand from '../../util/BaseCommand.js';
 import { AnyObject } from '../../util/types.js';
 import { getNewestTag } from './tag/index.js';
+import clipboard from 'clipboardy';
 
 const { get: objectGet } = lodash;
 
@@ -170,6 +171,7 @@ class Deploy extends BaseCommand {
       await this.helper.sequenceExec(flow, {
         debug: options.debug
       });
+      await this.deploySuccess(newestTag);
     } catch (error) {
       this.logger.error((error as Error).message);
       return;
@@ -206,6 +208,7 @@ class Deploy extends BaseCommand {
       await this.helper.sequenceExec(flow, {
         debug: options.debug
       });
+      await this.deploySuccess(newestTag);
     } catch (error) {
       this.logger.error((error as Error).message);
       return;
@@ -269,6 +272,14 @@ class Deploy extends BaseCommand {
       return null;
     }
   }
+  private async deploySuccess(tag: string) {
+    const projectConf = await this.getProjectConfig();
+    const jenkins = (projectConf as any).jenkins;
+    const ret = `${jenkins.id.replace(/[\-|_]test$/, '')}。${tag}`;
+    this.logger.success(`部署成功，复制填入更新文档：
+      ${ret}`);
+    clipboard.writeSync(ret);
+  }
   private createWorkflow(
     flowList: {
       condition: Boolean;
@@ -303,6 +314,7 @@ class Deploy extends BaseCommand {
     await this.helper.sequenceExec(flow, {
       debug: options.debug
     });
+    await this.deploySuccess(newestTag);
   }
   private async openDeployPage() {
     const projectConf = await this.getProjectConfig();

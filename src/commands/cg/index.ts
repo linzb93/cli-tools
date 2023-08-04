@@ -4,6 +4,8 @@ import path from 'path';
 import axios from 'axios';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
+import lodash from 'lodash';
+const { isNumber } = lodash;
 
 interface Options {
   realtime: boolean;
@@ -30,7 +32,10 @@ class Cg extends BaseCommand {
       this.getForecast();
       return;
     }
-    if (this.action === 'set') {
+    if (
+      this.action === 'set' ||
+      (this.action !== undefined && isNumber(Number(this.action)))
+    ) {
       this.setForecast();
       return;
     }
@@ -131,7 +136,7 @@ class Cg extends BaseCommand {
       });
   }
   private async setForecast() {
-    const performance = this.data;
+    const performance = this.data || Number(this.action);
     if (this.options.publish) {
       const cgData = this.ls.get('cg');
       const { data: fetchData } = await axios.post(

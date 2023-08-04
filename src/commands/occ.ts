@@ -6,11 +6,13 @@ import fs from 'fs-extra';
 import path from 'path';
 import dayjs from 'dayjs';
 import { SecretDB } from '../util/types';
-
+import { stringify } from 'querystring';
+import chalk from 'chalk';
 interface Options {
   token: string | boolean;
   pc: boolean;
   copy: boolean;
+  test: boolean;
   user: boolean;
   buyDate: string;
   endDate: string;
@@ -210,6 +212,10 @@ const map = {
     },
     testId: '16159400501'
   },
+  chain: {
+    name: 'chain',
+    testId: '15859095882'
+  },
   ele: {
     name: 'ele',
     appId: '29665924',
@@ -249,6 +255,10 @@ class OCC extends BaseCommand {
   async run() {
     const { options } = this;
     const { match, shopId } = this.getMatchProj();
+    if (match.name === 'chain') {
+      this.handleChainProject(match, shopId);
+      return;
+    }
     const { shop, url } = await this.getShop(match, shopId);
     if (options.token === true) {
       // token无值，就只是复制token
@@ -345,7 +355,11 @@ class OCC extends BaseCommand {
   }> {
     const { options } = this;
     const service = axios.create({
-      baseURL: `${this.ls.get('oa.apiPrefix')}${match.url.base}`,
+      baseURL: `${
+        options.test
+          ? this.ls.get('oa.testPrefix')
+          : this.ls.get('oa.apiPrefix')
+      }${match.url.base}`,
       headers: {
         token: this.ls.get('oa.token')
       }
@@ -485,6 +499,64 @@ class OCC extends BaseCommand {
     await fs.remove(target);
     this.spinner.succeed('登录成功', true);
     await this.helper.sleep(1500);
+  }
+  private async handleChainProject(match: any, shopId: string) {
+    this.logger.debug(`shopId:${shopId}`);
+    const { options } = this;
+    axios
+      .post(
+        `${this.ls.get('oa.oldApiPrefix')}/chain/occ/dkdAccount/oa/listAccount`,
+        {
+          searchParam: shopId || match.testId,
+          accountStatus: '',
+          pageSize: 10,
+          pageIndex: 1
+        }
+      )
+      .then((response) => {
+        const target = response.data.result.list[0];
+        if (!target) {
+          this.spinner.fail('店铺不存在', true);
+        }
+        return Promise.all([
+          axios.post(
+            `${this.ls.get(
+              'oa.oldApiPrefix'
+            )}/chain/occ/dkdAccount/oa/getAccountToken`,
+            {
+              id: target.id
+            }
+          ),
+          Promise.resolve(target.brandName)
+        ]);
+      })
+      .then(([response, brandName]) => {
+        const { token, createTime, phoneNumber, id, shopNumber } =
+          response.data.result;
+
+        if (options.token) {
+          this.spinner.succeed(
+            `已复制账号${chalk.yellow(`【${brandName}】`)}token：\n${token}`
+          );
+          clipboard.writeSync(token);
+        } else {
+          this.spinner.succeed(
+            `正在打开${chalk.yellow(`【${brandName}】`)}的管理后台`
+          );
+          open(
+            `https://ka.diankeduo.net/#/loginByOa?${stringify({
+              token,
+              createTime,
+              phoneNumber,
+              id,
+              shopNumber
+            })}`
+          );
+        }
+      })
+      .catch((e) => {
+        this.spinner.fail((e as Error).message);
+      });
   }
   private getSearchDate(match: typeof map.default) {
     if (this.options.buyDate && match.searchSupport.buyDate === true) {

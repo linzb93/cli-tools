@@ -3,8 +3,17 @@ import express from 'express';
 import notifier from 'node-notifier';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import path from 'path';
 import ls from '../../util/ls.js';
 import * as helper from '../../util/helper.js';
+
+const notify = (content: string) => {
+  notifier.notify({
+    title: '店客多通知',
+    icon: path.join(helper.root, 'source/dkd-logo.png'),
+    message: content
+  });
+};
 
 (async () => {
   process.on('unhandledRejection', (e) => {
@@ -38,14 +47,12 @@ import * as helper from '../../util/helper.js';
     const { data } = res;
     const current = data.Result.Total.TodayTurnover;
     if (!isRealtime) {
-      notifier.notify(
-        `截至${dayjs().format('HH:mm:ss')}，业绩已达到${current}元。`
-      );
+      notify(`截至${dayjs().format('HH:mm:ss')}，业绩已达到${current}元。`);
       return current;
     }
     for (const target of targets) {
       if (current >= target.data && !target.loaded) {
-        notifier.notify(`今日业绩突破${target.data}元，目前已到达${current}元`);
+        notify(`今日业绩突破${target.data}元，目前已到达${current}元`);
         target.loaded = true;
         break;
       }
@@ -78,13 +85,13 @@ import * as helper from '../../util/helper.js';
               }
             );
             if (fetchData.code === 200) {
-              notifier.notify('今日预测推送成功');
+              notify('今日预测推送成功');
             }
           } catch (error) {
-            notifier.notify(`提交失败，请手动提交。你的预测是：${forecast}`);
+            notify(`提交失败，请手动提交。你的预测是：${forecast}`);
           }
         } else {
-          notifier.notify('[debug]今日预测推送成功');
+          notify('[debug]今日预测推送成功');
         }
         data.forecast = 0;
         await db.write();
