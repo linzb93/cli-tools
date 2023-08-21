@@ -1,6 +1,10 @@
 import clipboard from 'clipboardy';
 import BaseCommand from '../../../util/BaseCommand.js';
 import deleteTag from './delete.js';
+import lodash from 'lodash';
+
+const { last } = lodash;
+
 interface Options {
   delete?: boolean;
   silent?: boolean;
@@ -70,11 +74,11 @@ class Tag extends BaseCommand {
     minor: boolean;
   }): Promise<string> {
     const gitTags = await this.git.tag();
-    const matchTag = this.getSimilarTag(gitTags);
+    const matchTag = this.gitCurrentLatestTag(gitTags);
     const firstNum = Number(matchTag.slice(1, 2)[0]);
-    const secondNum = Number((matchTag.match(/v\d\.(\d)/) as string[])[1]);
-    const thirdNum = Number((matchTag.match(/v(\d\.){2}(\d)/) as string[])[2]);
-    const lastNum = Number((matchTag.match(/v[\d\.]{2,}(\d)/) as string[])[1]);
+    const secondNum = Number((matchTag.match(/v\d\.(\d+)/) as string[])[1]);
+    const thirdNum = Number((matchTag.match(/v(\d\.){2}(\d+)/) as string[])[2]);
+    const lastNum = Number((matchTag.match(/(\d+)$/) as string[])[1]);
     if (opt?.major) {
       // 第二位数字+1，第三位置为0，保留三位数
       if (secondNum === 9) {
@@ -91,10 +95,13 @@ class Tag extends BaseCommand {
     }
     return `v${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
   }
-  private getSimilarTag(tags: string[]): string {
+  private gitCurrentLatestTag(tags: string[]): string {
     for (let i = tags.length - 1; i >= 0; i--) {
       if (tags[i].match(/^v\d\./)) {
-        return tags[i];
+        const lastNum = Number(last(tags[i].split('.')));
+        if (!tags.includes(tags[i].replace(/\d+$/, (lastNum + 1).toString()))) {
+          return tags[i];
+        }
       }
     }
     return '';

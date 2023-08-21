@@ -354,6 +354,10 @@ class OCC extends BaseCommand {
     url: string;
   }> {
     const { options } = this;
+    if (!this.ls.get('oa.token')) {
+      await this.login();
+      return await this.getShop(match, shopId);
+    }
     const service = axios.create({
       baseURL: `${
         options.test
@@ -364,7 +368,7 @@ class OCC extends BaseCommand {
         token: this.ls.get('oa.token')
       }
     });
-    this.logger.debug(this.ls.get('oa.token'));
+    this.logger.debug(`token:${this.ls.get('oa.token')}`);
     let listData: ShopListResponse;
     this.logger.debug(
       `高级搜索参数：${JSON.stringify(this.getSearchDate(match))}`
@@ -470,7 +474,7 @@ class OCC extends BaseCommand {
   }
   // 通过用户输入的验证码登录，将token存入本地之后再次调用获取店铺信息的接口。
   private async login() {
-    this.spinner.warning('token失效，需重新登录，请先输入验证码');
+    this.spinner.warning('登录过期，需重新登录，请输入验证码。');
     await this.helper.sleep(1000);
     const {
       data: { img, uuid }

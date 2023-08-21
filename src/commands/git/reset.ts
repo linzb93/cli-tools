@@ -1,6 +1,6 @@
 import BaseCommand from '../../util/BaseCommand.js';
 
-class Revert extends BaseCommand {
+class Reset extends BaseCommand {
   private filename: string;
   constructor(filename: string) {
     super();
@@ -18,5 +18,5 @@ class Revert extends BaseCommand {
 }
 
 export default (filename: string) => {
-  new Revert(filename).run();
+  new Reset(filename).run();
 };

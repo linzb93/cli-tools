@@ -50,9 +50,15 @@ program
       subCommand = 'tag/index';
     }
     if (
-      !['clone', 'deploy', 'rename', 'scan', 'reset', 'tag/index'].includes(
-        subCommand
-      )
+      ![
+        'clone',
+        'deploy',
+        'rename',
+        'scan',
+        'reset',
+        'pull',
+        'tag/index'
+      ].includes(subCommand)
     ) {
       logger.error('命令不存在，请重新输入', true);
     }
@@ -81,6 +87,7 @@ program
   .option('-c, --copy', '复制地址')
   .option('-f, --force', '强制覆盖')
   .option('--prod', '生产版')
+  .option('--start', '复制并启动')
   .option('--all', '全部')
   .option('--help', '查看帮助文档')
   .action(async (data, options) => {

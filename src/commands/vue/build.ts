@@ -42,8 +42,16 @@ class BuildServe extends BaseCommand {
     let beforeData: any;
     if (!this.options.start) {
       beforeData = await this.beforeOpenServe(match);
+    } else {
+      await fs.copy(
+        `${match.cwd}/dist`,
+        path.resolve(this.helper.root, `data/vue/${match.id}`),
+        {
+          recursive: true
+        }
+      );
     }
-    if (this.options.force || this.options.start) {
+    if (this.options.force) {
       // 强制模式下服务器不需要启动
       const url = `http://${ip}:${match.buildPort}`;
       const local = `http://localhost:${match.buildPort}`;
