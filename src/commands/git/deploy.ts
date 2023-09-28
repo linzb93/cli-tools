@@ -162,8 +162,8 @@ class Deploy extends BaseCommand {
         },
         'git push',
         'git checkout master',
-        'git merge release',
         'git pull',
+        'git merge release',
         'git push',
         `git tag ${newestTag}`,
         `git push origin ${newestTag}`
@@ -196,11 +196,11 @@ class Deploy extends BaseCommand {
           onError() {}
         },
         `git checkout master`,
-        `git merge ${curBranch}`,
         {
           message: 'git pull',
           onError() {}
         },
+        `git merge ${curBranch}`,
         'git push',
         `git tag ${newestTag}`,
         `git push origin ${newestTag}`
@@ -233,6 +233,7 @@ class Deploy extends BaseCommand {
           onError() {}
         },
         `git checkout release`,
+        'git pull',
         {
           message: `git merge ${curBranch}`,
           onError: async () => {
@@ -253,7 +254,6 @@ class Deploy extends BaseCommand {
             ]);
           }
         },
-        'git pull',
         'git push'
       ];
       flow.push(`git checkout ${curBranch}`);

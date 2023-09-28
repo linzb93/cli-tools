@@ -188,6 +188,30 @@ const map = {
     },
     testId: '16668523733'
   },
+  sp: {
+    name: 'sp',
+    appKey: '106',
+    serviceName: '商品大师-美团',
+    platform: 8,
+    appKeyName: 'appKey',
+    url: {
+      base: '/',
+      list: '/query/businessInfoList',
+      login: '/occ/order/replaceUserLogin',
+      userApi: '/api'
+    },
+    loginKey: (item: MeituanLoginParams) => ({
+      appKey: item.appKey,
+      memberId: item.shopId,
+      platform: item.platform
+    }),
+    searchSupport: {
+      buyDate: true,
+      endDate: true,
+      version: true
+    },
+    testId: '16928614773'
+  },
   zx: {
     name: 'zx',
     appKey: '36',
