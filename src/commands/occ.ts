@@ -291,7 +291,9 @@ class OCC extends BaseCommand {
       const token = fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
       clipboard.writeSync(token);
       this.spinner.succeed(
-        `已复制店铺 ${shop.shopName || shop.shopId} 的token\n${token}`
+        `【${match.serviceName}】已复制店铺 ${
+          shop.shopName || shop.shopId
+        } 的token\n${token}`
       );
     } else if (options.token) {
       // token有值，就是根据token登录
@@ -300,7 +302,11 @@ class OCC extends BaseCommand {
       open(`${origin}${pathname}#/login?code=${options.token}`);
     } else if (options.copy) {
       clipboard.writeSync(url);
-      this.spinner.succeed(`已复制店铺 ${shop.shopName || shop.shopId} 的地址`);
+      this.spinner.succeed(
+        `【${match.serviceName}】已复制店铺 ${
+          shop.shopName || shop.shopId
+        } 的地址`
+      );
     } else if (options.user) {
       const { hash } = new URL(url);
       const token = hash.replace('#/login?code=', '');
@@ -316,13 +322,15 @@ class OCC extends BaseCommand {
       this.spinner.succeed(`获取店铺 ${shop.shopName || shop.shopId} 信息成功`);
       console.log(data.result);
     } else {
-      if (options.pc && ['4', '36'].includes(match.appKey)) {
+      if (options.pc && ['4', '36', '75'].includes(match.appKey)) {
         // 只有美团经营神器和装修神器有PC端
         open(url.replace('app', ''));
       } else {
         open(url);
       }
-      this.spinner.succeed(`店铺 ${shop.shopName || shop.shopId} 打开成功`);
+      this.spinner.succeed(
+        `【${match.serviceName}】店铺 ${shop.shopName || shop.shopId} 打开成功`
+      );
     }
   }
   private getMatchProj(): { match: typeof map.default; shopId: string } {
@@ -479,9 +487,13 @@ class OCC extends BaseCommand {
     }
     shop = listData.result.list[0];
     if (options.token === true) {
-      this.spinner.text = `正在获取token:${shop.shopName || shop.shopId}`;
+      this.spinner.text = `【${match.serviceName}】正在获取token:${
+        shop.shopName || shop.shopId
+      }`;
     } else if (!options.token) {
-      this.spinner.text = `正在打开店铺:${shop.shopName || shop.shopId}`;
+      this.spinner.text = `【${match.serviceName}】正在打开店铺:${
+        shop.shopName || shop.shopId
+      }`;
     }
     await this.helper.sleep(1500);
     const {
@@ -564,7 +576,9 @@ class OCC extends BaseCommand {
 
         if (options.token) {
           this.spinner.succeed(
-            `已复制账号${chalk.yellow(`【${brandName}】`)}token：\n${token}`
+            `【${match.serviceName}】已复制账号${chalk.yellow(
+              `【${brandName}】`
+            )}token：\n${token}`
           );
           clipboard.writeSync(token);
         } else {

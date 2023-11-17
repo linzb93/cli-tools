@@ -3,8 +3,8 @@ import BaseCommand from '../util/BaseCommand.js';
 import jwt from 'jsonwebtoken';
 
 interface Options {
-  origin: boolean;
-  complete: boolean;
+  origin: boolean; // 原始数据，时间戳没有解析成标准时间格式
+  complete: boolean; // 完整数据，包括算法等
 }
 
 class Token extends BaseCommand {

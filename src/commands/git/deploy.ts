@@ -178,6 +178,14 @@ class Deploy extends BaseCommand {
     }
   }
   private async deployDevToProduction() {
+    const { answer } = await this.helper.inquirer.prompt({
+      message: '确认更新到正式站？',
+      name: 'answer',
+      type: 'confirm'
+    });
+    if (!answer) {
+      return;
+    }
     const { options, data } = this;
     const curBranch = await this.git.getCurrentBranch();
     let input = '';
