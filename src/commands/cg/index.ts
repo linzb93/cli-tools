@@ -10,7 +10,6 @@ const { isNumber } = lodash;
 interface Options {
   realtime: boolean;
   debug: boolean;
-  publish: boolean;
 }
 
 class Cg extends BaseCommand {
@@ -137,28 +136,18 @@ class Cg extends BaseCommand {
   }
   private async setForecast() {
     const performance = this.data || Number(this.action);
-    if (this.options.publish) {
-      const cgData = this.ls.get('cg');
-      const { data: fetchData } = await axios.post(
-        this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/insert',
-        {
-          name: cgData.author,
-          nameId: cgData.nameId,
-          amount: performance
-        }
-      );
-      if (fetchData.code === 200) {
-        this.logger.success('今日预测推送成功');
+    const cgData = this.ls.get('cg');
+    const { data: fetchData } = await axios.post(
+      this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/insert',
+      {
+        name: cgData.author,
+        nameId: cgData.nameId,
+        amount: performance
       }
-      return;
+    );
+    if (fetchData.code === 200) {
+      this.logger.success('今日预测推送成功');
     }
-    // 将设置结果保存在本地，定时发送。
-    const db = this.helper.createDB('cg');
-    await db.read();
-    const { data } = db as any;
-    data.forecast = performance;
-    this.logger.success(`预测已提交，将在${chalk.cyan(data.publishTime)}推送`);
-    await db.write();
   }
 }
 export default (action: string, data: string, options: Options) => {

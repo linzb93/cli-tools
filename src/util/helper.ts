@@ -12,6 +12,7 @@ import windowsShortcuts from 'windows-shortcuts';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import boxen from 'boxen';
+import os from 'os';
 import ValidatorSchema, {
   Rules as ValidatorRules,
   ValidateSource,
@@ -178,6 +179,14 @@ export const emptyWritableStream = new Writable({
     callback();
   }
 });
+
+export const desktop = (() => {
+  if (isWin) {
+    return `${os.homedir()}/DESKTOP`;
+  } else {
+    return os.homedir();
+  }
+})();
 
 export const log = async (content: string) => {
   const real = `\n[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}`;

@@ -139,13 +139,21 @@ program
     const spider = (await import('../commands/spider.js')).default;
     spider(url, option);
   });
-program.command('bug [source]').action(async (source) => {
-  const bug = (await import('../commands/bug.js')).default;
-  bug(source);
-});
+program
+  .command('bug [source]')
+  .option('--debug', '调试模式')
+  .option('--all', '全部')
+  .action(async (source, option) => {
+    const bug = (await import('../commands/bug.js')).default;
+    bug(source, option);
+  });
 program.command('kill <data...>').action(async (data) => {
   const kill = (await import('../commands/kill.js')).default;
   kill(data);
+});
+program.command('paste <data...>').action(async (data) => {
+  const paste = (await import('../commands/paste.js')).default;
+  paste(data);
 });
 program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;
@@ -155,7 +163,6 @@ program
   .command('cg [action] [...rest]')
   .option('--realtime', '实时更新')
   .option('--debug', '调试')
-  .option('--publish', '推送')
   .action(async (action, rest, options) => {
     const cg = (await import('../commands/cg/index.js')).default;
     cg(action, rest, options);

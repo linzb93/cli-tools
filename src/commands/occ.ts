@@ -212,6 +212,12 @@ const map = {
     },
     testId: '16928614773'
   },
+  sg: {
+    name: 'sg',
+    testId: 't_OtWpj5Vx31',
+    appKey: 122726,
+    url: 'https://sg.diankeduo.net/pages/shangou/#/'
+  },
   zx: {
     name: 'zx',
     appKey: '36',
@@ -281,6 +287,10 @@ class OCC extends BaseCommand {
     const { match, shopId } = this.getMatchProj();
     if (match.name === 'chain') {
       this.handleChainProject(match, shopId);
+      return;
+    }
+    if (match.name === 'sg') {
+      this.handleSgProject(match, shopId);
       return;
     }
     const { shop, url } = await this.getShop(match, shopId);
@@ -549,7 +559,7 @@ class OCC extends BaseCommand {
         {
           searchParam: shopId || match.testId,
           accountStatus: '',
-          pageSize: 10,
+          pageSize: 1,
           pageIndex: 1
         }
       )
@@ -599,6 +609,59 @@ class OCC extends BaseCommand {
       .catch((e) => {
         this.spinner.fail((e as Error).message);
       });
+  }
+  private async handleSgProject(match: any, shopId: string) {
+    this.logger.debug(`shopId:${shopId}`);
+    const { options } = this;
+    const token = this.ls.get('oa.token');
+    const response = await axios.post(
+      `${this.ls.get('oa.apiPrefix')}/retailManage/pageQueryOccOrder`,
+      {
+        queryParam: shopId || match.testId,
+        pageSize: 1,
+        pageIndex: 1
+      },
+      {
+        headers: {
+          token
+        }
+      }
+    );
+    if (response.data.code === 401) {
+      await this.login();
+      return await this.handleChainProject(match, shopId);
+    }
+    const target = response.data.result.list[0];
+    if (!target) {
+      this.spinner.fail('店铺不存在', true);
+    }
+    const tokenResponse = await axios.post(
+      `${this.ls.get('oa.apiPrefix')}/retailManage/getShopTokenToUse`,
+      {
+        shopId: target.shopId,
+        appKey: match.appKey
+      },
+      {
+        headers: {
+          token
+        }
+      }
+    );
+    const { occToken } = tokenResponse.data.result;
+
+    if (options.token) {
+      this.spinner.succeed(
+        `【美团闪购】已复制账号${chalk.yellow(
+          `【${target.shopName}】`
+        )}token：\n${occToken}`
+      );
+      clipboard.writeSync(occToken);
+    } else {
+      this.spinner.succeed(
+        `正在打开${chalk.yellow(`【${target.shopName}】`)}的店铺`
+      );
+      open(`${match.url}login?code=${occToken}`);
+    }
   }
   private getSearchDate(match: typeof map.default) {
     if (this.options.buyDate && match.searchSupport.buyDate === true) {
