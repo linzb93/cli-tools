@@ -16,7 +16,8 @@ class Token extends BaseCommand {
     this.options = options;
   }
   async run() {
-    const decoded = jwt.decode(this.tokenStr, {
+    const tokenStr = this.tokenStr.replace(/^occ_(senior_)?/, '');
+    const decoded = jwt.decode(tokenStr, {
       complete: this.options.complete
     }) as any;
     if (this.options.origin) {

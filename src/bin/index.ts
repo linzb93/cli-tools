@@ -108,12 +108,10 @@ program
   .option('--copy', '复制地址')
   .option('--test', '测试环境')
   .option('--user', '根据token获取用户信息')
-  .option('--buyDate <cond>', '订购时间')
-  .option('--endDate <cond>', '到期时间')
   .option('--version <v>', '版本')
   .option('--debug', '调试模式')
   .action(async (data, options) => {
-    const occ = (await import('../commands/occ.js')).default;
+    const occ = (await import('../commands/occ/index.js')).default;
     occ(data, options);
   });
 program

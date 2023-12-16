@@ -2,7 +2,8 @@ import clipboard from 'clipboardy';
 import BaseCommand from '../../../util/BaseCommand.js';
 import deleteTag from './delete.js';
 import lodash from 'lodash';
-
+import fs from 'fs-extra';
+import { AnyObject } from '../../../util/types.js';
 const { last } = lodash;
 
 interface Options {
@@ -48,48 +49,37 @@ class Tag extends BaseCommand {
       let output = '';
       const input = this.datas[0];
       if (!input) {
-        output = await this.getNewestTag({
-          major: this.datas[0] === 'major',
-          minor: this.datas[0] === 'minor'
-        });
+        output = await this.getNewestTag();
       } else {
         output = input.startsWith('v') ? input : `v${input}`;
       }
-      const { ans } = await this.helper.inquirer.prompt({
-        message: `请确认是否打tag：${output}`,
-        name: 'ans',
-        type: 'confirm'
-      });
-      if (ans) {
-        await this.helper.sequenceExec([
-          `git tag ${output}`,
-          `git push origin ${output}`
-        ]);
-        this.logger.success('tag输出成功');
-      }
+      await this.helper.sequenceExec([
+        `git tag ${output}`,
+        `git push origin ${output}`
+      ]);
+      const projectConf = await this.getProjectConfig();
+      const jenkins = (projectConf as any).jenkins;
+      const ret = `${jenkins.id.replace(/[\-|_]test$/, '')}。${output}`;
+      this.logger.success(`部署成功，复制填入更新文档：
+      ${ret}`);
+      clipboard.writeSync(ret);
     }
   }
-  async getNewestTag(opt?: {
-    major: boolean;
-    minor: boolean;
-  }): Promise<string> {
+  private async getProjectConfig(): Promise<AnyObject | null> {
+    try {
+      const data = await fs.readJSON('project.config.json');
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+  async getNewestTag(): Promise<string> {
     const gitTags = await this.git.tag();
     const matchTag = this.gitCurrentLatestTag(gitTags);
     const firstNum = Number(matchTag.slice(1, 2)[0]);
     const secondNum = Number((matchTag.match(/v\d\.(\d+)/) as string[])[1]);
     const thirdNum = Number((matchTag.match(/v(\d\.){2}(\d+)/) as string[])[2]);
     const lastNum = Number((matchTag.match(/(\d+)$/) as string[])[1]);
-    if (opt?.major) {
-      // 第二位数字+1，第三位置为0，保留三位数
-      if (secondNum === 9) {
-        return `v${firstNum + 1}.0.0`;
-      }
-      return `v${firstNum}.${secondNum + 1}.0`;
-    }
-    if (opt?.minor) {
-      // 第三位数字+1，保留三位数
-      return `v${firstNum}.${secondNum}.${thirdNum + 1}`;
-    }
     if (matchTag.split('.').length === 3) {
       return `${matchTag}.1`;
     }
@@ -114,9 +104,6 @@ function tag(datas: any[], options: Options): void {
 
 export default tag;
 
-export const getNewestTag = (data: string) => {
-  return new Tag([], {}).getNewestTag({
-    minor: data === 'minor',
-    major: data === 'major'
-  });
+export const getNewestTag = () => {
+  return new Tag([], {}).getNewestTag();
 };

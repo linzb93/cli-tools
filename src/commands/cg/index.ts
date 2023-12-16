@@ -101,22 +101,22 @@ class Cg extends BaseCommand {
     Promise.all([
       axios
         .post(this.ls.get('cg.oldPrefix') + '/AppApi/GetDkdData')
-        .then(({ data }) => data.Result.Total.TodayTurnover),
+        .then(({ data }) => data.Result.Total),
       axios
         .post(this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/query')
         .then(({ data }) => data.result)
     ])
-      .then(([currentPerformance, list]) => {
+      .then(([Total, list]) => {
         if (list.length === 0) {
           this.spinner.succeed(
-            `当前业绩：${currentPerformance}。预测还未开始。`
+            `当前业绩：${Total.TodayTurnover}，本月业绩：${Total.MonthTurnover}。预测还未开始。`
           );
           return;
         }
         this.spinner.succeed(
-          `${chalk.gray(
-            `[${dayjs().format('HH:mm:ss')}]`
-          )}当前业绩：${currentPerformance}。预测结果如下：`
+          `${chalk.gray(`[${dayjs().format('HH:mm:ss')}]`)}当前业绩：${
+            Total.TodayTurnover
+          }，本月业绩：${Total.MonthTurnover}。预测结果如下：`
         );
         console.log(
           list

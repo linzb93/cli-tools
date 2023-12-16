@@ -43,7 +43,9 @@ class ColorConvert extends BaseCommand {
     clipboard.writeSync(ret);
   }
 }
-
+/**
+ * eg: mycli color '#fff' or mycli color '255,255,255'
+ */
 export default (text: string, options: Options) => {
   new ColorConvert(text, options).run();
 };

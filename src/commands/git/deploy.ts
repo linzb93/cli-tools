@@ -138,15 +138,8 @@ class Deploy extends BaseCommand {
     this.logger.success('部署成功');
   }
   private async deployTestToProduction() {
-    const { options, data } = this;
-    let input = '';
-    if (data.includes('major')) {
-      input = 'major';
-    }
-    if (data.includes('minor')) {
-      input = 'minor';
-    }
-    const newestTag = await getNewestTag(input);
+    const { options } = this;
+    const newestTag = await getNewestTag();
     try {
       const flow = [
         'git add .',
@@ -178,6 +171,7 @@ class Deploy extends BaseCommand {
     }
   }
   private async deployDevToProduction() {
+    const { tag } = this.options;
     const { answer } = await this.helper.inquirer.prompt({
       message: '确认更新到正式站？',
       name: 'answer',
@@ -186,16 +180,9 @@ class Deploy extends BaseCommand {
     if (!answer) {
       return;
     }
-    const { options, data } = this;
+    const { options } = this;
     const curBranch = await this.git.getCurrentBranch();
-    let input = '';
-    if (data.includes('major')) {
-      input = 'major';
-    }
-    if (data.includes('minor')) {
-      input = 'minor';
-    }
-    const newestTag = await getNewestTag(input);
+    const newestTag = tag || (await getNewestTag());
     try {
       const flow = [
         'git add .',
@@ -302,15 +289,8 @@ class Deploy extends BaseCommand {
     }
   }
   private async deployToProduction() {
-    const { options, data } = this;
-    let input = '';
-    if (data.includes('major')) {
-      input = 'major';
-    }
-    if (data.includes('minor')) {
-      input = 'minor';
-    }
-    const newestTag = await getNewestTag(input);
+    const { options } = this;
+    const newestTag = await getNewestTag();
     const flow = [
       'git add .',
       `git commit -m ${options.commit || 'update'}`,
