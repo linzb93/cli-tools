@@ -16,12 +16,12 @@ class Shortcut extends BaseCommand {
       {
         title: '切换至下一个文件',
         windows: 'ctrl + page down',
-        mac: ''
+        mac: 'shift + cmd + ]'
       },
       {
         title: '切换至上一个文件',
         windows: 'ctrl + page up',
-        mac: ''
+        mac: 'shift + cmd + ['
       },
       {
         title: '新建文件',
