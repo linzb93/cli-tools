@@ -8,8 +8,16 @@ class Ip extends BaseCommand {
     this.logger.success(`内网IP: ${chalk.cyan(iIp)}
   公网IP: ${chalk.cyan(pIp)}`);
   }
+  async get() {
+    const iIp = await internalIp.v4();
+    return iIp;
+  }
 }
 
 export default () => {
   new Ip().run();
 };
+
+export function get() {
+  return new Ip().get();
+}

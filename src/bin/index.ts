@@ -149,9 +149,9 @@ program.command('kill <data...>').action(async (data) => {
   const kill = (await import('../commands/kill.js')).default;
   kill(data);
 });
-program.command('paste <data...>').action(async (data) => {
-  const paste = (await import('../commands/paste.js')).default;
-  paste(data);
+program.command('server').action(async () => {
+  const server = (await import('../commands/server/index.js')).default;
+  server();
 });
 program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;

@@ -88,7 +88,7 @@ class GetSize extends BaseCommand {
     if (this.options.rect) {
       const dimensions = sizeOf(filePath);
       this.logger.success(
-        `大小：${ret}，尺寸：${dimensions.width} X ${dimensions.height}`
+        `大小：${ret}，尺寸：${dimensions.width} * ${dimensions.height}`
       );
     } else {
       this.logger.success(ret);

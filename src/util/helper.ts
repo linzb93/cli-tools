@@ -161,6 +161,8 @@ export const pickAndRename = (src: string, maps: object) => {
   return data;
 };
 
+export const isInVSCodeTerminal = process.env.TERM_PROGRAM === 'vscode';
+
 export const showWeakenTips = (mainTitle: string, tips: string): string => {
   const tipsSeg = tips.split(/\n/);
   const formattedTips = tipsSeg

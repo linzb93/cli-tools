@@ -148,7 +148,7 @@ class OCC extends BaseCommand {
       process.exit(1);
     }
     if (listData.code === 401) {
-      await login();
+      await login(options.test);
       return await this.getSearchList();
     } else if (!listData.result) {
       this.spinner.fail(
@@ -206,7 +206,7 @@ class OCC extends BaseCommand {
           : this.ls.get('oa.apiPrefix')
       }${match.url.base}`,
       headers: {
-        token: this.ls.get('oa.token')
+        token: this.ls.get(options.test ? 'oa.testToken' : 'oa.token')
       }
     });
   }
@@ -231,7 +231,7 @@ class OCC extends BaseCommand {
       data: { result }
     } = await this.service.post(match.url.login, match.loginKey(shop), {
       headers: {
-        token: this.ls.get('oa.token')
+        token: this.ls.get(options.test ? 'oa.testToken' : 'oa.token')
       }
     });
     return {
@@ -281,12 +281,12 @@ class OCC extends BaseCommand {
     };
   }
   private async getShopUrl(shop: any) {
-    const { currentApp: match } = this;
+    const { currentApp: match, options } = this;
     const {
       data: { result }
     } = await this.service.post(match.url.login, match.loginKey(shop), {
       headers: {
-        token: this.ls.get('oa.token')
+        token: this.ls.get(options.test ? 'oa.testToken' : 'oa.token')
       }
     });
     return result;
@@ -387,7 +387,7 @@ class OCC extends BaseCommand {
       }
     );
     if (response.data.code === 401) {
-      await login();
+      await login(options.test);
       return await this.handleChainProject();
     }
     const target = response.data.result.list[0];
