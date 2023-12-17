@@ -30,24 +30,19 @@ class Server extends BaseCommand {
 
       app.post('/copy', (req, res) => {
         const { text } = req.body;
-        notifier.notify({
-          title: '服务器通知',
-          icon: path.join(this.helper.root, 'source/dkd-logo.png'),
-          message: '收到来自iPhone的剪贴'
-        });
+        this.notify('收到来自iPhone的剪贴');
         clipboard.writeSync(decodeURIComponent(text) as string);
         res.send('ok');
       });
 
       app.post('/sendImg', async (req, res) => {
         const { file } = req.body;
-        notifier.notify({
-          title: '服务器通知',
-          icon: path.join(this.helper.root, 'source/dkd-logo.png'),
-          message: '收到来自iPhone的图片'
-        });
+        this.notify('收到来自iPhone的图片');
         const buf = Buffer.from(file, 'base64');
-        await fs.writeFile(`${this.helper.desktop}/图片.png`, buf);
+        const root = this.helper.isWin
+          ? this.helper.desktop
+          : `${this.helper.root}/.temp`;
+        await fs.writeFile(`${root}/图片.png`, buf);
 
         res.send('ok');
       });
@@ -55,6 +50,13 @@ class Server extends BaseCommand {
         const ip = await getIp();
         this.logger.success('服务器已在端口6060开启,IP是：' + ip);
       });
+    });
+  }
+  notify(content: string) {
+    notifier.notify({
+      title: 'mycli server通知',
+      icon: path.join(this.helper.root, 'source/dkd-logo.png'),
+      message: content
     });
   }
 }
