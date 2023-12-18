@@ -24,14 +24,24 @@ export default {
       clipboard.writeSync(decodeURIComponent(text) as string);
       res.send('ok');
     });
+    app.get('/copy-data', (req, res) => {
+      const copyData = clipboard.readSync();
+      res.send(copyData);
+    });
     app.post('/sendImg', async (req, res) => {
       const { file } = req.body;
       notify('收到来自iPhone的图片');
       const buf = Buffer.from(file, 'base64');
       const root = helper.isWin ? helper.desktop : `${helper.root}/.temp`;
       await fs.writeFile(`${root}/图片.png`, buf);
-
       res.send('ok');
+    });
+    app.post('/getImg', async (req, res) => {
+      const ret = await fs.readFile('./test.png');
+      const base64 = ret.toString('base64');
+      res.send({
+        result: base64
+      });
     });
   }
 };
