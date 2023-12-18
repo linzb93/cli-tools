@@ -1,11 +1,10 @@
-import path from 'path';
 import BaseCommand from '../../util/BaseCommand.js';
 import express from 'express';
-import clipboard from 'clipboardy';
 import notifier from 'node-notifier';
 import bodyParser from 'body-parser';
-import fs from 'fs-extra';
+import chalk from 'chalk';
 import { get as getIp } from '../ip.js';
+import fs from 'fs-extra';
 class Server extends BaseCommand {
   run() {
     new Promise(async (resolve) => {
@@ -23,39 +22,39 @@ class Server extends BaseCommand {
       } else {
         this.logger.error('服务终止开启', true);
       }
-    }).then(() => {
+    }).then(async () => {
       const app = express();
       app.use(bodyParser.urlencoded({ extended: false }));
-      app.use(bodyParser.json());
-
-      app.post('/copy', (req, res) => {
-        const { text } = req.body;
-        this.notify('收到来自iPhone的剪贴');
-        clipboard.writeSync(decodeURIComponent(text) as string);
-        res.send('ok');
-      });
-
-      app.post('/sendImg', async (req, res) => {
-        const { file } = req.body;
-        this.notify('收到来自iPhone的图片');
-        const buf = Buffer.from(file, 'base64');
-        const root = this.helper.isWin
-          ? this.helper.desktop
-          : `${this.helper.root}/.temp`;
-        await fs.writeFile(`${root}/图片.png`, buf);
-
-        res.send('ok');
-      });
+      app.use(bodyParser.json({ limit: '5mb' }));
+      const tasks = await fs.readdir(`./dist/commands/server/tasks`);
+      const services: any[] = [];
+      for (const task of tasks) {
+        const obj = (await import(`./tasks/${task}`)).default;
+        if (!obj.loaded) {
+          continue;
+        }
+        obj.actions({
+          app,
+          helper: this.helper,
+          notify: this.notify
+        });
+        services.push(obj.name);
+      }
       app.listen(6060, async () => {
         const ip = await getIp();
-        this.logger.success('服务器已在端口6060开启,IP是：' + ip);
+        this.logger.success(`
+服务器已在端口6060开启,地址是${chalk.yellow(`${ip}:6060`)}
+下列服务已加载：
+${services
+    .map((service, index) => chalk.magenta(`${index + 1}.${service}`))
+    .join('\n')}
+        `);
       });
     });
   }
   notify(content: string) {
     notifier.notify({
       title: 'mycli server通知',
-      icon: path.join(this.helper.root, 'source/dkd-logo.png'),
       message: content
     });
   }

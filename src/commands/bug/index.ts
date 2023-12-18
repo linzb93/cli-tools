@@ -1,4 +1,4 @@
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import fs from 'fs-extra';
 import dayjs from 'dayjs';
 import path from 'path';
@@ -8,6 +8,7 @@ import pMap from 'p-map';
 import xlsx from 'node-xlsx';
 import lodash from 'lodash';
 import open from 'open';
+import sitemap from './sitemap.js';
 const { flatten } = lodash;
 
 interface Options {
@@ -42,53 +43,6 @@ class Bug extends BaseCommand {
     this.helper.openInEditor(isEditorPath, true);
   }
   private async getAllBugReport() {
-    // 获取上个工作日收集的bug
-    const sitemap = [
-      {
-        name: '美团-经营神器',
-        id: 'a61618b1e6e30c3796beb054a92c1ada'
-      },
-      {
-        name: '美团-装修神器',
-        id: '313164674c1de78352e6fe3b1b549984'
-      },
-      {
-        name: '饿了么经营神器',
-        id: '23589ff77bb181ab09631a267d3d16be'
-      },
-      {
-        name: '美团连锁品牌多店版',
-        id: 'a38e77b10c61ce37083d337db3bcb05a'
-      },
-      {
-        name: '美团评价神器',
-        id: '625599ce7ed5cd2af5472ea70232dbd9'
-      },
-      {
-        name: '美团-IM神器',
-        id: 'f185c8903369e2364258ba815e24cf18'
-      },
-      {
-        name: '美团-点金大师',
-        id: '5fc1e9a29c3eecbad5e4cc9c7b0fae76'
-      },
-      {
-        name: '美团-营销神器',
-        id: '211fbef553346a71251b3481534caf1f'
-      },
-      {
-        name: '美团-商品大师',
-        id: 'ec51352d850027711f9942f1fb6e3f40'
-      },
-      {
-        name: '美团闪购',
-        id: '6dd82bbfa54c6275583de5705ee0a7a8'
-      },
-      {
-        name: '品牌连锁数据分析',
-        id: 'e7500e2a12510c1e42ed5eaa17f65ac0'
-      }
-    ];
     const prefix = this.ls.get('oa.apiPrefix');
     const yesterday = dayjs().subtract(1, 'd');
     let beginTime = yesterday.format('YYYY-MM-DD 00:00:00');
@@ -168,11 +122,12 @@ class Bug extends BaseCommand {
       },
       { concurrency: 4 }
     );
+    const range = `${dayjs()
+      .subtract(3, 'd')
+      .format('YYYY-MM-DD')}~${yesterday.format('YYYY-MM-DD')}`;
     this.spinner.succeed(
       `【${chalk.yellow(
-        dayjs().day() !== 1
-          ? yesterday.format('YYYY-MM-DD')
-          : `${dayjs().subtract(3, 'd').format('YYYY-MM-DD')}~${yesterday}`
+        dayjs().day() !== 1 ? yesterday.format('YYYY-MM-DD') : range
       )}】获取报告成功`
     );
     const excelData = [
