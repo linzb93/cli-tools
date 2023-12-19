@@ -37,11 +37,7 @@ export default {
       res.send('ok');
     });
     app.post('/getImg', async (req, res) => {
-      const ret = await fs.readFile('./test.png');
-      const base64 = ret.toString('base64');
-      res.send({
-        result: base64
-      });
+      fs.createReadStream('./test.png').pipe(res);
     });
   }
 };
