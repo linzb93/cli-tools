@@ -29,11 +29,7 @@ export default {
       res.send(copyData);
     });
     app.post('/sendImg', async (req, res) => {
-      const { file } = req.body;
-      notify('收到来自iPhone的图片');
-      const buf = Buffer.from(file, 'base64');
-      const root = helper.isWin ? helper.desktop : `${helper.root}/.temp`;
-      await fs.writeFile(`${root}/图片.png`, buf);
+      req.pipe(fs.createWriteStream('test.png'));
       res.send('ok');
     });
     app.post('/getImg', async (req, res) => {

@@ -1,5 +1,5 @@
 import * as helperObj from '../../../util/helper.js';
-import bug from '../../bug/index.js';
+// import bug from '../../bug/index.js';
 import sitemap from '../../bug/sitemap.js';
 import dayjs from 'dayjs';
 type Helper = typeof helperObj;

@@ -12,7 +12,6 @@ interface Options {
   token: string | boolean;
   pc: boolean;
   copy: boolean;
-  test: boolean;
   user: boolean;
   /**
    * 如何获取豪华版（2）
@@ -136,7 +135,11 @@ class OCC extends BaseCommand {
     let listData: ShopListResponse;
     this.logger.debug(listSearchParams);
     try {
-      const res = await service.post(match.url.list, listSearchParams);
+      const res = await service.post(match.url.list, listSearchParams, {
+        headers: {
+          token: this.ls.get('oa.token')
+        }
+      });
       listData = res.data;
     } catch (error) {
       this.spinner.fail(
@@ -148,7 +151,7 @@ class OCC extends BaseCommand {
       process.exit(1);
     }
     if (listData.code === 401) {
-      await login(options.test);
+      await login();
       return await this.getSearchList();
     } else if (!listData.result) {
       this.spinner.fail(
@@ -164,7 +167,7 @@ class OCC extends BaseCommand {
     return listData.result.list;
   }
   private setMatchProject(): void {
-    const { input, options } = this;
+    const { input } = this;
     let match = {} as typeof map.default;
     let shopId = '';
     this.spinner.text = '正在搜索店铺';
@@ -200,13 +203,9 @@ class OCC extends BaseCommand {
     this.currentApp = match;
     this.shopId = shopId;
     this.service = axios.create({
-      baseURL: `${
-        options.test
-          ? this.ls.get('oa.testPrefix')
-          : this.ls.get('oa.apiPrefix')
-      }${match.url.base}`,
+      baseURL: `${this.ls.get('oa.apiPrefix')}${match.url.base}`,
       headers: {
-        token: this.ls.get(options.test ? 'oa.testToken' : 'oa.token')
+        token: this.ls.get('oa.token')
       }
     });
   }
@@ -231,7 +230,7 @@ class OCC extends BaseCommand {
       data: { result }
     } = await this.service.post(match.url.login, match.loginKey(shop), {
       headers: {
-        token: this.ls.get(options.test ? 'oa.testToken' : 'oa.token')
+        token: this.ls.get('oa.token')
       }
     });
     return {
@@ -281,12 +280,12 @@ class OCC extends BaseCommand {
     };
   }
   private async getShopUrl(shop: any) {
-    const { currentApp: match, options } = this;
+    const { currentApp: match } = this;
     const {
       data: { result }
     } = await this.service.post(match.url.login, match.loginKey(shop), {
       headers: {
-        token: this.ls.get(options.test ? 'oa.testToken' : 'oa.token')
+        token: this.ls.get('oa.token')
       }
     });
     return result;
@@ -387,7 +386,7 @@ class OCC extends BaseCommand {
       }
     );
     if (response.data.code === 401) {
-      await login(options.test);
+      await login();
       return await this.handleChainProject();
     }
     const target = response.data.result.list[0];
