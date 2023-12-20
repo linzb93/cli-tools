@@ -57,6 +57,7 @@ program
         'scan',
         'reset',
         'pull',
+        'push',
         'tag/index'
       ].includes(subCommand)
     ) {
