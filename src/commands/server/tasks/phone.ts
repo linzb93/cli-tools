@@ -29,8 +29,10 @@ export default {
       const copyData = clipboard.readSync();
       res.send(copyData);
     });
-    app.post('/sendImg', (req, res) => {
+    app.post('/sendImg', async (req, res) => {
       req.pipe(fs.createWriteStream('test.png'));
+      const { file } = req.body;
+      await fs.writeFile(path.resolve(helper.desktop, '图片.png'), file);
       res.send('ok');
     });
     app.get('/getImgList', async (req, res) => {

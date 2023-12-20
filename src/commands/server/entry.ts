@@ -13,7 +13,10 @@ class Server extends BaseCommand {
     this.options = options;
   }
   run() {
-    const target = path.resolve(this.helper.root, './dist/commands/server');
+    const target = path.resolve(
+      this.helper.root,
+      './dist/commands/server/index.js'
+    );
     if (this.options.dev) {
       monitor(target, []);
     } else {

@@ -3,6 +3,7 @@ import * as helper from '../../util/helper.js';
 import logger from '../../util/logger.js';
 import bodyParser from 'body-parser';
 import fs from 'fs-extra';
+import dayjs from 'dayjs';
 import chalk from 'chalk';
 import path from 'path';
 import notifier from 'node-notifier';
@@ -21,9 +22,33 @@ function notify(content: string) {
     path.resolve(helper.root, `./dist/commands/server/tasks`)
   );
   const services: any[] = [];
+  // 创建任务队列
+  const todayFormat = dayjs().format('YYYY-MM-DD');
+  const taskQueue: any[] = [];
+  setInterval(() => {
+    if (!taskQueue.length) {
+      return;
+    }
+    if (dayjs().isAfter(`${todayFormat} ${taskQueue[0].schedule}`)) {
+      taskQueue[0].actions({
+        app,
+        helper,
+        notify
+      });
+      taskQueue.shift();
+    }
+  }, 1000 * 5);
   for (const task of tasks) {
     const obj = (await import(`./tasks/${task}`)).default;
     if (!obj.loaded) {
+      continue;
+    }
+    services.push(obj.name);
+    if (obj.schedule) {
+      taskQueue.push({
+        schedule: obj.schedule,
+        actions: obj.actions
+      });
       continue;
     }
     obj.actions({
@@ -31,7 +56,6 @@ function notify(content: string) {
       helper,
       notify
     });
-    services.push(obj.name);
   }
   const port = 6060;
   app.listen(port, async () => {

@@ -5,7 +5,7 @@ type Helper = typeof helperObj;
 
 type Notify = (content: string) => void;
 export default {
-  loaded: true,
+  loaded: false,
   name: '冲高业绩实时播报',
   actions: async ({ helper, notify }: { helper: Helper; notify: Notify }) => {
     setInterval(async () => {

@@ -169,3 +169,5 @@ class Bug extends BaseCommand {
 export default (source: string, options: Options) => {
   new Bug(source, options).run();
 };
+
+export function generate(list: any[]) {}
