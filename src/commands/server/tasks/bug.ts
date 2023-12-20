@@ -6,8 +6,9 @@ type Helper = typeof helperObj;
 
 type Notify = (content: string) => void;
 export default {
+  title: '每日bug报告',
   loaded: false,
-  schedule: '09:00',
+  schedule: '09:10',
   actions: ({ helper, notify }: { helper: Helper; notify: Notify }) => {
     const matches = sitemap.find(
       (site) => dayjs(site.publishTime).diff(dayjs(), 'd') === 1

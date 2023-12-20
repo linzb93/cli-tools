@@ -96,6 +96,17 @@ class Cg extends BaseCommand {
       this.spinner.fail('服务器故障，请稍后再试', true);
     }
   }
+  async get() {
+    try {
+      const { data } = await axios.post(
+        this.ls.get('cg.oldPrefix') + '/AppApi/GetDkdData'
+      );
+      const res = data.Result.Total.TodayTurnover;
+      return res;
+    } catch (error) {
+      return null;
+    }
+  }
   private async getForecast() {
     this.spinner.text = '正在获取预测数据';
     Promise.all([
@@ -153,3 +164,10 @@ class Cg extends BaseCommand {
 export default (action: string, data: string, options: Options) => {
   new Cg(action, data, options).run();
 };
+
+export function get() {
+  return new Cg('', '', {
+    realtime: false,
+    debug: false
+  }).get();
+}

@@ -1,5 +1,6 @@
 import clipboard from 'clipboardy';
 import fs from 'fs-extra';
+import path from 'path';
 import { Express } from 'express';
 import * as helperObj from '../../../util/helper.js';
 type Helper = typeof helperObj;
@@ -28,12 +29,21 @@ export default {
       const copyData = clipboard.readSync();
       res.send(copyData);
     });
-    app.post('/sendImg', async (req, res) => {
+    app.post('/sendImg', (req, res) => {
       req.pipe(fs.createWriteStream('test.png'));
       res.send('ok');
     });
-    app.post('/getImg', async (req, res) => {
-      fs.createReadStream('./test.png').pipe(res);
+    app.get('/getImgList', async (req, res) => {
+      const dirs = await fs.readdir(path.resolve(helper.desktop, '/iPhone'));
+      res.send({
+        dirs
+      });
+    });
+    app.get('/getImg', (req, res) => {
+      const { name } = req.query;
+      fs.createReadStream(
+        path.resolve(helper.desktop, './iPhone', name as string)
+      ).pipe(res);
     });
   }
 };

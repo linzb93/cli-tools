@@ -149,10 +149,13 @@ program.command('kill <data...>').action(async (data) => {
   const kill = (await import('../commands/kill.js')).default;
   kill(data);
 });
-program.command('server').action(async () => {
-  const server = (await import('../commands/server/index.js')).default;
-  server();
-});
+program
+  .command('server')
+  .option('--dev', '开发模式')
+  .action(async (options) => {
+    const server = (await import('../commands/server/entry.js')).default;
+    server(options);
+  });
 program.command('clear <filename>').action(async (filename) => {
   const clear = (await import('../commands/clear.js')).default;
   clear(filename);
