@@ -10,6 +10,7 @@ const { isNumber } = lodash;
 interface Options {
   realtime: boolean;
   debug: boolean;
+  full: boolean;
 }
 
 class Cg extends BaseCommand {
@@ -109,41 +110,61 @@ class Cg extends BaseCommand {
   }
   private async getForecast() {
     this.spinner.text = '正在获取预测数据';
-    Promise.all([
-      axios
-        .post(this.ls.get('cg.oldPrefix') + '/AppApi/GetDkdData')
-        .then(({ data }) => data.Result.Total),
+    if (this.options.full) {
+      Promise.all([
+        axios
+          .post(this.ls.get('cg.oldPrefix') + '/AppApi/GetDkdData')
+          .then(({ data }) => data.Result.Total),
+        axios
+          .post(this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/query')
+          .then(({ data }) => data.result)
+      ])
+        .then(([Total, list]) => {
+          if (list.length === 0) {
+            this.spinner.succeed(
+              `当前业绩：${Total.TodayTurnover}，本月业绩：${Total.MonthTurnover}。预测还未开始。`
+            );
+            return;
+          }
+          this.spinner.succeed(
+            `${chalk.gray(`[${dayjs().format('HH:mm:ss')}]`)}当前业绩：${
+              Total.TodayTurnover
+            }，本月业绩：${Total.MonthTurnover}。预测结果如下：`
+          );
+          console.log(
+            list
+              .map((user: any, index: number) => {
+                const output = `${index + 1}. ${user.name}: ${user.amount}`;
+                if (index === 0) {
+                  return chalk.bold.yellow(output);
+                }
+                return output;
+              })
+              .join('\n')
+          );
+        })
+        .catch(() => {
+          this.spinner.fail('服务器故障，请稍后再试');
+        });
+    } else {
       axios
         .post(this.ls.get('oa.apiPrefix') + '/dkd/ad/forecast/query')
         .then(({ data }) => data.result)
-    ])
-      .then(([Total, list]) => {
-        if (list.length === 0) {
-          this.spinner.succeed(
-            `当前业绩：${Total.TodayTurnover}，本月业绩：${Total.MonthTurnover}。预测还未开始。`
+        .then((list) => {
+          this.spinner.succeed(`预测结果如下：`);
+          console.log(
+            list
+              .map((user: any, index: number) => {
+                const output = `${index + 1}. ${user.name}: ${user.amount}`;
+                if (index === 0) {
+                  return chalk.bold.yellow(output);
+                }
+                return output;
+              })
+              .join('\n')
           );
-          return;
-        }
-        this.spinner.succeed(
-          `${chalk.gray(`[${dayjs().format('HH:mm:ss')}]`)}当前业绩：${
-            Total.TodayTurnover
-          }，本月业绩：${Total.MonthTurnover}。预测结果如下：`
-        );
-        console.log(
-          list
-            .map((user: any, index: number) => {
-              const output = `${index + 1}. ${user.name}: ${user.amount}`;
-              if (index === 0) {
-                return chalk.bold.yellow(output);
-              }
-              return output;
-            })
-            .join('\n')
-        );
-      })
-      .catch(() => {
-        this.spinner.fail('服务器故障，请稍后再试');
-      });
+        });
+    }
   }
   private async setForecast() {
     const performance = this.data || Number(this.action);
@@ -168,6 +189,7 @@ export default (action: string, data: string, options: Options) => {
 export function get() {
   return new Cg('', '', {
     realtime: false,
-    debug: false
+    debug: false,
+    full: false
   }).get();
 }

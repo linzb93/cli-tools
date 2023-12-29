@@ -7,12 +7,12 @@ type Helper = typeof helperObj;
 type Notify = (content: string) => void;
 export default {
   name: '每日bug报告',
-  loaded: true,
+  loaded: false,
   schedule: '09:10',
   actions: async ({ helper, notify }: { helper: Helper; notify: Notify }) => {
     const matches = sitemap.find(
       (site) => dayjs(site.publishTime).diff(dayjs(), 'd') === 1
     );
-    await bugGenerate(matches);
+    // await bugGenerate(matches);
   }
 };

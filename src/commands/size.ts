@@ -5,9 +5,11 @@ import sizeOf from 'image-size';
 import through from 'through2';
 import del from 'del';
 import BaseCommand from '../util/BaseCommand.js';
-
+import clipboard from 'clipboardy';
 interface Options {
   rect: boolean;
+  css: boolean;
+  mobile: boolean;
 }
 
 class GetSize extends BaseCommand {
@@ -71,6 +73,19 @@ class GetSize extends BaseCommand {
         this.logger.success(
           `大小：${bytesSize}，尺寸：${dimensions.width} X ${dimensions.height}`
         );
+        if (this.options.css) {
+          this.logger.success('CSS代码已复制');
+          if (this.options.mobile) {
+            clipboard.writeSync(`width: rem(${dimensions.width});
+height:rem(${dimensions.height});
+background-image: url(${filePath});
+background-size: 100% 100%;`);
+          } else {
+            clipboard.writeSync(`width:${dimensions.width}px;
+height:${dimensions.height}px;
+background-image:url(${filePath})`);
+          }
+        }
         await del(targetName);
       } else {
         this.logger.success(bytesSize);

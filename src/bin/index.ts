@@ -79,6 +79,8 @@ program
 program
   .command('size <url>')
   .option('--rect', '获取宽高')
+  .option('--css', '复制CSS样式')
+  .option('-m, --mobile', '移动端rem')
   .action(async (filename, options) => {
     const getSize = (await import('../commands/size.js')).default;
     getSize(filename, options);
@@ -164,6 +166,7 @@ program.command('clear <filename>').action(async (filename) => {
 program
   .command('cg [action] [...rest]')
   .option('--realtime', '实时更新')
+  .option('-f, --full', '全部')
   .option('--debug', '调试')
   .action(async (action, rest, options) => {
     const cg = (await import('../commands/cg/index.js')).default;
