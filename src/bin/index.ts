@@ -38,6 +38,7 @@ program
   .option('--from <src>', '来源')
   .option('-d, --delete', '删除')
   .option('-g, --get', '获取')
+  .option('-c, --current', '当前的')
   .option('--commit <msg>', '提交信息')
   .option('--latest', '获取最新版的')
   .option('--type <type>', '类型')

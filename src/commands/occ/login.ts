@@ -10,11 +10,9 @@ class Login extends BaseCommand {
     const {
       data: { img, uuid }
     } = await axios.get(this.ls.get('oa.apiPrefix') + '/captchaImage');
-    const picBuffer = Buffer.from(img, 'base64');
-    const target = path.resolve(this.helper.root, '.temp/vrCode.png');
-    await fs.writeFile(target, picBuffer);
-    await this.helper.sleep(500);
-    await this.helper.openInEditor(target);
+    const picture = path.resolve(this.helper.root, '.temp/vrCode.png');
+    await fs.writeFile(picture, Buffer.from(img, 'base64'));
+    await this.helper.openInEditor(picture);
     const answer = await this.helper.inquirer.prompt({
       type: 'input',
       message: '请输入验证码',
@@ -31,7 +29,7 @@ class Login extends BaseCommand {
       code: answer.vrCode
     });
     this.ls.set('oa.token', token);
-    await fs.remove(target);
+    await fs.remove(picture);
     this.spinner.succeed('登录成功', true);
     await this.helper.sleep(1500);
   }

@@ -9,12 +9,13 @@ const map = {
     url: {
       base: '',
       list: '',
+      shopList: '',
       login: '',
       userApi: ''
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: ''
@@ -27,13 +28,14 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: '/meituan/home'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: '15983528161'
@@ -46,13 +48,14 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: '/evaluate/home'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: '16499283381'
@@ -65,13 +68,14 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: '/imService/home'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: '16505256214'
@@ -84,13 +88,14 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: '/issueMarket/home'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: '16505284824'
@@ -103,13 +108,14 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: '/meituan/home'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: '16668523733'
@@ -122,13 +128,14 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: '/commodity/guru/home'
     },
     loginKey: (item: MeituanLoginParams) => ({
       appKey: item.appKey,
-      memberId: item.shopId,
+      memberId: item.memberId,
       platform: item.platform
     }),
     testId: '16928614773'
@@ -147,7 +154,8 @@ const map = {
     appKeyName: 'appKey',
     url: {
       base: '/',
-      list: '/query/businessInfoList',
+      list: '/occ/order/getOrderInfoList',
+      shopList: '/query/businessInfoList',
       login: '/occ/order/replaceUserLogin',
       userApi: 'decorate/home'
     },
@@ -160,7 +168,10 @@ const map = {
   },
   chain: {
     name: 'chain',
-    testId: '15859095882'
+    testId: '15859095882',
+    url: {
+      base: '/'
+    }
   },
   ele: {
     name: 'ele',

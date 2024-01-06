@@ -21,6 +21,7 @@ interface Options {
   commit: string;
   tag: string;
   debug: boolean;
+  current: boolean;
 }
 interface JenkinsProject {
   name: string;
@@ -61,6 +62,10 @@ class Deploy extends BaseCommand {
       this.logger.warn('不建议不写提交信息，请认真填写');
     }
     this.createWorkflow([
+      {
+        condition: this.options.current,
+        action: this.deployCurrent
+      },
       {
         condition: remote.includes('github.com'),
         action: this.deployToGithub
@@ -135,6 +140,15 @@ class Deploy extends BaseCommand {
       this.logger.error((error as Error).message);
       return;
     }
+    this.logger.success('部署成功');
+  }
+  private async deployCurrent() {
+    await this.helper.sequenceExec([
+      'git add .',
+      `git commit -m ${this.options.commit || 'update'}`,
+      'git pull',
+      'git push'
+    ]);
     this.logger.success('部署成功');
   }
   private async deployTestToProduction() {

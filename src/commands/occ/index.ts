@@ -7,22 +7,15 @@ import { stringify } from 'querystring';
 import chalk from 'chalk';
 import map from './map.js';
 import { MeituanLoginParams, EleLoginParams } from './types';
-import { AnyObject } from '../../util/types.js';
 interface Options {
   token: string | boolean;
   pc: boolean;
   copy: boolean;
   user: boolean;
-  /**
-   * 如何获取豪华版（2）
-   * 获取最近10条累积消费在200元以上的高级版用户，
-   * 每一条查询是否是豪华版。将获取到的用户ID写入存储，
-   * 下次直接调用，在此之前检查是否还是豪华版，如果不是，就删除，重复上面的操作
-   */
-  version: '0' | '1' | '2';
+  test: boolean;
 }
 interface ShopItem extends MeituanLoginParams, EleLoginParams {
-  memeberName?: string;
+  memberName?: string;
   shopName?: string;
   startTime: string;
   endTime: string;
@@ -38,7 +31,7 @@ class OCC extends BaseCommand {
   private input: string[];
   private options: Options;
   private currentApp: any;
-  private shopId: any;
+  private memberId: any;
   private service: AxiosInstance;
   constructor(input: string[], options: Options) {
     super();
@@ -59,10 +52,6 @@ class OCC extends BaseCommand {
       this.handleSgProject();
       return;
     }
-    if (options.version === '2') {
-      await this.getLuxuryShop();
-      return;
-    }
     const { shop, url } = await this.getShop();
     if (options.token === true) {
       // token无输入值，就只是复制token
@@ -72,7 +61,7 @@ class OCC extends BaseCommand {
       clipboard.writeSync(token);
       this.spinner.succeed(
         `【${this.currentApp.serviceName}】已复制店铺 ${
-          shop.shopName || shop.shopId
+          shop.memberName || shop.memberId
         } 的token\n${token}`
       );
     } else if (options.token) {
@@ -84,8 +73,8 @@ class OCC extends BaseCommand {
       clipboard.writeSync(url);
       this.spinner.succeed(
         `【${this.currentApp.serviceName}】已复制店铺 ${
-          shop.shopName || shop.shopId
-        } 的地址`
+          shop.memberName || shop.memberId
+        } 的地址:\n${url}`
       );
     } else if (options.user) {
       const { hash } = new URL(url);
@@ -100,7 +89,9 @@ class OCC extends BaseCommand {
           }
         }
       );
-      this.spinner.succeed(`获取店铺 ${shop.shopName || shop.shopId} 信息成功`);
+      this.spinner.succeed(
+        `获取店铺 ${shop.memberName || shop.memberId} 信息成功`
+      );
       console.log(data.result);
     } else {
       if (
@@ -114,22 +105,22 @@ class OCC extends BaseCommand {
       }
       this.spinner.succeed(
         `【${this.currentApp.serviceName}】店铺 ${
-          shop.shopName || shop.shopId
+          shop.memberName || shop.memberId
         } 打开成功`
       );
     }
   }
   private async getSearchList(pageSize = 1): Promise<any[]> {
-    const { options, service, shopId, currentApp: match } = this;
+    const { service, memberId, currentApp: match } = this;
     const listSearchParams = {
       // @ts-ignore
       [match.appKeyName]: match[match.appKeyName],
       pageIndex: 1,
       pageSize,
-      param: shopId,
+      param: memberId,
       platform: match.platform,
       version: 1,
-      minPrice: options.version === '2' ? 200 : 0,
+      minPrice: 0,
       serviceName: match.serviceName
     };
     let listData: ShopListResponse;
@@ -169,21 +160,21 @@ class OCC extends BaseCommand {
   private setMatchProject(): void {
     const { input } = this;
     let match = {} as typeof map.default;
-    let shopId = '';
+    let memberId = '';
     this.spinner.text = '正在搜索店铺';
     if (input.length === 0) {
       match = map.default;
-      shopId = match.testId;
+      memberId = match.testId;
     } else if (input.length === 1) {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
         match = map[input[0]];
         if (!match) {
           this.spinner.fail('项目不存在，请重新输入', true);
         }
-        shopId = match.testId;
+        memberId = match.testId;
       } else {
         match = map.default;
-        shopId = input[0];
+        memberId = input[0];
       }
     } else if (input.length === 2) {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
@@ -191,19 +182,23 @@ class OCC extends BaseCommand {
         if (!match) {
           this.spinner.fail('项目不存在，请重新输入', true);
         }
-        shopId = input[1];
+        memberId = input[1];
       } else if (this.helper.isValidKey(input[1], map)) {
         match = map[input[1]];
         if (!match) {
           this.spinner.fail('项目不存在，请重新输入', true);
         }
-        shopId = input[0];
+        memberId = input[0];
       }
     }
     this.currentApp = match;
-    this.shopId = shopId;
+    this.memberId = memberId;
     this.service = axios.create({
-      baseURL: `${this.ls.get('oa.apiPrefix')}${match.url.base}`,
+      baseURL: `${
+        this.options.test
+          ? this.ls.get('oa.testPrefix')
+          : this.ls.get('oa.apiPrefix')
+      }${match.url.base}`,
       headers: {
         token: this.ls.get('oa.token')
       }
@@ -218,11 +213,11 @@ class OCC extends BaseCommand {
     const shop = list[0] as ShopItem;
     if (options.token === true) {
       this.spinner.text = `【${match.serviceName}】正在获取token:${
-        shop.shopName || shop.shopId
+        shop.memberName || shop.memberId
       }`;
     } else if (!options.token) {
-      this.spinner.text = `【${match.serviceName}】正在获取token:${
-        shop.shopName || shop.shopId
+      this.spinner.text = `【${match.serviceName}】正在获取店铺信息:${
+        shop.memberName || shop.memberId
       }`;
     }
     await this.helper.sleep(1500);
@@ -238,82 +233,16 @@ class OCC extends BaseCommand {
       shop
     };
   }
-  private async getLuxuryShop() {
-    const { options } = this;
-    const luxuryShop = this.ls.get('oa.luxury');
-    const { is, token, url } = await this.isLuxuryShop(luxuryShop);
-    if (is) {
-      if (options.token === true) {
-        clipboard.writeSync(token);
-        this.spinner.succeed(
-          `【${this.currentApp.serviceName}】已复制店铺 ${
-            luxuryShop.shopName || luxuryShop.shopId
-          } 的token\n${token}`
-        );
-      } else {
-        this.spinner.succeed('打开成功');
-        open(url);
-      }
-      return;
-    }
-    const shops = await this.getSearchList(10);
-    for (const shop of shops) {
-      const url = await this.getShopUrl(shop);
-      const { hash } = new URL(url);
-      const fullToken = hash.replace('#/login?code=', '');
-      const userInfo = await this.getUserInfo(fullToken, shop);
-      if (userInfo.versionPlus === 1) {
-        this.ls.set('oa.luxury', shop);
-        return;
-      }
-    }
-  }
-  private async isLuxuryShop(shop: any): Promise<AnyObject> {
-    const url = await this.getShopUrl(shop);
-    const { hash } = new URL(url);
-    const fullToken = hash.replace('#/login?code=', '');
-    const userInfo = await this.getUserInfo(fullToken, shop);
-    return {
-      is: userInfo.versionPlus === 1,
-      url,
-      token: fullToken
-    };
-  }
-  private async getShopUrl(shop: any) {
-    const { currentApp: match } = this;
-    const {
-      data: { result }
-    } = await this.service.post(match.url.login, match.loginKey(shop), {
-      headers: {
-        token: this.ls.get('oa.token')
-      }
-    });
-    return result;
-  }
-  private async getUserInfo(token: string, shop: any): Promise<any> {
-    const match = this.currentApp;
-    const { data } = await axios.post(
-      this.ls.get('oa.userApiPrefix') + match.url.userApi,
-      {},
-      {
-        headers: {
-          token
-        }
-      }
-    );
-    this.spinner.succeed(`获取店铺 ${shop.shopName || shop.shopId} 信息成功`);
-    console.log(data.result);
-  }
   private async handleChainProject() {
     const match = this.currentApp;
-    const { shopId } = this;
-    this.logger.debug(`shopId:${shopId}`);
+    const { memberId } = this;
+    this.logger.debug(`memberId:${memberId}`);
     const { options } = this;
     axios
       .post(
         `${this.ls.get('oa.oldApiPrefix')}/chain/occ/dkdAccount/oa/listAccount`,
         {
-          searchParam: shopId || match.testId,
+          searchParam: memberId || match.testId,
           accountStatus: '',
           pageSize: 1,
           pageIndex: 1
@@ -368,14 +297,14 @@ class OCC extends BaseCommand {
   }
   private async handleSgProject() {
     const match = this.currentApp;
-    const { shopId } = this;
-    this.logger.debug(`shopId:${shopId}`);
+    const { memberId } = this;
+    this.logger.debug(`memberId:${memberId}`);
     const { options } = this;
     const token = this.ls.get('oa.token');
     const response = await axios.post(
       `${this.ls.get('oa.apiPrefix')}/retailManage/pageQueryOccOrder`,
       {
-        queryParam: shopId || match.testId,
+        queryParam: memberId || match.testId,
         pageSize: 1,
         pageIndex: 1
       },
@@ -396,7 +325,7 @@ class OCC extends BaseCommand {
     const tokenResponse = await axios.post(
       `${this.ls.get('oa.apiPrefix')}/retailManage/getShopTokenToUse`,
       {
-        shopId: target.shopId,
+        memberId: target.memberId,
         appKey: match.appKey
       },
       {
