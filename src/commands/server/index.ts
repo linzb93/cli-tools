@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import chalk from 'chalk';
 import path from 'path';
 import notifier from 'node-notifier';
+import { v4 as uuidv4 } from 'uuid';
 import { get as getIp } from '../ip.js';
 function notify(content: string) {
   notifier.notify({
@@ -29,13 +30,36 @@ function notify(content: string) {
     if (!taskQueue.length) {
       return;
     }
-    if (dayjs().isAfter(`${todayFormat} ${taskQueue[0].schedule}`)) {
-      taskQueue[0].actions({
-        app,
-        helper,
-        notify
-      });
-      taskQueue.shift();
+    for (let i = 0; i < taskQueue.length; i++) {
+      if (taskQueue[i].schedule) {
+        if (dayjs().isAfter(`${todayFormat} ${taskQueue[i].schedule}`)) {
+          taskQueue[i].actions({
+            app,
+            helper,
+            notify
+          });
+          if (!taskQueue[i].interval) {
+            taskQueue.splice(i, 1);
+          } else {
+            taskQueue[i].schedule = '';
+            taskQueue[i].lastOperateTime = dayjs().format('HH:mm:ss');
+          }
+        }
+      } else if (
+        dayjs().isAfter(
+          dayjs(`${todayFormat} ${taskQueue[i].lastOperateTime}`).add(
+            taskQueue[i].interval,
+            'ms'
+          )
+        )
+      ) {
+        taskQueue[i].actions({
+          app,
+          helper,
+          notify
+        });
+        taskQueue[i].lastOperateTime = dayjs().format('HH:mm:ss');
+      }
     }
   }, 1000 * 5);
   for (const task of tasks) {
@@ -46,8 +70,11 @@ function notify(content: string) {
     services.push(obj.name);
     if (obj.schedule) {
       taskQueue.push({
+        id: uuidv4(),
         schedule: obj.schedule,
-        actions: obj.actions
+        actions: obj.actions,
+        interval: obj.interval,
+        lastOperateTime: ''
       });
       continue;
     }

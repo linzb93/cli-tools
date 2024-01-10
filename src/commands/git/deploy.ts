@@ -9,12 +9,14 @@ import lodash from 'lodash';
 import fs from 'fs-extra';
 import open from 'open';
 import readPkg from 'read-pkg';
+import notifier from 'node-notifier';
 import { CommandItem } from '../../util/pFunc';
 import BaseCommand from '../../util/BaseCommand.js';
 import { AnyObject } from '../../util/types.js';
 import { getNewestTag } from './tag/index.js';
 import clipboard from 'clipboardy';
-
+import path from 'path';
+import dayjs from 'dayjs';
 const { get: objectGet } = lodash;
 
 interface Options {
@@ -58,9 +60,6 @@ class Deploy extends BaseCommand {
       (curBranch === 'master' && data[0] === 'test') || data[0] !== 'prod'
         ? 'release'
         : 'master';
-    if (!this.options.commit) {
-      this.logger.warn('不建议不写提交信息，请认真填写');
-    }
     this.createWorkflow([
       {
         condition: this.options.current,
@@ -138,6 +137,10 @@ class Deploy extends BaseCommand {
       });
     } catch (error) {
       this.logger.error((error as Error).message);
+      notifier.notify({
+        title: 'mycli通知',
+        message: 'Github项目更新失败！'
+      });
       return;
     }
     this.logger.success('部署成功');
@@ -153,7 +156,7 @@ class Deploy extends BaseCommand {
   }
   private async deployTestToProduction() {
     const { options } = this;
-    const newestTag = await getNewestTag();
+    const newestTag = options.tag || (await getNewestTag());
     try {
       const flow = [
         'git add .',
@@ -273,6 +276,20 @@ class Deploy extends BaseCommand {
       return;
     }
   }
+  private async write(projectName: string): Promise<void> {
+    const logFile = path.resolve(this.helper.root, 'data/gitDeploy.json');
+    const fileJSON = await fs.readJSON(logFile, 'utf-8');
+    const match = fileJSON.find((item: any) => item.name === projectName);
+    if (match) {
+      (match as any).publishTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    } else {
+      fileJSON.push({
+        name: projectName,
+        publishTime: dayjs().format('YYYY-MM-DD HH:mm:ss')
+      });
+    }
+    await fs.writeJSON(logFile, fileJSON);
+  }
   private async getProjectConfig(): Promise<AnyObject | null> {
     try {
       const data = await fs.readJSON('project.config.json');
@@ -288,6 +305,7 @@ class Deploy extends BaseCommand {
     this.logger.success(`部署成功，复制填入更新文档：
       ${ret}`);
     clipboard.writeSync(ret);
+    this.write(jenkins.name);
   }
   private createWorkflow(
     flowList: {

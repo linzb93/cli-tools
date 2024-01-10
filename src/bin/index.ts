@@ -141,6 +141,10 @@ program
     const spider = (await import('../commands/spider.js')).default;
     spider(url, option);
   });
+program.command('lixi').action(async () => {
+  const lixi = (await import('../commands/lixi.js')).default;
+  lixi();
+});
 program
   .command('bug [source]')
   .option('--debug', '调试模式')
