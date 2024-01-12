@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import sizeOf from 'image-size';
 import through from 'through2';
 import del from 'del';
+import path from 'path';
 import BaseCommand from '../util/BaseCommand.js';
 import clipboard from 'clipboardy';
 interface Options {
@@ -48,7 +49,10 @@ class GetSize extends BaseCommand {
       }
       let size = 0;
       const extname = this.getExtname(filePath);
-      const targetName = `.temp/getSizeImage${extname}`;
+      const targetName = path.resolve(
+        this.helper.root,
+        `.temp/getSizeImage${extname}`
+      );
       await new Promise((resolve) => {
         res.data
           .pipe(
@@ -76,14 +80,16 @@ class GetSize extends BaseCommand {
         if (this.options.css) {
           this.logger.success('CSS代码已复制');
           if (this.options.mobile) {
-            clipboard.writeSync(`width: rem(${dimensions.width});
-height:rem(${dimensions.height});
+            clipboard.writeSync(`width: rem(${
+              (dimensions.width as number) / 2
+            });
+height: rem(${(dimensions.height as number) / 2});
 background-image: url(${filePath});
 background-size: 100% 100%;`);
           } else {
-            clipboard.writeSync(`width:${dimensions.width}px;
-height:${dimensions.height}px;
-background-image:url(${filePath})`);
+            clipboard.writeSync(`width: ${dimensions.width}px;
+height: ${dimensions.height}px;
+background-image: url(${filePath})`);
           }
         }
         await del(targetName);
