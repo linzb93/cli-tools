@@ -112,23 +112,23 @@ class Search extends BaseCommand {
     return val;
   }
   private lineFeed(str: string, perLineLength = 30): string {
-    const strArr = str.split(' ');
+    const strList = str.split(' ');
     let tempArr: string[] = [];
-    const retArr = [];
-    strArr.forEach((s) => {
+    const lines = [];
+    strList.forEach((s) => {
       tempArr.push(s);
       if (
         tempArr.reduce((sum, item) => sum + item + ' ', '').length >
         perLineLength
       ) {
-        retArr.push(tempArr.join(' '));
+        lines.push(tempArr.join(' '));
         tempArr = [];
       }
     });
     if (tempArr.length) {
-      retArr.push(tempArr.join(' '));
+      lines.push(tempArr.join(' '));
     }
-    return retArr.join('\n');
+    return lines.join('\n');
   }
 }
 

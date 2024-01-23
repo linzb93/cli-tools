@@ -57,6 +57,7 @@ program
         'rename',
         'scan',
         'reset',
+        'remove',
         'pull',
         'push',
         'tag/index'

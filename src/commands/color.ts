@@ -25,12 +25,12 @@ class ColorConvert extends BaseCommand {
       ret = convert.hex.rgb(text).join(', ');
     } else if (this.text.includes(',')) {
       text = this.text.replace(/\s/g, '');
-      const arr = text.split(',').map((item) => Number(item)) as [
+      const colorNumberList = text.split(',').map((item) => Number(item)) as [
         number,
         number,
         number
       ];
-      ret = `#${convert.rgb.hex(arr)}`;
+      ret = `#${convert.rgb.hex(colorNumberList)}`;
       blockColor = ret;
     }
     if (this.options.get) {

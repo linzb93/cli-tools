@@ -301,10 +301,10 @@ class Deploy extends BaseCommand {
   private async deploySuccess(tag: string) {
     const projectConf = await this.getProjectConfig();
     const jenkins = (projectConf as any).jenkins;
-    const ret = `${jenkins.id.replace(/[\-|_]test$/, '')}。${tag}`;
+    const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}，${tag}`;
     this.logger.success(`部署成功，复制填入更新文档：
-      ${ret}`);
-    clipboard.writeSync(ret);
+      ${copyText}`);
+    clipboard.writeSync(copyText);
     this.write(jenkins.name);
   }
   private createWorkflow(

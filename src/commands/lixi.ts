@@ -36,7 +36,7 @@ class Lixi extends BaseCommand {
     }, 0);
     this.logger.success(
       `截止今日，已有利息${chalk.red.bold(
-        `${lixiTotal}元`
+        `${lixiTotal.toFixed(2)}元`
       )}，昨日收益${chalk.yellow.bold(`${yesterdayLixi}元`)}`
     );
   }
