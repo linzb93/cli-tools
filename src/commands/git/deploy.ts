@@ -200,23 +200,27 @@ class Deploy extends BaseCommand {
     const { options } = this;
     const curBranch = await this.git.getCurrentBranch();
     const newestTag = tag || (await getNewestTag());
+    const gitStatus = await this.git.getPushStatus();
+    const flow = [];
+    if (gitStatus === 1) {
+      flow.push('git add .', {
+        message: `git commit -m ${options.commit || 'update'}`,
+        onError() {}
+      });
+    }
+    flow.push(
+      `git checkout master`,
+      {
+        message: 'git pull',
+        onError() {}
+      },
+      `git merge ${curBranch}`,
+      'git push'
+    );
+    if (newestTag) {
+      flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
+    }
     try {
-      const flow = [
-        'git add .',
-        {
-          message: `git commit -m ${options.commit || 'update'}`,
-          onError() {}
-        },
-        `git checkout master`,
-        {
-          message: 'git pull',
-          onError() {}
-        },
-        `git merge ${curBranch}`,
-        'git push',
-        `git tag ${newestTag}`,
-        `git push origin ${newestTag}`
-      ];
       await this.helper.sequenceExec(flow, {
         debug: options.debug
       });
@@ -299,6 +303,10 @@ class Deploy extends BaseCommand {
     }
   }
   private async deploySuccess(tag: string) {
+    if (!tag) {
+      this.logger.success('部署成功');
+      return;
+    }
     const projectConf = await this.getProjectConfig();
     const jenkins = (projectConf as any).jenkins;
     const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}，${tag}`;
@@ -327,10 +335,11 @@ class Deploy extends BaseCommand {
       'git add .',
       `git commit -m ${options.commit || 'update'}`,
       'git pull',
-      'git push',
-      `git tag ${newestTag}`,
-      `git push origin ${newestTag}`
+      'git push'
     ];
+    if (newestTag) {
+      flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
+    }
     await this.helper.sequenceExec(flow, {
       debug: options.debug
     });

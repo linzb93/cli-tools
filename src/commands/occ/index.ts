@@ -53,6 +53,12 @@ class OCC extends BaseCommand {
       return;
     }
     const { shop, url } = await this.getShop();
+    const shopName = (() => {
+      if (this.currentApp.name === 'ele') {
+        return shop.shopName || shop.shopId;
+      }
+      return shop.memberName || shop.memberId;
+    })();
     if (options.token === true) {
       // token无输入值，就只是复制token
       const { hash } = new URL(url);
@@ -60,9 +66,7 @@ class OCC extends BaseCommand {
       const token = fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
       clipboard.writeSync(token);
       this.spinner.succeed(
-        `【${this.currentApp.serviceName}】已复制店铺 ${
-          shop.memberName || shop.memberId
-        } 的token\n${token}`
+        `【${this.currentApp.serviceName}】已复制店铺 ${shopName} 的token\n${token}`
       );
     } else if (options.token) {
       // token有值，就是根据token登录
@@ -72,9 +76,7 @@ class OCC extends BaseCommand {
     } else if (options.copy) {
       clipboard.writeSync(url);
       this.spinner.succeed(
-        `【${this.currentApp.serviceName}】已复制店铺 ${
-          shop.memberName || shop.memberId
-        } 的地址:\n${url}`
+        `【${this.currentApp.serviceName}】已复制店铺 ${shopName} 的地址:\n${url}`
       );
     } else if (options.user) {
       const { hash } = new URL(url);
@@ -89,9 +91,7 @@ class OCC extends BaseCommand {
           }
         }
       );
-      this.spinner.succeed(
-        `获取店铺 ${shop.memberName || shop.memberId} 信息成功`
-      );
+      this.spinner.succeed(`获取店铺 ${shopName} 信息成功`);
       console.log(data.result);
     } else {
       if (
@@ -103,10 +103,15 @@ class OCC extends BaseCommand {
       } else {
         open(url);
       }
+      const shopName = (() => {
+        if (this.currentApp.name === 'ele') {
+          return shop.shopName || shop.shopId;
+        }
+        return shop.memberName || shop.memberId;
+      })();
+
       this.spinner.succeed(
-        `【${this.currentApp.serviceName}】店铺 ${
-          shop.memberName || shop.memberId
-        } 打开成功`
+        `【${this.currentApp.serviceName}】店铺 ${shopName} 打开成功`
       );
     }
   }
@@ -142,7 +147,7 @@ class OCC extends BaseCommand {
       process.exit(1);
     }
     if (listData.code === 401) {
-      await login();
+      await login(this.options);
       return await this.getSearchList();
     } else if (!listData.result) {
       this.spinner.fail(
@@ -164,14 +169,14 @@ class OCC extends BaseCommand {
     this.spinner.text = '正在搜索店铺';
     if (input.length === 0) {
       match = map.default;
-      memberId = match.testId;
+      memberId = !this.options.test ? match.defaultId : match.testId;
     } else if (input.length === 1) {
       if (isNaN(Number(input[0])) && this.helper.isValidKey(input[0], map)) {
         match = map[input[0]];
         if (!match) {
           this.spinner.fail('项目不存在，请重新输入', true);
         }
-        memberId = match.testId;
+        memberId = !this.options.test ? match.defaultId : match.testId;
       } else {
         match = map.default;
         memberId = input[0];
@@ -211,14 +216,16 @@ class OCC extends BaseCommand {
     const { options, currentApp: match } = this;
     const list = await this.getSearchList();
     const shop = list[0] as ShopItem;
+    const shopName = (() => {
+      if (match.name === 'ele') {
+        return shop.shopName || shop.shopId;
+      }
+      return shop.memberName || shop.memberId;
+    })();
     if (options.token === true) {
-      this.spinner.text = `【${match.serviceName}】正在获取token:${
-        shop.memberName || shop.memberId
-      }`;
+      this.spinner.text = `【${match.serviceName}】正在获取token:${shopName}`;
     } else if (!options.token) {
-      this.spinner.text = `【${match.serviceName}】正在获取店铺信息:${
-        shop.memberName || shop.memberId
-      }`;
+      this.spinner.text = `【${match.serviceName}】正在获取店铺信息:${shopName}`;
     }
     await this.helper.sleep(1500);
     const {
@@ -238,11 +245,20 @@ class OCC extends BaseCommand {
     const { memberId } = this;
     this.logger.debug(`memberId:${memberId}`);
     const { options } = this;
+    const searchParam = (() => {
+      if (memberId) {
+        return memberId;
+      }
+      if (!this.options.test) {
+        return match.defaultId;
+      }
+      return match.testId;
+    })();
     axios
       .post(
         `${this.ls.get('oa.oldApiPrefix')}/chain/occ/dkdAccount/oa/listAccount`,
         {
-          searchParam: memberId || match.testId,
+          searchParam,
           accountStatus: '',
           pageSize: 1,
           pageIndex: 1
@@ -301,10 +317,19 @@ class OCC extends BaseCommand {
     this.logger.debug(`memberId:${memberId}`);
     const { options } = this;
     const token = this.ls.get('oa.token');
+    const queryParam = (() => {
+      if (memberId) {
+        return memberId;
+      }
+      if (!this.options.test) {
+        return match.defaultId;
+      }
+      return match.testId;
+    })();
     const response = await axios.post(
       `${this.ls.get('oa.apiPrefix')}/retailManage/pageQueryOccOrder`,
       {
-        queryParam: memberId || match.testId,
+        queryParam,
         pageSize: 1,
         pageIndex: 1
       },
@@ -315,7 +340,7 @@ class OCC extends BaseCommand {
       }
     );
     if (response.data.code === 401) {
-      await login();
+      await login(this.options);
       return await this.handleChainProject();
     }
     const target = response.data.result.list[0];

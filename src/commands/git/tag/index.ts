@@ -75,6 +75,9 @@ class Tag extends BaseCommand {
   }
   async getNewestTag(): Promise<string> {
     const gitTags = await this.git.tag();
+    if (gitTags.length === 0) {
+      return '';
+    }
     const matchTag = this.gitCurrentLatestTag(gitTags);
     const firstNum = Number(matchTag.slice(1, 2)[0]);
     const secondNum = Number((matchTag.match(/v\d\.(\d+)/) as string[])[1]);

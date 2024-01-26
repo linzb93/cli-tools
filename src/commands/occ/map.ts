@@ -18,6 +18,7 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
+    defaultId: '',
     testId: ''
   },
   jysq: {
@@ -38,7 +39,8 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
-    testId: '15983528161'
+    defaultId: '15983528161',
+    testId: ''
   },
   pj: {
     name: 'pj',
@@ -58,7 +60,7 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
-    testId: '16499283381'
+    defaultId: '16499283381'
   },
   im: {
     name: 'im',
@@ -78,7 +80,7 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
-    testId: '16505256214'
+    defaultId: '16505256214'
   },
   yx: {
     name: 'yx',
@@ -98,7 +100,7 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
-    testId: '16505284824'
+    defaultId: '16505284824'
   },
   dj: {
     name: 'dj',
@@ -118,7 +120,7 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
-    testId: '16668523733'
+    defaultId: '16668523733'
   },
   sp: {
     name: 'sp',
@@ -138,11 +140,11 @@ const map = {
       memberId: item.memberId,
       platform: item.platform
     }),
-    testId: '16928614773'
+    defaultId: '16928614773'
   },
   sg: {
     name: 'sg',
-    testId: 't_OtWpj5Vx31',
+    defaultId: 't_OtWpj5Vx31',
     appKey: 122726,
     url: 'https://sg.diankeduo.net/pages/shangou/#/'
   },
@@ -164,11 +166,11 @@ const map = {
       memberId: item.shopId,
       platform: item.platform
     }),
-    testId: '16159400501'
+    defaultId: '16159400501'
   },
   chain: {
     name: 'chain',
-    testId: '15859095882',
+    defaultId: '15859095882',
     url: {
       base: '/'
     }
@@ -177,12 +179,12 @@ const map = {
     name: 'ele',
     appId: '29665924',
     serviceName: '店客多-饿了么经营神器',
-    baseURL: '/eleocc',
+    baseURL: '/eleOcc',
     listUrl: '/manage/getOrderList',
     platform: 11,
     appKeyName: 'appId',
     url: {
-      base: '/eleocc',
+      base: '/eleOcc',
       list: '/manage/getOrderList',
       login: '/auth/onelogin',
       userApi: '/home/getUserInfo'
@@ -192,7 +194,8 @@ const map = {
       shopId: item.shopId,
       userId: item.userId
     }),
-    testId: '160276429'
+    defaultId: '160276429',
+    testId: '500822668'
   }
 };
 map.default = map.jysq;
