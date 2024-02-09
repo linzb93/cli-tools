@@ -2,15 +2,19 @@ import kill from '../kill.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { CacheItem } from './index';
 
+interface DbData {
+  items: Required<CacheItem>[];
+}
+
 class Stop extends BaseCommand {
   async run() {
     const db = this.helper.createDB('agent');
-    const cacheData = (db.data as any).items as Required<CacheItem>[];
+    const cacheData = (db.data as DbData).items;
     const matches = cacheData.filter((item) => item.port);
     if (matches.length === 1) {
       await kill(['port', matches[0].port]);
       delete (matches[0] as CacheItem).port;
-      (db.data as any).items = cacheData;
+      (db.data as DbData).items = cacheData;
       await db.write();
     } else if (matches.length > 1) {
       const { ports } = await this.helper.inquirer.prompt([
@@ -34,7 +38,7 @@ class Stop extends BaseCommand {
         await db.write();
       }
       // @ts-ignore
-      (db.data as any).items = cacheData;
+      (db.data as DbData).items = cacheData;
       await db.write();
     } else {
       this.logger.info('没有要关闭的进程');

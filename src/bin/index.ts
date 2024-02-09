@@ -120,14 +120,6 @@ program
     occ(data, options);
   });
 program
-  .command('test [data...]')
-  .option('-<token>', '获取token或根据token跳转')
-  .allowUnknownOption()
-  .action(async (data, options) => {
-    const test = (await import('../commands/test.js')).default;
-    test(data, options);
-  });
-program
   .command('mon [filename]')
   .allowUnknownOption()
   .action(async (file, _, options) => {

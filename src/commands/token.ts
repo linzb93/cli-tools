@@ -19,7 +19,7 @@ class Token extends BaseCommand {
     const tokenStr = this.tokenStr.replace(/^occ_(senior_)?/, '');
     const decoded = jwt.decode(tokenStr, {
       complete: this.options.complete
-    }) as any;
+    }) as any; // 解析数据格式不定
     if (this.options.origin) {
       console.log(decoded);
       return;

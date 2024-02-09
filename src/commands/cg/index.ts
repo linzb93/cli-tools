@@ -13,6 +13,16 @@ interface Options {
   full: boolean;
 }
 
+interface DbData {
+  data: {
+    forecast: boolean;
+  };
+}
+interface User {
+  name: string;
+  amount: number;
+}
+
 class Cg extends BaseCommand {
   private action: string;
   private data: string;
@@ -61,7 +71,7 @@ class Cg extends BaseCommand {
       }) => {
         const db = this.helper.createDB('cg');
         await db.read();
-        const { data } = db as any;
+        const { data } = db as DbData;
         this.spinner.succeed(
           `今日业绩监控服务已启动：${chalk.yellow(port)}端口。\n${
             currentPerformance !== 0
@@ -133,7 +143,7 @@ class Cg extends BaseCommand {
           );
           console.log(
             list
-              .map((user: any, index: number) => {
+              .map((user: User, index: number) => {
                 const output = `${index + 1}. ${user.name}: ${user.amount}`;
                 if (index === 0) {
                   return chalk.bold.yellow(output);
@@ -154,7 +164,7 @@ class Cg extends BaseCommand {
           this.spinner.succeed(`预测结果如下：`);
           console.log(
             list
-              .map((user: any, index: number) => {
+              .map((user: User, index: number) => {
                 const output = `${index + 1}. ${user.name}: ${user.amount}`;
                 if (index === 0) {
                   return chalk.bold.yellow(output);

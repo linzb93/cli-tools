@@ -3,7 +3,11 @@ import dayjs from 'dayjs';
 import BaseCommand from '../util/BaseCommand.js';
 
 class Lixi extends BaseCommand {
-  private source: any[];
+  private source: {
+    money: number;
+    rate: number;
+    saveDate: string;
+  }[];
   constructor() {
     super();
     this.source = [

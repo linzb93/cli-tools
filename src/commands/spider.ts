@@ -69,6 +69,6 @@ class Spider extends BaseCommand {
   }
 }
 
-export default (url: string, options: any) => {
+export default (url: string, options: { dest: string }) => {
   new Spider(url, options).run();
 };

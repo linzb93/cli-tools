@@ -70,7 +70,7 @@ export default {
   // 获取远端地址
   async remote(): Promise<string> {
     const { stdout: data } = await execa('git remote -v');
-    return (data.split(/\n/)[0].match(/http\S+/) as any[])[0];
+    return (data.split(/\n/)[0].match(/http\S+/) as RegExpMatchArray)[0];
   },
   /**
    * 获取代码提交状态
@@ -97,7 +97,7 @@ export default {
     if (stdout.includes('Your branch is ahead of ')) {
       return 2;
     }
-    if ((stdout.match(/On branch (\S+)/) as any[])[1] !== 'master') {
+    if ((stdout.match(/On branch (\S+)/) as RegExpMatchArray)[1] !== 'master') {
       return 4;
     }
     if (stdout.includes('nothing to commit')) {

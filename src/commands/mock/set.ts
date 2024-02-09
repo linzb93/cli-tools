@@ -1,6 +1,15 @@
 import BaseCommand from '../../util/BaseCommand.js';
 import fs from 'fs-extra';
 import path from 'path';
+
+interface DbData {
+  items: {
+    name: string;
+    prefix: string;
+    id: string;
+  }[];
+}
+
 class Set extends BaseCommand {
   async run() {
     const { name, prefix, id } = await this.helper.inquirer.prompt([
@@ -22,7 +31,7 @@ class Set extends BaseCommand {
     ]);
     const db = this.helper.createDB('yapi');
     await db.read();
-    (db.data as any).items.push({
+    (db.data as DbData).items.push({
       name,
       prefix,
       id

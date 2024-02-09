@@ -12,7 +12,6 @@ import readPkg from 'read-pkg';
 import notifier from 'node-notifier';
 import { CommandItem } from '../../util/pFunc';
 import BaseCommand from '../../util/BaseCommand.js';
-import { AnyObject } from '../../util/types.js';
 import { getNewestTag } from './tag/index.js';
 import clipboard from 'clipboardy';
 import path from 'path';
@@ -28,6 +27,10 @@ interface Options {
 interface JenkinsProject {
   name: string;
   id: string;
+}
+interface GitDeploy {
+  name: string;
+  publishTime: string;
 }
 class Deploy extends BaseCommand {
   private data: string[];
@@ -283,9 +286,9 @@ class Deploy extends BaseCommand {
   private async write(projectName: string): Promise<void> {
     const logFile = path.resolve(this.helper.root, 'data/gitDeploy.json');
     const fileJSON = await fs.readJSON(logFile, 'utf-8');
-    const match = fileJSON.find((item: any) => item.name === projectName);
+    const match = fileJSON.find((item: GitDeploy) => item.name === projectName);
     if (match) {
-      (match as any).publishTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+      match.publishTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     } else {
       fileJSON.push({
         name: projectName,
@@ -294,12 +297,22 @@ class Deploy extends BaseCommand {
     }
     await fs.writeJSON(logFile, fileJSON);
   }
-  private async getProjectConfig(): Promise<AnyObject | null> {
+  private async getProjectConfig(): Promise<{
+    jenkins: {
+      id: string;
+      name: string;
+    };
+  }> {
     try {
       const data = await fs.readJSON('project.config.json');
       return data;
     } catch (error) {
-      return null;
+      return {
+        jenkins: {
+          id: '',
+          name: ''
+        }
+      };
     }
   }
   private async deploySuccess(tag: string) {
@@ -308,8 +321,8 @@ class Deploy extends BaseCommand {
       return;
     }
     const projectConf = await this.getProjectConfig();
-    const jenkins = (projectConf as any).jenkins;
-    const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}，${tag}`;
+    const jenkins = projectConf.jenkins;
+    const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}。${tag}`;
     this.logger.success(`部署成功，复制填入更新文档：
       ${copyText}`);
     clipboard.writeSync(copyText);

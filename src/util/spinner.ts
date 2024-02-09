@@ -1,7 +1,7 @@
 import ora, { Ora } from 'ora';
 import logSymbols from 'log-symbols';
 import { ref, Ref } from '@vue/reactivity';
-
+import { setInterval } from 'timers';
 interface Setting {
   showTime: boolean;
 }
@@ -10,11 +10,12 @@ export class Spinner {
   private spinner: Ora;
   private setting: Setting;
   private duration: Ref;
-  private timer: any;
+  private timer: number;
   constructor() {
     this.spinner = ora({
       interval: 100
     });
+    this.timer = 0;
     this.setting = {
       showTime: false
     };
@@ -39,7 +40,7 @@ export class Spinner {
     if (this.setting.showTime) {
       this.timer = setInterval(() => {
         this.duration.value++;
-      }, 1000);
+      }, 1000) as unknown as number;
     }
     this.spinner.start();
   }

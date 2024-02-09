@@ -9,6 +9,15 @@ import * as helper from '../../util/helper.js';
 import Mock from 'mockjs';
 const program = new Command();
 
+interface YapiConfig {
+  items: {
+    path: string;
+    json: {
+      root: string;
+    } | null;
+  }[];
+}
+
 program
   .option('--prefix <prefix>', '地址')
   .option('--id <id>', '项目ID')
@@ -20,11 +29,11 @@ program
     app.use(express.json());
     app.use(cors());
     app.all(`${options.prefix}/*`, async (req, res) => {
-      const map = await fs.readJSON(
+      const map = (await fs.readJSON(
         path.resolve(helper.root, `data/yapi/${options.id}.json`)
-      );
+      )) as YapiConfig;
       const url = req.url.replace(options.prefix, '');
-      const match = map.items.find((item: any) => item.path === url);
+      const match = map.items.find((item) => item.path === url);
       if (!match) {
         res.send({
           code: 404,

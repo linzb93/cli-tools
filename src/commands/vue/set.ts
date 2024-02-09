@@ -1,10 +1,20 @@
 import BaseCommand from '../../util/BaseCommand.js';
 import { v4 as uuidv4 } from 'uuid';
 
+interface DbData {
+  items: {
+    cwd: string;
+    name: string;
+    id: string;
+    servePort: string;
+    buildPort: string;
+  }[];
+}
+
 class SetProject extends BaseCommand {
   private url: string;
   private name: string;
-  constructor(datas: any[]) {
+  constructor(datas: string[]) {
     super();
     if (datas.length === 1) {
       this.name = datas[0];
@@ -18,7 +28,7 @@ class SetProject extends BaseCommand {
     const { url, name } = this;
     const db = this.helper.createDB('vueServer');
     await db.read();
-    (db.data as any).items.push({
+    (db.data as DbData).items.push({
       cwd: url,
       name,
       id: uuidv4(),
@@ -30,6 +40,6 @@ class SetProject extends BaseCommand {
   }
 }
 
-export default (datas: any[]) => {
+export default (datas: string[]) => {
   new SetProject(datas).run();
 };

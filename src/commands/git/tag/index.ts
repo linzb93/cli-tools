@@ -3,7 +3,6 @@ import BaseCommand from '../../../util/BaseCommand.js';
 import deleteTag from './delete.js';
 import lodash from 'lodash';
 import fs from 'fs-extra';
-import { AnyObject } from '../../../util/types.js';
 const { last } = lodash;
 
 interface Options {
@@ -58,19 +57,29 @@ class Tag extends BaseCommand {
         `git push origin ${output}`
       ]);
       const projectConf = await this.getProjectConfig();
-      const jenkins = (projectConf as any).jenkins;
+      const jenkins = projectConf.jenkins;
       const ret = `${jenkins.id.replace(/[\-|_]test$/, '')}。${output}`;
       this.logger.success(`部署成功，复制填入更新文档：
       ${ret}`);
       clipboard.writeSync(ret);
     }
   }
-  private async getProjectConfig(): Promise<AnyObject | null> {
+  private async getProjectConfig(): Promise<{
+    jenkins: {
+      id: string;
+      name: string;
+    };
+  }> {
     try {
       const data = await fs.readJSON('project.config.json');
       return data;
     } catch (error) {
-      return null;
+      return {
+        jenkins: {
+          id: '',
+          name: ''
+        }
+      };
     }
   }
   async getNewestTag(): Promise<string> {
@@ -101,7 +110,7 @@ class Tag extends BaseCommand {
   }
 }
 
-function tag(datas: any[], options: Options): void {
+function tag(datas: string[], options: Options): void {
   new Tag(datas, options).run();
 }
 

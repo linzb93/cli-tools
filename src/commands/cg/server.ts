@@ -7,6 +7,13 @@ import path from 'path';
 import ls from '../../util/ls.js';
 import * as helper from '../../util/helper.js';
 
+interface DbData {
+  data: {
+    publishTime: string;
+    forecast: number;
+  };
+}
+
 const notify = (content: string) => {
   notifier.notify({
     title: '店客多通知',
@@ -26,7 +33,7 @@ const notify = (content: string) => {
   const targets = 'a'
     .repeat(20)
     .split('')
-    .map((_: any, index) => ({
+    .map((_: unknown, index) => ({
       data: (index + 1) * 5000,
       loaded: false
     }));
@@ -68,7 +75,7 @@ const notify = (content: string) => {
   const timer = setInterval(async () => {
     const db = helper.createDB('cg');
     await db.read();
-    const { data } = db as any;
+    const { data } = db as DbData;
     if (dayjs().isAfter(dayjs().format(`YYYY-MM-DD ${data.publishTime}`))) {
       clearInterval(timer);
       if (data.forecast) {

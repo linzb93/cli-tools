@@ -10,7 +10,7 @@ export interface EleLoginParams {
   userId: string;
 }
 export interface ShopItem extends MeituanLoginParams, EleLoginParams {
-  memeberName?: string;
+  memberName?: string;
   shopName?: string;
   startTime: string;
   endTime: string;

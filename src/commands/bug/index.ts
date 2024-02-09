@@ -16,6 +16,19 @@ interface Options {
   all: Boolean;
 }
 
+interface Result {
+  name: string;
+  totalCount: number;
+  list: ResultItem[];
+}
+interface ResultItem {
+  content: string;
+  url: string;
+  errorCount: number;
+  numberOfAffectedUsers: number;
+  track: string;
+}
+
 class Bug extends BaseCommand {
   private source: string;
   private options: Options;
@@ -50,7 +63,7 @@ class Bug extends BaseCommand {
     if (dayjs().day() === 1) {
       beginTime = dayjs().subtract(3, 'd').format('YYYY-MM-DD 00:00:00');
     }
-    const ret: { name: string; totalCount: number; list: any[] }[] = [];
+    const ret: Result[] = [];
     this.spinner.text = '正在获取报告';
     const siteList = !this.options.all
       ? sitemap.filter((site) => ['美团-经营神器'].includes(site.name))
@@ -78,7 +91,7 @@ class Bug extends BaseCommand {
         }
         const list = await pMap(
           result.list,
-          async (item: any) => {
+          async (item: ResultItem) => {
             if (
               item.content.startsWith('Cannot read properties of undefined')
             ) {

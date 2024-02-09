@@ -14,6 +14,7 @@ interface Options {
   user: boolean;
   test: boolean;
 }
+type App = typeof map.default;
 interface ShopItem extends MeituanLoginParams, EleLoginParams {
   memberName?: string;
   shopName?: string;
@@ -30,13 +31,15 @@ interface ShopListResponse {
 class OCC extends BaseCommand {
   private input: string[];
   private options: Options;
-  private currentApp: any;
-  private memberId: any;
+  private currentApp: App;
+  private memberId: string;
   private service: AxiosInstance;
   constructor(input: string[], options: Options) {
     super();
     this.input = input;
     this.options = options;
+    this.currentApp = map.default;
+    this.memberId = '';
     this.service = axios.create({
       baseURL: ''
     });

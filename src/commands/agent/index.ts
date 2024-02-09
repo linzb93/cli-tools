@@ -24,6 +24,10 @@ interface CacheSaveOption {
   projName: string;
 }
 
+interface DbData {
+  items: CacheItem[];
+}
+
 class Agent extends BaseCommand {
   private subCommand?: string;
   private options: Options;
@@ -58,7 +62,7 @@ class Agent extends BaseCommand {
     const db = this.helper.createDB('agent');
     await db.read();
     db.data = db.data || {};
-    const cacheData = (db.data as any).items as CacheItem[];
+    const cacheData = (db.data as DbData).items;
     const match = cacheData.find((item) => item.proxy === options.proxy);
     if (!match) {
       if (!options.proxy) {
@@ -89,7 +93,7 @@ class Agent extends BaseCommand {
           }
         ])) as CacheSaveOption;
         if (ans.choosed) {
-          (db.data as any).items.push({
+          (db.data as DbData).items.push({
             name: ans.projName,
             proxy: options.proxy
           });
@@ -123,7 +127,7 @@ class Agent extends BaseCommand {
           const items: CacheItem[] = this.ls.get('items').value();
           const match = items.find((item) => item.proxy === options.proxy);
           (match as CacheItem).port = port;
-          (db.data as any).items = items;
+          (db.data as DbData).items = items;
           await db.write();
           child.unref();
           child.disconnect();
