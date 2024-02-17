@@ -139,6 +139,15 @@ program.command('lixi').action(async () => {
   lixi();
 });
 program
+  .command('tree [dir]')
+  .option('--level <level>', '层级')
+  .option('--ignore <dirs>', '添加忽略的文件夹')
+  .option('-c, --copy', '复制')
+  .action(async (dir, option) => {
+    const tree = (await import('../commands/tree.js')).default;
+    tree(dir, option);
+  });
+program
   .command('bug [source]')
   .option('--debug', '调试模式')
   .option('--all', '全部')
