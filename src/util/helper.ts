@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 import logger from './logger.js';
 import lodash from 'lodash';
 import chalk from 'chalk';
-import windowsShortcuts from 'windows-shortcuts';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import boxen from 'boxen';
@@ -102,18 +101,6 @@ export function isValidKey(
 
 // 获取快捷方式文件夹的真实地址
 export const getOriginPath = async (rawPath: string): Promise<string> => {
-  if (isWin) {
-    return await new Promise((resolve) => {
-      // 如果ts编译报错，把shortcut依赖的.ts文件删掉
-      windowsShortcuts.query(rawPath, (err, lnk) => {
-        if (err) {
-          resolve(rawPath);
-        } else {
-          resolve(lnk.target || rawPath);
-        }
-      });
-    });
-  }
   // await requireDynamic('macos-alias');
   return rawPath;
 };

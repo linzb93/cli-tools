@@ -7,7 +7,7 @@ type Helper = typeof helperObj;
 type Notify = (content: string) => void;
 export default {
   name: '每日bug报告',
-  loaded: true,
+  loaded: false,
   schedule: '16:23',
   interval: 1000 * 10,
   actions: async ({ helper, notify }: { helper: Helper; notify: Notify }) => {
