@@ -70,10 +70,17 @@ export const download = (src: string, dest: string) => {
 };
 export const openInEditor = async (
   project: string,
-  isGoto?: boolean
+  options?: {
+    isGoto?: boolean;
+    reuse?: boolean;
+  }
 ): Promise<void> => {
   try {
-    await execa(`code ${isGoto ? '-g' : ''} ${project}`);
+    await execa(
+      `code ${options?.isGoto ? '-g' : ''} ${project} ${
+        options?.reuse ? '-r' : ''
+      }`
+    );
   } catch (cmdError) {
     try {
       await fs.access(project);

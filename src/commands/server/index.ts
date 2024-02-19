@@ -22,9 +22,9 @@ function notify(content: string) {
   const tasks = await fs.readdir(
     path.resolve(helper.root, `./dist/commands/server/tasks`)
   );
+  const todayFormat = dayjs().format('YYYY-MM-DD');
   const services: any[] = [];
   // 创建任务队列
-  const todayFormat = dayjs().format('YYYY-MM-DD');
   const taskQueue: any[] = [];
   setInterval(() => {
     if (!taskQueue.length) {
@@ -92,13 +92,14 @@ function notify(content: string) {
       port: 6000,
       services
     });
+    const serverList = services
+      .map((service, index) => chalk.cyan(`${index + 1}.${service}`))
+      .join('\n');
     logger.success(`服务器已启动，地址是：${chalk.yellow(
       `http://${ip}:${port}`
     )},
 以下服务已开启：
-${services
-  .map((service, index) => chalk.cyan(`${index + 1}.${service}`))
-  .join('\n')}
+${serverList}
       `);
   });
 })();

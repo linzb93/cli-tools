@@ -53,7 +53,9 @@ class Bug extends BaseCommand {
       await this.helper.download(filePath, target);
       this.spinner.succeed('打开文件');
     }
-    this.helper.openInEditor(isEditorPath, true);
+    this.helper.openInEditor(isEditorPath, {
+      isGoto: true
+    });
   }
   private async getAllBugReport() {
     const prefix = this.ls.get('oa.apiPrefix');

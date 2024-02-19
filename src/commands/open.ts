@@ -6,6 +6,7 @@ import BaseCommand from '../util/BaseCommand.js';
 
 interface Options {
   name: string;
+  reuse: boolean;
 }
 interface OpenItem {
   name: string;
@@ -73,7 +74,9 @@ class Open extends BaseCommand {
         return;
       }
       const path2 = await this.helper.getOriginPath(matchPath);
-      await this.helper.openInEditor(path2);
+      await this.helper.openInEditor(path2, {
+        reuse: options.reuse
+      });
     } else {
       const { source } = await this.helper.inquirer.prompt([
         {
@@ -86,17 +89,22 @@ class Open extends BaseCommand {
       const path2 = await this.helper.getOriginPath(
         path.join(sourceDir, source)
       );
-      await this.helper.openInEditor(path2);
+      await this.helper.openInEditor(path2, {
+        reuse: options.reuse
+      });
     }
   }
   private async makeOpenAction(map: OpenItem[], name: string) {
+    const { options } = this;
     const match = map.find((item) => item.name === name);
     if (!match) {
       this.logger.error('命令错误');
       return;
     }
     if (match.setting && match.isEditor) {
-      await this.helper.openInEditor(this.ls.get(match.setting));
+      await this.helper.openInEditor(this.ls.get(match.setting), {
+        reuse: options.reuse
+      });
     } else if (match.target) {
       await open(match.target);
     }

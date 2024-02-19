@@ -322,7 +322,7 @@ class Deploy extends BaseCommand {
     }
     const projectConf = await this.getProjectConfig();
     const jenkins = projectConf.jenkins;
-    const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}。${tag}`;
+    const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}，${tag}`;
     this.logger.success(`部署成功，复制填入更新文档：
       ${copyText}`);
     clipboard.writeSync(copyText);

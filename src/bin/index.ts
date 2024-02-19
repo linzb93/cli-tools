@@ -102,6 +102,7 @@ program
 program
   .command('open <name>')
   .option('--name <name>', '打开的文件夹')
+  .option('-r, --reuse', '强制在已开启的编辑器里打开')
   .action(async (url, cmd) => {
     const open = (await import('../commands/open.js')).default;
     open(url, cmd);
