@@ -8,6 +8,7 @@ import chalk from 'chalk';
 import path from 'path';
 import notifier from 'node-notifier';
 import { get as getIp } from '../ip.js';
+// import mysql from '../../util/service/mysql.js';
 
 function notify(content: string) {
   notifier.notify({
@@ -25,6 +26,11 @@ function notify(content: string) {
   );
   const services: any[] = [];
   const scheduleClient = connectService('schedule');
+  // const mysqlConnection = mysql();
+  // mysqlConnection.query('select * from dept where id = 1', (err, result) => {
+  //   console.log('数据库搜索');
+  //   console.log(result);
+  // });
   for (const task of tasks) {
     const taskContent = (await import(`./tasks/${task}`)).default;
     if (!taskContent.loaded) {
