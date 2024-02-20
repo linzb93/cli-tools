@@ -14,6 +14,7 @@ import { CommandItem } from '../../util/pFunc';
 import BaseCommand from '../../util/BaseCommand.js';
 import { getNewestTag } from './tag/index.js';
 import clipboard from 'clipboardy';
+import { connectService } from '../../util/service/index.js';
 import path from 'path';
 import dayjs from 'dayjs';
 const { get: objectGet } = lodash;
@@ -296,6 +297,14 @@ class Deploy extends BaseCommand {
       });
     }
     await fs.writeJSON(logFile, fileJSON);
+    const scheduleConnect = await connectService('schedule');
+    scheduleConnect.send({
+      sendToMainService: true,
+      action: 'notify',
+      interval: '1h',
+      times: 3,
+      params: `请查看监控系统：${projectName}`
+    });
   }
   private async getProjectConfig(): Promise<{
     jenkins: {

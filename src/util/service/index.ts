@@ -1,8 +1,6 @@
 import { fork } from 'child_process';
-import { createConnection } from 'net';
-import chalk from 'chalk';
+import ipc from 'node-ipc';
 import * as helper from '../helper.js';
-import ls from '../ls.js';
 type ConnectType = 'mysql' | 'schedule';
 
 export const startService = (type: ConnectType) =>
@@ -10,17 +8,32 @@ export const startService = (type: ConnectType) =>
     const child = fork(`${type}.js`, {
       cwd: `${helper.root}/dist/util/service`
     });
-    child.on('message', (obj: { port: number }) => {
-      ls.set(`service.port.${type}`, obj.port);
+    child.on('message', () => {
       resolve(null);
     });
   });
+interface ResCallback {
+  (data: any): void;
+}
 
-export const connectService = (type: ConnectType) => {
-  const client = createConnection({ port: ls.get(`service.port.${type}`) });
-  client.on('error', (error) => {
-    console.log(chalk.red(`${type}服务连接失败：${error.message}`));
-    process.exit(1);
+export function connectService(type: ConnectType): Promise<{
+  send: (data: any) => void;
+  listen: (callback: ResCallback) => void;
+}> {
+  return new Promise((resolve) => {
+    let resCallback: ResCallback;
+    ipc.connectTo('shedule', () => {
+      ipc.of.schedule.on('connect', () => {
+        ipc.of.schedule.on('response', resCallback);
+        resolve({
+          send(data) {
+            ipc.of.schedule.emit('message', data);
+          },
+          listen(callback) {
+            resCallback = callback;
+          }
+        });
+      });
+    });
   });
-  return client;
-};
+}

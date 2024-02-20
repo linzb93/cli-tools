@@ -230,4 +230,8 @@ program.command('shortcut [name]').action(async (name) => {
   const shortcut = (await import('../commands/shortcut.js')).default;
   shortcut(name);
 });
+program.command('test').action(async () => {
+  const test = (await import('../commands/test.js')).default;
+  test();
+});
 program.parse();

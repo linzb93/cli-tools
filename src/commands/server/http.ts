@@ -7,6 +7,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import path from 'path';
 import notifier from 'node-notifier';
+
 import { get as getIp } from '../ip.js';
 // import mysql from '../../util/service/mysql.js';
 
@@ -25,7 +26,7 @@ function notify(content: string) {
     path.resolve(helper.root, `./dist/commands/server/tasks`)
   );
   const services: any[] = [];
-  const scheduleClient = connectService('schedule');
+  const scheduleClient = await connectService('schedule');
   // const mysqlConnection = mysql();
   // mysqlConnection.query('select * from dept where id = 1', (err, result) => {
   //   console.log('数据库搜索');
@@ -48,17 +49,15 @@ function notify(content: string) {
         notify
       });
     } else {
-      scheduleClient.write(
-        JSON.stringify({
-          executeTime: taskContent.executeTime,
-          action: task
-        })
-      );
+      scheduleClient.send({
+        executeTime: taskContent.executeTime,
+        action: task.replace('.js', '')
+      });
     }
   }
-  scheduleClient.on('data', async (data) => {
-    const obj = JSON.parse(data.toString());
-    const matchTask = tasks.find((task) => task === obj.action);
+  const callback = async (obj: any) => {
+    const matchTask = tasks.find((task) => task === `${obj.action}.js`);
+    console.log(`收到任务：${matchTask}`);
     if (!matchTask) {
       return;
     }
@@ -69,7 +68,9 @@ function notify(content: string) {
       notify,
       params: obj.params
     });
-  });
+  };
+  scheduleClient.listen(callback);
+
   const port = 6060;
   app.listen(port, async () => {
     const ip = await getIp();
@@ -86,5 +87,7 @@ function notify(content: string) {
     )},
 以下服务已开启：
 ${serverList}`);
+
+    console.log('监听服务已开启');
   });
 })();

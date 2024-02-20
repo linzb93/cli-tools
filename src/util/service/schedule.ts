@@ -1,29 +1,34 @@
-import { createServer } from 'net';
-import detectPort from 'detect-port';
+import ipc from 'node-ipc';
 import dayjs from 'dayjs';
+import chalk from 'chalk';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
 const { omit } = lodash;
 (async () => {
-  const server = createServer((socket) => {
+  ipc.config.id = 'schedule';
+  ipc.config.retry = 1500;
+  ipc.serve(() => {
     let scheduleList: any[] = [];
     const todayFormat = dayjs().format('YYYY-MM-DD');
-    socket.on('data', (data: any) => {
-      const obj = JSON.parse(data);
+    ipc.server.on('message', (obj, socket) => {
       if (obj.action) {
         if (obj.interval) {
-          const timeUnit = obj.interval.at(-1);
+          const timeUnit = obj.interval.slice(-1);
           const delta = Number(obj.interval.slice(0, -1));
           scheduleList.push({
             ...obj,
             id: uuid(),
             intervalSeg: [delta, timeUnit],
+            socket,
             executeTime: dayjs().add(delta, timeUnit).format('HH:mm')
           });
-        } else {
+          console.log(`收到定时任务：${JSON.stringify(obj)}`);
+        } else if (dayjs().isBefore(`${todayFormat} ${obj.executeTime}:00`)) {
+          console.log(`收到定时任务：${JSON.stringify(obj)}`);
           scheduleList.push({
             ...obj,
-            id: uuid()
+            id: uuid(),
+            socket
           });
         }
       }
@@ -33,11 +38,14 @@ const { omit } = lodash;
         dayjs().isAfter(`${todayFormat} ${item.executeTime}:00`)
       );
       if (dueTask) {
-        socket.write(
-          JSON.stringify({
-            ...omit(dueTask, ['id'])
-          })
-        );
+        const output = {
+          ...omit(dueTask, ['id', 'socket'])
+        };
+        if (!dueTask.sendToMainService) {
+          dueTask.socket.write(output);
+        } else {
+          // emitter.emit('message', output);
+        }
         if (dueTask.times) {
           dueTask.times -= 1;
         }
@@ -53,11 +61,7 @@ const { omit } = lodash;
       }
     }, 1000 * 10);
   });
-  const port = await detectPort(6061);
-  server.listen(port, () => {
-    console.log('定时器进程已启动！');
-    process.send?.({
-      port
-    });
-  });
+  ipc.server.start();
+  console.log(`${chalk.gray(dayjs().format('HH:mm:ss'))} 定时器进程已启动！`);
+  process.send?.({});
 })();
