@@ -6,7 +6,6 @@ import git from './git.js';
 import npm from './npm.js';
 import ls from './ls.js';
 import inquirer from './inquirer.js';
-import createConnection from './service/index.js';
 
 const helper = {
   ...rawHelper,
@@ -21,7 +20,6 @@ export default abstract class {
   protected ls: typeof ls;
   protected git: typeof git;
   protected npm: typeof npm;
-  protected createConnection: unknown;
   constructor() {
     this.logger = logger;
     this.helper = helper;
@@ -29,7 +27,6 @@ export default abstract class {
     this.git = git;
     this.npm = npm;
     this.ls = ls;
-    this.createConnection = createConnection;
   }
   abstract run(): void;
 }

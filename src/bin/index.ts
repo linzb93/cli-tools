@@ -164,7 +164,7 @@ program
   .command('server')
   .option('--dev', '开发模式')
   .action(async (options) => {
-    const server = (await import('../commands/server/entry.js')).default;
+    const server = (await import('../commands/server/index.js')).default;
     server(options);
   });
 program.command('clear <filename>').action(async (filename) => {
