@@ -19,18 +19,25 @@ interface ResCallback {
 export function connectService(type: ConnectType): Promise<{
   send: (data: any) => void;
   listen: (callback: ResCallback) => void;
+  disconnect(): void;
 }> {
   return new Promise((resolve) => {
     let resCallback: ResCallback;
-    ipc.connectTo('shedule', () => {
+    ipc.config.silent = true;
+    ipc.connectTo('schedule', () => {
+      ipc.of.schedule.on('response', (data: any) => {
+        typeof resCallback === 'function' && resCallback(data);
+      });
       ipc.of.schedule.on('connect', () => {
-        ipc.of.schedule.on('response', resCallback);
         resolve({
           send(data) {
             ipc.of.schedule.emit('message', data);
           },
           listen(callback) {
             resCallback = callback;
+          },
+          disconnect() {
+            ipc.disconnect('schedule');
           }
         });
       });

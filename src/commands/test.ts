@@ -10,6 +10,7 @@ class Test extends BaseCommand {
       times: 3,
       params: `测试通信`
     });
+    scheduleConnect.disconnect();
   }
 }
 

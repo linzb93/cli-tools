@@ -2,6 +2,7 @@ import express from 'express';
 import * as helper from '../../util/helper.js';
 import logger from '../../util/logger.js';
 import { connectService } from '../../util/service/index.js';
+import ipc from 'node-ipc';
 import bodyParser from 'body-parser';
 import fs from 'fs-extra';
 import chalk from 'chalk';
@@ -10,7 +11,9 @@ import notifier from 'node-notifier';
 
 import { get as getIp } from '../ip.js';
 // import mysql from '../../util/service/mysql.js';
-
+ipc.config.id = 'mainService';
+ipc.config.retry = 1500;
+ipc.config.silent = true;
 function notify(content: string) {
   notifier.notify({
     title: 'mycli server通知',
@@ -57,7 +60,6 @@ function notify(content: string) {
   }
   const callback = async (obj: any) => {
     const matchTask = tasks.find((task) => task === `${obj.action}.js`);
-    console.log(`收到任务：${matchTask}`);
     if (!matchTask) {
       return;
     }
@@ -70,6 +72,10 @@ function notify(content: string) {
     });
   };
   scheduleClient.listen(callback);
+  ipc.serve(() => {
+    ipc.server.on('message', callback);
+  });
+  ipc.server.start();
 
   const port = 6060;
   app.listen(port, async () => {
@@ -87,7 +93,5 @@ function notify(content: string) {
     )},
 以下服务已开启：
 ${serverList}`);
-
-    console.log('监听服务已开启');
   });
 })();

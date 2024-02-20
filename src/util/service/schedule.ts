@@ -7,30 +7,33 @@ const { omit } = lodash;
 (async () => {
   ipc.config.id = 'schedule';
   ipc.config.retry = 1500;
+  ipc.config.silent = true;
+
   ipc.serve(() => {
-    let scheduleList: any[] = [];
+    let scheduleList: any[] = []; // 存放所有定时任务
     const todayFormat = dayjs().format('YYYY-MM-DD');
+
     ipc.server.on('message', (obj, socket) => {
-      if (obj.action) {
-        if (obj.interval) {
-          const timeUnit = obj.interval.slice(-1);
-          const delta = Number(obj.interval.slice(0, -1));
-          scheduleList.push({
-            ...obj,
-            id: uuid(),
-            intervalSeg: [delta, timeUnit],
-            socket,
-            executeTime: dayjs().add(delta, timeUnit).format('HH:mm')
-          });
-          console.log(`收到定时任务：${JSON.stringify(obj)}`);
-        } else if (dayjs().isBefore(`${todayFormat} ${obj.executeTime}:00`)) {
-          console.log(`收到定时任务：${JSON.stringify(obj)}`);
-          scheduleList.push({
-            ...obj,
-            id: uuid(),
-            socket
-          });
-        }
+      if (!obj.action) {
+        return;
+      }
+      if (obj.interval) {
+        // 轮询任务，每次执行后生成下次执行的时间
+        const timeUnit = obj.interval.slice(-1);
+        const delta = Number(obj.interval.slice(0, -1));
+        scheduleList.push({
+          ...obj,
+          id: uuid(),
+          intervalSeg: [delta, timeUnit],
+          socket,
+          executeTime: dayjs().add(delta, timeUnit).format('HH:mm')
+        });
+      } else if (dayjs().isBefore(`${todayFormat} ${obj.executeTime}:00`)) {
+        scheduleList.push({
+          ...obj,
+          id: uuid(),
+          socket
+        });
       }
     });
     setInterval(() => {
@@ -44,7 +47,12 @@ const { omit } = lodash;
         if (!dueTask.sendToMainService) {
           dueTask.socket.write(output);
         } else {
-          // emitter.emit('message', output);
+          ipc.connectTo('mainService', () => {
+            ipc.of.mainService.on('connect', () => {
+              ipc.of.mainService.emit('message', output);
+              ipc.disconnect('mainService');
+            });
+          });
         }
         if (dueTask.times) {
           dueTask.times -= 1;
