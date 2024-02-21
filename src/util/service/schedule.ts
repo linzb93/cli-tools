@@ -52,6 +52,9 @@ const { omit } = lodash;
               ipc.of.mainService.emit('message', output);
               ipc.disconnect('mainService');
             });
+            ipc.of.mainService.on('error', () => {
+              console.log(`mainService服务连接失败`);
+            });
           });
         }
         if (dueTask.times) {

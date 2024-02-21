@@ -3,12 +3,23 @@
 import commander from 'commander';
 import handleUncaughtError from '../util/handleUncaughtError.js';
 import logger from '../util/logger.js';
+// import * as helper from '../util/helper.js';
 import { isValidKey } from '../util/helper.js';
 import init from '../util/init.js';
 handleUncaughtError();
 init();
 const program = new commander.Command();
 program.version('2.0.0');
+// program.hook('preAction', (thisCommand, actionCommand) => {
+//   return new Promise((resolve, reject) => {
+//     const a = 4;
+//     setTimeout(() => {
+//       if (a > 3) {
+//         resolve();
+//       }
+//     }, 3000);
+//   });
+// });
 program
   .command('npm <sub-command> [rest...]')
   .option('-D, --dev', '安装到devDependencies')

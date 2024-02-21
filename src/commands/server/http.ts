@@ -6,6 +6,7 @@ import ipc from 'node-ipc';
 import bodyParser from 'body-parser';
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import dayjs from 'dayjs';
 import path from 'path';
 import notifier from 'node-notifier';
 
@@ -45,7 +46,12 @@ function notify(content: string) {
         taskContent.name
       }`
     );
-    if (!taskContent.executeTime) {
+    if (
+      !taskContent.executeTime ||
+      dayjs().isAfter(
+        dayjs().format(`YYYY-MM-DD ${taskContent.executeTime}:00`)
+      )
+    ) {
       taskContent.actions({
         app,
         helper,

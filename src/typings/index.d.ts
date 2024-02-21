@@ -31,13 +31,6 @@ declare module 'global-modules' {
   export default m;
 }
 
-declare module 'windows-shortcuts' {
-  interface QueryCallback {
-    (err: string | null, lnk: { target: string }): void;
-  }
-  export function query(pathName: string, callback: QueryCallback): void;
-}
-
 declare module 'uuid' {
   export function v4(): string;
 }
