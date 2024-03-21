@@ -10,7 +10,6 @@ import BaseCommand from '../util/BaseCommand.js';
 const resolve = (...src: string[]) => path.resolve(root, 'data/spider', ...src);
 
 class Spider extends BaseCommand {
-  private url: string;
   private dest: string;
   private static sourceMap = [
     {
@@ -23,9 +22,8 @@ class Spider extends BaseCommand {
       }
     }
   ];
-  constructor(url: string, { dest = '' }) {
+  constructor(private url: string, { dest = '' }) {
     super();
-    this.url = url;
     this.dest = dest;
   }
   async run() {

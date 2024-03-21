@@ -30,12 +30,8 @@ interface ResultItem {
 }
 
 class Bug extends BaseCommand {
-  private source: string;
-  private options: Options;
-  constructor(source: string, options: Options) {
+  constructor(private source: string, private options: Options) {
     super();
-    this.source = source;
-    this.options = options;
   }
   async run() {
     if (!this.source) {

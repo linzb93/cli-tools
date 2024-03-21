@@ -10,14 +10,10 @@ interface Options {
 }
 
 class Translate extends BaseCommand {
-  private text: string;
-  private options: Options;
   private isC2E: boolean; // 中文翻译成英文
-  constructor(text: string, options: Options) {
+  constructor(private text: string, private options: Options) {
     super();
-    this.text = text;
     this.isC2E = !/[a-z]+/.test(text);
-    this.options = options;
   }
   async run() {
     const { options, text, isC2E } = this;

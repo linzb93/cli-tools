@@ -24,14 +24,12 @@ interface User {
 }
 
 class Cg extends BaseCommand {
-  private action: string;
-  private data: string;
-  private options: Options;
-  constructor(action: string, data: string, options: Options) {
+  constructor(
+    private action: string,
+    private data: string,
+    private options: Options
+  ) {
     super();
-    this.action = action;
-    this.data = data;
-    this.options = options;
   }
   async run() {
     if (this.action === 'get') {

@@ -8,12 +8,8 @@ interface Options {
 }
 
 class ColorConvert extends BaseCommand {
-  private text: string;
-  private options: Options;
-  constructor(text: string, options: Options) {
+  constructor(private text: string, private options: Options) {
     super();
-    this.text = text;
-    this.options = options;
   }
   run() {
     let { text } = this;

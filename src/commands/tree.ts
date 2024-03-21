@@ -17,11 +17,9 @@ const characters = {
 };
 
 class Tree extends BaseCommand {
-  private dir: string;
-  private options: Options;
   private outputList: string[];
   private ignoreDirs: string[];
-  constructor(dir: string, options: Options) {
+  constructor(private dir: string, private options: Options) {
     super();
     this.dir = dir || '.';
     const defaultOptions = {

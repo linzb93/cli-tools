@@ -18,12 +18,8 @@ interface Dimensions {
 }
 
 class GetSize extends BaseCommand {
-  private filePath: string;
-  private options: Options;
-  constructor(filePath: string, options: Options) {
+  constructor(private filePath: string, private options: Options) {
     super();
-    this.filePath = filePath;
-    this.options = options;
     this.helper.validate(
       {
         file: filePath

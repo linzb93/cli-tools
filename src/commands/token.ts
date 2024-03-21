@@ -8,12 +8,8 @@ interface Options {
 }
 
 class Token extends BaseCommand {
-  private tokenStr: string;
-  private options: Options;
-  constructor(tokenStr: string, options: Options) {
+  constructor(private tokenStr: string, private options: Options) {
     super();
-    this.tokenStr = tokenStr;
-    this.options = options;
   }
   async run() {
     const tokenStr = this.tokenStr.replace(/^occ_(senior_)?/, '');

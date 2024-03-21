@@ -5,10 +5,8 @@ import BaseCommand from '../util/BaseCommand.js';
 
 // 主要是来清理Windows上被Git同步过来的 macOS 的 .DS_Store
 class Clear extends BaseCommand {
-  private filename: string;
-  constructor(filename: string) {
+  constructor(private filename: string) {
     super();
-    this.filename = filename;
   }
   async run() {
     const { filename } = this;

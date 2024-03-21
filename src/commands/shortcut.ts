@@ -1,10 +1,8 @@
 import BaseCommand from '../util/BaseCommand.js';
 import chalk from 'chalk';
 class Shortcut extends BaseCommand {
-  private name: string;
-  constructor(name: string) {
+  constructor(private name: string) {
     super();
-    this.name = name;
   }
   run() {
     const map = [

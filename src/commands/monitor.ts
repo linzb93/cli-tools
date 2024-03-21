@@ -11,14 +11,13 @@ import BaseCommand from '../util/BaseCommand.js';
 const { debounce } = lodash;
 
 class Monitor extends BaseCommand {
-  private filename: string | undefined;
-  private combinedOptions: string[];
   private entryFile: string;
   private subProcess: ChildProcess | undefined;
-  constructor(filename: string | undefined, combinedOptions: string[]) {
+  constructor(
+    private filename: string | undefined,
+    private combinedOptions: string[]
+  ) {
     super();
-    this.filename = filename;
-    this.combinedOptions = combinedOptions;
     this.entryFile = '';
   }
   async run() {

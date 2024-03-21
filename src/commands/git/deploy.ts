@@ -34,12 +34,8 @@ interface GitDeploy {
   publishTime: string;
 }
 class Deploy extends BaseCommand {
-  private data: string[];
-  private options: Options;
-  constructor(data: string[], options: Options) {
+  constructor(private data: string[], private options: Options) {
     super();
-    this.data = data;
-    this.options = options;
   }
   async run() {
     const { data } = this;

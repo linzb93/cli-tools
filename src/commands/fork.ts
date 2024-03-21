@@ -4,8 +4,7 @@ import chalk from 'chalk';
 import internalIp from 'internal-ip';
 import path from 'path';
 class Fork extends BaseCommand {
-  private filename: string;
-  constructor(filename: string) {
+  constructor(private filename: string) {
     super();
     this.filename = filename;
   }
