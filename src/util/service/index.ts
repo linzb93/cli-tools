@@ -43,6 +43,7 @@ export function connectService(type: ConnectType): Promise<{
       });
       ipc.of.schedule.on('error', () => {
         console.log(`schedule服务连接失败`);
+        ipc.disconnect('schedule');
       });
     });
   });

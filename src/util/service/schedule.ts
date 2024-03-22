@@ -45,7 +45,7 @@ const { omit } = lodash;
           ...omit(dueTask, ['id', 'socket'])
         };
         if (!dueTask.sendToMainService) {
-          dueTask.socket.write(output);
+          dueTask.socket.write(JSON.stringify(output));
         } else {
           ipc.connectTo('mainService', () => {
             ipc.of.mainService.on('connect', () => {
@@ -54,6 +54,7 @@ const { omit } = lodash;
             });
             ipc.of.mainService.on('error', () => {
               console.log(`mainService服务连接失败`);
+              ipc.disconnect('mainService');
             });
           });
         }

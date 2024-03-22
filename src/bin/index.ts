@@ -93,7 +93,7 @@ program
   .command('size <url>')
   .option('--rect', '获取宽高')
   .option('--css', '复制CSS样式')
-  .option('-m, --mobile', '移动端rem')
+  .option('-p, --pc', 'PC端px')
   .action(async (filename, options) => {
     const getSize = (await import('../commands/size.js')).default;
     getSize(filename, options);

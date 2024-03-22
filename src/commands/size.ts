@@ -10,7 +10,11 @@ import clipboard from 'clipboardy';
 interface Options {
   rect: boolean;
   css: boolean;
-  mobile: boolean;
+  pc: boolean;
+}
+interface Dimensions {
+  width: number | undefined;
+  height: number | undefined;
 }
 
 class GetSize extends BaseCommand {
@@ -53,6 +57,7 @@ class GetSize extends BaseCommand {
         this.helper.root,
         `.temp/getSizeImage${extname}`
       );
+      const settingRect = this.options.rect || this.options.css;
       await new Promise((resolve) => {
         res.data
           .pipe(
@@ -63,7 +68,7 @@ class GetSize extends BaseCommand {
             })
           )
           .pipe(
-            this.options.rect
+            settingRect
               ? fs.createWriteStream(targetName)
               : this.helper.emptyWritableStream
           )
@@ -72,25 +77,19 @@ class GetSize extends BaseCommand {
           });
       });
       const bytesSize = bytes(size);
-      if (this.options.rect) {
-        const dimensions = sizeOf(targetName);
+      if (settingRect) {
+        let dimensions: Dimensions;
+        try {
+          dimensions = sizeOf(targetName);
+        } catch (error) {
+          this.logger.error('无法识别的图片格式', true);
+          return;
+        }
         this.logger.success(
           `大小：${bytesSize}，尺寸：${dimensions.width} X ${dimensions.height}`
         );
         if (this.options.css) {
-          this.logger.success('CSS代码已复制');
-          if (this.options.mobile) {
-            clipboard.writeSync(`width: rem(${
-              (dimensions.width as number) / 2
-            });
-height: rem(${(dimensions.height as number) / 2});
-background-image: url(${filePath});
-background-size: 100% 100%;`);
-          } else {
-            clipboard.writeSync(`width: ${dimensions.width}px;
-height: ${dimensions.height}px;
-background-image: url(${filePath})`);
-          }
+          this.copyCss(filePath, dimensions as Dimensions);
         }
         await del(targetName);
       } else {
@@ -106,15 +105,22 @@ background-image: url(${filePath})`);
       return;
     }
     const ret = bytes(fileData.size);
-    if (this.options.rect) {
-      const dimensions = sizeOf(filePath);
-      this.logger.success(
-        `大小：${ret}，尺寸：${dimensions.width} * ${dimensions.height}`
-      );
-    } else {
-      this.logger.success(ret);
-    }
     return ret;
+  }
+  private copyCss(filePath: string, dimensions: Dimensions) {
+    this.logger.success('CSS代码已复制');
+    if (!this.options.pc) {
+      clipboard.writeSync(`width: rem(${Math.floor(
+        (dimensions.width as number) / 2
+      )});
+height: rem(${Math.floor((dimensions.height as number) / 2)});
+background-image: url(${filePath});
+background-size: 100% 100%;`);
+    } else {
+      clipboard.writeSync(`width: ${dimensions.width}px;
+height: ${dimensions.height}px;
+background-image: url(${filePath})`);
+    }
   }
   private getExtname(filename: string) {
     const exts = ['.jpg', '.png', '.webp', '.gif'];
