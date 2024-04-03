@@ -1,8 +1,9 @@
 import clipboard from 'clipboardy';
 import BaseCommand from '../../../util/BaseCommand.js';
 import deleteTag from './delete.js';
+import readPkg from 'read-pkg';
 import lodash from 'lodash';
-import fs from 'fs-extra';
+
 const { last } = lodash;
 
 interface Options {
@@ -56,30 +57,14 @@ class Tag extends BaseCommand {
         `git tag ${output}`,
         `git push origin ${output}`
       ]);
-      const projectConf = await this.getProjectConfig();
+      const projectConf = await readPkg({
+        cwd: process.cwd()
+      });
       const jenkins = projectConf.jenkins;
       const ret = `${jenkins.id.replace(/[\-|_]test$/, '')}。${output}`;
       this.logger.success(`部署成功，复制填入更新文档：
       ${ret}`);
       clipboard.writeSync(ret);
-    }
-  }
-  private async getProjectConfig(): Promise<{
-    jenkins: {
-      id: string;
-      name: string;
-    };
-  }> {
-    try {
-      const data = await fs.readJSON('project.config.json');
-      return data;
-    } catch (error) {
-      return {
-        jenkins: {
-          id: '',
-          name: ''
-        }
-      };
     }
   }
   async getNewestTag(): Promise<string> {

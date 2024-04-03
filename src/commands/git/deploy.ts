@@ -306,30 +306,14 @@ class Deploy extends BaseCommand {
       params: `请查看监控系统：${projectName}`
     });
   }
-  private async getProjectConfig(): Promise<{
-    jenkins: {
-      id: string;
-      name: string;
-    };
-  }> {
-    try {
-      const data = await fs.readJSON('project.config.json');
-      return data;
-    } catch (error) {
-      return {
-        jenkins: {
-          id: '',
-          name: ''
-        }
-      };
-    }
-  }
   private async deploySuccess(tag: string) {
     if (!tag) {
       this.logger.success('部署成功');
       return;
     }
-    const projectConf = await this.getProjectConfig();
+    const projectConf = await readPkg({
+      cwd: process.cwd()
+    });
     const jenkins = projectConf.jenkins;
     const copyText = `${jenkins.id.replace(/[\-|_]test$/, '')}，${tag}`;
     this.logger.success(`部署成功，复制填入更新文档：
@@ -368,7 +352,9 @@ class Deploy extends BaseCommand {
     await this.deploySuccess(newestTag);
   }
   private async openDeployPage() {
-    const projectConf = await this.getProjectConfig();
+    const projectConf = await readPkg({
+      cwd: process.cwd()
+    });
     let jenkins;
     if (projectConf) {
       jenkins = projectConf.jenkins as JenkinsProject;
