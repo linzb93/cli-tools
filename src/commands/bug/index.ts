@@ -12,8 +12,9 @@ import sitemap from './sitemap.js';
 const { flatten } = lodash;
 
 interface Options {
-  debug: Boolean;
-  all: Boolean;
+  debug: boolean;
+  all: boolean;
+  help: boolean;
 }
 
 interface Result {
@@ -34,6 +35,10 @@ class Bug extends BaseCommand {
     super();
   }
   async run() {
+    if (this.options.help) {
+      this.generateHelp();
+      return;
+    }
     if (!this.source) {
       this.getAllBugReport();
       return;
@@ -174,6 +179,14 @@ class Bug extends BaseCommand {
     fs.writeFile(filePath, buffer).then(() => {
       open(filePath);
     });
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc('bug', '', [
+      {
+        title: '',
+        description: '下载文件，定位到报错位置'
+      }
+    ]);
   }
 }
 

@@ -163,6 +163,7 @@ program
   .command('bug [source]')
   .option('--debug', '调试模式')
   .option('--all', '全部')
+  .option('-h, --help', '帮助文档')
   .action(async (source, option) => {
     const bug = (await import('../commands/bug/index.js')).default;
     bug(source, option);
