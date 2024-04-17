@@ -55,6 +55,11 @@ class Shortcut extends BaseCommand {
         title: '清除终端内容',
         windows: 'ctrl + k',
         mac: ''
+      },
+      {
+        title: 'chrome切换到下一个标签',
+        windows: '',
+        mac: 'command + option + ->'
       }
     ];
     const list = this.name

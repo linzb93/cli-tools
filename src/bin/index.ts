@@ -214,6 +214,10 @@ program
     const color = (await import('../commands/color.js')).default;
     color(data, options);
   });
+program.command('ipc').action(async () => {
+  const ipc = (await import('../commands/ipc.js')).default;
+  ipc();
+});
 program
   .command('upload <filename>')
   .option('-m,--markdown', '复制markdown语法')
