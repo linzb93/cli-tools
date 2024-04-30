@@ -1,8 +1,10 @@
 import npmInstall from './install.js';
 import BaseCommand from '../../util/BaseCommand.js';
+import boxen from 'boxen';
 
 interface Options {
   dev?: boolean;
+  help?: boolean;
 }
 class Has extends BaseCommand {
   private args: string[];
@@ -14,6 +16,10 @@ class Has extends BaseCommand {
   }
   async run() {
     const { args, options, spinner } = this;
+    if (options.help) {
+      this.renderHelp();
+      return;
+    }
     const name = args[0];
     this.spinner.text = '正在查找';
     const listRet = await this.npm.getList(name);
@@ -40,6 +46,24 @@ class Has extends BaseCommand {
       await npmInstall([name], { dev });
     }
     this.spinner.stop();
+  }
+  private renderHelp() {
+    console.log(
+      boxen(
+        `
+        判断本项目是否有某个模块，如果没有的话会确认是否安装，支持带scope的。
+        ————————————————————————————————
+        mycli npm has @scope/moduleName 这个是正常用法
+        mycli npm has moduleName -d 如果没有安装，就添加到devDependencies中。
+    `,
+        {
+          borderColor: 'green',
+          dimBorder: true,
+          padding: 0,
+          margin: 0
+        }
+      )
+    );
   }
 }
 

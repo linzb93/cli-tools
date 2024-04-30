@@ -2,6 +2,7 @@ import semver, { SemVer } from 'semver';
 import axios from 'axios';
 import readPkg from 'read-pkg';
 import path from 'path';
+import boxen from 'boxen';
 import { execaCommand as execa } from 'execa';
 import fs from 'fs-extra';
 import pMap from 'p-map';
@@ -9,6 +10,7 @@ import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
   dev?: boolean;
+  help?: boolean;
 }
 class Install extends BaseCommand {
   private pkg: string;
@@ -20,6 +22,10 @@ class Install extends BaseCommand {
   }
   async run() {
     const { pkg, options, spinner } = this;
+    if (options.help) {
+      this.renderHelp();
+      return;
+    }
     if (pkg.startsWith('@daze')) {
       // 这个是下载本地的
       const registry = 'http://ikuai0.haloom.cc:7945';
@@ -123,6 +129,26 @@ class Install extends BaseCommand {
     }
     spinner.text = `正在下载${name}版本V${semver.major(version)}.x`;
     return semver.major(version);
+  }
+  private renderHelp() {
+    console.log(
+      boxen(
+        `
+        为本项目下载某个模块，可以从npm下载，也可以从本地复制。
+        只下载支持CommonJS的。
+        ————————————————————————————————
+        mycli npm install moduleName 当参数不是地址的时候，判断为线上的npm模块
+        mycli npm install /path/to/your_module 从本地复制过来
+        mycli npm install moduleName -d 添加到devDependencies中。
+    `,
+        {
+          borderColor: 'green',
+          dimBorder: true,
+          padding: 0,
+          margin: 0
+        }
+      )
+    );
   }
 }
 

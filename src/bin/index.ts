@@ -10,6 +10,7 @@ handleUncaughtError();
 init();
 const program = new commander.Command();
 program.version('2.0.0');
+// hook 的用法
 // program.hook('preAction', (thisCommand, actionCommand) => {
 //   return new Promise((resolve, reject) => {
 //     const a = 4;
@@ -21,15 +22,21 @@ program.version('2.0.0');
 //   });
 // });
 program
-  .command('npm <sub-command> [rest...]')
+  .command('npm [sub-command] [rest...]')
   .option('-D, --dev', '安装到devDependencies')
   .option('-g, --global', '全局操作')
   .option('--open', '打开页面')
+  .option('--help', '帮助文档')
   .action(async (subCommand: string, rest, cmd) => {
     const shorthands = {
       i: 'install',
       un: 'uninstall'
     };
+    if (!subCommand) {
+      const fn = (await import('../commands/npm/index.js')).default;
+      fn(cmd);
+      return;
+    }
     let target = '';
     if (isValidKey(subCommand, shorthands)) {
       target = shorthands[subCommand];

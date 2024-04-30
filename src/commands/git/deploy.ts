@@ -199,7 +199,6 @@ class Deploy extends BaseCommand {
     }
     const { options } = this;
     const curBranch = await this.git.getCurrentBranch();
-    const newestTag = tag || (await getNewestTag());
     const gitStatus = await this.git.getPushStatus();
     const flow = [];
     if (gitStatus === 1) {
@@ -217,6 +216,7 @@ class Deploy extends BaseCommand {
       `git merge ${curBranch}`,
       'git push'
     );
+    const newestTag = tag || (await getNewestTag());
     if (newestTag) {
       flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
     }
@@ -332,13 +332,13 @@ class Deploy extends BaseCommand {
   }
   private async deployToProduction() {
     const { options } = this;
-    const newestTag = await getNewestTag();
     const flow = [
       'git add .',
       `git commit -m ${options.commit || 'update'}`,
       'git pull',
       'git push'
     ];
+    const newestTag = await getNewestTag();
     if (newestTag) {
       flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
     }
