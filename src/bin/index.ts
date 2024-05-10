@@ -3,24 +3,21 @@
 import commander from 'commander';
 import handleUncaughtError from '../util/handleUncaughtError.js';
 import logger from '../util/logger.js';
-// import * as helper from '../util/helper.js';
-import { isValidKey } from '../util/helper.js';
+import dayjs from 'dayjs';
+import { isValidKey, root } from '../util/helper.js';
+import path from 'node:path';
 import init from '../util/init.js';
+import fs from 'fs-extra';
 handleUncaughtError();
 init();
 const program = new commander.Command();
 program.version('2.0.0');
-// hook 的用法
-// program.hook('preAction', (thisCommand, actionCommand) => {
-//   return new Promise((resolve, reject) => {
-//     const a = 4;
-//     setTimeout(() => {
-//       if (a > 3) {
-//         resolve();
-//       }
-//     }, 3000);
-//   });
-// });
+program.hook('preAction', (thisCommand) => {
+  fs.appendFile(
+    path.resolve(root, 'data/track.txt'),
+    `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${thisCommand.args.join(' ')}\n`
+  );
+});
 program
   .command('npm [sub-command] [rest...]')
   .option('-D, --dev', '安装到devDependencies')
