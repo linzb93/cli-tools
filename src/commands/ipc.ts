@@ -8,12 +8,27 @@ class Ipc extends BaseCommand {
     ipc.config.retry = 1500;
     ipc.serve(() => {
       ipc.server.on('message', async (data, socket) => {
-        if ((data.action = 'vue-build')) {
+        const { requestId } = data;
+        if (data.action === 'vue-build') {
           await execa('npm run build', {
             cwd: data.params.cwd
           });
           ipc.server.emit(socket, 'response', {
-            code: 200
+            code: 200,
+            requestId
+          });
+        } else if (data.action === 'vue-serve') {
+          const std = execa('npm run serve', {
+            cwd: data.params.cwd
+          });
+          std.stdout?.on('data', (message) => {
+            if (message.toString().includes('- Network')) {
+              ipc.server.emit(socket, 'response', {
+                code: 200,
+                message: message.toString(),
+                requestId
+              });
+            }
           });
         }
       });
