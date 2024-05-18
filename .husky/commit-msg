@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+FORCE_COLOR=1 node scripts/gitCommitFormat.js $1
+exit_code=$?
+exit $exit_code

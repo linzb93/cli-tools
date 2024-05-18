@@ -12,7 +12,8 @@
     "build": "tsc",
     "lint": "eslint ./src/**/*.ts --fix",
     "postpull": "npm i && npm run build",
-    "analyse": "node ./scripts/code-analyse"
+    "analyse": "node ./scripts/code-analyse",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -98,6 +99,7 @@
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^9.0.11",
     "typescript": "~5.4.0",
     "vitest": "^1.6.0"
   }
