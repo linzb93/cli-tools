@@ -96,23 +96,9 @@ program
 program
   .command('size <url>')
   .option('--rect', '获取宽高')
-  .option('--css', '复制CSS样式')
-  .option('-p, --pc', 'PC端px')
   .action(async (filename, options) => {
     const getSize = (await import('../commands/size.js')).default;
     getSize(filename, options);
-  });
-program
-  .command('vue [data...]')
-  .option('-c, --copy', '复制地址')
-  .option('-f, --force', '强制覆盖')
-  .option('--prod', '生产版')
-  .option('--start', '复制并启动')
-  .option('--all', '全部')
-  .option('--help', '查看帮助文档')
-  .action(async (data, options) => {
-    const vue = (await import('../commands/vue/index.js')).default;
-    vue(data, options);
   });
 program
   .command('open <name>')
@@ -166,7 +152,6 @@ program
 program
   .command('bug [source]')
   .option('--debug', '调试模式')
-  .option('--all', '全部')
   .option('-h, --help', '帮助文档')
   .action(async (source, option) => {
     const bug = (await import('../commands/bug/index.js')).default;
@@ -222,13 +207,6 @@ program.command('ipc').action(async () => {
   const ipc = (await import('../commands/ipc.js')).default;
   ipc();
 });
-program
-  .command('upload <filename>')
-  .option('-m,--markdown', '复制markdown语法')
-  .action(async (file, options) => {
-    const upload = (await import('../commands/upload.js')).default;
-    upload(file, options);
-  });
 program.command('ip').action(async () => {
   const ip = (await import('../commands/ip.js')).default;
   ip();
@@ -249,9 +227,5 @@ program
 program.command('shortcut [name]').action(async (name) => {
   const shortcut = (await import('../commands/shortcut.js')).default;
   shortcut(name);
-});
-program.command('test').action(async () => {
-  const test = (await import('../commands/test.js')).default;
-  test();
 });
 program.parse();
