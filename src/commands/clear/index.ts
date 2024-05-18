@@ -1,7 +1,7 @@
 import del from 'del';
 import globby from 'globby';
 import pMap from 'p-map';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 // 主要是来清理Windows上被Git同步过来的 macOS 的 .DS_Store
 class Clear extends BaseCommand {
