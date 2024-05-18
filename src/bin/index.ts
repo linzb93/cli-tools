@@ -169,7 +169,7 @@ program
     server(options);
   });
 program.command('clear <filename>').action(async (filename) => {
-  const clear = (await import('../commands/clear.js')).default;
+  const clear = (await import('../commands/clear/index.js')).default;
   clear(filename);
 });
 program
