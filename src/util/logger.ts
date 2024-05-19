@@ -1,9 +1,8 @@
 import readline from 'readline';
 import spinner from './spinner.js';
-import lodash from 'lodash';
+import { isPlainObject } from 'lodash-es';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
-const { isPlainObject } = lodash;
 
 function hook(callback: () => void) {
   let isStop = false;

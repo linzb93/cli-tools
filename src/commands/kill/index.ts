@@ -1,7 +1,7 @@
 import rawKillPort from 'kill-port';
 import iconv from 'iconv-lite';
 import chalk from 'chalk';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 const numberRE = /[1-9][0-9]*/;
 

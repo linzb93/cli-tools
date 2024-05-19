@@ -1,13 +1,11 @@
 import chalk from 'chalk';
-import path from 'path';
+import path from 'node:path';
 import { fork } from 'child_process';
 import { fileURLToPath } from 'url';
-import lodash from 'lodash';
-import monitor from '../monitor.js';
-import BaseCommand from '../../util/BaseCommand.js';
+import { pick } from 'lodash-es';
+import monitor from '@/commands/monitor';
+import BaseCommand from '@/util/BaseCommand';
 import stop from './stop.js';
-
-const { pick } = lodash;
 interface Options {
   proxy: string;
   port: string;

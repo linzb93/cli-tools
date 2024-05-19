@@ -1,7 +1,7 @@
 import convert from 'color-convert';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
   get: boolean;

@@ -1,4 +1,4 @@
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import ipc from 'node-ipc';
 import { execaCommand as execa } from 'execa';
 

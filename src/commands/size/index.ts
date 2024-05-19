@@ -5,7 +5,7 @@ import sizeOf from 'image-size';
 import through from 'through2';
 import del from 'del';
 import path from 'path';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
   rect: boolean;

@@ -1,4 +1,4 @@
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import chalk from 'chalk';
 class Shortcut extends BaseCommand {
   constructor(private name: string) {

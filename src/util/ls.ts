@@ -1,13 +1,12 @@
 import fs from 'fs-extra';
 import prettier from 'prettier';
-import lodash from 'lodash';
+import { get as objectGet, set as objectSet, isBoolean } from 'lodash-es';
 import path from 'path';
 import { BaseType } from './types';
 import { root } from './helper.js';
 
 const { readJSONSync, writeFileSync } = fs;
 const resolve = (src: string) => path.resolve(root, src);
-const { get: objectGet, set: objectSet, isBoolean } = lodash;
 
 export default {
   get(key: string) {

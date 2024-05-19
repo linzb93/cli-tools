@@ -1,9 +1,9 @@
 import ipc from 'node-ipc';
 import dayjs from 'dayjs';
 import chalk from 'chalk';
-import lodash from 'lodash';
+import { omit } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
-const { omit } = lodash;
+
 (async () => {
   ipc.config.id = 'schedule';
   ipc.config.retry = 1500;

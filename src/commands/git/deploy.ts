@@ -5,7 +5,7 @@
  * mycli git deploy prod 生产环境
  * 也可以部署github的
  */
-import lodash from 'lodash';
+import { get as objectGet } from 'lodash-es';
 import fs from 'fs-extra';
 import open from 'open';
 import readPkg from 'read-pkg';
@@ -17,7 +17,6 @@ import clipboard from 'clipboardy';
 import { connectService } from '../../util/service/index.js';
 import path from 'path';
 import dayjs from 'dayjs';
-const { get: objectGet } = lodash;
 
 interface Options {
   commit: string;
