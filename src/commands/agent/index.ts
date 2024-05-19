@@ -1,15 +1,14 @@
-import chalk from 'chalk';
 import path from 'node:path';
-import { fork } from 'child_process';
-import { fileURLToPath } from 'url';
+import { fork } from 'node:child_process';
+import chalk from 'chalk';
 import { pick } from 'lodash-es';
-import monitor from '@/commands/monitor';
 import BaseCommand from '@/util/BaseCommand';
-import stop from './stop.js';
+import { onShutdown } from '@/util/schedule';
+import stopAgent from './stop.js';
+import { ChildProcessEmitData } from './types';
 interface Options {
   proxy: string;
   port: string;
-  debug: boolean;
   copy: boolean;
 }
 export interface CacheItem {
@@ -26,37 +25,35 @@ interface DbData {
   items: CacheItem[];
 }
 
+/**
+ * 开启代理服务器。
+ * Vue项目不需要用这个，请在vue.config.js中的devServer.proxy中设置。
+ */
 class Agent extends BaseCommand {
-  private subCommand?: string;
-  private options: Options;
-  constructor(subCommand: string, options: Options) {
+  constructor(private subCommand: string, private options: Options) {
     super();
-    this.subCommand = subCommand;
-    this.options = options;
   }
   async run() {
     const { subCommand, options } = this;
     if (subCommand === 'stop') {
-      stop();
+      stopAgent();
       return;
-    } else if (subCommand !== undefined) {
+    }
+    if (subCommand !== undefined) {
       this.logger.error('命令不存在，请重新输入');
       return;
     }
     this.helper.validate(options, {
-      proxy: [
-        {
-          pattern: /^https?\:/,
-          message: '格式不合法，请输入网址类型的'
-        }
-      ],
-      port: [
-        {
-          validator: (_, value) => Number(value) > 1000 || value === undefined,
-          message: '端口号请输入1000以上的整数'
-        }
-      ]
+      proxy: {
+        pattern: /^https?\:/,
+        message: '格式不合法，请输入网址类型的'
+      },
+      port: {
+        validator: (_, value) => Number(value) > 1000 || value === undefined,
+        message: '端口号请输入1000以上的整数'
+      }
     });
+    // 将过往做过代理的项目存入本地，以后方便使用。
     const db = this.helper.createDB('agent');
     await db.read();
     db.data = db.data || {};
@@ -64,6 +61,7 @@ class Agent extends BaseCommand {
     const match = cacheData.find((item) => item.proxy === options.proxy);
     if (!match) {
       if (!options.proxy) {
+        // 未输入代理的地址，表示是从数据库文件中读取历史记录
         const { server } = await this.helper.inquirer.prompt([
           {
             message: '请选择要开启的代理服务器',
@@ -77,6 +75,7 @@ class Agent extends BaseCommand {
         ]);
         options.proxy = server;
       } else {
+        // 否则会询问是否将输入内容存入数据库。
         const ans = (await this.helper.inquirer.prompt([
           {
             type: 'confirm',
@@ -99,47 +98,47 @@ class Agent extends BaseCommand {
         }
       }
     }
-    if (!options.debug) {
-      const child = fork(
-        path.resolve(this.helper.root, 'dist/commands/agent/server.js'),
-        [
-          ...this.helper.processArgvToFlags(
-            pick(options, ['proxy', 'port', 'debug', 'copy'])
-          ),
-          '--from-bin=mycli-agent'
-        ],
-        {
-          cwd: this.helper.root,
-          detached: true,
-          stdio: [null, null, null, 'ipc']
-        }
-      );
-      child.on(
-        'message',
-        async ({ port, ip }: { port: string; ip: string }) => {
+    const child = fork(
+      path.resolve(this.helper.root, 'dist/commands/agent/server.js'),
+      [
+        ...this.helper.processArgvToFlags(
+          pick(options, ['proxy', 'port', 'copy'])
+        )
+      ],
+      {
+        cwd: this.helper.root,
+        detached: true,
+        stdio: [null, null, null, 'ipc']
+      }
+    );
+    child.on(
+      'message',
+      async ({ port, ip, type, errorMessage }: ChildProcessEmitData) => {
+        if (type === 'close') {
           console.log(`
-    代理服务器已在 ${chalk.yellow(port)} 端口启动：
-    - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
-    - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
-    路由映射至：${chalk.cyan(options.proxy)}`);
+  代理服务器已在 ${chalk.yellow(port)} 端口启动：
+  - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
+  - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
+  路由映射至：${chalk.cyan(options.proxy)}`);
           const items: CacheItem[] = this.ls.get('items').value();
           const match = items.find((item) => item.proxy === options.proxy);
           (match as CacheItem).port = port;
           (db.data as DbData).items = items;
           await db.write();
+          onShutdown(async () => {
+            await db.read();
+            (db.data as DbData).items.forEach(item => {
+              item.port = '';
+            });
+            await db.write();
+          });
           child.unref();
           child.disconnect();
           process.exit(0);
         }
-      );
-    } else {
-      monitor(
-        path.resolve(fileURLToPath(import.meta.url), '../server.js'),
-        this.helper.processArgvToFlags(
-          pick(options, ['proxy', 'port', 'debug', 'copy'])
-        ) as string[]
-      );
-    }
+        this.logger.error(errorMessage);
+      }
+    );
   }
 }
 

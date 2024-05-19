@@ -188,7 +188,12 @@ export const log = async (content: string) => {
   await fs.appendFile('debug.log', real);
 };
 
-export const createDB = (pathName: string) => {
+/**
+ * 创建本地数据库文件实例
+ * @param {string} pathName 数据库文件地址，支持放在嵌套文件夹里
+ * @returns {Low} 数据库实例
+ */
+export const createDB = (pathName: string): Low => {
   const url = pathName.includes('.')
     ? `data/${pathName.replace(/\./g, '/')}.json`
     : `data/${pathName}.json`;
