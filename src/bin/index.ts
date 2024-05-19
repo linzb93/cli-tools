@@ -88,7 +88,6 @@ program
   .option('--proxy <url>', '代理地址')
   .option('--port <num>', '端口号')
   .option('-c, --copy', '复制网络地址')
-  .option('--debug', '调试模式')
   .action(async (subCommand, options) => {
     const agent = (await import(`../commands/agent/index.js`)).default;
     agent(subCommand, options);
