@@ -1,4 +1,4 @@
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import fs from 'fs-extra';
 import path from 'path';
 import clipboardy from 'clipboardy';

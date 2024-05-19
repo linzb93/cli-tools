@@ -1,4 +1,4 @@
-import kill from '../kill.js';
+import kill from '../kill/index.js';
 import BaseCommand from '../../util/BaseCommand.js';
 import { CacheItem } from './index';
 

@@ -2,12 +2,13 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "ESNext",
-    "allowJs": true,
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "strict": true,
+    "allowSyntheticDefaultImports": true,
     "outDir": "./dist/",
+    "baseUrl": "./",
+    "paths": {
+        "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*.ts"]
 }

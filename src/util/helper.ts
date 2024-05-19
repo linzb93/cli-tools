@@ -6,7 +6,7 @@ import { Low, JSONFile } from 'lowdb';
 import { execaCommand as execa } from 'execa';
 import { fileURLToPath } from 'url';
 import logger from './logger.js';
-import lodash from 'lodash';
+import { pick } from 'lodash-es';
 import chalk from 'chalk';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -17,7 +17,6 @@ import ValidatorSchema, {
   ValidateSource,
   FieldErrorList
 } from 'async-validator';
-const { pick } = lodash;
 
 export const isWin = process.platform === 'win32';
 

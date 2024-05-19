@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 class Lixi extends BaseCommand {
   private source: {

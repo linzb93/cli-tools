@@ -29,9 +29,7 @@ export class Spinner {
       this.start();
     }
     this.spinner.text = value;
-    if (this.spinner.spinner !== 'dots') {
-      this.spinner.spinner = 'dots';
-    }
+    this.spinner.spinner = 'dots';
   }
   get isSpinning() {
     return this.spinner.isSpinning;

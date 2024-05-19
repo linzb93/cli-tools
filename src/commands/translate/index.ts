@@ -3,7 +3,7 @@ import boxen from 'boxen';
 import axios from 'axios';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import open from 'open';
 interface Options {
   example: boolean;

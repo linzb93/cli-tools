@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import jwt from 'jsonwebtoken';
 
 interface Options {

@@ -1,4 +1,4 @@
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import publicIp from 'public-ip';
 import internalIp from 'internal-ip';
 import chalk from 'chalk';

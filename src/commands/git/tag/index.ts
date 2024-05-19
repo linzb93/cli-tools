@@ -2,9 +2,7 @@ import clipboard from 'clipboardy';
 import BaseCommand from '../../../util/BaseCommand.js';
 import deleteTag from './delete.js';
 import readPkg from 'read-pkg';
-import lodash from 'lodash';
-
-const { last } = lodash;
+import { last } from 'lodash-es';
 
 interface Options {
   delete?: boolean;

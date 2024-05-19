@@ -3,11 +3,10 @@ import glob from 'glob';
 import chalk from 'chalk';
 import { execaCommand as execa } from 'execa';
 import path from 'path';
-import lodash from 'lodash';
+import { camelCase, kebabCase, filter } from 'lodash-es';
 import pMap from 'p-map';
 import { pascalCase } from 'pascal-case';
 import BaseCommand from '../../util/BaseCommand';
-const { camelCase, kebabCase, filter } = lodash;
 const whiteList = ['App.vue', '.otf', '.ttf', '1px.scss', 'README.md'];
 
 // 对所有命名不规范的文件/文件夹，重新命名，并用 git mv 更新

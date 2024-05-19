@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import axios from 'axios';
 import { fork, ChildProcess } from 'child_process';
-import lodash from 'lodash';
+import { flatten, omit } from 'lodash-es';
 import clipboardy from 'clipboardy';
 import { reactive } from '@vue/reactivity';
 import { watch } from '@vue/runtime-core';
@@ -46,8 +46,6 @@ interface ApiList {
     json: AnyObject;
   }[];
 }
-
-const { flatten, omit } = lodash;
 const service = axios.create({
   baseURL: 'http://192.168.0.107:3000/api'
 });

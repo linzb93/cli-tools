@@ -3,12 +3,10 @@ import chokidar, { FSWatcher } from 'chokidar';
 import { fork, ChildProcess } from 'child_process';
 import path from 'path';
 import chalk from 'chalk';
-import lodash from 'lodash';
+import { debounce } from 'lodash-es';
 import fs from 'fs-extra';
 import dayjs from 'dayjs';
-import BaseCommand from '../util/BaseCommand.js';
-
-const { debounce } = lodash;
+import BaseCommand from '../../util/BaseCommand.js';
 
 class Monitor extends BaseCommand {
   private entryFile: string;

@@ -1,5 +1,5 @@
 import { fork } from 'child_process';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 import chalk from 'chalk';
 import internalIp from 'internal-ip';
 import path from 'path';

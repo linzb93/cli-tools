@@ -3,7 +3,7 @@ import path from 'path';
 import open from 'open';
 import internalIp from 'internal-ip';
 import globalNpm from 'global-modules';
-import BaseCommand from '../util/BaseCommand.js';
+import BaseCommand from '../../util/BaseCommand.js';
 
 interface Options {
   name: string;

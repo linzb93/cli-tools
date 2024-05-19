@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import path from 'path';
 import notifier from 'node-notifier';
 
-import { get as getIp } from '../ip.js';
+import { get as getIp } from '../ip/index.js';
 // import mysql from '../../util/service/mysql.js';
 ipc.config.id = 'mainService';
 ipc.config.retry = 1500;

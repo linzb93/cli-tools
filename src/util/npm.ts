@@ -1,13 +1,11 @@
 /* eslint-disable no-redeclare */
 import { execaCommand as execa } from 'execa';
-import lodash from 'lodash';
+import { isPlainObject, get } from 'lodash-es';
 import cheerio, { CheerioAPI, Node as CheerioNode } from 'cheerio';
 import axios from 'axios';
 import inquirer from './inquirer.js';
 import fs from 'fs-extra';
 import readPkg from 'read-pkg';
-
-const { isPlainObject, get } = lodash;
 
 /**
  * npm public API: https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md

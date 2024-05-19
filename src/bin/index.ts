@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import commander from 'commander';
+import * as commander from 'commander';
 import handleUncaughtError from '../util/handleUncaughtError.js';
 import logger from '../util/logger.js';
 import dayjs from 'dayjs';
@@ -97,7 +97,7 @@ program
   .command('size <url>')
   .option('--rect', '获取宽高')
   .action(async (filename, options) => {
-    const getSize = (await import('../commands/size.js')).default;
+    const getSize = (await import('../commands/size/index.js')).default;
     getSize(filename, options);
   });
 program
@@ -105,7 +105,7 @@ program
   .option('--name <name>', '打开的文件夹')
   .option('-r, --reuse', '强制在已开启的编辑器里打开')
   .action(async (url, cmd) => {
-    const open = (await import('../commands/open.js')).default;
+    const open = (await import('../commands/open/index.js')).default;
     open(url, cmd);
   });
 program
@@ -126,18 +126,18 @@ program
   .allowUnknownOption()
   .action(async (file, _, options) => {
     const combinedOptions = options.args.slice(1);
-    const monitor = (await import('../commands/monitor.js')).default;
+    const monitor = (await import('../commands/monitor/index.js')).default;
     monitor(file, combinedOptions);
   });
 program
   .command('spider <url>')
   .option('--dest <dest>', '下载目标文件夹')
   .action(async (url, option) => {
-    const spider = (await import('../commands/spider.js')).default;
+    const spider = (await import('../commands/spider/index.js')).default;
     spider(url, option);
   });
 program.command('lixi').action(async () => {
-  const lixi = (await import('../commands/lixi.js')).default;
+  const lixi = (await import('../commands/lixi/index.js')).default;
   lixi();
 });
 program
@@ -146,7 +146,7 @@ program
   .option('--ignore <dirs>', '添加忽略的文件夹')
   .option('-c, --copy', '复制')
   .action(async (dir, option) => {
-    const tree = (await import('../commands/tree.js')).default;
+    const tree = (await import('../commands/tree/index.js')).default;
     tree(dir, option);
   });
 program
@@ -158,7 +158,7 @@ program
     bug(source, option);
   });
 program.command('kill <data...>').action(async (data) => {
-  const kill = (await import('../commands/kill.js')).default;
+  const kill = (await import('../commands/kill/index.js')).default;
   kill(data);
 });
 program
@@ -186,33 +186,33 @@ program
   .option('-o --origin', '原始数据')
   .option('-c --complete', '完整数据')
   .action(async (data, options) => {
-    const token = (await import('../commands/token.js')).default;
+    const token = (await import('../commands/token/index.js')).default;
     token(data, options);
   });
 program
   .command('eng <text>')
   .option('-e,--example', '显示范例')
   .action(async (text, options) => {
-    const translate = (await import('../commands/translate.js')).default;
+    const translate = (await import('../commands/translate/index.js')).default;
     translate(text, options);
   });
 program
   .command('color <text>')
   .option('--get')
   .action(async (data, options) => {
-    const color = (await import('../commands/color.js')).default;
+    const color = (await import('../commands/color/index.js')).default;
     color(data, options);
   });
 program.command('ipc').action(async () => {
-  const ipc = (await import('../commands/ipc.js')).default;
+  const ipc = (await import('../commands/ipc/index.js')).default;
   ipc();
 });
 program.command('ip').action(async () => {
-  const ip = (await import('../commands/ip.js')).default;
+  const ip = (await import('../commands/ip/index.js')).default;
   ip();
 });
 program.command('fork <filename>').action(async (file) => {
-  const fork = (await import('../commands/fork.js')).default;
+  const fork = (await import('../commands/fork/index.js')).default;
   fork(file);
 });
 program
@@ -225,7 +225,7 @@ program
     mock(action, options);
   });
 program.command('shortcut [name]').action(async (name) => {
-  const shortcut = (await import('../commands/shortcut.js')).default;
+  const shortcut = (await import('../commands/shortcut/index.js')).default;
   shortcut(name);
 });
 program.parse();

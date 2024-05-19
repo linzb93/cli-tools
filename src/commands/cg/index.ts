@@ -4,8 +4,7 @@ import path from 'path';
 import axios from 'axios';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-import lodash from 'lodash';
-const { isNumber } = lodash;
+import { isNumber } from 'lodash-es';
 
 interface Options {
   realtime: boolean;
