@@ -1,17 +1,17 @@
-import open from 'open';
-import chalk from 'chalk';
-import Table from 'cli-table3';
-import { AxiosError } from 'axios';
-import BaseCommand from '../../util/BaseCommand.js';
+import open from "open";
+import chalk from "chalk";
+import Table from "cli-table3";
+import { AxiosError } from "axios";
+import BaseCommand from "../../util/BaseCommand.js";
 const table = new Table({
   head: [
-    chalk.green('名称'),
-    chalk.green('简介'),
-    chalk.green('周下载量'),
-    chalk.green('上次更新'),
-    chalk.green('最新版本')
+    chalk.green("名称"),
+    chalk.green("简介"),
+    chalk.green("周下载量"),
+    chalk.green("上次更新"),
+    chalk.green("最新版本"),
   ],
-  colAligns: ['center', 'center', 'center', 'center', 'center']
+  colAligns: ["center", "center", "center", "center", "center"],
 });
 interface Options {
   open?: boolean;
@@ -37,7 +37,7 @@ class Search extends BaseCommand {
     } else if (args.length > 1) {
       return this.fetchMulNpmPackage(args);
     } else {
-      this.logger.error('未检测到依赖名称。');
+      this.logger.error("未检测到依赖名称。");
     }
   }
   // 获取单个包信息
@@ -53,10 +53,10 @@ class Search extends BaseCommand {
     const page = await this.npm.getPage(packageName);
     const data = {
       name: packageName,
-      description: page.get('description'),
-      weeklyDl: page.get('weeklyDl'),
-      lastPb: page.get('lastPb'),
-      version: page.get('version')
+      description: page.get("description"),
+      weeklyDl: page.get("weeklyDl"),
+      lastPb: page.get("lastPb"),
+      version: page.get("version"),
     };
     data.weeklyDl = this.transformNumberCn(data.weeklyDl).toString();
     if (isMultiple || process.env.VITEST) {
@@ -75,7 +75,7 @@ class Search extends BaseCommand {
   // 获取多个包信息并比较
   private async fetchMulNpmPackage(args: string[]) {
     const { spinner } = this;
-    spinner.text = `正在查找 ${args.join(' ')} 这些模块`;
+    spinner.text = `正在查找 ${args.join(" ")} 这些模块`;
     let resList;
     try {
       resList = await Promise.all(
@@ -83,14 +83,14 @@ class Search extends BaseCommand {
       );
     } catch (error) {
       const err = error as AxiosError;
-      if (err.response && err.response.statusText === 'Not Found') {
+      if (err.response && err.response.statusText === "Not Found") {
         spinner.fail(
           `没有 ${(err.response.config.url as string)
-            .split('/')
+            .split("/")
             .pop()} 这个模块`
         );
       } else {
-        spinner.fail('无法访问');
+        spinner.fail("无法访问");
       }
       process.exit(0);
     }
@@ -100,37 +100,38 @@ class Search extends BaseCommand {
         item.name,
         this.lineFeed(item.description),
         item.weeklyDl,
-        item.lastPb
+        item.lastPb,
+        item.version,
       ])
     );
     console.log(table.toString());
   }
   // 12,345,678 => 1234万
   private transformNumberCn(val: string): string {
-    const value = Number(val.replace(/,/g, ''));
+    const value = Number(val.replace(/,/g, ""));
     if (value > 10000) {
       return `${parseInt((value / 10000).toString())}万`;
     }
     return val;
   }
   private lineFeed(str: string, perLineLength = 30): string {
-    const strList = str.split(' ');
+    const strList = str.split(" ");
     let tempArr: string[] = [];
     const lines = [];
     strList.forEach((s) => {
       tempArr.push(s);
       if (
-        tempArr.reduce((sum, item) => sum + item + ' ', '').length >
+        tempArr.reduce((sum, item) => sum + item + " ", "").length >
         perLineLength
       ) {
-        lines.push(tempArr.join(' '));
+        lines.push(tempArr.join(" "));
         tempArr = [];
       }
     });
     if (tempArr.length) {
-      lines.push(tempArr.join(' '));
+      lines.push(tempArr.join(" "));
     }
-    return lines.join('\n');
+    return lines.join("\n");
   }
 }
 

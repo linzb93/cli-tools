@@ -1,8 +1,10 @@
-import readline from 'readline';
-import spinner from './spinner.js';
-import { isPlainObject } from 'lodash-es';
-import chalk from 'chalk';
-import logSymbols from 'log-symbols';
+import readline from "readline";
+import spinner from "./spinner.js";
+import { isPlainObject } from "lodash-es";
+import chalk from "chalk";
+import logSymbols from "log-symbols";
+import terminalSize from "terminal-size";
+import stringWidth from "string-width";
 
 function hook(callback: () => void) {
   let isStop = false;
@@ -17,6 +19,13 @@ function hook(callback: () => void) {
   if (isStop) {
     spinner.start();
   }
+}
+
+interface BoxOptions {
+  title?: string;
+  borderColor: string;
+  padding?: number;
+  content: string;
 }
 
 export default {
@@ -44,9 +53,9 @@ export default {
     }
   },
   debug(content: any) {
-    if (process.argv.includes('--debug')) {
+    if (process.argv.includes("--debug")) {
       hook(() => {
-        let str = '';
+        let str = "";
         if (isPlainObject(content)) {
           try {
             str = JSON.stringify(content);
@@ -54,14 +63,14 @@ export default {
         } else {
           str = content.toString();
         }
-        console.log(`${chalk.cyan('[debug]')} ${str}`);
+        console.log(`${chalk.cyan("[debug]")} ${str}`);
       });
     }
   },
   clearConsole(start = 0, clearAll?: boolean) {
     if (process.stdout.isTTY) {
       if (!clearAll) {
-        const blank = '\n'.repeat(process.stdout.rows);
+        const blank = "\n".repeat(process.stdout.rows);
         console.log(blank);
       }
       readline.cursorTo(process.stdout, 0, start);
@@ -73,5 +82,28 @@ export default {
       process.stdout.moveCursor(0, -1);
       process.stdout.clearLine(0);
     }
-  }
+  },
+  // 替代原来的boxen
+  box(options: BoxOptions) {
+    const { columns } = terminalSize();
+    const title = chalk.bgRed.white(` ${options.title} `);
+    const titleEdgeLength = Math.floor((columns - stringWidth(title)) / 2);
+    console.log(
+      `${chalk[options.borderColor](
+        `-`.repeat(titleEdgeLength)
+      )}${title}${chalk[options.borderColor](`-`.repeat(titleEdgeLength))}`
+    );
+    if (options.padding) {
+      for (let i = 0; i < options.padding; i++) {
+        console.log("");
+      }
+    }
+    console.log(options.content);
+    if (options.padding) {
+      for (let i = 0; i < options.padding; i++) {
+        console.log("");
+      }
+    }
+    console.log(chalk[options.borderColor](`-`.repeat(columns)));
+  },
 };
