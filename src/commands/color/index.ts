@@ -33,6 +33,9 @@ class ColorConvert extends BaseCommand {
       this.logger.success(`${chalk.hex(blockColor).bold('示例文字')}`);
       return;
     }
+    if (process.env.VITEST) {
+      return ret;
+    }
     this.logger.success(
       `${chalk.green('[已复制]')}${chalk.hex(blockColor).bold(ret)}`
     );
@@ -43,5 +46,5 @@ class ColorConvert extends BaseCommand {
  * eg: mycli color '#fff' or mycli color '255,255,255'
  */
 export default (text: string, options: Options) => {
-  new ColorConvert(text, options).run();
+  return new ColorConvert(text, options).run();
 };

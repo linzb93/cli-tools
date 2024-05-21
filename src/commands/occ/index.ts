@@ -5,7 +5,7 @@ import BaseCommand from '../../util/BaseCommand.js';
 import login from './login.js';
 import { stringify } from 'querystring';
 import chalk from 'chalk';
-import map from './map.js';
+import map from './sitemap.js';
 import { MeituanLoginParams, EleLoginParams } from './types';
 interface Options {
   token: string | boolean;

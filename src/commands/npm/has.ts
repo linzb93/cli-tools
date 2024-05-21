@@ -24,10 +24,16 @@ class Has extends BaseCommand {
     this.spinner.text = '正在查找';
     const listRet = await this.npm.getList(name);
     if (!listRet.list.length) {
+      if (process.env.VITEST) {
+        return false;
+      }
       await this.handleNotFound(name, options.dev);
       return;
     }
     if (listRet.list.length === 1) {
+      if (process.env.VITEST) {
+        return true;
+      }
       spinner.succeed(`${name}存在，版本号是${listRet.versionList[0]}`);
       return;
     }
@@ -68,5 +74,5 @@ class Has extends BaseCommand {
 }
 
 export default (args: string[], options: Options) => {
-  new Has(args, options).run();
+  return new Has(args, options).run();
 };

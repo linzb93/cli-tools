@@ -10,7 +10,7 @@ class Clear extends BaseCommand {
   }
   async run() {
     const { filename } = this;
-    const paths = await globby([filename, `**/*/${filename}`, '!node_modules']);
+    const paths = await getMatchPaths(filename);
     const len = paths.length;
     if (len === 0) {
       this.logger.info('未发现需要删除的文件');
@@ -22,5 +22,9 @@ class Clear extends BaseCommand {
 }
 
 export default (filename: string) => {
-  new Clear(filename).run();
+  return new Clear(filename).run();
 };
+
+export function getMatchPaths(filename: string) {
+  return globby([`**/*/${filename}`, '!node_modules']);
+}

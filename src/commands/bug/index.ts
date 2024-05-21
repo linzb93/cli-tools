@@ -20,7 +20,7 @@ class Bug extends BaseCommand {
     const seg = this.source.split(':');
     const filePath = seg.slice(0, 2).join(':');
     const filename = path.basename(filePath);
-    const target = path.resolve(this.helper.root, `.temp/${filename}`);
+    const target = path.resolve(this.helper.root, `temp/${filename}`);
     const lineText = seg.slice(2).join(':');
     const isEditorPath = `${target}:${lineText}`;
     if (!fs.existsSync(target)) {

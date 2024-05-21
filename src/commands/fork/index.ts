@@ -1,8 +1,10 @@
 import { fork } from 'child_process';
-import BaseCommand from '../../util/BaseCommand.js';
+import BaseCommand from '@/util/BaseCommand.js';
 import chalk from 'chalk';
 import internalIp from 'internal-ip';
-import path from 'path';
+import path from 'node:path';
+
+// 在子进程中启动服务，退出父进程
 class Fork extends BaseCommand {
   constructor(private filename: string) {
     super();

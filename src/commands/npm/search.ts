@@ -8,9 +8,10 @@ const table = new Table({
     chalk.green('名称'),
     chalk.green('简介'),
     chalk.green('周下载量'),
-    chalk.green('上次更新')
+    chalk.green('上次更新'),
+    chalk.green('最新版本')
   ],
-  colAligns: ['center', 'center', 'center', 'center']
+  colAligns: ['center', 'center', 'center', 'center', 'center']
 });
 interface Options {
   open?: boolean;
@@ -32,9 +33,9 @@ class Search extends BaseCommand {
   async run() {
     const { args, options } = this;
     if (args.length === 1) {
-      this.fetchNpmPackage(args[0], false, options);
+      return this.fetchNpmPackage(args[0], false, options);
     } else if (args.length > 1) {
-      this.fetchMulNpmPackage(args);
+      return this.fetchMulNpmPackage(args);
     } else {
       this.logger.error('未检测到依赖名称。');
     }
@@ -54,10 +55,11 @@ class Search extends BaseCommand {
       name: packageName,
       description: page.get('description'),
       weeklyDl: page.get('weeklyDl'),
-      lastPb: page.get('lastPb')
+      lastPb: page.get('lastPb'),
+      version: page.get('version')
     };
     data.weeklyDl = this.transformNumberCn(data.weeklyDl).toString();
-    if (isMultiple) {
+    if (isMultiple || process.env.VITEST) {
       return data;
     }
     spinner.stop();
@@ -133,5 +135,5 @@ class Search extends BaseCommand {
 }
 
 export default async (args: string[], options: Options) => {
-  new Search(args, options).run();
+  return new Search(args, options).run();
 };
