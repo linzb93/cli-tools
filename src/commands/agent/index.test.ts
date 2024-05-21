@@ -1,4 +1,4 @@
-import { describe, expect, beforeAll, afterAll } from 'vitest';
+import { describe, beforeAll, afterAll } from 'vitest';
 import createAgent from '.';
 import kill from '../kill';
 describe('Agent网站代理功能', it => {
@@ -9,16 +9,16 @@ describe('Agent网站代理功能', it => {
     port,
     copy: true
   }));
-  it('代理接口可以正常访问', () => {
+  it.todo('代理接口可以正常访问', () => {
 
   });
-  it.concurrent('代理静态资源正确', () => {
+  it.todo('代理静态资源正确', () => {
     // 根据npm包mime判断获取的是否是图片
   });
-  it.concurrent('端口号正确', () => {
+  it.todo('端口号正确', () => {
     // 读取这个端口的时候，可以拿到是在进行vitest测试的参数
   });
-  it.concurrent('可以复制', () => {
+  it.todo('可以复制', () => {
     // 读取剪贴板数据，是不是刚才生成的网址
   });
 

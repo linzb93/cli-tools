@@ -10,6 +10,9 @@ function hook(callback: () => void) {
     spinner.stop();
     isStop = true;
   }
+  if (process.env.VITEST) {
+    return;
+  }
   callback();
   if (isStop) {
     spinner.start();

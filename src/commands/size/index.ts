@@ -49,7 +49,7 @@ class GetSize extends BaseCommand {
       const extname = this.getExtname(filePath);
       const targetName = path.resolve(
         this.helper.root,
-        `.temp/getSizeImage${extname}`
+        `temp/getSizeImage${extname}`
       );
       const settingRect = this.options.rect;
       await new Promise((resolve) => {

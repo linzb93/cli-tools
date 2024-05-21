@@ -3,8 +3,8 @@ import BaseCommand from '../../util/BaseCommand.js';
 import jwt from 'jsonwebtoken';
 
 interface Options {
-  origin: boolean; // 原始数据，时间戳没有解析成标准时间格式
-  complete: boolean; // 完整数据，包括算法等
+  origin?: boolean; // 原始数据，时间戳没有解析成标准时间格式
+  complete?: boolean; // 完整数据，包括算法等
 }
 
 class Token extends BaseCommand {
@@ -18,34 +18,34 @@ class Token extends BaseCommand {
     }) as any; // 解析数据格式不定
     if (this.options.origin) {
       console.log(decoded);
-      return;
+      return decoded;
     }
-    console.log(
-      Object.keys(decoded).reduce((obj, key) => {
-        if (
-          Number.isInteger(decoded[key]) &&
-          (decoded[key].toString().length === 10 ||
-            decoded[key].toString().length === 13)
-        ) {
-          // 可能是时间戳
-          const ts =
-            decoded[key].toString().length === 10
-              ? decoded[key] * 1000
-              : decoded[key];
-          return {
-            ...obj,
-            [key]: dayjs(ts).format('YYYY-MM-DD HH:mm:ss')
-          };
-        }
+    const result = Object.keys(decoded).reduce((obj, key) => {
+      if (
+        Number.isInteger(decoded[key]) &&
+        (decoded[key].toString().length === 10 ||
+          decoded[key].toString().length === 13)
+      ) {
+        // 可能是时间戳
+        const ts =
+          decoded[key].toString().length === 10
+            ? decoded[key] * 1000
+            : decoded[key];
         return {
           ...obj,
-          [key]: decoded[key]
+          [key]: dayjs(ts).format('YYYY-MM-DD HH:mm:ss')
         };
-      }, {})
-    );
+      }
+      return {
+        ...obj,
+        [key]: decoded[key]
+      };
+    }, {});
+    console.log(result);
+    return result;
   }
 }
 
 export default (data: string, options: Options) => {
-  new Token(data, options).run();
+  return new Token(data, options).run();
 };

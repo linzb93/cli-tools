@@ -82,6 +82,9 @@ export class Npm {
     if (type === 'description') {
       return this.regData.description;
     }
+    if (type === 'version') {
+      return $('.f2874b88.truncate').text();
+    }
     return '';
   }
 }
