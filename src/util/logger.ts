@@ -3,8 +3,8 @@ import spinner from "./spinner";
 import { isPlainObject } from "lodash-es";
 import chalk from "chalk";
 import logSymbols from "log-symbols";
-// import terminalSize from "terminal-size";
-
+import terminalSize from "terminal-size";
+import stringWidth from "string-width";
 function hook(callback: () => void) {
   let isStop = false;
   if (spinner.isSpinning) {
@@ -84,25 +84,25 @@ export default {
   },
   // 替代原来的boxen
   box(options: BoxOptions) {
-    // const { columns } = terminalSize();
-    // const title = chalk.bgRed.white(` ${options.title} `);
-    // const titleEdgeLength = Math.floor((columns - stringWidth(title)) / 2);
-    // console.log(
-    //   `${chalk[options.borderColor](
-    //     `-`.repeat(titleEdgeLength)
-    //   )}${title}${chalk[options.borderColor](`-`.repeat(titleEdgeLength))}`
-    // );
-    // if (options.padding) {
-    //   for (let i = 0; i < options.padding; i++) {
-    //     console.log("");
-    //   }
-    // }
-    // console.log(options.content);
-    // if (options.padding) {
-    //   for (let i = 0; i < options.padding; i++) {
-    //     console.log("");
-    //   }
-    // }
-    // console.log(chalk[options.borderColor](`-`.repeat(columns)));
+    const { columns } = terminalSize();
+    const title = chalk.bgRed.white(` ${options.title} `);
+    const titleEdgeLength = Math.floor((columns - stringWidth(title)) / 2);
+    console.log(
+      `${chalk[options.borderColor](
+        `-`.repeat(titleEdgeLength)
+      )}${title}${chalk[options.borderColor](`-`.repeat(titleEdgeLength))}`
+    );
+    if (options.padding) {
+      for (let i = 0; i < options.padding; i++) {
+        console.log("");
+      }
+    }
+    console.log(options.content);
+    if (options.padding) {
+      for (let i = 0; i < options.padding; i++) {
+        console.log("");
+      }
+    }
+    console.log(chalk[options.borderColor](`-`.repeat(columns)));
   },
 };

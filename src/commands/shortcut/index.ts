@@ -1,0 +1,87 @@
+import BaseCommand from "@/util/BaseCommand";
+import chalk from "chalk";
+class Shortcut extends BaseCommand {
+  constructor(private name: string) {
+    super();
+  }
+  run() {
+    const map = [
+      {
+        title: "聚焦文件资源管理器（自定义）",
+        windows: "alt + `",
+        mac: "",
+      },
+      {
+        title: "切换至下一个文件",
+        windows: "ctrl + page down",
+        mac: "shift + cmd + ]",
+      },
+      {
+        title: "切换至上一个文件",
+        windows: "ctrl + page up",
+        mac: "shift + cmd + [",
+      },
+      {
+        title: "新建文件",
+        windows: "ctrl + alt + n",
+        mac: "",
+      },
+      {
+        title: "新建文件夹",
+        windows: "ctrl + shift + alt + n",
+        mac: "",
+      },
+      {
+        title: "聚焦终端",
+        windows: "ctrl + j",
+        mac: "",
+      },
+      {
+        title: "新建终端",
+        windows: "ctrl + shift + `",
+        mac: "",
+      },
+      {
+        title: "聚焦上一个终端",
+        windows: "ctrl + page up",
+        mac: "",
+      },
+      {
+        title: "聚焦下一个终端",
+        windows: "ctrl + page down",
+        mac: "",
+      },
+      {
+        title: "清除终端内容",
+        windows: "ctrl + k",
+        mac: "",
+      },
+      {
+        title: "chrome切换到下一个标签",
+        windows: "",
+        mac: "command + option + ->",
+      },
+    ];
+    const list = this.name
+      ? map.filter((item) => item.title.includes(this.name))
+      : map;
+    if (!list.length) {
+      this.logger.error("没有找到对应的命令");
+    } else {
+      console.log(
+        list
+          .map(
+            (item) =>
+              `${chalk.cyan(item.title)} ${
+                this.helper.isWin ? item.windows : item.mac
+              }`
+          )
+          .join("\n")
+      );
+    }
+  }
+}
+
+export default (name: string) => {
+  new Shortcut(name).run();
+};
