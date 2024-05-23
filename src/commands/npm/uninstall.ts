@@ -1,8 +1,8 @@
-import del from 'del';
-import path from 'path';
-import globalNpm from 'global-modules';
-import readPkg, { NormalizedPackageJson } from 'read-pkg';
-import BaseCommand from '../../util/BaseCommand.js';
+import del from "del";
+import path from "node:path";
+import globalNpm from "global-modules";
+import readPkg, { NormalizedPackageJson } from "read-pkg";
+import BaseCommand from "@/util/BaseCommand";
 
 interface Options {
   global?: boolean;
@@ -22,29 +22,29 @@ class Uninstall extends BaseCommand {
     const { name, options } = this;
     if (options.global) {
       await this.delGlobal(name);
-      this.logger.success('删除成功');
+      this.logger.success("删除成功");
       return;
     }
     const listRet = await this.npm.getList(name);
     if (!listRet.list.length) {
-      this.logger.error('没找到，无法删除');
+      this.logger.error("没找到，无法删除");
       return;
     }
     if (listRet.list.length === 1) {
       await del(`node_modules/${listRet.list[0]}`);
-      this.logger.success('删除成功');
+      this.logger.success("删除成功");
       return;
     }
     const ans = await this.helper.inquirer.prompt([
       {
-        message: '发现有多个符合条件的依赖，请选择其中需要删除的',
-        type: 'checkbox',
-        name: 'ret',
+        message: "发现有多个符合条件的依赖，请选择其中需要删除的",
+        type: "checkbox",
+        name: "ret",
         choices: listRet.list.map((item) => ({
           name: this.npm.getVersion(item),
-          value: item
-        }))
-      }
+          value: item,
+        })),
+      },
     ]);
     try {
       for (const pkg of ans.ret) {
@@ -54,72 +54,72 @@ class Uninstall extends BaseCommand {
       this.logger.error((error as Error).message);
       return;
     }
-    this.logger.success('删除成功');
+    this.logger.success("删除成功");
   }
   // 除了删除全局的文件，还要删除全局命令
   private async delGlobal(name: string) {
     let pkg = {} as NormalizedPackageJson;
     try {
       pkg = await readPkg({
-        cwd: path.resolve(globalNpm, 'node_modules', name)
+        cwd: path.resolve(globalNpm, "node_modules", name),
       });
     } catch (error) {
       const similarNpm = await this.getSimilar(name);
       if ((similarNpm as SimilarOption).name) {
         const { action } = await this.helper.inquirer.prompt([
           {
-            type: 'confirm',
+            type: "confirm",
             message: `${name}不存在，你想删除的是${
               (similarNpm as SimilarOption).name
             }吗？`,
             default: true,
-            name: 'action'
-          }
+            name: "action",
+          },
         ]);
         if (action) {
           pkg = await readPkg({
             cwd: path.resolve(
               globalNpm,
-              'node_modules',
+              "node_modules",
               (similarNpm as SimilarOption).name
-            )
+            ),
           });
           const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
           await del((similarNpm as SimilarOption).name, {
-            cwd: path.resolve(globalNpm, 'node_modules')
+            cwd: path.resolve(globalNpm, "node_modules"),
           });
           for (const cmd of cmds) {
             await del([cmd, `${cmd}.cmd`, `${cmd}.ps1`], {
-              cwd: globalNpm
+              cwd: globalNpm,
             });
           }
         }
       } else {
-        this.logger.error('模块不存在');
+        this.logger.error("模块不存在");
         process.exit(1);
       }
     }
     const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
     await del(name, {
-      cwd: path.resolve(globalNpm, 'node_modules')
+      cwd: path.resolve(globalNpm, "node_modules"),
     });
     for (const cmd of cmds) {
       await del([cmd, `${cmd}.cmd`, `${cmd}.ps1`], {
-        cwd: globalNpm
+        cwd: globalNpm,
       });
     }
   }
   private async getSimilar(name: string): Promise<SimilarOption | Boolean> {
-    const similarNpm = `@${name.replace('-', '/')}`;
+    const similarNpm = `@${name.replace("-", "/")}`;
     if (similarNpm === `@${name}`) {
       return false;
     }
     try {
       await readPkg({
-        cwd: path.resolve(globalNpm, 'node_modules', similarNpm)
+        cwd: path.resolve(globalNpm, "node_modules", similarNpm),
       });
       return {
-        name: similarNpm
+        name: similarNpm,
       };
     } catch (error) {
       return false;

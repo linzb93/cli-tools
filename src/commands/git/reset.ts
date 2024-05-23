@@ -1,19 +1,19 @@
-import BaseCommand from '../../util/BaseCommand.js';
+import BaseCommand from "@/util/BaseCommand";
 
 class Reset extends BaseCommand {
   private filename: string;
   constructor(filename: string) {
     super();
-    this.filename = filename.replace(/\\/g, '/');
+    this.filename = filename.replace(/\\/g, "/");
   }
   async run() {
     const { filename } = this;
     const headSecondCommit = await this.git.getHeadSecondCommit();
     await this.git.reset({
       filename,
-      id: headSecondCommit
+      id: headSecondCommit,
     });
-    this.logger.success('回退成功');
+    this.logger.success("回退成功");
   }
 }
 

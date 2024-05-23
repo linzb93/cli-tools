@@ -1,11 +1,11 @@
-import path from 'path';
-import fs from 'fs-extra';
-import axios, { AxiosResponse } from 'axios';
-import chalk from 'chalk';
-import * as cheerio from 'cheerio';
-import { Npm } from '../../util/npm.js';
-import BaseCommand from '../../util/BaseCommand.js';
-import { SecretDB } from '../../util/types';
+import path from "node:path";
+import fs from "fs-extra";
+import axios, { AxiosResponse } from "axios";
+import chalk from "chalk";
+import * as cheerio from "cheerio";
+import { Npm } from "@/util/npm";
+import BaseCommand from "@/util/BaseCommand";
+import { SecretDB } from "@/util/types";
 
 interface Options {
   dir: string;
@@ -25,34 +25,34 @@ class Clone extends BaseCommand {
     const { source, options } = this;
     this.helper.validate(
       {
-        source
+        source,
       },
       {
         source: [
           {
             required: true,
             message:
-              '请输入项目来源，可以是npm包、GitHub搜索关键词，或Git项目地址'
-          }
-        ]
+              "请输入项目来源，可以是npm包、GitHub搜索关键词，或Git项目地址",
+          },
+        ],
       }
     );
-    this.spinner.text = '正在下载';
+    this.spinner.text = "正在下载";
     let dirName: string;
-    const openMap = this.ls.get('open') as SecretDB['open'];
+    const openMap = this.ls.get("open") as SecretDB["open"];
     if (!options.dir) {
-      options.dir = 'source';
+      options.dir = "source";
     } else if (!openMap[options.dir]) {
       const answer = await this.helper.inquirer.prompt({
-        message: '文件夹可能输入有误，请从以下文件夹中选择一个',
-        name: 'folder',
-        type: 'list',
+        message: "文件夹可能输入有误，请从以下文件夹中选择一个",
+        name: "folder",
+        type: "list",
         choices: Object.keys(openMap).map((folder) => {
           return {
             name: openMap[folder],
-            value: folder
+            value: folder,
           };
-        })
+        }),
       });
       options.dir = answer.folder;
     }
@@ -63,14 +63,14 @@ class Clone extends BaseCommand {
           () =>
             this.git.clone({
               url,
-              dirName: path.basename(url, '.git'),
-              cwd: openMap[options.dir]
+              dirName: path.basename(url, ".git"),
+              cwd: openMap[options.dir],
             }),
           {
             retries: 10,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次下载失败，正在重试`;
-            }
+            },
           }
         );
       } catch (error) {
@@ -79,12 +79,12 @@ class Clone extends BaseCommand {
         return;
       }
       if (options.install) {
-        this.spinner.text = '正在安装依赖';
+        this.spinner.text = "正在安装依赖";
         await this.npm.install({
-          cwd: path.join(openMap[options.dir], path.basename(url, '.git'))
+          cwd: path.join(openMap[options.dir], path.basename(url, ".git")),
         });
       }
-      this.spinner.succeed('下载成功');
+      this.spinner.succeed("下载成功");
       if (options.open) {
         await this.helper.openInEditor(
           path.resolve(openMap[options.dir], dirName)
@@ -92,46 +92,46 @@ class Clone extends BaseCommand {
       }
       return;
     }
-    if (options.from === 'github' || options.from === 'gh') {
+    if (options.from === "github" || options.from === "gh") {
       let pageRes: AxiosResponse;
       try {
         pageRes = await this.helper.pRetry(
           () =>
             axios({
               url: `https://github.com/search?q=${source}`,
-              timeout: 15000
+              timeout: 15000,
             }),
           {
             retries: 5,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次搜索失败，正在重试`;
-            }
+            },
           }
         );
       } catch {
-        this.spinner.fail('下载失败:访问已超时');
+        this.spinner.fail("下载失败:访问已超时");
         return;
       }
       const $ = cheerio.load(pageRes.data);
-      const $target = $('.repo-list').first().children().first();
+      const $target = $(".repo-list").first().children().first();
       const url = `https://github.com${$target
-        .find('a')
+        .find("a")
         .first()
-        .attr('href')}.git`;
+        .attr("href")}.git`;
       this.spinner.text = `正在从${chalk.cyan(url)}下载`;
       try {
         dirName = await this.helper.pRetry(
           () =>
             this.git.clone({
               url,
-              dirName: path.basename(url, '.git'),
-              cwd: openMap[options.dir]
+              dirName: path.basename(url, ".git"),
+              cwd: openMap[options.dir],
             }),
           {
             retries: 2,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
-            }
+            },
           }
         );
       } catch (error) {
@@ -140,12 +140,12 @@ class Clone extends BaseCommand {
         return;
       }
       if (options.install) {
-        this.spinner.text = '正在安装依赖';
+        this.spinner.text = "正在安装依赖";
         await this.npm.install({
-          cwd: path.join(openMap[options.dir], path.basename(url, '.git'))
+          cwd: path.join(openMap[options.dir], path.basename(url, ".git")),
         });
       }
-      this.spinner.succeed('下载成功');
+      this.spinner.succeed("下载成功");
       if (options.open) {
         await this.helper.openInEditor(
           path.resolve(openMap[options.dir], dirName)
@@ -160,28 +160,28 @@ class Clone extends BaseCommand {
       this.logger.error((error as Error).message);
       return;
     }
-    const repo = page.get('repository');
-    const cwd = this.ls.get('open.source');
+    const repo = page.get("repository");
+    const cwd = this.ls.get("open.source");
     if (fs.existsSync(path.join(cwd, path.basename(repo)))) {
-      this.spinner.text = '正在拉取最新代码';
+      this.spinner.text = "正在拉取最新代码";
       try {
         await this.helper.pRetry(
           () =>
             this.git.pull({
-              cwd: path.join(cwd, path.basename(repo))
+              cwd: path.join(cwd, path.basename(repo)),
             }),
           {
             retries: 5,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
-            }
+            },
           }
         );
       } catch (error) {
-        this.spinner.fail('拉取代码失败');
+        this.spinner.fail("拉取代码失败");
         return;
       }
-      this.spinner.succeed('拉取代码成功');
+      this.spinner.succeed("拉取代码成功");
       if (options.open) {
         await this.helper.openInEditor(path.resolve(cwd, path.basename(repo)));
       }
@@ -193,26 +193,26 @@ class Clone extends BaseCommand {
           this.git.clone({
             url: `${repo}.git`,
             shallow: true,
-            cwd
+            cwd,
           }),
         {
           retries: 5,
           retryTimesCallback: (times) => {
             this.spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
-          }
+          },
         }
       );
     } catch (error) {
       this.spinner.fail(
-        '下载失败：' + JSON.stringify((error as Error).message)
+        "下载失败：" + JSON.stringify((error as Error).message)
       );
       return;
     }
-    this.spinner.succeed('下载成功');
+    this.spinner.succeed("下载成功");
     if (options.install) {
-      this.spinner.text = '正在安装依赖';
+      this.spinner.text = "正在安装依赖";
       await this.npm.install({
-        cwd: path.join(openMap[options.dir], path.basename(repo, '.git'))
+        cwd: path.join(openMap[options.dir], path.basename(repo, ".git")),
       });
     }
     if (options.open) {
@@ -223,15 +223,15 @@ class Clone extends BaseCommand {
     return this.helper.isURL(url) || this.isGitSSH(url);
   }
   private isGitSSH(url: string): boolean {
-    return url.startsWith('git@') && url.endsWith('.git');
+    return url.startsWith("git@") && url.endsWith(".git");
   }
   private toGitUrl(url: string): string {
     if (this.helper.isURL(url)) {
-      return url.endsWith('.git') ? url : `${url}.git`;
+      return url.endsWith(".git") ? url : `${url}.git`;
     }
     return url
-      .replace(/git@([a-z\.]+\.com)\:/, 'https://$1/')
-      .replace(/[^\.git]$/, '.git');
+      .replace(/git@([a-z\.]+\.com)\:/, "https://$1/")
+      .replace(/[^\.git]$/, ".git");
   }
 }
 
