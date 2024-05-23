@@ -2,7 +2,7 @@ import open from "open";
 import chalk from "chalk";
 import Table from "cli-table3";
 import { AxiosError } from "axios";
-import BaseCommand from "../../util/BaseCommand.js";
+import BaseCommand from "@/util/BaseCommand";
 const table = new Table({
   head: [
     chalk.green("名称"),

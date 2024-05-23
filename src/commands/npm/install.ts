@@ -1,12 +1,11 @@
-import semver, { SemVer } from 'semver';
-import axios from 'axios';
-import readPkg from 'read-pkg';
-import path from 'path';
-import boxen from 'boxen';
-import { execaCommand as execa } from 'execa';
-import fs from 'fs-extra';
-import pMap from 'p-map';
-import BaseCommand from '../../util/BaseCommand.js';
+import semver, { SemVer } from "semver";
+import axios from "axios";
+import readPkg from "read-pkg";
+import path from "node:path";
+import { execaCommand as execa } from "execa";
+import fs from "fs-extra";
+import pMap from "p-map";
+import BaseCommand from "@/util/BaseCommand";
 
 interface Options {
   dev?: boolean;
@@ -26,10 +25,10 @@ class Install extends BaseCommand {
       this.renderHelp();
       return;
     }
-    if (pkg.startsWith('@daze')) {
+    if (pkg.startsWith("@daze")) {
       // 这个是下载本地的
-      const registry = 'http://ikuai0.haloom.cc:7945';
-      const root = this.ls.get('code.project');
+      const registry = "http://ikuai0.haloom.cc:7945";
+      const root = this.ls.get("code.project");
       const dirs = await fs.readdir(root);
       this.logger.info(`正在查找${pkg}`);
       await pMap(
@@ -39,14 +38,14 @@ class Install extends BaseCommand {
             return;
           }
           if (await this.isMonorepo(path.join(root, dir))) {
-            const subDirs = await fs.readdir(path.join(root, dir, 'packages'));
+            const subDirs = await fs.readdir(path.join(root, dir, "packages"));
             await pMap(
               subDirs,
               async (sub) => {
                 try {
-                  const cwd = path.join(root, dir, 'packages', sub);
+                  const cwd = path.join(root, dir, "packages", sub);
                   const { name } = await readPkg({
-                    cwd
+                    cwd,
                   });
                   if (name === pkg) {
                     this.logger.success(`找到${pkg}，位置是${cwd}`);
@@ -71,7 +70,7 @@ class Install extends BaseCommand {
           } else {
             try {
               const { name } = await readPkg({
-                cwd: path.join(root, dir)
+                cwd: path.join(root, dir),
               });
               if (name === pkg) {
                 await execa(
@@ -87,18 +86,18 @@ class Install extends BaseCommand {
         },
         { concurrency: 3 }
       );
-      this.logger.error('未找到匹配的项目');
+      this.logger.error("未找到匹配的项目");
     } else {
-      this.spinner.text = '正在下载';
+      this.spinner.text = "正在下载";
       const version = await this.getAvailableVersion(pkg);
       const pkgName = `${pkg}@${version}`;
       try {
         await this.npm.install(pkgName, {
           dependencies: !options.dev,
-          devDependencies: options.dev
+          devDependencies: options.dev,
         });
       } catch {
-        spinner.fail('无法下载，请检查名称是否有误');
+        spinner.fail("无法下载，请检查名称是否有误");
         return;
       }
       spinner.succeed(`${pkgName}下载成功`);
@@ -106,21 +105,21 @@ class Install extends BaseCommand {
   }
   private async isMonorepo(folder: string) {
     const dirs = await fs.readdir(folder);
-    return dirs.includes('lerna.json');
+    return dirs.includes("lerna.json");
   }
   private async getAvailableVersion(name: string) {
     const { spinner } = this;
-    let version = 'latest';
-    let type = 'module';
-    while (type === 'module') {
-      if (version !== 'latest') {
+    let version = "latest";
+    let type = "module";
+    while (type === "module") {
+      if (version !== "latest") {
         version = (semver.coerce(semver.major(version) - 1) as SemVer).version;
       }
       const res = await axios.get(
         `https://registry.npmjs.org/${name}/${version}`
       );
       type = res.data.type;
-      if (type === 'module') {
+      if (type === "module") {
         spinner.text = `检测到当前版本是ESModule类型的，正在向下查找CommonJS版本的V${semver.major(
           version
         )}.x`;
@@ -131,24 +130,24 @@ class Install extends BaseCommand {
     return semver.major(version);
   }
   private renderHelp() {
-    console.log(
-      boxen(
-        `
-        为本项目下载某个模块，可以从npm下载，也可以从本地复制。
-        只下载支持CommonJS的。
-        ————————————————————————————————
-        mycli npm install moduleName 当参数不是地址的时候，判断为线上的npm模块
-        mycli npm install /path/to/your_module 从本地复制过来
-        mycli npm install moduleName -d 添加到devDependencies中。
-    `,
-        {
-          borderColor: 'green',
-          dimBorder: true,
-          padding: 0,
-          margin: 0
-        }
-      )
-    );
+    // console.log(
+    //   boxen(
+    //     `
+    //     为本项目下载某个模块，可以从npm下载，也可以从本地复制。
+    //     只下载支持CommonJS的。
+    //     ————————————————————————————————
+    //     mycli npm install moduleName 当参数不是地址的时候，判断为线上的npm模块
+    //     mycli npm install /path/to/your_module 从本地复制过来
+    //     mycli npm install moduleName -d 添加到devDependencies中。
+    // `,
+    //     {
+    //       borderColor: "green",
+    //       dimBorder: true,
+    //       padding: 0,
+    //       margin: 0,
+    //     }
+    //   )
+    // );
   }
 }
 

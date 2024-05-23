@@ -42,7 +42,7 @@ export const validate = (obj: any, descriptor: ValidatorRules): void => {
   });
 };
 
-export const root = process.cwd();
+export const root = path.join(fileURLToPath(import.meta.url), "../../");
 
 export const download = (src: string, dest: string) => {
   const ws = fs.createWriteStream(dest);
