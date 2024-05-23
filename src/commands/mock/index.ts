@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import axios from "axios";
-import { fork, ChildProcess } from "child_process";
+import { fork, ChildProcess } from "node:child_process";
 import { flatten, omit } from "lodash-es";
 import clipboardy from "clipboardy";
 import { reactive } from "@vue/reactivity";
