@@ -2,12 +2,16 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "outDir": "./dist/",
     "baseUrl": "./",
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src"]
 }

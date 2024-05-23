@@ -1,7 +1,7 @@
-import BaseCommand from '../../util/BaseCommand.js';
-import publicIp from 'public-ip';
-import internalIp from 'internal-ip';
-import chalk from 'chalk';
+import BaseCommand from "@/util/BaseCommand";
+import publicIp from "public-ip";
+import internalIp from "internal-ip";
+import chalk from "chalk";
 class Ip extends BaseCommand {
   async run() {
     const [iIp, pIp] = await Promise.all([internalIp.v4(), publicIp.v4()]);
