@@ -3,39 +3,35 @@ import chalk from "chalk";
 import Table from "cli-table3";
 import { AxiosError } from "axios";
 import BaseCommand from "@/util/BaseCommand";
-const table = new Table({
-  head: [
-    chalk.green("名称"),
-    chalk.green("简介"),
-    chalk.green("周下载量"),
-    chalk.green("上次更新"),
-    chalk.green("最新版本"),
-  ],
-  colAligns: ["center", "center", "center", "center", "center"],
-});
+
 interface Options {
   open?: boolean;
+  full?: boolean;
 }
 interface OutputPkgItem {
   name: string;
   description: string;
   weeklyDl: string;
   lastPb: string;
+  version: string;
 }
+
+/**
+ * 查询npm模块信息，支持单包查询和多包查询
+ * 单包查询的可以访问npm主页
+ */
 class Search extends BaseCommand {
-  private args: string[];
   private options: Options;
-  constructor(args: string[], options: Options) {
+  constructor(private packages: string[], options: Options) {
     super();
-    this.args = args;
     this.options = options;
   }
   async run() {
-    const { args, options } = this;
-    if (args.length === 1) {
-      return this.fetchNpmPackage(args[0], false, options);
-    } else if (args.length > 1) {
-      return this.fetchMulNpmPackage(args);
+    const { packages, options } = this;
+    if (packages.length === 1) {
+      return this.fetchNpmPackage(packages[0], false, options);
+    } else if (packages.length > 1) {
+      return this.fetchMulNpmPackage(packages);
     } else {
       this.logger.error("未检测到依赖名称。");
     }
@@ -48,7 +44,7 @@ class Search extends BaseCommand {
   ): Promise<OutputPkgItem> {
     const { spinner } = this;
     if (!isMultiple) {
-      spinner.text = `正在查找 ${packageName} 模块`;
+      spinner.text = `正在查找${chalk.cyan(packageName)}模块`;
     }
     const page = await this.npm.getPage(packageName);
     const data = {
@@ -66,20 +62,35 @@ class Search extends BaseCommand {
     console.log(`${chalk.bold(`关于${packageName}`)}:
         ${data.description}
       周下载量：${chalk.green(data.weeklyDl)}
-      上次更新：${chalk.green(data.lastPb)}`);
+      上次更新：${chalk.green(data.lastPb)}
+      最新版本：${chalk.green(data.version)}`);
     if (options.open) {
       await open(`https://npmjs.com/package/${packageName}`);
     }
     return data;
   }
   // 获取多个包信息并比较
-  private async fetchMulNpmPackage(args: string[]) {
-    const { spinner } = this;
-    spinner.text = `正在查找 ${args.join(" ")} 这些模块`;
-    let resList;
+  private async fetchMulNpmPackage(packages: string[]) {
+    const { spinner, options } = this;
+    const head = [
+      chalk.green("名称"),
+      chalk.green("简介"),
+      chalk.green("周下载量"),
+      chalk.green("上次更新"),
+      chalk.green("最新版本"),
+    ];
+    if (!options.full) {
+      head.splice(1, 1);
+    }
+    const table = new Table({
+      head,
+      colAligns: options.full ? ["center", "center", "center", "center", "center"] : ["center", "center", "center", "center"],
+    });
+    spinner.text = `正在查找 ${packages.join(" ")} 这些模块`;
+    let resList: OutputPkgItem[];
     try {
       resList = await Promise.all(
-        args.map((arg) => this.fetchNpmPackage(arg, true))
+        packages.map((pkg) => this.fetchNpmPackage(pkg, true))
       );
     } catch (error) {
       const err = error as AxiosError;
@@ -96,13 +107,19 @@ class Search extends BaseCommand {
     }
     spinner.stop();
     table.push(
-      ...resList.map((item) => [
-        item.name,
-        this.lineFeed(item.description),
-        item.weeklyDl,
-        item.lastPb,
-        item.version,
-      ])
+      ...resList.map((item) => {
+        const output = [
+          item.name,
+          this.lineFeed(item.description),
+          item.weeklyDl,
+          item.lastPb,
+          item.version,
+        ]
+        if (!options.full) {
+          output.splice(1, 1);
+        }
+        return output;
+      })
     );
     console.log(table.toString());
   }

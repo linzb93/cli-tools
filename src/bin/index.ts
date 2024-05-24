@@ -6,7 +6,7 @@ import open from "@/commands/open";
 import translate from "@/commands/translate";
 import occ from "@/commands/occ";
 import fs from "fs-extra";
-import path from "node:path";
+import { resolve } from "node:path";
 import dayjs from "dayjs";
 import { root } from "@/util/helper";
 import agent from "@/commands/agent";
@@ -33,7 +33,7 @@ program.version("2.0.0");
 
 program.hook("preAction", (thisCommand) => {
   fs.appendFile(
-    path.resolve(root, "data/track.txt"),
+    resolve(root, "data/track.txt"),
     `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${thisCommand.args.join(" ")}\n`
   );
 });
@@ -179,6 +179,7 @@ program
   .command("npm [sub-command] [rest...]")
   .option("-D, --dev", "安装到devDependencies")
   .option("-g, --global", "全局操作")
+  .option("-f, --full", "完整版")
   .option("--open", "打开页面")
   .option("--help", "帮助文档")
   .action((subCommand: string, rest, cmd) => {
