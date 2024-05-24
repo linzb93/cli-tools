@@ -26,7 +26,7 @@ import token from "@/commands/token";
 import tree from "@/commands/tree";
 import git from "@/commands/git";
 import npm from "@/commands/npm";
-import vue from "@/commands/vue";
+import code from "@/commands/code";
 
 const program = new Command();
 program.version("2.0.0");
@@ -185,9 +185,9 @@ program
     npm(subCommand, rest, cmd);
   });
   program
-  .command("vue [sub-command] [rest...]")
+  .command("code [sub-command] [rest...]")
   .option("--help", "帮助文档")
-  .action((subCommand: string) => {
-    vue(subCommand);
+  .action((subCommand: string, rest) => {
+    code(subCommand, rest);
   });
 program.parse(process.argv);
