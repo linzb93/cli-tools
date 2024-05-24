@@ -8,6 +8,7 @@ interface Options {
   help: boolean;
 }
 
+// 下载bug文件并定位
 class Bug extends BaseCommand {
   constructor(private source: string, private options: Options) {
     super();

@@ -12,12 +12,12 @@ class Shortcut extends BaseCommand {
         mac: "",
       },
       {
-        title: "切换至下一个文件",
+        title: "切换至下一个文件（Chrome同理）",
         windows: "ctrl + page down",
         mac: "shift + cmd + ]",
       },
       {
-        title: "切换至上一个文件",
+        title: "切换至上一个文件（Chrome同理）",
         windows: "ctrl + page up",
         mac: "shift + cmd + [",
       },
@@ -54,12 +54,7 @@ class Shortcut extends BaseCommand {
       {
         title: "清除终端内容",
         windows: "ctrl + k",
-        mac: "",
-      },
-      {
-        title: "chrome切换到下一个标签",
-        windows: "",
-        mac: "command + option + ->",
+        mac: "cmd + k",
       },
     ];
     const list = this.name

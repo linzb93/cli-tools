@@ -1,4 +1,4 @@
-import cheerio, { CheerioAPI } from "cheerio";
+import { load as cheerioLoad, CheerioAPI } from "cheerio";
 import axios, { AxiosResponse } from "axios";
 import fs from "fs-extra";
 import path from "node:path";
@@ -13,6 +13,7 @@ class Spider extends BaseCommand {
   private dest: string;
   private static sourceMap = [
     {
+      title:'知乎',
       pattern: /^https:\/\/www.zhihu.com\/question\/\d+\/answer\/\d+$/,
       parser($: CheerioAPI): string[] {
         const $targets = $(".RichContent-inner").first().find("img");
@@ -44,7 +45,7 @@ class Spider extends BaseCommand {
       this.spinner.fail("页面爬取失败，任务结束");
       return;
     }
-    const $ = cheerio.load(res.data);
+    const $ = cheerioLoad(res.data);
     const imgs = matchSource.parser($).map((img) => ({
       source: img,
       filename: path.basename(img.split("?")[0]),

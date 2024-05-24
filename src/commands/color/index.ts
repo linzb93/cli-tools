@@ -13,33 +13,35 @@ class ColorConvert extends BaseCommand {
   }
   run() {
     let { text } = this;
-    let ret = convert.hex.rgb(text).join(", ");
+    let destColor = '';
     let blockColor = `#${text}`;
     if (this.text.startsWith("#")) {
+      // hex格式的，形如`#fff`
       blockColor = text;
       text = this.text.slice(1);
-      ret = convert.hex.rgb(text).join(", ");
+      destColor = convert.hex.rgb(text).join(", ");
     } else if (this.text.includes(",")) {
+      // rgb格式的，形容`22,33,22`
       text = this.text.replace(/\s/g, "");
       const colorNumberList = text.split(",").map((item) => Number(item)) as [
         number,
         number,
         number
       ];
-      ret = `#${convert.rgb.hex(colorNumberList)}`;
-      blockColor = ret;
+      destColor = `#${convert.rgb.hex(colorNumberList)}`;
+      blockColor = destColor;
     }
     if (this.options.get) {
       this.logger.success(`${chalk.hex(blockColor).bold("示例文字")}`);
       return;
     }
     if (process.env.VITEST) {
-      return ret;
+      return destColor;
     }
     this.logger.success(
-      `${chalk.green("[已复制]")}${chalk.hex(blockColor).bold(ret)}`
+      `${chalk.green("[已复制]")}${chalk.hex(blockColor).bold(destColor)}`
     );
-    clipboard.writeSync(ret);
+    clipboard.writeSync(destColor);
   }
 }
 /**
