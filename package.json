@@ -17,6 +17,7 @@
   "author": "linzb93",
   "license": "ISC",
   "dependencies": {
+    "@linzb93/utils": "^0.0.14",
     "@vue/reactivity": "^3.4.27",
     "@vue/runtime-core": "^3.4.27",
     "async-validator": "^4.2.5",
@@ -27,7 +28,7 @@
     "cheerio": "^1.0.0-rc.12",
     "chokidar": "^3.6.0",
     "cli-table3": "^0.6.5",
-    "clipboardy": "^4.0.0",
+    "clipboardy": "^2.3.0",
     "color-convert": "^2.0.1",
     "commander": "^8.3.0",
     "cors": "^2.8.5",
@@ -61,7 +62,7 @@
     "public-ip": "^5.0.0",
     "read-pkg": "^5.2.0",
     "semver": "^7.3.5",
-    "string-width": "^7.1.0",
+    "string-width": "^6.1.0",
     "terminal-size": "^4.0.0",
     "through2": "^4.0.2",
     "uuid": "^8.3.2"

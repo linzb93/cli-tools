@@ -8,7 +8,7 @@ import occ from "@/commands/occ";
 import fs from "fs-extra";
 import path from "node:path";
 import dayjs from "dayjs";
-import { isValidKey, root } from "@/util/helper";
+import { root } from "@/util/helper";
 import agent from "@/commands/agent";
 import cg from "@/commands/cg";
 import bug from "@/commands/bug";

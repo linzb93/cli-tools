@@ -12,7 +12,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import os from "node:os";
 import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
-
+export { sleep, isEmptyObject } from '@linzb93/utils'; 
 export const isWin = process.platform === "win32";
 
 export const isURL = (text: string): boolean => {
@@ -96,19 +96,6 @@ export const getOriginPath = async (rawPath: string): Promise<string> => {
   return rawPath;
 };
 
-export const isEmptyObject = (value: any) => {
-  // eslint-disable-next-line no-unused-vars
-  for (const key of value) {
-    return false;
-  }
-  return true;
-};
-
-export const sleep = (time: number): Promise<number> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-};
 
 export const splitByLine = (str: string): string[] => {
   const eol = str.includes("\r\n") ? "\r\n" : "\n";

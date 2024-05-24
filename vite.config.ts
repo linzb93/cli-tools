@@ -7,11 +7,11 @@ import pkg from "./package.json";
 export default defineConfig({
   resolve: {
     alias: {
-      "@": resolve(process.cwd(), "/src"),
+      "@": resolve(process.cwd(), "src"),
     },
   },
   build: {
-    target: "node18",
+    target: "node14",
     outDir: "dist",
     minify: false,
     rollupOptions: {
