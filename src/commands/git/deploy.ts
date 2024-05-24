@@ -37,20 +37,6 @@ class Deploy extends BaseCommand {
   }
   async run() {
     const { data } = this;
-    this.helper.validate(
-      {
-        data: data[0],
-      },
-      {
-        data: [
-          {
-            type: "enum",
-            enum: ["test", "prod"],
-            message: "请输入正确的部署环境，测试环境可以不写，生产环境为prod",
-          },
-        ],
-      }
-    );
     const remote = await this.git.remote();
     const curBranch = await this.git.getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);

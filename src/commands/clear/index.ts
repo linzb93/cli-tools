@@ -1,5 +1,5 @@
 import del from "del";
-import { globby } from "globby";
+// import { globby } from "globby";
 import pMap from "p-map";
 import BaseCommand from "@/util/BaseCommand";
 
@@ -28,5 +28,6 @@ export default (filename: string) => {
 };
 
 export function getMatchPaths(filename: string) {
-  return globby([`**/*/${filename}`, "!node_modules"]);
+  // return globby([`**/*/${filename}`, "!node_modules"]);
+  return [];
 }
