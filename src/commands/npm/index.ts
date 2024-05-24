@@ -3,11 +3,12 @@ import has from "./has";
 import install from "./install";
 import search from "./search";
 import uninstall from "./uninstall";
+import analyse from "./analyse";
 
 class Home extends BaseCommand {
   constructor(
     private subCommand: string,
-    private data: string,
+    private data: string[],
     private options: any
   ) {
     super();
@@ -15,19 +16,22 @@ class Home extends BaseCommand {
   async run() {
     const { subCommand, data, options } = this;
     if (subCommand === "has") {
-      has([data], options);
+      has(data, options);
       return;
     }
     if (subCommand === "install") {
-      install([data], options);
+      install(data, options);
       return;
     }
     if (subCommand === "search") {
-      search([data], options);
+      search(data, options);
       return;
     }
     if (subCommand === "uninstall") {
-      uninstall([data], options);
+      uninstall(data, options);
+    }
+    if (subCommand === 'analyse') {
+      analyse();
     }
     // console.log(
     //   boxen(
@@ -51,6 +55,6 @@ class Home extends BaseCommand {
   }
 }
 
-export default function (subCommand: string, data: string, options: any) {
+export default function (subCommand: string, data: string[], options: any) {
   new Home(subCommand, data, options).run();
 }

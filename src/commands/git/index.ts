@@ -11,7 +11,7 @@ import tag from "./tag";
 class Home extends BaseCommand {
   constructor(
     private subCommand: string,
-    private data: string,
+    private data: string[],
     private options: any
   ) {
     super();
@@ -19,11 +19,11 @@ class Home extends BaseCommand {
   run() {
     const { subCommand, data, options } = this;
     if (subCommand === "clone") {
-      clone([data], options);
+      clone(data, options);
       return;
     }
     if (subCommand === "deploy") {
-      deploy([data], options);
+      deploy(data, options);
       return;
     }
     if (subCommand === "pull") {
@@ -47,16 +47,16 @@ class Home extends BaseCommand {
       return;
     }
     if (subCommand === "reset") {
-      reset(data);
+      reset(data[0]);
       return;
     }
     if (subCommand === "tag") {
-      tag([data], options);
+      tag(data, options);
       return;
     }
   }
 }
 
-export default function (subCommand: string, data: string, options: any) {
+export default function (subCommand: string, data: string[], options: any) {
   new Home(subCommand, data, options).run();
 }

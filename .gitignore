@@ -8,6 +8,6 @@ lib/commands/test.js
 lib/commands/spider/images/
 dist
 data/
-.temp
+temp/
 *.txt
 *.log
