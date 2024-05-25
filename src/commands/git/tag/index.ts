@@ -80,6 +80,11 @@ class Tag extends BaseCommand {
     }
     return `v${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
   }
+  /**
+   * 获取最近的一次tag
+   * @param tags
+   * @returns
+   */
   private gitCurrentLatestTag(tags: string[]): string {
     for (let i = tags.length - 1; i >= 0; i--) {
       if (tags[i].match(/^v\d\./)) {

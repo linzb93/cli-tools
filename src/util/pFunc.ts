@@ -20,17 +20,17 @@ type PromiseFunc = () => Promise<any>;
 export const pRetry = async (
   input: PromiseFunc,
   {
-    retries = 10,
+    retryTimes = 10,
     retryTimesCallback,
   }: {
-    retries: number;
+    retryTimes: number;
     retryTimesCallback?(c: number, message?: string): void;
   }
 ): Promise<any> => {
   let count = 0;
   const retryFunc = async (
     ipt: PromiseFunc,
-    retriesTime: number
+    retryTimesTime: number
   ): Promise<any> => {
     try {
       return await ipt();
@@ -38,16 +38,16 @@ export const pRetry = async (
       count++;
       typeof retryTimesCallback === "function" &&
         retryTimesCallback(count, (error as Error).message);
-      if (count === retriesTime) {
+      if (count === retryTimesTime) {
         throw error;
       } else {
-        return retryFunc(ipt, retriesTime);
+        return retryFunc(ipt, retryTimesTime);
       }
     }
   };
   let data;
   try {
-    data = await retryFunc(input, retries);
+    data = await retryFunc(input, retryTimes);
   } catch (error) {
     throw error;
   }
@@ -57,7 +57,7 @@ export const pRetry = async (
 export interface CommandItem {
   message: string;
   suffix?: string;
-  retries?: number;
+  retryTimes?: number;
   onError?: Function;
 }
 export const sequenceExec = async (
@@ -83,9 +83,9 @@ export const sequenceExec = async (
       continue;
     }
     try {
-      if ((commandItem as CommandItem).retries) {
+      if ((commandItem as CommandItem).retryTimes) {
         const { stdout } = await pRetry(() => execa(command), {
-          retries: (commandItem as CommandItem).retries as number,
+          retryTimes: (commandItem as CommandItem).retryTimes as number,
           retryTimesCallback: (times, errorMessage) => {
             console.log(
               showWeakenTips(

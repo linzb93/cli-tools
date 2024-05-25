@@ -3,13 +3,22 @@ import { globby } from "globby";
 import pMap from "p-map";
 import BaseCommand from "@/util/BaseCommand";
 
+interface IOptions {
+  root?: boolean;
+}
+
 // 主要是来清理Windows上被Git同步过来的 macOS 的 .DS_Store
 class Clear extends BaseCommand {
-  constructor(private filename: string) {
+  constructor(private filename: string, private options?: IOptions) {
     super();
   }
   async run() {
     const { filename } = this;
+    if (this.options?.root) {
+      await del(filename);
+      this.logger.success(`${filename}已删除`);
+      return;
+    }
     const paths = await getMatchPaths(filename);
     const len = paths.length;
     if (len === 0) {
@@ -23,8 +32,8 @@ class Clear extends BaseCommand {
   }
 }
 
-export default (filename: string) => {
-  return new Clear(filename).run();
+export default (filename: string, options?: IOptions) => {
+  return new Clear(filename, options).run();
 };
 
 export function getMatchPaths(filename: string) {

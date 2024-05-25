@@ -5,17 +5,13 @@
  * mycli git deploy prod 生产环境
  * 也可以部署github的
  */
-import { get as objectGet } from "lodash-es";
-import fs from "fs-extra";
 import open from "open";
 import readPkg from "read-pkg";
 import notifier from "node-notifier";
 import { CommandItem } from "@/util/pFunc";
 import BaseCommand from "@/util/BaseCommand";
-import { getNewestTag } from "./tag";
+import { getNewestTag } from "../tag";
 import clipboard from "clipboardy";
-import path from "node:path";
-import dayjs from "dayjs";
 
 interface Options {
   commit: string;
@@ -27,10 +23,8 @@ interface JenkinsProject {
   name: string;
   id: string;
 }
-interface GitDeploy {
-  name: string;
-  publishTime: string;
-}
+
+// git代码部署流程
 class Deploy extends BaseCommand {
   constructor(private data: string[], private options: Options) {
     super();
@@ -44,46 +38,41 @@ class Deploy extends BaseCommand {
       (curBranch === "master" && data[0] === "test") || data[0] !== "prod"
         ? "release"
         : "master";
-    this.createWorkflow([
+    this.createSerial([
       {
+        // 只提交到当前分支
         condition: this.options.current,
         action: this.deployCurrent,
       },
       {
+        // github项目
         condition: remote.includes("github.com"),
         action: this.deployToGithub,
       },
       {
+        // 测试阶段，从开发分支提交到release分支
         condition: targetBranch === "release" && isDevBranch, // dev -> release
         action: this.deployToRelease,
       },
       {
         condition: targetBranch === curBranch && curBranch === "release", // release -> release
+        action: this.deployCurrent,
+      },
+      {
+        condition: curBranch === "release" && targetBranch === "master", // release -> master
         action: () => {
-          this.helper.sequenceExec(
-            [
-              "git add .",
-              `git commit -m ${this.options.commit || "update"}`,
-              `git pull`,
-              `git push`,
-            ],
-            {
-              debug: this.options.debug,
-            }
+          this.logger.error(
+            "不允许直接从release分支合并到master分支，请从开发分支合并",
+            true
           );
         },
       },
       {
-        condition: curBranch === "release" && targetBranch === "master", // release -> master
-        action: this.deployTestToProduction,
-      },
-      {
-        condition: isDevBranch && targetBranch === "master", // dev -> master
+        // dev -> master or master -> master
+        condition:
+          (isDevBranch && targetBranch === "master") ||
+          (targetBranch === curBranch && curBranch === "master"),
         action: this.deployDevToProduction,
-      },
-      {
-        condition: targetBranch === curBranch && curBranch === "master", // master -> master
-        action: this.deployToProduction,
       },
     ]);
   }
@@ -92,33 +81,22 @@ class Deploy extends BaseCommand {
     const flow: (string | CommandItem)[] = [
       {
         message: "git pull",
-        retries: 20,
+        retryTimes: 20,
       },
       {
         message: "git push",
-        retries: 20,
+        retryTimes: 20,
       },
     ];
     const gitStatus = await this.git.getPushStatus();
     if (gitStatus === 1) {
       flow.unshift("git add .", {
-        message: `git commit -m ${options.commit || "update"}`,
+        message: `git commit -m ${this.getFormattedCommitMessage()}`,
         onError: () => {},
       });
-    } else if (gitStatus === 3) {
-      flow.pop();
-      const pkgData = await readPkg();
-      if (objectGet(pkgData, "scripts.postpull")) {
-        flow.push({
-          message: "npm run postpull",
-          suffix: objectGet(pkgData, "scripts.postpull"),
-        });
-      }
     }
     try {
-      await this.helper.sequenceExec(flow, {
-        debug: options.debug,
-      });
+      await this.helper.sequenceExec(flow);
     } catch (error) {
       this.logger.error((error as Error).message);
       notifier.notify({
@@ -127,7 +105,7 @@ class Deploy extends BaseCommand {
       });
       return;
     }
-    this.logger.success("部署成功");
+    this.logger.success("Github项目更新成功");
   }
   private async deployCurrent() {
     await this.helper.sequenceExec([
@@ -138,56 +116,24 @@ class Deploy extends BaseCommand {
     ]);
     this.logger.success("部署成功");
   }
-  private async deployTestToProduction() {
-    const { options } = this;
-    const newestTag = options.tag || (await getNewestTag());
-    try {
-      const flow = [
-        "git add .",
-        {
-          message: `git commit -m ${options.commit || "update"}`,
-          onError() {
-            throw new Error("没有需要提交的代码");
-          },
-        },
-        {
-          message: "git pull",
-          onError() {},
-        },
-        "git push",
-        "git checkout master",
-        "git pull",
-        "git merge release",
-        "git push",
-        `git tag ${newestTag}`,
-        `git push origin ${newestTag}`,
-      ];
-      await this.helper.sequenceExec(flow, {
-        debug: options.debug,
-      });
-      await this.deploySuccess(newestTag);
-    } catch (error) {
-      this.logger.error((error as Error).message);
-      return;
-    }
-  }
   private async deployDevToProduction() {
     const { tag } = this.options;
-    const { answer } = await this.helper.inquirer.prompt({
-      message: "确认更新到正式站？",
-      name: "answer",
-      type: "confirm",
-    });
-    if (!answer) {
-      return;
+    if ((await this.git.getCurrentBranch()) !== "master") {
+      const { answer } = await this.helper.inquirer.prompt({
+        message: "确认更新到正式站？",
+        name: "answer",
+        type: "confirm",
+      });
+      if (!answer) {
+        return;
+      }
     }
-    const { options } = this;
     const curBranch = await this.git.getCurrentBranch();
     const gitStatus = await this.git.getPushStatus();
     const flow = [];
     if (gitStatus === 1) {
       flow.push("git add .", {
-        message: `git commit -m ${options.commit || "update"}`,
+        message: `git commit -m ${this.getFormattedCommitMessage()}`,
         onError() {},
       });
     }
@@ -205,9 +151,7 @@ class Deploy extends BaseCommand {
       flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
     }
     try {
-      await this.helper.sequenceExec(flow, {
-        debug: options.debug,
-      });
+      await this.helper.sequenceExec(flow);
       await this.deploySuccess(newestTag);
     } catch (error) {
       this.logger.error((error as Error).message);
@@ -215,13 +159,12 @@ class Deploy extends BaseCommand {
     }
   }
   private async deployToRelease() {
-    const { options } = this;
     const curBranch = await this.git.getCurrentBranch();
     try {
       const flow = [
         "git add .",
         {
-          message: `git commit -m ${options.commit || "update"}`,
+          message: `git commit -m ${this.getFormattedCommitMessage()}`,
           onError() {},
         },
         {
@@ -264,20 +207,6 @@ class Deploy extends BaseCommand {
       return;
     }
   }
-  private async write(projectName: string): Promise<void> {
-    const logFile = path.resolve(this.helper.root, "data/gitDeploy.json");
-    const fileJSON = await fs.readJSON(logFile, "utf-8");
-    const match = fileJSON.find((item: GitDeploy) => item.name === projectName);
-    if (match) {
-      match.publishTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      fileJSON.push({
-        name: projectName,
-        publishTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      });
-    }
-    await fs.writeJSON(logFile, fileJSON);
-  }
   private async deploySuccess(tag: string) {
     if (!tag) {
       this.logger.success("部署成功");
@@ -291,9 +220,30 @@ class Deploy extends BaseCommand {
     this.logger.success(`部署成功，复制填入更新文档：
       ${copyText}`);
     clipboard.writeSync(copyText);
-    this.write(jenkins.name);
   }
-  private createWorkflow(
+  // commit message 规范化
+  private getFormattedCommitMessage() {
+    const standardCommitPrefixes = [
+      "chore",
+      "test",
+      "docs",
+      "chore",
+      "feat",
+      "fix",
+      "style",
+      "refactor",
+    ];
+    const { commit } = this.options;
+    if (
+      commit === "" ||
+      !standardCommitPrefixes.includes(commit.split(":")[0])
+    ) {
+      // 不规范
+      return `feat:${commit}`;
+    }
+    return commit;
+  }
+  private createSerial(
     flowList: {
       condition: Boolean;
       action: Function;
@@ -306,30 +256,13 @@ class Deploy extends BaseCommand {
       }
     }
   }
-  private async deployToProduction() {
-    const { options } = this;
-    const flow = [
-      "git add .",
-      `git commit -m ${options.commit || "update"}`,
-      "git pull",
-      "git push",
-    ];
-    const newestTag = await getNewestTag();
-    if (newestTag) {
-      flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
-    }
-    await this.helper.sequenceExec(flow, {
-      debug: options.debug,
-    });
-    await this.deploySuccess(newestTag);
-  }
   private async openDeployPage() {
-    const projectConf = await readPkg({
+    const pkg = await readPkg({
       cwd: process.cwd(),
     });
-    let jenkins;
-    if (projectConf) {
-      jenkins = projectConf.jenkins as JenkinsProject;
+    let jenkins: JenkinsProject;
+    if (pkg) {
+      jenkins = pkg.jenkins;
     }
     if (jenkins) {
       const { name, id } = jenkins;
