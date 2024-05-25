@@ -67,7 +67,7 @@ class Clone extends BaseCommand {
               cwd: openMap[options.dir],
             }),
           {
-            retries: 10,
+            retryTimes: 10,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次下载失败，正在重试`;
             },
@@ -102,7 +102,7 @@ class Clone extends BaseCommand {
               timeout: 15000,
             }),
           {
-            retries: 5,
+            retryTimes: 5,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次搜索失败，正在重试`;
             },
@@ -128,7 +128,7 @@ class Clone extends BaseCommand {
               cwd: openMap[options.dir],
             }),
           {
-            retries: 2,
+            retryTimes: 2,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
             },
@@ -171,7 +171,7 @@ class Clone extends BaseCommand {
               cwd: path.join(cwd, path.basename(repo)),
             }),
           {
-            retries: 5,
+            retryTimes: 5,
             retryTimesCallback: (times) => {
               this.spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
             },
@@ -196,7 +196,7 @@ class Clone extends BaseCommand {
             cwd,
           }),
         {
-          retries: 5,
+          retryTimes: 5,
           retryTimesCallback: (times) => {
             this.spinner.text = `第${times}次拉取失败，正在重新尝试拉取`;
           },

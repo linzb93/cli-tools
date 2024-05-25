@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+// 先处理debug模式
+if (process.argv.includes("--debug")) {
+  process.env.DEBUG = "*";
+}
+
 import { Command } from "commander";
 import ip from "@/commands/ip";
 import open from "@/commands/open";
@@ -38,6 +43,8 @@ program.hook("preAction", (thisCommand) => {
   );
 });
 
+program.option("--debug", "开启调试模式");
+
 program.command("ip").action(() => {
   ip();
 });
@@ -59,13 +66,13 @@ program
 
 program
   .command("occ [data...]")
-  .option("--token [token]", "获取token或根据token跳转")
+  .option("--token", "获取token或根据token跳转")
   .option("--pc", "打开PC端")
   .option("--copy", "复制地址")
   .option("--test", "测试环境")
   .option("--user", "根据token获取用户信息")
+  .option("--full", "先获取登录账号的店铺信息")
   .option("--version <v>", "版本")
-  .option("--debug", "调试模式")
   .action((data, options) => {
     occ(data, options);
   });
@@ -110,7 +117,6 @@ program
   });
 program
   .command("bug [source]")
-  .option("--debug", "调试模式")
   .option("-h, --help", "帮助文档")
   .action((source, option) => {
     bug(source, option);
@@ -118,14 +124,16 @@ program
 program.command("kill <data...>").action((data) => {
   kill(data);
 });
-program.command("clear <filename>").action((filename) => {
-  clear(filename);
-});
+program
+  .command("clear <filename>")
+  .option("-r, --root", "清理根目录下的")
+  .action((filename, options) => {
+    clear(filename, options);
+  });
 program
   .command("cg [action] [...rest]")
   .option("--realtime", "实时更新")
   .option("-f, --full", "全部")
-  .option("--debug", "调试")
   .action((action, rest, options) => {
     cg(action, rest, options);
   });
@@ -171,7 +179,6 @@ program
   .option("--tag <name>", "tag名称")
   .option("-i,--install", "安装")
   .option("--last <len>", "最近几次")
-  .option("--debug", "调试模式")
   .action((subCommand, rest, cmd) => {
     git(subCommand, rest, cmd);
   });
@@ -185,7 +192,7 @@ program
   .action((subCommand: string, rest, cmd) => {
     npm(subCommand, rest, cmd);
   });
-  program
+program
   .command("code [sub-command] [rest...]")
   .option("--help", "帮助文档")
   .action((subCommand: string, rest) => {

@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import path from "node:path";
+import { join, basename } from "node:path";
 import open from "open";
 import internalIp from "internal-ip";
 import globalNpm from "global-modules";
@@ -30,6 +30,14 @@ class Open extends BaseCommand {
       this.openSource();
       return;
     }
+    if (name === "cmd") {
+      await open(
+        this.helper.isWin
+          ? "https://www.yuque.com/linzb93/fedocs/rrfmzp"
+          : "https://www.yuque.com/linzb93/fedocs/tu3wft"
+      );
+      return;
+    }
     const map = [
       {
         name: "test",
@@ -58,8 +66,8 @@ class Open extends BaseCommand {
       try {
         matchPath = await this.helper.pLocate(
           [
-            path.join(sourceDir, options.name),
-            path.join(sourceDir, `${options.name}.lnk`),
+            join(sourceDir, options.name),
+            join(sourceDir, `${options.name}.lnk`),
           ],
           async (file: string) => {
             try {
@@ -84,12 +92,10 @@ class Open extends BaseCommand {
           type: "list",
           name: "source",
           message: "选择要打开的项目",
-          choices: dirs.map((dir) => path.basename(dir)),
+          choices: dirs.map((dir) => basename(dir)),
         },
       ]);
-      const path2 = await this.helper.getOriginPath(
-        path.join(sourceDir, source)
-      );
+      const path2 = await this.helper.getOriginPath(join(sourceDir, source));
       await this.helper.openInEditor(path2, {
         reuse: options.reuse,
       });

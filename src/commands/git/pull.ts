@@ -5,7 +5,7 @@ class Pull extends BaseCommand {
     await this.helper.sequenceExec([
       {
         message: "git pull",
-        retries: 20,
+        retryTimes: 20,
       },
     ]);
     this.logger.success("代码拉取成功");

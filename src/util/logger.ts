@@ -1,6 +1,5 @@
 import readline from "node:readline";
 import spinner from "./spinner";
-import { isPlainObject } from "lodash-es";
 import chalk from "chalk";
 import logSymbols from "log-symbols";
 import terminalSize from "terminal-size";
@@ -49,21 +48,6 @@ export default {
     });
     if (needExit) {
       process.exit(1);
-    }
-  },
-  debug(content: any) {
-    if (process.argv.includes("--debug")) {
-      hook(() => {
-        let str = "";
-        if (isPlainObject(content)) {
-          try {
-            str = JSON.stringify(content);
-          } catch (error) {}
-        } else {
-          str = content.toString();
-        }
-        console.log(`${chalk.cyan("[debug]")} ${str}`);
-      });
     }
   },
   clearConsole(start = 0, clearAll?: boolean) {
