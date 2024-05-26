@@ -1,23 +1,4 @@
 import { AnyObject } from "@/util/types";
-export interface MeituanLoginParams {
-  appKey: string;
-  shopId?: string;
-  memberId?: string;
-  platform: number;
-}
-export interface EleLoginParams {
-  shopId?: string;
-  shopName?: string;
-  memberId?: string;
-  userId: string;
-}
-export interface ShopItem extends MeituanLoginParams, EleLoginParams {
-  memberName?: string;
-  shopName?: string;
-  startTime: string;
-  endTime: string;
-  price: string;
-}
 
 export interface App {
   name: string;
@@ -29,6 +10,7 @@ export interface App {
   prefix?: string;
   defaultId: string;
   testDefaultId?: string;
+  needGetList?: boolean; // 必须先获取列表再获取token
   url: {
     base: string;
     list: string;
@@ -36,8 +18,7 @@ export interface App {
     userApi?: string;
   };
   getFindQuery: (app: App) => AnyObject;
-  getFindResult: (res: any) => AnyObject;
-  getLoginQuery: (data: any) => AnyObject;
+  getLoginQuery: (data: any, app: App) => AnyObject;
   getShopName: (shop: any) => string;
   getToken?: (result: any) => string;
 }

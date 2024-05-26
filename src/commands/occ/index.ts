@@ -3,7 +3,8 @@ import open from "open";
 import clipboard from "clipboardy";
 import BaseCommand from "@/util/BaseCommand";
 import appMap from "./appMap";
-import { MeituanLoginParams, EleLoginParams, App } from "./types";
+import { App } from "./types";
+import { AnyObject } from "@/util/types";
 
 interface Options {
   token: string | boolean;
@@ -12,19 +13,6 @@ interface Options {
   full: boolean;
   user: boolean;
   test: boolean;
-}
-interface ShopItem extends MeituanLoginParams, EleLoginParams {
-  memberName?: string;
-  shopName?: string;
-  startTime: string;
-  endTime: string;
-  price: string;
-}
-interface ShopListResponse {
-  result: {
-    list: ShopItem[];
-  };
-  code: number;
 }
 /**
  * OCC管理
@@ -88,7 +76,8 @@ class OCC extends BaseCommand {
    * @param pageSize
    * @returns
    */
-  private async getSearchList(): Promise<ShopItem[]> {
+  private async getSearchList(): Promise<any[]> {
+    this.spinner.text = `【${this.currentApp.serviceName}】正在获取店铺信息`;
     const { service, memberId, currentApp } = this;
     const listSearchParams = {
       ...this.currentApp.getFindQuery(this.currentApp),
@@ -96,7 +85,11 @@ class OCC extends BaseCommand {
       pageSize: 1,
       [this.currentApp.searchKey]: memberId,
     };
-    let listData: ShopListResponse;
+    let listData: {
+      result: {
+        list: AnyObject[];
+      };
+    };
     try {
       const res = await service.post(currentApp.url.list, listSearchParams, {});
       listData = res.data;
@@ -123,13 +116,22 @@ class OCC extends BaseCommand {
     return listData.result.list;
   }
   private async getShop(): Promise<{
-    shop: ShopItem;
+    shop: AnyObject;
     url: string;
   }> {
     const { options, currentApp } = this;
-    const list = await this.getSearchList();
-    const shop = list[0];
-    const shopName = this.currentApp.getShopName(shop);
+    let shop = {};
+    let shopName = "";
+    if (options.full || currentApp.needGetList) {
+      const list = await this.getSearchList();
+      shop = list[0];
+      shopName = this.currentApp.getShopName(list[0]);
+    } else {
+      shop = {
+        memberId: this.memberId,
+      };
+      shopName = this.memberId;
+    }
     if (options.token) {
       this.spinner.text = `【${currentApp.serviceName}】正在获取token:${shopName}`;
     } else {
@@ -140,7 +142,7 @@ class OCC extends BaseCommand {
       data: { result },
     } = await this.service.post(
       currentApp.url.login,
-      currentApp.getLoginQuery(shop)
+      currentApp.getLoginQuery(shop, currentApp)
     );
     return {
       url:
