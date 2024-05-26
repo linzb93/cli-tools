@@ -17,14 +17,11 @@ const meituanParams = {
       serviceName: app.serviceName,
     };
   },
-  getFindResult(res: any) {
-    return {};
-  },
-  getLoginQuery(item: any) {
+  getLoginQuery(item: any, app: App) {
     return {
-      appKey: item.appKey,
+      appKey: app.appKey,
       memberId: item.memberId,
-      platform: item.platform,
+      platform: app.platform,
     };
   },
   getShopName(shop: any) {
@@ -32,6 +29,7 @@ const meituanParams = {
   },
 };
 const eleFn = {
+  needGetList: true,
   url: {
     base: "/eleOcc",
     list: "/manage/getOrderList",
@@ -45,10 +43,7 @@ const eleFn = {
       serviceName: app.serviceName,
     };
   },
-  getFindResult(res: any) {
-    return {};
-  },
-  getLoginQuery(item: any) {
+  getLoginQuery(item: any, app: App) {
     return {
       appId: item.appId,
       shopId: item.shopId,
@@ -128,6 +123,7 @@ const appMap: App[] = [
     serviceName: "店客多品牌连锁",
     defaultId: "15859095882",
     prefix: ls.get("oa.oldApiPrefix"),
+    needGetList: true,
     url: {
       base: "/chain/occ",
       list: "/oa/dkdAccountDetails/accountAnalysisList",
@@ -139,10 +135,7 @@ const appMap: App[] = [
         sortType: "",
       };
     },
-    getFindResult(res: any) {
-      return {};
-    },
-    getLoginQuery(item: any) {
+    getLoginQuery(item: any, app: App) {
       return {
         id: item.dkdAccountInfo.id,
       };
