@@ -61,7 +61,7 @@
     "public-ip": "^5.0.0",
     "read-pkg": "^5.2.0",
     "semver": "^7.3.5",
-    "string-width": "^6.1.0",
+    "string-width": "^5.1.2",
     "terminal-size": "^4.0.0",
     "through2": "^4.0.2",
     "uuid": "^8.3.2"
