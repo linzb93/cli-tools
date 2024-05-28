@@ -61,6 +61,7 @@ const appMap: App[] = [
     appKey: "4",
     serviceName: "经营神器-美团",
     defaultId: "15983528161",
+    testDefaultId: '15983528161',
     ...meituanParams,
   },
   {
@@ -68,6 +69,7 @@ const appMap: App[] = [
     appKey: "36",
     serviceName: "装修神器-美团",
     defaultId: "16159400501",
+    testDefaultId: "16159400501",
     ...meituanParams,
   },
   {
@@ -75,6 +77,7 @@ const appMap: App[] = [
     appKey: "73",
     serviceName: "评价神器-美团",
     defaultId: "16499283381",
+    testDefaultId:"16499283381",
     ...meituanParams,
   },
   {
@@ -82,6 +85,7 @@ const appMap: App[] = [
     appKey: "75",
     serviceName: "IM神器-美团",
     defaultId: "16505256214",
+    testDefaultId: "16505256214",
     ...meituanParams,
   },
   {
@@ -89,6 +93,7 @@ const appMap: App[] = [
     appKey: "76",
     serviceName: "营销神器-美团",
     defaultId: "16505284824",
+    testDefaultId: "16505284824",
     ...meituanParams,
   },
   {
@@ -96,6 +101,7 @@ const appMap: App[] = [
     appKey: "85",
     serviceName: "点金大师-美团",
     defaultId: "16668523733",
+    testDefaultId:"16668523733",
     ...meituanParams,
   },
   {
@@ -105,6 +111,7 @@ const appMap: App[] = [
     platform: 8,
     searchKey: "param",
     defaultId: "16928614773",
+    testDefaultId:"16928614773",
     ...meituanParams,
   },
   {
@@ -129,13 +136,13 @@ const appMap: App[] = [
       list: "/oa/dkdAccountDetails/accountAnalysisList",
       login: "/dkdAccount/oa/getAccountToken",
     },
-    getFindQuery(app: App) {
+    getFindQuery(_: App) {
       return {
         sort: "",
         sortType: "",
       };
     },
-    getLoginQuery(item: any, app: App) {
+    getLoginQuery(item: any, _: App) {
       return {
         id: item.dkdAccountInfo.id,
       };

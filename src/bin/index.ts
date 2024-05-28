@@ -43,126 +43,68 @@ program.hook("preAction", (thisCommand) => {
   );
 });
 
-program.option("--debug", "开启调试模式");
-
-program.command("ip").action(() => {
-  ip();
-});
-
-program
-  .command("open <name>")
-  .option("--name <name>", "打开的文件夹")
-  .option("-r, --reuse", "强制在已开启的编辑器里打开")
-  .action((url, cmd) => {
-    open(url, cmd);
-  });
-
-program
-  .command("eng <text>")
-  .option("-e,--example", "显示范例")
-  .action((text, options) => {
-    translate(text, options);
-  });
-
-program
-  .command("occ [data...]")
-  .option("--token", "获取token或根据token跳转")
-  .option("--pc", "打开PC端")
-  .option("--copy", "复制地址")
-  .option("--test", "测试环境")
-  .option("--user", "根据token获取用户信息")
-  .option("--full", "先获取登录账号的店铺信息")
-  .option("--version <v>", "版本")
-  .action((data, options) => {
-    occ(data, options);
-  });
-
 program
   .command("agent [sub-command]")
   .option("--proxy <url>", "代理地址")
   .option("--port <num>", "端口号")
   .option("-c, --copy", "复制网络地址")
+  .option('--help', '显示帮助文档')
   .action((subCommand, options) => {
     agent(subCommand, options);
   });
-program
-  .command("size <url>")
-  .option("--rect", "获取宽高")
-  .action((filename, options) => {
-    getSize(filename, options);
-  });
-program
-  .command("mon [filename]")
-  .allowUnknownOption()
-  .action((file, _, options) => {
-    const combinedOptions = options.args.slice(1);
-    monitor(file, combinedOptions);
-  });
-program
-  .command("spider <url>")
-  .option("--dest <dest>", "下载目标文件夹")
-  .action((url, option) => {
-    spider(url, option);
-  });
-program.command("lixi").action(() => {
-  lixi();
-});
-program
-  .command("tree [dir]")
-  .option("--level <level>", "层级")
-  .option("--ignore <dirs>", "添加忽略的文件夹")
-  .option("-c, --copy", "复制")
-  .action((dir, option) => {
-    tree(dir, option);
-  });
+
 program
   .command("bug [source]")
-  .option("-h, --help", "帮助文档")
+  .option('--help', '显示帮助文档')
   .action((source, option) => {
     bug(source, option);
   });
-program.command("kill <data...>").action((data) => {
-  kill(data);
-});
-program
-  .command("clear <filename>")
-  .option("-r, --root", "清理根目录下的")
-  .action((filename, options) => {
-    clear(filename, options);
-  });
+
 program
   .command("cg [action] [...rest]")
   .option("--realtime", "实时更新")
   .option("-f, --full", "全部")
+  .option('--help', '显示帮助文档')
   .action((action, rest, options) => {
     cg(action, rest, options);
   });
+
 program
-  .command("token <data>")
-  .option("-o --origin", "原始数据")
-  .option("-c --complete", "完整数据")
-  .action((data, options) => {
-    token(data, options);
+  .command("clear <filename>")
+  .option("-r, --root", "清理根目录下的")
+  .option('--help', '显示帮助文档')
+  .action((filename, options) => {
+    clear(filename, options);
   });
+
+program
+  .command("code [sub-command] [rest...]")
+  .option('--help', '显示帮助文档')
+  .action((subCommand: string, rest) => {
+    code(subCommand, rest);
+  });
+
 program
   .command("color <text>")
+  .option('--help', '显示帮助文档')
   .option("--get")
   .action((data, options) => {
     color(data, options);
   });
-program.command("fork <filename>").action((file) => {
-  fork(file);
-});
+
 program
-  .command("mock [action]")
-  .option("--force", "强制更新所有接口并启动服务器")
-  .option("--single [path]", "更新单一接口")
-  .option("--update", "只更新接口")
-  .action((action, options) => {
-    mock(action, options);
+  .command("eng <text>")
+  .option("-e,--example", "显示范例")
+  .option('--help', '显示帮助文档')
+  .action((text, options) => {
+    translate(text, options);
   });
-program.command("shortcut [name]").action((name) => {
-  shortcut(name);
+
+program
+.command("fork <filename>")
+.option('--help', '显示帮助文档')
+.action((file) => {
+  fork(file);
 });
 
 program
@@ -179,23 +121,117 @@ program
   .option("--tag <name>", "tag名称")
   .option("-i,--install", "安装")
   .option("--last <len>", "最近几次")
+  .option('--help', '显示帮助文档')
   .action((subCommand, rest, cmd) => {
     git(subCommand, rest, cmd);
   });
+
+program.command("ip").action(() => {
+  ip();
+});
+
+program.command("kill <data...>")
+.option('--help', '显示帮助文档')
+.action((data) => {
+  kill(data);
+});
+
+program.command("lixi").action(() => {
+  lixi();
+});
+
+program
+  .command("mock [action]")
+  .option("--force", "强制更新所有接口并启动服务器")
+  .option("--single [path]", "更新单一接口")
+  .option("--update", "只更新接口")
+  .option('--help', '显示帮助文档')
+  .action((action, options) => {
+    mock(action, options);
+  });
+
+program
+  .command("mon [filename]")
+  .option('--help', '显示帮助文档')
+  .allowUnknownOption()
+  .action((file, _, options) => {
+    const combinedOptions = options.args.slice(1);
+    monitor(file, combinedOptions);
+  });
+
 program
   .command("npm [sub-command] [rest...]")
   .option("-D, --dev", "安装到devDependencies")
   .option("-g, --global", "全局操作")
   .option("-f, --full", "完整版")
   .option("--open", "打开页面")
-  .option("--help", "帮助文档")
+  .option('--help', '显示帮助文档')
   .action((subCommand: string, rest, cmd) => {
     npm(subCommand, rest, cmd);
   });
+
 program
-  .command("code [sub-command] [rest...]")
-  .option("--help", "帮助文档")
-  .action((subCommand: string, rest) => {
-    code(subCommand, rest);
+  .command("occ [data...]")
+  .option("--token", "获取token或根据token跳转")
+  .option("--pc", "打开PC端")
+  .option("--copy", "复制地址")
+  .option("--test", "测试环境")
+  .option("--user", "根据token获取用户信息")
+  .option("--full", "先获取登录账号的店铺信息")
+  .option('--help', '显示帮助文档')
+  .action((data, options) => {
+    occ(data, options);
   });
+
+program
+  .command("open <name>")
+  .option("--name <name>", "打开的文件夹")
+  .option("-r, --reuse", "强制在已开启的编辑器里打开")
+  .option('--help', '显示帮助文档')
+  .action((url, cmd) => {
+    open(url, cmd);
+  });
+
+program
+.command("shortcut [name]")
+.option('--help', '显示帮助文档')
+.action((name) => {
+  shortcut(name);
+});
+
+program
+  .command("size <url>")
+  .option("--rect", "获取宽高")
+  .option('--help', '显示帮助文档')
+  .action((filename, options) => {
+    getSize(filename, options);
+  });
+
+program
+  .command("spider <url>")
+  .option("--dest <dest>", "下载目标文件夹")
+  .option('--help', '显示帮助文档')
+  .action((url, option) => {
+    spider(url, option);
+  });
+
+program
+  .command("token <data>")
+  .option("-o --origin", "原始数据")
+  .option("-c --complete", "完整数据")
+  .option('--help', '显示帮助文档')
+  .action((data, options) => {
+    token(data, options);
+  });
+
+program
+  .command("tree [dir]")
+  .option("--level <level>", "层级")
+  .option("--ignore <dirs>", "添加忽略的文件夹")
+  .option("-c, --copy", "复制")
+  .option('--help', '显示帮助文档')
+  .action((dir, option) => {
+    tree(dir, option);
+  });
+
 program.parse(process.argv);

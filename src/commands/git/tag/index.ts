@@ -47,7 +47,7 @@ class Tag extends BaseCommand {
       let output = "";
       const input = this.datas[0];
       if (!input) {
-        output = await this.getNewestTag();
+        output = await this.generateNewestTag();
       } else {
         output = input.startsWith("v") ? input : `v${input}`;
       }
@@ -65,18 +65,18 @@ class Tag extends BaseCommand {
       clipboard.writeSync(ret);
     }
   }
-  async getNewestTag(): Promise<string> {
+  /**
+   * 生成最新的tag
+   */
+  async generateNewestTag(): Promise<string> {
     const gitTags = await this.git.tag();
     if (gitTags.length === 0) {
       return "";
     }
-    const matchTag = this.gitCurrentLatestTag(gitTags);
-    const firstNum = Number(matchTag.slice(1, 2)[0]);
-    const secondNum = Number((matchTag.match(/v\d\.(\d+)/) as string[])[1]);
-    const thirdNum = Number((matchTag.match(/v(\d\.){2}(\d+)/) as string[])[2]);
-    const lastNum = Number((matchTag.match(/(\d+)$/) as string[])[1]);
-    if (matchTag.split(".").length === 3) {
-      return `${matchTag}.1`;
+    const lastTag = this.gitCurrentLatestTag(gitTags);
+    const [firstNum, secondNum, thirdNum, lastNum] = lastTag.replace(/^v/, '').split('.');
+    if (lastTag.split(".").length === 3) {
+      return `${lastTag}.1`;
     }
     return `v${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
   }
@@ -104,6 +104,6 @@ function tag(datas: string[], options: Options): void {
 
 export default tag;
 
-export const getNewestTag = () => {
-  return new Tag([], {}).getNewestTag();
+export const generateNewestTag = () => {
+  return new Tag([], {}).generateNewestTag();
 };

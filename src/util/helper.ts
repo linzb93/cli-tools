@@ -180,27 +180,16 @@ export const createDB = (pathName: string): Low => {
   return new Low(adapter);
 };
 
-interface HelpDocSubTitle {
+interface HelpDocOptions {
   title: string;
-  description: string;
-  options?: {
-    title: string;
-    description: string;
-  }[];
+  content: string;
 }
 
-// 异步循环操作，直到满足条件退出。（不要删掉，目前还没用到，我不知道代码能放哪里）
-// exports.until = async function until(
-//     params, // 异步函数的参数
-//     pCallback, // 异步函数
-//     endCondition, // 结束循环条件
-//     changeParams // 不满足结束条件时参数发生的变化
-// ) {
-//     let res;
-//     let cond = false;
-//     while (!cond) {
-//         res = await pCallback(params);
-//         cond = endCondition(res);
-//         params = changeParams(params);
-//     }
-// };
+export const generateHelpDoc = (options: HelpDocOptions) => {
+  logger.box({
+    title: `${options.title}命令帮助文档`,
+    borderColor: 'green',
+    padding: 1,
+    content: options.content
+  });
+}

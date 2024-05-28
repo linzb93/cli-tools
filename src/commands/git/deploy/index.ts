@@ -10,7 +10,7 @@ import readPkg from "read-pkg";
 import notifier from "node-notifier";
 import { CommandItem } from "@/util/pFunc";
 import BaseCommand from "@/util/BaseCommand";
-import { getNewestTag } from "../tag";
+import { generateNewestTag } from "../tag";
 import clipboard from "clipboardy";
 
 interface Options {
@@ -72,12 +72,11 @@ class Deploy extends BaseCommand {
         condition:
           (isDevBranch && targetBranch === "master") ||
           (targetBranch === curBranch && curBranch === "master"),
-        action: this.deployDevToProduction,
+        action: this.deployToProduction,
       },
     ]);
   }
   private async deployToGithub() {
-    const { options } = this;
     const flow: (string | CommandItem)[] = [
       {
         message: "git pull",
@@ -116,9 +115,10 @@ class Deploy extends BaseCommand {
     ]);
     this.logger.success("部署成功");
   }
-  private async deployDevToProduction() {
+  private async deployToProduction() {
     const { tag } = this.options;
-    if ((await this.git.getCurrentBranch()) !== "master") {
+    const curBranch = await this.git.getCurrentBranch();
+    if (curBranch !== "master") {
       const { answer } = await this.helper.inquirer.prompt({
         message: "确认更新到正式站？",
         name: "answer",
@@ -128,9 +128,9 @@ class Deploy extends BaseCommand {
         return;
       }
     }
-    const curBranch = await this.git.getCurrentBranch();
+    
     const gitStatus = await this.git.getPushStatus();
-    const flow = [];
+    let flow = [];
     if (gitStatus === 1) {
       flow.push("git add .", {
         message: `git commit -m ${this.getFormattedCommitMessage()}`,
@@ -138,18 +138,19 @@ class Deploy extends BaseCommand {
       });
     }
     flow.push(
-      `git checkout master`,
+      curBranch === "master" ? '' : `git checkout master`,
       {
         message: "git pull",
         onError() {},
       },
-      `git merge ${curBranch}`,
+      curBranch === "master" ? '' :  `git merge ${curBranch}`,
       "git push"
     );
-    const newestTag = tag || (await getNewestTag());
+    const newestTag = tag || (await generateNewestTag());
     if (newestTag) {
       flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
     }
+    flow = flow.filter(item => !!item);
     try {
       await this.helper.sequenceExec(flow);
       await this.deploySuccess(newestTag);

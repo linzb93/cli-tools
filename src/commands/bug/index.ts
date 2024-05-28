@@ -33,12 +33,12 @@ class Bug extends BaseCommand {
     });
   }
   private generateHelp() {
-    // this.helper.generateHelpDoc("bug", "", [
-    //   {
-    //     title: "",
-    //     description: "下载文件，定位到报错位置",
-    //   },
-    // ]);
+    this.helper.generateHelpDoc({
+      title: 'bug',
+      content: `下载bug所在文档并在VSCode中定位到具体位置。
+使用方法：
+bug [bugfile]`
+    })
   }
 }
 
