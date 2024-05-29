@@ -12,12 +12,14 @@ import { CommandItem } from "@/util/promiseFn";
 import BaseCommand from "@/util/BaseCommand";
 import { generateNewestTag } from "../tag";
 import clipboard from "clipboardy";
+import chalk from "chalk";
 
 interface Options {
   commit: string;
   tag: string;
   debug: boolean;
   current: boolean;
+  help: boolean;
 }
 interface JenkinsProject {
   name: string;
@@ -30,7 +32,11 @@ class Deploy extends BaseCommand {
     super();
   }
   async run() {
-    const { data } = this;
+    const { data, options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     const remote = await this.git.remote();
     const curBranch = await this.git.getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);
@@ -273,6 +279,23 @@ class Deploy extends BaseCommand {
         }/view/${name}/job/${id}/`
       );
     }
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "git deploy",
+      content: `一键部署git项目(包括push和tag)，支持以下部署方式：
+- 从开发分支合并到测试分支并部署
+- 从开发分支合并到主分支并部署
+- 从主分支部署
+使用方法：
+${chalk.cyan("git deploy prod")}
+参数：
+- prod: 合并到主分支并部署
+选项：
+- -c/--current: 只push，没有tag
+- --commit=: 输入commit内容
+- --tag=: 输入tag标签`,
+    });
   }
 }
 export default (data: string[], options: Options) => {

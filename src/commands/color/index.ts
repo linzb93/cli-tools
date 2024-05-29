@@ -5,6 +5,7 @@ import BaseCommand from "@/util/BaseCommand";
 
 interface Options {
   get: boolean;
+  help: boolean;
 }
 
 class ColorConvert extends BaseCommand {
@@ -12,7 +13,11 @@ class ColorConvert extends BaseCommand {
     super();
   }
   run() {
-    let { text } = this;
+    let { text, options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     let ret = convert.hex.rgb(text).join(", ");
     let blockColor = `#${text}`;
     if (this.text.startsWith("#")) {
@@ -29,7 +34,7 @@ class ColorConvert extends BaseCommand {
       ret = `#${convert.rgb.hex(colorNumberList)}`;
       blockColor = ret;
     }
-    if (this.options.get) {
+    if (options.get) {
       this.logger.success(`${chalk.hex(blockColor).bold("示例文字")}`);
       return;
     }
@@ -40,6 +45,14 @@ class ColorConvert extends BaseCommand {
       `${chalk.green("[已复制]")}${chalk.hex(blockColor).bold(ret)}`
     );
     clipboard.writeSync(ret);
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "color",
+      content: `转换颜色显示
+color '#333' => '51,51,51'
+color '255,255,255' => '#fff'`,
+    });
   }
 }
 /**
