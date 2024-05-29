@@ -8,7 +8,7 @@
 import open from "open";
 import readPkg from "read-pkg";
 import notifier from "node-notifier";
-import { CommandItem } from "@/util/pFunc";
+import { CommandItem } from "@/util/promiseFn";
 import BaseCommand from "@/util/BaseCommand";
 import { generateNewestTag } from "../tag";
 import clipboard from "clipboardy";
@@ -128,7 +128,7 @@ class Deploy extends BaseCommand {
         return;
       }
     }
-    
+
     const gitStatus = await this.git.getPushStatus();
     let flow = [];
     if (gitStatus === 1) {
@@ -138,19 +138,19 @@ class Deploy extends BaseCommand {
       });
     }
     flow.push(
-      curBranch === "master" ? '' : `git checkout master`,
+      curBranch === "master" ? "" : `git checkout master`,
       {
         message: "git pull",
         onError() {},
       },
-      curBranch === "master" ? '' :  `git merge ${curBranch}`,
+      curBranch === "master" ? "" : `git merge ${curBranch}`,
       "git push"
     );
     const newestTag = tag || (await generateNewestTag());
     if (newestTag) {
       flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
     }
-    flow = flow.filter(item => !!item);
+    flow = flow.filter((item) => !!item);
     try {
       await this.helper.sequenceExec(flow);
       await this.deploySuccess(newestTag);
