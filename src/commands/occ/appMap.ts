@@ -128,7 +128,7 @@ const appMap: App[] = [
     name: "chain",
     searchKey: "searchParam",
     serviceName: "店客多品牌连锁",
-    defaultId: "15859095882",
+    defaultId: "13023942325",
     prefix: ls.get("oa.oldApiPrefix"),
     needGetList: true,
     url: {

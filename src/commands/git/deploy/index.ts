@@ -91,7 +91,7 @@ class Deploy extends BaseCommand {
     if (gitStatus === 1) {
       flow.unshift("git add .", {
         message: `git commit -m ${this.getFormattedCommitMessage()}`,
-        onError: () => {},
+        onError: () => { },
       });
     }
     try {
@@ -128,22 +128,22 @@ class Deploy extends BaseCommand {
         return;
       }
     }
-    
+
     const gitStatus = await this.git.getPushStatus();
     let flow = [];
     if (gitStatus === 1) {
       flow.push("git add .", {
         message: `git commit -m ${this.getFormattedCommitMessage()}`,
-        onError() {},
+        onError() { },
       });
     }
     flow.push(
       curBranch === "master" ? '' : `git checkout master`,
       {
         message: "git pull",
-        onError() {},
+        onError() { },
       },
-      curBranch === "master" ? '' :  `git merge ${curBranch}`,
+      curBranch === "master" ? '' : `git merge ${curBranch}`,
       "git push"
     );
     const newestTag = tag || (await generateNewestTag());
@@ -166,15 +166,15 @@ class Deploy extends BaseCommand {
         "git add .",
         {
           message: `git commit -m ${this.getFormattedCommitMessage()}`,
-          onError() {},
+          onError() { },
         },
         {
           message: "git pull",
-          onError() {},
+          onError() { },
         },
         {
           message: "git push",
-          onError() {},
+          onError() { },
         },
         `git checkout release`,
         "git pull",
@@ -236,7 +236,7 @@ class Deploy extends BaseCommand {
     ];
     const { commit } = this.options;
     if (
-      commit === "" ||
+      !commit ||
       !standardCommitPrefixes.includes(commit.split(":")[0])
     ) {
       // 不规范
@@ -268,8 +268,7 @@ class Deploy extends BaseCommand {
     if (jenkins) {
       const { name, id } = jenkins;
       await open(
-        `http://${
-          this.helper.isWin ? "192.168.0.32:8080" : "218.66.91.50:13379"
+        `http://${this.helper.isWin ? "192.168.0.32:8080" : "218.66.91.50:13379"
         }/view/${name}/job/${id}/`
       );
     }
