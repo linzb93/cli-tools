@@ -4,13 +4,21 @@ import chalk from "chalk";
 import internalIp from "internal-ip";
 import path from "node:path";
 
+interface IOptions {
+  help: boolean;
+}
+
 // 在子进程中启动服务，退出父进程
 class Fork extends BaseCommand {
-  constructor(private filename: string) {
+  constructor(private filename: string, private options: IOptions) {
     super();
-    this.filename = filename;
   }
   async run() {
+    const { options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     const child = fork(path.resolve(process.cwd(), this.filename), {
       cwd: this.helper.root,
       detached: true,
@@ -24,8 +32,16 @@ class Fork extends BaseCommand {
       process.exit(0);
     });
   }
+  generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "fork",
+      content: `fork一个子进程，解除父子进程的关联，独立子进程。一般用于本机HTTP服务。
+使用方法：
+fork app.js`,
+    });
+  }
 }
 
-export default (filename: string) => {
-  new Fork(filename).run();
+export default (filename: string, options: IOptions) => {
+  new Fork(filename, options).run();
 };

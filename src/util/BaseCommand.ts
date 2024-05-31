@@ -3,13 +3,13 @@ import * as rawHelper from "./helper";
 import spinner, { Spinner } from "./spinner";
 import git from "./git";
 import npm from "./npm";
-import * as pFunc from "./pFunc";
+import * as promiseFn from "./promiseFn";
 import ls from "./ls";
 import inquirer from "./inquirer";
 
 const helper = {
   ...rawHelper,
-  ...pFunc,
+  ...promiseFn,
   inquirer,
 };
 

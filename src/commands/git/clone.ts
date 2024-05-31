@@ -10,6 +10,7 @@ interface Options {
   open?: boolean;
   from?: string;
   install?: boolean;
+  help: boolean;
 }
 class Clone extends BaseCommand {
   private source: string;
@@ -19,6 +20,10 @@ class Clone extends BaseCommand {
   }
   async run() {
     const { source, options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     this.helper.validate(
       {
         source,
@@ -34,7 +39,7 @@ class Clone extends BaseCommand {
       }
     );
     this.spinner.text = "正在下载";
-    let dirName: string = '';
+    let dirName: string = "";
     const openMap = this.ls.get("open") as SecretDB["open"];
     if (!options.dir) {
       options.dir = "source";
@@ -87,7 +92,7 @@ ${(error as Error).message}`);
     }
   }
   private async getCloneUrl(): Promise<string> {
-    const {source, options} = this;
+    const { source, options } = this;
     // 普通的git地址，也可以是GitHub项目地址
     if (this.isGitUrl(source)) {
       return this.toGitUrl(source);
@@ -115,10 +120,7 @@ ${(error as Error).message}`);
       }
       const $ = cheerio.load(pageRes.data);
       const $target = $(".repo-list").first().children().first();
-      return `https://github.com${$target
-        .find("a")
-        .first()
-        .attr("href")}.git`;
+      return `https://github.com${$target.find("a").first().attr("href")}.git`;
     }
     // 从npm搜索
     let page: Npm;
@@ -144,6 +146,21 @@ ${(error as Error).message}`);
     return url
       .replace(/git@([a-z\.]+\.com)\:/, "https://$1/")
       .replace(/[^\.git]$/, ".git");
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "git clone",
+      content: `支持从github、git地址或者npm网站clone项目。
+使用方法：
+git clone <url>
+参数：
+- <url>: git地址、github搜索关键词、npm网站搜索关键词
+选项：
+- dir: clone的地址
+- from=github: 从github clone
+- open: clone结束后使用vscode打开
+- install: 安装npm依赖`,
+    });
   }
 }
 
