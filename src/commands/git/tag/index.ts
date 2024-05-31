@@ -78,7 +78,7 @@ class Tag extends BaseCommand {
     if (lastTag.split(".").length === 3) {
       return `${lastTag}.1`;
     }
-    return `v${firstNum}.${secondNum}.${thirdNum}.${lastNum + 1}`;
+    return `v${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
   }
   /**
    * 获取最近的一次tag
