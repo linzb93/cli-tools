@@ -219,10 +219,10 @@ class OCC extends BaseCommand {
     this.helper.generateHelpDoc({
       title: 'occ',
       content: `OCC各平台数据获取。
-      使用方法：
-      ${chalk.cyan(`occ [appName] [shopId]`)}。
+使用方法：
+${chalk.cyan(`occ [appName] [shopId]`)}。
 默认是打开美团经营神器测试账号的店铺。
-appName选项：
+appName 选项：
 - jysq: 美团经营神器
 - zx: 美团装修神器
 - pj: 美团评价神器

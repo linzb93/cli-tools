@@ -10,7 +10,7 @@ interface Options {
   proxy: string;
   port: string;
   copy: boolean;
-  help: boolean;
+  help?: boolean;
 }
 export interface CacheItem {
   proxy: string;

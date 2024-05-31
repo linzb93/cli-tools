@@ -5,6 +5,7 @@ import BaseCommand from "@/util/BaseCommand";
 
 interface IOptions {
   root?: boolean;
+  help?: boolean;
 }
 
 // 主要是来清理Windows上被Git同步过来的 macOS 的 .DS_Store
@@ -13,8 +14,12 @@ class Clear extends BaseCommand {
     super();
   }
   async run() {
-    const { filename } = this;
-    if (this.options?.root) {
+    const { filename, options } = this;
+    if (options?.help) {
+      this.generateHelp();
+      return;
+    }
+    if (options?.root) {
       await del(filename);
       this.logger.success(`${filename}已删除`);
       return;
@@ -29,6 +34,15 @@ class Clear extends BaseCommand {
       concurrency: 10,
     });
     this.logger.success(`操作成功，共删除${len}个文件`);
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: 'clear',
+      content:`清理文件/文件夹
+clear [file/dir]
+选项：
+- root: 只在根目录下查询`
+    })
   }
 }
 
