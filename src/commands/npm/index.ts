@@ -1,10 +1,23 @@
+import { generateHelpDoc } from "@/util/helper";
 import has from "./has";
 import install from "./install";
 import search from "./search";
 import uninstall from "./uninstall";
 import analyse from "./analyse";
 
-export default function (subCommand: string, data: string[], options: any) {
+interface IOption {
+  help?: boolean;
+  // 子模块的
+  open?: boolean;
+  full?: boolean;
+  global?: boolean;
+}
+
+export default function (subCommand: string, data: string[], options: IOption) {
+  if (options.help && !subCommand) {
+    generateHelp();
+    return;
+  }
   if (subCommand === "has") {
     has(data, options);
     return;
@@ -23,23 +36,16 @@ export default function (subCommand: string, data: string[], options: any) {
   if (subCommand === "analyse") {
     analyse();
   }
-  // console.log(
-  //   boxen(
-  //     `
-  //     npm相关的工具，具体可以进入各模块输入"--help"查看，
-  //     例如"mycli npm install --help"。
-  //     ————————————————————————————————
-  //     install: 下载，可以从npm下载，也可以从本地复制；
-  //     uninstall: 卸载，可以卸载全局的，还有移除相关的命令行；
-  //     has: 判断本项目是否有某个模块，如果没有的话会确认是否安装；
-  //     search: 获取某个模块的信息，包括描述、周下载量等。
-  // `,
-  //     {
-  //       borderColor: 'green',
-  //       dimBorder: true,
-  //       padding: 0,
-  //       margin: 0
-  //     }
-  //   )
-  // );
+}
+
+function generateHelp() {
+  generateHelpDoc({
+    title: "npm",
+    content: `npm命令支持下列子命令，请输入子命令 + "--help"选项查看：
+- analyse:分析npm依赖
+- has: 有安装某个依赖
+- install：安装依赖，支持从本地通过"file:"的方式引入
+- search: 查询单个/多个npm模块的信息
+- uninstall: 卸载npm模块，支持全局卸载，还移除全局命令`,
+  });
 }

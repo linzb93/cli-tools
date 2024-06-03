@@ -6,21 +6,21 @@ import { last } from "lodash-es";
 
 interface Options {
   delete?: boolean;
-  silent?: boolean;
   last?: boolean;
   get?: boolean;
+  help?: boolean;
 }
 
 class Tag extends BaseCommand {
-  private options: Options;
-  private datas: string[];
-  constructor(datas: string[], options: Options) {
+  constructor(private datas: string[], private options: Options) {
     super();
-    this.options = options;
-    this.datas = datas;
   }
-  async run(): Promise<void> {
+  async run() {
     const { options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     if (options.delete) {
       deleteTag();
       return;
@@ -74,7 +74,9 @@ class Tag extends BaseCommand {
       return "";
     }
     const lastTag = this.gitCurrentLatestTag(gitTags);
-    const [firstNum, secondNum, thirdNum, lastNum] = lastTag.replace(/^v/, '').split('.');
+    const [firstNum, secondNum, thirdNum, lastNum] = lastTag
+      .replace(/^v/, "")
+      .split(".");
     if (lastTag.split(".").length === 3) {
       return `${lastTag}.1`;
     }
@@ -95,6 +97,19 @@ class Tag extends BaseCommand {
       }
     }
     return "";
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "git tag",
+      content: `git项目获取、添加、删除tag。建议tag的格式是"v" + 版本号
+使用方法：
+打tag：git tag v2.1.1.2
+获取最近10个tag: git tag --last=10。没有这个选项的话就是获取所有的tag。
+参数：
+- delete: 删除tag，包括本地和远端的
+- last=: 获取最近几个tag
+- get: 获取并复制最近的一次tag`,
+    });
   }
 }
 

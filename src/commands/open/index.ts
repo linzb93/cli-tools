@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import { join, basename } from "node:path";
 import open from "open";
-import internalIp from "internal-ip";
 import globalNpm from "global-modules";
 import BaseCommand from "@/util/BaseCommand";
 
@@ -105,11 +104,6 @@ class Open extends BaseCommand {
     const { options } = this;
     const match = map.find((item) => item.name === name);
     if (!match) {
-      if (name.startsWith("http")) {
-        this.openUrl(name);
-      } else {
-        this.logger.error("命令错误");
-      }
       return;
     }
     if (match.setting && match.isEditor) {
@@ -118,30 +112,6 @@ class Open extends BaseCommand {
       });
     } else if (match.target) {
       await open(match.target);
-    }
-  }
-  private async openUrl(url: string) {
-    const ip = await internalIp.v4();
-    if (ip !== "192.168.0.129") {
-      // 外部
-      const map = [
-        {
-          origin: "http://192.168.0.107:3000/",
-          new: "http://218.66.91.50:7990/",
-        },
-        {
-          origin: "http://prototype.chunsuns.com/",
-          new: "http://218.66.91.50:7968/",
-        },
-      ];
-      const match = map.find((item) => url.startsWith(item.origin));
-      if (!match) {
-        await open(url);
-      } else {
-        await open(url.replace(match.origin, match.new));
-      }
-    } else {
-      await open(url);
     }
   }
 }

@@ -23,7 +23,7 @@ import fork from "@/commands/fork";
 import kill from "@/commands/kill";
 import lixi from "@/commands/lixi";
 import mock from "@/commands/mock";
-import monitor from "@/commands/monitor";
+// import monitor from "@/commands/monitor";
 import spider from "@/commands/spider";
 import shortcut from "@/commands/shortcut";
 import getSize from "@/commands/size";
@@ -108,7 +108,7 @@ program
   });
 
 program
-  .command("git <sub-command> [rest...]")
+  .command("git [sub-command] [rest...]")
   .option("--dir <dir>", "选择安装的目录")
   .option("--open", "在VSCode中打开项目")
   .option("--from <src>", "来源")
@@ -133,8 +133,8 @@ program.command("ip").action(() => {
 program
   .command("kill <data...>")
   .option("--help", "显示帮助文档")
-  .action((data) => {
-    kill(data);
+  .action((data, options) => {
+    kill(data, options);
   });
 
 program.command("lixi").action(() => {
@@ -151,14 +151,14 @@ program
     mock(action, options);
   });
 
-program
-  .command("mon [filename]")
-  .option("--help", "显示帮助文档")
-  .allowUnknownOption()
-  .action((file, _, options) => {
-    const combinedOptions = options.args.slice(1);
-    monitor(file, combinedOptions);
-  });
+// program
+//   .command("mon [filename]")
+//   .option("--help", "显示帮助文档")
+//   .allowUnknownOption()
+//   .action((file, _, options) => {
+//     const combinedOptions = options.args.slice(1);
+//     monitor(file, combinedOptions);
+//   });
 
 program
   .command("npm [sub-command] [rest...]")
