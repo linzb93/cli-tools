@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 interface Options {
   origin?: boolean; // 原始数据，时间戳没有解析成标准时间格式
   complete?: boolean; // 完整数据，包括算法等
+  help?: boolean;
 }
 
 class Token extends BaseCommand {
@@ -12,6 +13,11 @@ class Token extends BaseCommand {
     super();
   }
   async run() {
+    const { options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     const tokenStr = this.tokenStr.replace(/^occ_(senior_)?/, "");
     const decoded = jwt.decode(tokenStr, {
       complete: this.options.complete,
@@ -43,6 +49,15 @@ class Token extends BaseCommand {
     }, {});
     console.log(result);
     return result;
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "token",
+      content: `解析token，会将时间戳转化为标准格式。
+参数：
+- origin: 不转换时间戳
+- complete: 获取完整的解析结果，包括算法`,
+    });
   }
 }
 

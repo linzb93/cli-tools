@@ -7,6 +7,7 @@ import BaseCommand from "@/util/BaseCommand";
 interface Options {
   open?: boolean;
   full?: boolean;
+  help?: boolean;
 }
 interface OutputPkgItem {
   name: string;
@@ -28,6 +29,10 @@ class Search extends BaseCommand {
   }
   async run() {
     const { packages, options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     if (packages.length === 1) {
       return this.fetchNpmPackage(packages[0], false, options);
     } else if (packages.length > 1) {
@@ -84,7 +89,9 @@ class Search extends BaseCommand {
     }
     const table = new Table({
       head,
-      colAligns: options.full ? ["center", "center", "center", "center", "center"] : ["center", "center", "center", "center"],
+      colAligns: options.full
+        ? ["center", "center", "center", "center", "center"]
+        : ["center", "center", "center", "center"],
     });
     spinner.text = `正在查找 ${packages.join(" ")} 这些模块`;
     let resList: OutputPkgItem[];
@@ -114,7 +121,7 @@ class Search extends BaseCommand {
           item.weeklyDl,
           item.lastPb,
           item.version,
-        ]
+        ];
         if (!options.full) {
           output.splice(1, 1);
         }
@@ -149,6 +156,15 @@ class Search extends BaseCommand {
       lines.push(tempArr.join(" "));
     }
     return lines.join("\n");
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "npm search",
+      content: `查询单个/多个npm模块的信息
+使用方法：
+- npm search moduleName --open 查询单个模块，返回信息后，打开模块对应的主页
+- npm search module1 module2 查询多个npm模块，以table的方式输出`,
+    });
   }
 }
 

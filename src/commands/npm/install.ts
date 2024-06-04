@@ -130,24 +130,15 @@ class Install extends BaseCommand {
     return semver.major(version);
   }
   private renderHelp() {
-    // console.log(
-    //   boxen(
-    //     `
-    //     为本项目下载某个模块，可以从npm下载，也可以从本地复制。
-    //     只下载支持CommonJS的。
-    //     ————————————————————————————————
-    //     mycli npm install moduleName 当参数不是地址的时候，判断为线上的npm模块
-    //     mycli npm install /path/to/your_module 从本地复制过来
-    //     mycli npm install moduleName -d 添加到devDependencies中。
-    // `,
-    //     {
-    //       borderColor: "green",
-    //       dimBorder: true,
-    //       padding: 0,
-    //       margin: 0,
-    //     }
-    //   )
-    // );
+    this.helper.generateHelpDoc({
+      title: "npm install",
+      content: `为本项目下载某个模块，可以从npm下载，也可以从本地复制。
+使用方法：
+npm install moduleName: 当参数不是地址格式的时候，判断为线上的npm模块
+npm install /path/to/your_module 从本地复制过来
+参数：
+- -d: 添加到devDependencies中`,
+    });
   }
 }
 

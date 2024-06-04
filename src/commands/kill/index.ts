@@ -5,15 +5,21 @@ import BaseCommand from "@/util/BaseCommand";
 
 const numberRE = /[1-9][0-9]*/;
 
+interface IOption {
+  help?: boolean;
+}
+
 type Params = [string] | [string, string];
 class Kill extends BaseCommand {
-  private args: Params;
-  constructor(args: Params) {
+  constructor(private args: Params, private options?: IOption) {
     super();
-    this.args = args;
   }
   async run() {
-    const { args } = this;
+    const { args, options } = this;
+    if (options?.help) {
+      this.generateHelp();
+      return;
+    }
     if (args.length === 1) {
       if (!numberRE.test(args[0])) {
         this.logger.error("端口号或者进程ID格式不正确，只能输入数字");
@@ -102,8 +108,18 @@ class Kill extends BaseCommand {
         .catch(reject);
     });
   }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "kill",
+      content: `根据端口号/进程ID结束任务。
+使用方法：
+- kill port 8080: 根据端口号结束任务
+- kill pid 23019: 根据进程ID结束任务
+- kill 9080: 根据端口号或者进程ID结束任务`,
+    });
+  }
 }
 
-export default async (args: Params) => {
-  await new Kill(args).run();
+export default async (args: Params, options?: IOption) => {
+  await new Kill(args, options).run();
 };
