@@ -5,7 +5,7 @@ import BaseCommand from "@/util/BaseCommand";
 
 interface Options {
   get: boolean;
-  help: boolean;
+  help?: boolean;
 }
 
 class ColorConvert extends BaseCommand {

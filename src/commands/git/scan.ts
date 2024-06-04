@@ -39,7 +39,7 @@ class Scan extends BaseCommand {
             } else if (status === 2) {
               str = `项目${dir} ${chalk.yellow("未推送")}`;
             } else if (status === 4) {
-              str = `项目${dir} ${chalk.yellow("不在master分支上")}`;
+              str = `项目${dir} ${chalk.yellow("不在主分支上")}`;
             }
             if (str) {
               cur.children.push(str);

@@ -97,7 +97,8 @@ export default {
     if (stdout.includes('Your branch is ahead of ')) {
       return 2;
     }
-    if ((stdout.match(/On branch (\S+)/) as RegExpMatchArray)[1] !== 'master') {
+    const currentBranchName = stdout.match(/On branch (\S+)/) as RegExpMatchArray;
+    if (!['master', 'main'].includes(currentBranchName[1])) {
       return 4;
     }
     if (stdout.includes('nothing to commit')) {
