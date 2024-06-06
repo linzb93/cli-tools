@@ -7,6 +7,7 @@ import BaseCommand from "@/util/BaseCommand";
 interface Options {
   name: string;
   reuse: boolean;
+  help?:boolean;
 }
 interface OpenItem {
   name: string;
@@ -16,15 +17,15 @@ interface OpenItem {
 }
 
 class Open extends BaseCommand {
-  private name: string;
-  private options: Options;
-  constructor(name: string, options: Options) {
+  constructor(private name: string, private options: Options) {
     super();
-    this.name = name;
-    this.options = options;
   }
   async run() {
-    const { name } = this;
+    const { name, options } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     if (name === "source") {
       this.openSource();
       return;
@@ -113,6 +114,17 @@ class Open extends BaseCommand {
     } else if (match.target) {
       await open(match.target);
     }
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: 'open',
+      content:`打开指定的网页或项目
+使用方法：
+cli - 命令行项目
+test - 本机的测试项目
+source - 本机的开源项目代码，--name=<source> 打开具体的项目
+cmd - 本机系统的命令行文件`
+    })
   }
 }
 

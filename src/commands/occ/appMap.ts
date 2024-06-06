@@ -153,6 +153,13 @@ const appMap: App[] = [
     getToken(result) {
       return result.token;
     },
+    getOpenUrl(res) {
+      return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(
+                            res.createTime
+                        )}&id=${encodeURIComponent(res.id)}&phoneNumber=${encodeURIComponent(
+                            res.phoneNumber
+                        )}&shopNumber=${encodeURIComponent(res.shopNumber)}&token=${encodeURIComponent(res.token)}`
+    }
   },
   {
     name: "outer",

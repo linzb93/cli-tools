@@ -33,7 +33,7 @@ class OCC extends BaseCommand {
       return;
     }
     this.setMatchApp();
-    const { shop, url } = await this.getShop();
+    const { shop, url,shopResult } = await this.getShop();
     const shopName = this.currentApp.getShopName(shop);
     if (options.token) {
       // 读取token
@@ -63,14 +63,15 @@ class OCC extends BaseCommand {
       );
       this.spinner.succeed(`获取店铺【${shopName}】信息成功！\n${data.result}`);
     } else {
+      const newUrl = typeof this.currentApp.getOpenUrl === 'function' ? this.currentApp.getOpenUrl(shopResult) : url;
       if (
         options.pc &&
         ["4", "73", "36", "75"].includes(this.currentApp.appKey)
       ) {
         // 只有美团经营神器、装修神器、评价神器和IM神器有PC端
-        open(url.replace("app", ""));
+        open(newUrl.replace("app", ""));
       } else {
-        open(url);
+        open(newUrl);
       }
       this.spinner.succeed(
         `【${this.currentApp.serviceName}】店铺【${shopName}】打开成功`
@@ -124,6 +125,7 @@ class OCC extends BaseCommand {
   private async getShop(): Promise<{
     shop: AnyObject;
     url: string;
+    shopResult: any
   }> {
     const { options, currentApp } = this;
     let shop = {};
@@ -151,6 +153,7 @@ class OCC extends BaseCommand {
       currentApp.getLoginQuery(shop, currentApp)
     );
     return {
+      shopResult:result,
       url:
         typeof currentApp.getToken === "function"
           ? currentApp.getToken(result)

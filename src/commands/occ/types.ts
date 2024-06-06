@@ -21,4 +21,5 @@ export interface App {
   getLoginQuery: (data: any, app: App) => AnyObject;
   getShopName: (shop: any) => string;
   getToken?: (result: any) => string;
+  getOpenUrl?:(result:any) => string;
 }
