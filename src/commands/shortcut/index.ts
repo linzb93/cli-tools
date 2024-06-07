@@ -7,7 +7,7 @@ class Shortcut extends BaseCommand {
   run() {
     const map = [
       {
-        type: 'common',
+        type: "common",
         children: [
           {
             title: "切换至下一个页面",
@@ -19,15 +19,15 @@ class Shortcut extends BaseCommand {
             windows: "ctrl + page up",
             mac: "shift + cmd + [",
           },
-        ]
+        ],
       },
       {
-        type: 'vscode',
+        type: "vscode",
         children: [
           {
             title: "聚焦文件资源管理器（自定义）",
             windows: "alt + `",
-            mac: "",
+            mac: "option + `",
           },
           {
             title: "新建文件",
@@ -42,47 +42,66 @@ class Shortcut extends BaseCommand {
           {
             title: "聚焦终端",
             windows: "ctrl + j",
-            mac: "",
+            mac: "command + j",
           },
           {
             title: "新建终端",
             windows: "ctrl + shift + `",
-            mac: "",
+            mac: "shift + option + `",
           },
           {
             title: "清除终端内容",
             windows: "ctrl + k",
-            mac: "",
+            mac: "ctrl + k",
           },
         ],
       },
       {
-        type: 'chrome',
+        type: "chrome",
         children: [
           {
             title: "切换到下一个标签",
             windows: "",
             mac: "command + option + ->",
           },
-        ]
+        ],
       },
-      
     ];
     if (!this.name) {
-      console.log(map.map(panel => {
-        return `${chalk.bold.red(panel.type)}
-  ${panel.children.map(item => `${chalk.blue(item.title)} ${this.helper.isWin ? item.windows : item.mac}`).join('\n  ')}`
-      }).join('\n'))
+      console.log(
+        map
+          .map((panel) => {
+            return `${chalk.bold.red(panel.type)}
+  ${panel.children
+    .map(
+      (item) =>
+        `${chalk.blue(item.title)} ${
+          this.helper.isWin ? item.windows : item.mac
+        }`
+    )
+    .join("\n  ")}`;
+          })
+          .join("\n")
+      );
     } else {
-      if (!['chrome', 'vscode'].includes(this.name)) {
-        this.logger.error('不存在的平台，只支持vscode和chrome');
+      if (!["chrome", "vscode"].includes(this.name)) {
+        this.logger.error("不存在的平台，只支持vscode和chrome");
       } else {
-        const list = [
-          map[0],
-          map.find(panel => panel.type === this.name)
-        ];
-        const flatList = list.reduce((acc, panel) => acc.concat(panel.children), [])
-        console.log(flatList.map(item => `${chalk.blue(item.title)} ${this.helper.isWin ? item.windows : item.mac}`).join('\n'));
+        const list = [map[0], map.find((panel) => panel.type === this.name)];
+        const flatList = list.reduce(
+          (acc, panel) => acc.concat(panel.children),
+          []
+        );
+        console.log(
+          flatList
+            .map(
+              (item) =>
+                `${chalk.blue(item.title)} ${
+                  this.helper.isWin ? item.windows : item.mac
+                }`
+            )
+            .join("\n")
+        );
       }
     }
   }
