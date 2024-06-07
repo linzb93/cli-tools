@@ -8,6 +8,10 @@ import fs from "fs-extra";
 import dayjs from "dayjs";
 import BaseCommand from "@/util/BaseCommand";
 
+/**
+ * 监控文件变化，重启服务。
+ * 这个只是练手，项目主要还是靠nodemon实现这个功能。
+ */
 class Monitor extends BaseCommand {
   private entryFile: string;
   private subProcess: ChildProcess | undefined;

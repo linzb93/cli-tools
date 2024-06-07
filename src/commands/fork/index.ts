@@ -7,8 +7,10 @@ import path from "node:path";
 interface IOptions {
   help: boolean;
 }
-
-// 在子进程中启动服务，退出父进程
+/**
+ * 在子进程中启动服务，退出父进程。
+ * 只能用在HTTP服务中，TCP和IPC在父进程退出后也会自动结束
+ */
 class Fork extends BaseCommand {
   constructor(private filename: string, private options: IOptions) {
     super();

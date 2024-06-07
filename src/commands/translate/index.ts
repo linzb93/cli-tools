@@ -7,16 +7,24 @@ import BaseCommand from "@/util/BaseCommand";
 
 interface Options {
   example: boolean;
+  help: boolean;
 }
 
+/**
+ * 使用有道词典API翻译。
+ */
 class Translate extends BaseCommand {
-  private isC2E: boolean; // 是中文翻译成英文
+  private isC2E: boolean; // 是否是中文翻译成英文
   constructor(private text: string, private options: Options) {
     super();
     this.isC2E = !/[a-z]+/.test(text);
   }
   async run() {
     const { options, text, isC2E } = this;
+    if (options.help) {
+      this.generateHelp();
+      return;
+    }
     this.spinner.text = "正在查找";
     try {
       // 使用有道翻译
@@ -119,6 +127,16 @@ class Translate extends BaseCommand {
       lines.push(tempArr.join(" "));
     }
     return lines.join("\n");
+  }
+  private generateHelp() {
+    this.helper.generateHelpDoc({
+      title: "翻译",
+      content: `使用有道词典API进行翻译，自动判断是中译英还是英译中。
+使用方法：
+eng hello
+选项：
+- --example: 提供翻译示例`,
+    });
   }
 }
 

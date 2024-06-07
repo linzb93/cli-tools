@@ -1,7 +1,7 @@
 import logger from "./logger";
 import * as rawHelper from "./helper";
 import spinner, { Spinner } from "./spinner";
-import git from "./git";
+import * as git from "./git";
 import npm from "./npm";
 import * as promiseFn from "./promiseFn";
 import ls from "./ls";

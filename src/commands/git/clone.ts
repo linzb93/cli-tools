@@ -12,6 +12,12 @@ interface Options {
   install?: boolean;
   help: boolean;
 }
+/**
+ * git clone功能，支持从下面这些地方clone:
+ * 1. git地址
+ * 2. github，输入关键词，clone第一个仓库
+ * 3. npm模块对应的github官网
+ */
 class Clone extends BaseCommand {
   private source: string;
   constructor(source: string[], private options: Options) {
