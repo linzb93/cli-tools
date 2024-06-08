@@ -28,17 +28,17 @@ class Bug extends BaseCommand {
       await this.helper.download(filePath, target);
       this.spinner.succeed("打开文件");
     }
-    this.helper.openInEditor(isEditorPath, {
+    this.helper.vscode.open(isEditorPath, {
       isGoto: true,
     });
   }
   private generateHelp() {
     this.helper.generateHelpDoc({
-      title: 'bug',
+      title: "bug",
       content: `下载bug所在文档并在VSCode中定位到具体位置。
 使用方法：
-bug [bugfile]`
-    })
+bug [bugfile]`,
+    });
   }
 }
 

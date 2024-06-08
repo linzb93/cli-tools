@@ -7,7 +7,7 @@ import BaseCommand from "@/util/BaseCommand";
 interface Options {
   name: string;
   reuse: boolean;
-  help?:boolean;
+  help?: boolean;
 }
 interface OpenItem {
   name: string;
@@ -83,7 +83,7 @@ class Open extends BaseCommand {
         return;
       }
       const path2 = await this.helper.getOriginPath(matchPath);
-      await this.helper.openInEditor(path2, {
+      await this.helper.vscode.open(path2, {
         reuse: options.reuse,
       });
     } else {
@@ -96,7 +96,7 @@ class Open extends BaseCommand {
         },
       ]);
       const path2 = await this.helper.getOriginPath(join(sourceDir, source));
-      await this.helper.openInEditor(path2, {
+      await this.helper.vscode.open(path2, {
         reuse: options.reuse,
       });
     }
@@ -108,7 +108,7 @@ class Open extends BaseCommand {
       return;
     }
     if (match.setting && match.isEditor) {
-      await this.helper.openInEditor(this.ls.get(match.setting), {
+      await this.helper.vscode.open(this.ls.get(match.setting), {
         reuse: options.reuse,
       });
     } else if (match.target) {
@@ -117,14 +117,14 @@ class Open extends BaseCommand {
   }
   private generateHelp() {
     this.helper.generateHelpDoc({
-      title: 'open',
-      content:`打开指定的网页或项目
+      title: "open",
+      content: `打开指定的网页或项目
 使用方法：
 cli - 命令行项目
 test - 本机的测试项目
 source - 本机的开源项目代码，--name=<source> 打开具体的项目
-cmd - 本机系统的命令行文件`
-    })
+cmd - 本机系统的命令行文件`,
+    });
   }
 }
 

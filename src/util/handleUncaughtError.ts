@@ -4,7 +4,8 @@ import createCallsiteRecord, { CallsiteRecord } from "callsite-record";
 import inquirer from "./inquirer";
 import logger from "./logger";
 import spinner from "./spinner";
-import { openInEditor, root } from "./helper";
+import { root } from "./helper";
+import vscode from "./vscode";
 
 export default async () => {
   process.on("uncaughtException", async (e) => {
@@ -50,7 +51,7 @@ async function errorHandler(
       openEditor: boolean;
     };
     if (openEditor) {
-      openInEditor(path.resolve(root));
+      vscode.open(path.resolve(root));
     } else {
       process.exit(0);
     }

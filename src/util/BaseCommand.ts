@@ -2,6 +2,7 @@ import logger from "./logger";
 import * as rawHelper from "./helper";
 import spinner, { Spinner } from "./spinner";
 import * as git from "./git";
+import vscode from "./vscode";
 import npm from "./npm";
 import * as promiseFn from "./promiseFn";
 import ls from "./ls";
@@ -11,6 +12,7 @@ const helper = {
   ...rawHelper,
   ...promiseFn,
   inquirer,
+  vscode,
 };
 
 export default abstract class {

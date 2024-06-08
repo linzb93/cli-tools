@@ -1,16 +1,15 @@
-import rawInquirer, { QuestionCollection } from "inquirer";
+import inquirer, { QuestionCollection } from "inquirer";
 import spinner from "./spinner";
-const inquirer = {
+
+export default {
   async prompt(options: QuestionCollection) {
     if (spinner.isSpinning) {
       spinner.stop();
     }
-    const answer = await rawInquirer.prompt(options);
+    const answer = await inquirer.prompt(options);
     if (spinner.text !== "") {
       spinner.start();
     }
     return answer;
   },
 };
-
-export default inquirer;

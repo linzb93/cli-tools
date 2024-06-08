@@ -92,7 +92,7 @@ ${(error as Error).message}`);
     }
     this.spinner.succeed("下载成功");
     if (options.open) {
-      await this.helper.openInEditor(
+      await this.helper.vscode.open(
         path.resolve(openMap[options.dir], dirName)
       );
     }

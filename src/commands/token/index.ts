@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import BaseCommand from "@/util/BaseCommand";
 import jwt from "jsonwebtoken";
+import { AnyObject } from "@/util/types";
 
 interface Options {
   origin?: boolean; // 原始数据，时间戳没有解析成标准时间格式
@@ -21,7 +22,7 @@ class Token extends BaseCommand {
     const tokenStr = this.tokenStr.replace(/^(.+_)?/, "");
     const decoded = jwt.decode(tokenStr, {
       complete: this.options.complete,
-    }) as any; // 解析数据格式不定
+    }) as AnyObject; // 解析数据格式不定
     if (this.options.origin) {
       console.log(decoded);
       return decoded;
