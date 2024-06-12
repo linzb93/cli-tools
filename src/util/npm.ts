@@ -8,6 +8,9 @@ import fs from "fs-extra";
 import readPkg from "read-pkg";
 
 /**
+ * 总体思路：
+ * 1. npm、pnpm、yarn都要支持，但现在慢慢淘汰yarn
+ * 2. 所有的功能写清楚注释
  * npm public API: https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
  * or cnpm: https://registry.npmmirror.com/ 版本号支持缩写
  */
@@ -17,9 +20,21 @@ interface InstallOptions {
   global?: boolean;
   cwd?: string;
 }
+/**
+ * 安装npm依赖
+ * @param name 
+ */
 async function install(name: string): Promise<void>;
+/**
+ * 安装npm依赖，有选项
+ * @param name 
+ */
 async function install(name: string, options: InstallOptions): Promise<void>;
-async function install(options: InstallOptions): Promise<void>;
+/**
+ * 安装所有npm依赖
+ * @param name 
+ */
+async function install(options: { cwd: InstallOptions['cwd'] }): Promise<void>;
 async function install(...args: any[]) {
   let pkgName = "";
   let options: InstallOptions = {};
@@ -68,7 +83,12 @@ export class Npm {
     this.$ = $;
     this.regData = regData;
   }
-  get(type: string): string {
+  /**
+   * 使用cheerio，获取指定模块的npm页面信息
+   * @param {string} type - 模块名称
+   * @returns {string} - 模块信息
+   */
+  get(type: 'repository' | 'weeklyDl' | 'lastPb' | 'description' | 'version'): string {
     const { $ } = this;
     if (type === "repository") {
       return $("#repository").next().find("a").attr("href") as string;
@@ -129,14 +149,21 @@ async function getPage(pkg: string): Promise<Npm> {
   }
 }
 
-const shouldUseYarn = () => {
+// 判断使用的npm客户端
+const getNpmClient = () => {
+  try {
+    fs.accessSync("pnpm-lock.yaml");
+    return 'pnpm'
+  } catch {
+
+  }
   try {
     fs.accessSync("yarn.lock");
+    return 'yarn'
   } catch {
-    return false;
+    return 'npm'
   }
-  return true;
-};
+}
 
 function getVersion(packageName: string): string {
   const match = packageName.match(/@([0-9a-z\.\-]+)@/);
@@ -153,7 +180,7 @@ async function getList(name: string) {
       versionList: [],
     };
   }
-  if (shouldUseYarn()) {
+  if (getNpmClient() === 'yarn') {
     return {
       list: [name],
       versionList: [
@@ -191,6 +218,6 @@ const npm = {
   getPage,
   getVersion,
   getList,
-  Npm,
+  getNpmClient,
 };
 export default npm;

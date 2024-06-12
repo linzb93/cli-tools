@@ -10,6 +10,7 @@ import BaseCommand from "@/util/BaseCommand";
 interface Options {
   dev?: boolean;
   help?: boolean;
+  cjs?: boolean;
 }
 class Install extends BaseCommand {
   private pkg: string;
@@ -25,70 +26,7 @@ class Install extends BaseCommand {
       this.renderHelp();
       return;
     }
-    if (pkg.startsWith("@daze")) {
-      // 这个是下载本地的
-      const registry = "http://ikuai0.haloom.cc:7945";
-      const root = this.ls.get("code.project");
-      const dirs = await fs.readdir(root);
-      this.logger.info(`正在查找${pkg}`);
-      await pMap(
-        dirs,
-        async (dir) => {
-          if (!fs.statSync(path.join(root, dir)).isDirectory()) {
-            return;
-          }
-          if (await this.isMonorepo(path.join(root, dir))) {
-            const subDirs = await fs.readdir(path.join(root, dir, "packages"));
-            await pMap(
-              subDirs,
-              async (sub) => {
-                try {
-                  const cwd = path.join(root, dir, "packages", sub);
-                  const { name } = await readPkg({
-                    cwd,
-                  });
-                  if (name === pkg) {
-                    this.logger.success(`找到${pkg}，位置是${cwd}`);
-                    this.logger.info(
-                      `正在下载${path.relative(process.cwd(), cwd)}`
-                    );
-                    await execa(
-                      `npm i ${path.relative(
-                        process.cwd(),
-                        cwd
-                      )} --registry=${registry}`
-                    );
-                    this.logger.success(`${pkg}下载成功`);
-                    process.exit(0);
-                  }
-                } catch (error) {
-                  return;
-                }
-              },
-              { concurrency: 3 }
-            );
-          } else {
-            try {
-              const { name } = await readPkg({
-                cwd: path.join(root, dir),
-              });
-              if (name === pkg) {
-                await execa(
-                  `npm i ${path.join(root, dir)} --registry=${registry}`
-                );
-                this.logger.success(`${pkg}下载成功`);
-                process.exit(0);
-              }
-            } catch (error) {
-              return;
-            }
-          }
-        },
-        { concurrency: 3 }
-      );
-      this.logger.error("未找到匹配的项目");
-    } else {
-      this.spinner.text = "正在下载";
+    this.spinner.text = "正在下载";
       const version = await this.getAvailableVersion(pkg);
       const pkgName = `${pkg}@${version}`;
       try {
@@ -101,13 +39,11 @@ class Install extends BaseCommand {
         return;
       }
       spinner.succeed(`${pkgName}下载成功`);
-    }
-  }
-  private async isMonorepo(folder: string) {
-    const dirs = await fs.readdir(folder);
-    return dirs.includes("lerna.json");
   }
   private async getAvailableVersion(name: string) {
+    if (!this.options?.cjs) {
+      return 'latest';
+    }
     const { spinner } = this;
     let version = "latest";
     let type = "module";

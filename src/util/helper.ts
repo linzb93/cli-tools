@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import fs from "fs-extra";
 import { Writable } from "node:stream";
 import path from "node:path";
