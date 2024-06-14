@@ -225,7 +225,7 @@ class Deploy extends BaseCommand {
     const jenkins = projectConf.jenkins;
     const copyText = `${jenkins.id.replace(/[\-|_]test$/, "")}，${tag}`;
     this.logger.success(`部署成功，复制填入更新文档：
-      ${copyText}`);
+${copyText}`);
     clipboard.writeSync(copyText);
   }
   // commit message 规范化

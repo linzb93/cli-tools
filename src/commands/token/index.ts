@@ -18,7 +18,7 @@ class Token extends BaseCommand {
       this.generateHelp();
       return;
     }
-    const tokenStr = this.tokenStr.replace(/^occ_(senior_)?/, "");
+    const tokenStr = this.tokenStr.replace(/^(.+_)?/, "");
     const decoded = jwt.decode(tokenStr, {
       complete: this.options.complete,
     }) as any; // 解析数据格式不定
@@ -33,13 +33,13 @@ class Token extends BaseCommand {
           decoded[key].toString().length === 13)
       ) {
         // 可能是时间戳
-        const ts =
+        const timestamp =
           decoded[key].toString().length === 10
             ? decoded[key] * 1000
             : decoded[key];
         return {
           ...obj,
-          [key]: dayjs(ts).format("YYYY-MM-DD HH:mm:ss"),
+          [key]: dayjs(timestamp).format("YYYY-MM-DD HH:mm:ss"),
         };
       }
       return {

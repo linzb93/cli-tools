@@ -61,7 +61,7 @@ class Tag extends BaseCommand {
       const jenkins = projectConf.jenkins;
       const ret = `${jenkins.id.replace(/[\-|_]test$/, "")}。${output}`;
       this.logger.success(`部署成功，复制填入更新文档：
-      ${ret}`);
+${ret}`);
       clipboard.writeSync(ret);
     }
   }

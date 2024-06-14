@@ -1,7 +1,7 @@
 import semver, { SemVer } from "semver";
 import axios from "axios";
 import readPkg from "read-pkg";
-import path from "node:path";
+import {relative} from "node:path";
 import { execaCommand as execa } from "execa";
 import fs from "fs-extra";
 import pMap from "p-map";
@@ -26,19 +26,25 @@ class Install extends BaseCommand {
       this.renderHelp();
       return;
     }
+    if (this.helper.isPath(pkg)) {
+      // 是本地的
+      const relativePath = relative(pkg, process.cwd());
+      this.npm.install(relativePath);
+      return;
+    }
     this.spinner.text = "正在下载";
-      const version = await this.getAvailableVersion(pkg);
-      const pkgName = `${pkg}@${version}`;
-      try {
-        await this.npm.install(pkgName, {
-          dependencies: !options.dev,
-          devDependencies: options.dev,
-        });
-      } catch {
-        spinner.fail("无法下载，请检查名称是否有误");
-        return;
-      }
-      spinner.succeed(`${pkgName}下载成功`);
+    const version = await this.getAvailableVersion(pkg);
+    const pkgName = `${pkg}@${version}`;
+    try {
+      await this.npm.install(pkgName, {
+        dependencies: !options.dev,
+        devDependencies: options.dev,
+      });
+    } catch {
+      spinner.fail("无法下载，请检查名称是否有误");
+      return;
+    }
+    spinner.succeed(`${pkgName}下载成功`);
   }
   private async getAvailableVersion(name: string) {
     if (!this.options?.cjs) {
