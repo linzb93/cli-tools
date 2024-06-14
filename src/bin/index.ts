@@ -126,9 +126,12 @@ program
     git(subCommand, rest, cmd);
   });
 
-program.command("ip").action(() => {
-  ip();
-});
+program
+  .command("ip [rest...]")
+  .option("--help", "显示帮助文档")
+  .action((data, options) => {
+    ip(data, options);
+  });
 
 program
   .command("kill <data...>")
@@ -166,7 +169,7 @@ program
   .option("-g, --global", "全局操作")
   .option("-f, --full", "完整版")
   .option("--open", "打开页面")
-  .option('--cjs', '安装commonjs类型的')
+  .option("--cjs", "安装commonjs类型的")
   .option("--help", "显示帮助文档")
   .action((subCommand: string, rest, cmd) => {
     npm(subCommand, rest, cmd);

@@ -52,6 +52,7 @@ class Translate extends BaseCommand {
         await open(`https://youdao.com/w/eng/${encodeURIComponent(text)}`);
         return;
       }
+      let examples = "";
       if (options.example) {
         const arrs: { en: string; cn: string }[] = [];
         $("#bilingual")
@@ -79,54 +80,36 @@ class Translate extends BaseCommand {
               });
             }
           });
-        const table = new Table({
-          head: [chalk.green("含义"), chalk.green("范例")],
-          colAligns: ["left", "left"],
-        });
-        table.push([
-          meanings.map((str) => this.lineFeed(str)).join("\n\n"),
-          arrs
-            .map((item, index) => {
-              if (isC2E) {
-                return `${index + 1}.${item.cn}\n${item.en}`;
-              } else {
-                return `${index + 1}.${item.en}\n${item.cn}`;
-              }
-            })
-            .join("\n\n"),
-        ]);
-        console.log(table.toString());
-      } else {
-        this.logger.box({
-          title: text,
-          borderColor: "red",
-          content: meanings.join("\n\n"),
-          padding: 1,
-        });
+        examples = arrs
+          .map((item, index) => {
+            if (isC2E) {
+              return `${index + 1}.${item.cn}\n${item.en}`;
+            } else {
+              return `${index + 1}.${item.en}\n${item.cn}`;
+            }
+          })
+          .join("\n\n");
       }
+      this.logger.box({
+        title: isC2E ? "中文 => 英文" : "英文 => 中文",
+        borderColor: "red",
+        content: `翻译内容：${chalk.cyan(text)}
+
+翻译结果：
+${meanings.join("\n\n")}
+${
+  !examples
+    ? ""
+    : `
+示例语句：
+${examples}`
+}`,
+        padding: 1,
+      });
     } catch (error) {
       this.spinner.fail("服务器故障，请稍后再试");
       console.log(error);
     }
-  }
-  private lineFeed(str: string, perLineLength = 30): string {
-    const strList = str.split(" ");
-    let tempArr: string[] = [];
-    const lines = [];
-    strList.forEach((s) => {
-      tempArr.push(s);
-      if (
-        tempArr.reduce((sum, item) => sum + item + " ", "").length >
-        perLineLength
-      ) {
-        lines.push(tempArr.join(" "));
-        tempArr = [];
-      }
-    });
-    if (tempArr.length) {
-      lines.push(tempArr.join(" "));
-    }
-    return lines.join("\n");
   }
   private generateHelp() {
     this.helper.generateHelpDoc({
