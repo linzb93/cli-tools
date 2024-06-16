@@ -95,7 +95,7 @@ class Open extends BaseCommand {
           choices: dirs.map((dir) => basename(dir)),
         },
       ]);
-      const path2 = await this.helper.getOriginPath(join(sourceDir, source));
+      const path2 = join(sourceDir, source);
       await this.helper.vscode.open(path2, {
         reuse: options.reuse,
       });

@@ -19,6 +19,11 @@ class Shortcut extends BaseCommand {
             windows: "ctrl + page up",
             mac: "shift + cmd + [",
           },
+          {
+            title: "截图",
+            windows: "ctrl + a",
+            mac: "shift + command + 2",
+          },
         ],
       },
       {
