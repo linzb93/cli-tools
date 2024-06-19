@@ -61,7 +61,8 @@ class OCC extends BaseCommand {
           },
         }
       );
-      this.spinner.succeed(`获取店铺【${shopName}】信息成功！\n${data.result}`);
+      this.spinner.succeed(`获取店铺【${shopName}】信息成功!`);
+      console.log(data.result);
     } else {
       const newUrl = typeof this.currentApp.getOpenUrl === 'function' ? this.currentApp.getOpenUrl(shopResult) : url;
       if (

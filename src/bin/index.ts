@@ -32,6 +32,7 @@ import tree from "@/commands/tree";
 import git from "@/commands/git";
 import npm from "@/commands/npm";
 import code from "@/commands/code";
+import time from "@/commands/time";
 
 const program = new Command();
 program.version("2.0.0");
@@ -219,6 +220,11 @@ program
   .action((url, option) => {
     spider(url, option);
   });
+
+  program.command('time <time>')
+  .action(data => {
+    time(data);
+  })
 
 program
   .command("token <data>")
