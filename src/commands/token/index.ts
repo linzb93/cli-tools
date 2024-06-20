@@ -1,6 +1,6 @@
-import dayjs from "dayjs";
-import BaseCommand from "@/util/BaseCommand";
 import jwt from "jsonwebtoken";
+import timestampFormat from '@/commands/time';
+import BaseCommand from "@/util/BaseCommand";
 import { AnyObject } from "@/util/types";
 
 interface Options {
@@ -34,13 +34,10 @@ class Token extends BaseCommand {
           decoded[key].toString().length === 13)
       ) {
         // 可能是时间戳
-        const timestamp =
-          decoded[key].toString().length === 10
-            ? decoded[key] * 1000
-            : decoded[key];
+        const timestamp = decoded[key];
         return {
           ...obj,
-          [key]: dayjs(timestamp).format("YYYY-MM-DD HH:mm:ss"),
+          [key]: timestampFormat(timestamp),
         };
       }
       return {
