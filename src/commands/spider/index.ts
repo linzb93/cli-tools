@@ -1,13 +1,13 @@
 import { load as cheerioLoad, CheerioAPI } from "cheerio";
 import axios, { AxiosResponse } from "axios";
 import fs from "fs-extra";
-import path from "node:path";
+import {resolve as pathResolve, basename} from "node:path";
 import pMap from "p-map";
 import { ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 import { root } from "@/util/helper";
 import BaseCommand from "@/util/BaseCommand";
-const resolve = (...src: string[]) => path.resolve(root, "data/spider", ...src);
+const resolve = (...src: string[]) => pathResolve(root, "data/spider", ...src);
 
 class Spider extends BaseCommand {
   private dest: string;
@@ -28,6 +28,10 @@ class Spider extends BaseCommand {
   }
   async run() {
     const { url, dest } = this;
+    if (url.includes('zhihu.com')) {
+      this.logger.error('知乎不能爬取！');
+      return;
+    }
     const matchSource = Spider.sourceMap.find((item) => item.pattern.test(url));
     if (!matchSource) {
       this.logger.error("页面无法解析，任务结束");
@@ -47,7 +51,7 @@ class Spider extends BaseCommand {
     const $ = cheerioLoad(res.data);
     const imgs = matchSource.parser($).map((img) => ({
       source: img,
-      filename: path.basename(img.split("?")[0]),
+      filename: basename(img.split("?")[0]),
     }));
     await fs.mkdir(resolve(dest), { recursive: true });
     this.spinner.text = "正在下载图片";
