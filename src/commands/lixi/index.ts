@@ -21,6 +21,11 @@ class Lixi extends BaseCommand {
         rate: 2.8,
         saveDate: "2024-01-08",
       },
+      {
+        money: 100000,
+        rate: 12,
+        saveDate: "2024-06-27",
+      },
     ];
   }
   async run() {

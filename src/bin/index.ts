@@ -33,6 +33,7 @@ import git from "@/commands/git";
 import npm from "@/commands/npm";
 import code from "@/commands/code";
 import time from "@/commands/time";
+import repl from "@/commands/repl";
 
 const program = new Command();
 program.version("2.0.0");
@@ -197,6 +198,10 @@ program
   .action((url, cmd) => {
     open(url, cmd);
   });
+
+program.command('repl').action(() => {
+  repl();
+});
 
 program
   .command("shortcut [name]")

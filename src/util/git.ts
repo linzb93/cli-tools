@@ -74,7 +74,7 @@ export const remote = async (): Promise<string> => {
 
 /**
  * 获取代码提交状态
- * @return { number } 未提交 1；未推送 2；已推送 3；不在master分支上 4；状态未知 0
+ * @return { number } 未提交 1；未推送 2；已推送 3；不在master/main分支上 4；状态未知 0
  */
 export const getPushStatus = async ({ cwd = process.cwd() } = {}): Promise<
   0 | 1 | 2 | 3 | 4

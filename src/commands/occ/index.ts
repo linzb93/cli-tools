@@ -184,7 +184,7 @@ class OCC extends BaseCommand {
         memberId = input[0];
       }
     } else if (input.length === 2) {
-      const match = appMap.find((app) => app.name === input[0]);
+      match = appMap.find((app) => app.name === input[0]);
       if (!match) {
         throw new Error("项目不存在，请重新输入");
       }
