@@ -17,8 +17,8 @@ maxMap.set("vue", {
 });
 
 const table = new Table({
-  head: [chalk.green("文件地址"), chalk.green("行数")],
-  colAligns: ["left", "center"],
+  head: ['', chalk.green("文件地址"), chalk.green("行数")],
+  colAligns: ["left", "left", "center"],
 });
 
 class Analyse extends BaseCommand {
@@ -52,8 +52,9 @@ class Analyse extends BaseCommand {
     table.push(
       ...result
         .sort((prev, next) => (prev.lines > next.lines ? -1 : 1))
-        .map((item) => {
+        .map((item,index) => {
           return [
+            (index + 1).toString(),
             chalk.cyan(item.file),
             item.type === "danger"
               ? chalk.red(item.lines)

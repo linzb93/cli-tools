@@ -59,6 +59,11 @@ class Shortcut extends BaseCommand {
             windows: "ctrl + k",
             mac: "ctrl + k",
           },
+          {
+            title: "拆分编辑器",
+            windows: "ctrl + \\",
+            mac: "",
+          },
         ],
       },
       {

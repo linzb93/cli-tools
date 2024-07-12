@@ -6,8 +6,11 @@ import chalk from 'chalk';
 export default () => {
     console.log(chalk.red('press `.exit` to quit'));
     const instance = repl.start({
-        prompt: 'Node.js via stdin> ',
+        prompt: chalk.cyan('>'),
     });
     instance.context.dayjs = dayjs;
     instance.context.lodash = lodash;
+    instance.on('close', () => {
+        console.log(chalk.yellow('say goodbye from repl'));
+    });
 }
