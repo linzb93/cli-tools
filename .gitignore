@@ -1,6 +1,7 @@
 node_modules/
 coverage/
 package-lock.json
+pnpm-lock.yaml
 config.secret.json
 lib/commands/fund/.cache
 .DS_Store

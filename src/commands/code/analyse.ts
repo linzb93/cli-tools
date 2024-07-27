@@ -5,16 +5,99 @@ import pMap from "p-map";
 import { globby } from "globby";
 import chalk from "chalk";
 
-// 不同类型的项目，文件最大行数不同
-const maxMap = new Map();
-maxMap.set("default", {
-  warning: 200,
-  danger: 300,
-});
-maxMap.set("vue", {
-  warning: 500,
-  danger: 700,
-});
+interface IModule {
+  access(): Promise<boolean>;
+  maxLength: {
+    warning: number;
+    danger: number;
+  };
+  filePattern(prefix: string): string;
+  calc(lines: string[]): object;
+  render: {
+    name: string;
+    data(row: any): string;
+  }[];
+}
+
+const vueModule: IModule = {
+  async access() {
+    try {
+      await fs.access("vue.config.js");
+      return true;
+    } catch (error) {
+      return false;
+    }
+  },
+  maxLength: {
+    warning: 500,
+    danger: 700,
+  },
+  filePattern: (prefix) => `${prefix ? `${prefix}/` : ""}**/*.vue`,
+  calc(splitLines) {
+    const indexes = {
+      scriptStart: splitLines.findIndex((line) => line.includes("<script")),
+      scriptEnd: splitLines.findIndex((line) => line.includes("</script>")),
+      styleStart: splitLines.findIndex((line) => line.includes("<style")),
+      styleEnd: splitLines.findIndex((line) => line.includes("</style>")),
+    };
+    const scriptLength = indexes.scriptEnd - indexes.scriptStart + 1;
+    const styleLength = indexes.styleEnd - indexes.styleStart + 1;
+    return {
+      lines: splitLines.length,
+      scriptLength,
+      styleLength,
+      templateLength: splitLines.length - scriptLength - styleLength,
+    };
+  },
+  render: [
+    {
+      name: "文件地址",
+      data: (row) => chalk.cyan(row.file),
+    },
+    {
+      name: "总行数",
+      data: (row) => chalk.cyan(row.lines),
+    },
+    // {
+    //   name: "template行数",
+    //   data: (row) => chalk.cyan(row.templateLength),
+    // },
+    // {
+    //   name: "script行数",
+    //   data: (row) => chalk.cyan(row.scriptLength),
+    // },
+    // {
+    //   name: "style行数",
+    //   data: (row) => chalk.cyan(row.styleLength),
+    // },
+  ],
+};
+
+const javascriptModule: IModule = {
+  async access() {
+    return true;
+  },
+  maxLength: {
+    warning: 200,
+    danger: 300,
+  },
+  filePattern: (prefix) => `${prefix ? `${prefix}/` : ""}**/*.{js,ts}`,
+  calc(splitLines) {
+    return {
+      lines: splitLines.length,
+    };
+  },
+  render: [
+    {
+      name: "文件地址",
+      data: (row) => chalk.cyan(row.file),
+    },
+    {
+      name: "行数",
+      data: (row) => chalk.cyan(row.lines),
+    },
+  ],
+};
 
 const table = new Table({
   head: ['', chalk.green("文件地址"), chalk.green("行数")],
@@ -22,8 +105,12 @@ const table = new Table({
 });
 
 class Analyse extends BaseCommand {
+  private modules: IModule[] = [];
   constructor(private data: string[]) {
     super();
+  }
+  addModule(...modules: IModule[]) {
+    this.modules = modules;
   }
   async run() {
     this.spinner.text = "正在分析";
@@ -49,6 +136,10 @@ class Analyse extends BaseCommand {
       return;
     }
     this.spinner.succeed("分析完成");
+    const table = new Table({
+      head: [chalk.green("文件地址"), chalk.green("行数")],
+      colAligns: ["left", "center"],
+    });
     table.push(
       ...result
         .sort((prev, next) => (prev.lines > next.lines ? -1 : 1))
@@ -66,29 +157,22 @@ class Analyse extends BaseCommand {
   }
   private async getMatchFiles(): Promise<{
     files: string[];
-    max: any;
+    max: IModule["maxLength"];
   }> {
     const prefix = this.data[0];
-    try {
-      await fs.access("vue.config.js");
-      return {
-        files: await globby([
-          `${prefix ? `${prefix}/` : ""}**/*.vue`,
-          "!node_modules",
-        ]),
-        max: maxMap.get("vue"),
-      };
-    } catch (error) {}
-    return {
-      files: await globby([
-        `${prefix ? `${prefix}/` : ""}**/*.{js,ts}`,
-        "!node_modules",
-      ]),
-      max: maxMap.get("default"),
-    };
+    for (const m of this.modules) {
+      if (await m.access()) {
+        return {
+          files: await globby([m.filePattern(prefix), "!node_modules"]),
+          max: m.maxLength,
+        };
+      }
+    }
   }
 }
 
-export default function (data: string[]) {
-  return new Analyse(data).run();
+export default function (prefix: string[]) {
+  const util = new Analyse(prefix);
+  util.addModule(vueModule, javascriptModule);
+  util.run();
 }
