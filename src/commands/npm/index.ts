@@ -18,23 +18,15 @@ export default function (subCommand: string, data: string[], options: IOption) {
     generateHelp();
     return;
   }
-  if (subCommand === "has") {
-    has(data, options);
-    return;
-  }
-  if (subCommand === "install") {
-    install(data, options);
-    return;
-  }
-  if (subCommand === "search") {
-    search(data, options);
-    return;
-  }
-  if (subCommand === "uninstall") {
-    uninstall(data, options);
-  }
-  if (subCommand === "analyse") {
-    analyse();
+  const commandMap = {
+    has: () => has(data, options),
+    install: () => install(data, options),
+    search: () => search(data, options),
+    uninstall: () => uninstall(data, options),
+    analyse: () => analyse(),
+  };
+  if (commandMap[subCommand]) {
+    commandMap[subCommand]();
   }
 }
 

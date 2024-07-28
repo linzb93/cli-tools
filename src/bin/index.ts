@@ -115,7 +115,6 @@ program
   .option("--open", "在VSCode中打开项目")
   .option("--from <src>", "来源")
   .option("-d, --delete", "删除")
-  .option("-r, --remote", "操作远端的")
   .option("-g, --get", "获取")
   .option("-c, --current", "当前的")
   .option("--commit <msg>", "提交信息")
@@ -200,7 +199,7 @@ program
     open(url, cmd);
   });
 
-program.command('repl').action(() => {
+program.command("repl").action(() => {
   repl();
 });
 
@@ -227,10 +226,9 @@ program
     spider(url, option);
   });
 
-  program.command('time <time>')
-  .action(data => {
-    time(data);
-  })
+program.command("time <time>").action((data) => {
+  time(data);
+});
 
 program
   .command("token <data>")
