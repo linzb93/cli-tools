@@ -115,6 +115,7 @@ program
   .option("--open", "在VSCode中打开项目")
   .option("--from <src>", "来源")
   .option("-d, --delete", "删除")
+  .option("-r, --remote", "操作远端的")
   .option("-g, --get", "获取")
   .option("-c, --current", "当前的")
   .option("--commit <msg>", "提交信息")

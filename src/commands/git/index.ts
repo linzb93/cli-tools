@@ -3,6 +3,7 @@ import deploy from "./deploy";
 import pull from "./pull";
 import push from "./push";
 import rename from "./rename";
+import branch from "./branch";
 import scan from "./scan";
 import tag from "./tag";
 import * as helper from "@/util/helper";
@@ -12,33 +13,18 @@ export default function (subCommand: string, data: string[], options: any) {
     generateHelp();
     return;
   }
-  if (subCommand === "clone") {
-    clone(data, options);
-    return;
+  const commandMap = {
+    clone: () => clone(data, options),
+    deploy: () => deploy(data, options),
+    pull: () => pull(),
+    push: () => push(),
+    scan: () => scan(),
+    branch: () => branch(options),
+    rename: () => rename(),
+    tag: () => tag(data, options)
   }
-  if (subCommand === "deploy") {
-    deploy(data, options);
-    return;
-  }
-  if (subCommand === "pull") {
-    pull();
-    return;
-  }
-  if (subCommand === "push") {
-    push();
-    return;
-  }
-  if (subCommand == "scan") {
-    scan();
-    return;
-  }
-  if (subCommand === "rename") {
-    rename();
-    return;
-  }
-  if (subCommand === "tag") {
-    tag(data, options);
-    return;
+  if (commandMap[subCommand]) {
+    commandMap[subCommand]();
   }
 }
 
