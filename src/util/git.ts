@@ -150,3 +150,27 @@ export const deleteTag = async (
     await execa(`git tag -d ${tag}`, { cwd });
   }
 };
+
+// 获取分支列表
+export const getBranchs = async () => {
+  const { stdout } = await execa("git branch --format='%(refname:short)'");
+  return stdout.split("\n");
+};
+
+// 删除分支
+export const deleteBranch = async (
+  branch: string,
+  {
+    includeRemote,
+    cwd = process.cwd(),
+  }: {
+    includeRemote?: boolean;
+    cwd?: string;
+  } = {}
+): Promise<void> => {
+  if (includeRemote) {
+    await execa(`git push origin :refs/tags/${tag}`, { cwd });
+  } else {
+    await execa(`git branch -d ${tag}`, { cwd });
+  }
+};

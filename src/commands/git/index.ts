@@ -17,10 +17,10 @@ export default function (subCommand: string, data: string[], options: any) {
     deploy: () => deploy(data, options),
     pull: () => pull(),
     push: () => push(),
-    branch: () => branch(options),
+    branch: () => branch(),
     rename: () => rename(),
-    tag: () => tag(data, options)
-  }
+    tag: () => tag(data, options),
+  };
   if (commandMap[subCommand]) {
     commandMap[subCommand]();
   }
