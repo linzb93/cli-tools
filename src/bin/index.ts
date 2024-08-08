@@ -16,7 +16,6 @@ import dayjs from "dayjs";
 import { root } from "@/util/helper";
 import agent from "@/commands/agent";
 // import cg from "@/commands/cg";
-import bug from "@/commands/bug";
 import clear from "@/commands/clear";
 import color from "@/commands/color";
 import fork from "@/commands/fork";
@@ -53,13 +52,6 @@ program
   .option("--help", "显示帮助文档")
   .action((subCommand, options) => {
     agent(subCommand, options);
-  });
-
-program
-  .command("bug [source]")
-  .option("--help", "显示帮助文档")
-  .action((source, option) => {
-    bug(source, option);
   });
 
 // program

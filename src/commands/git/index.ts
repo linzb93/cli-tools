@@ -4,7 +4,6 @@ import pull from "./pull";
 import push from "./push";
 import rename from "./rename";
 import branch from "./branch";
-import scan from "./scan";
 import tag from "./tag";
 import * as helper from "@/util/helper";
 
@@ -18,7 +17,6 @@ export default function (subCommand: string, data: string[], options: any) {
     deploy: () => deploy(data, options),
     pull: () => pull(),
     push: () => push(),
-    scan: () => scan(),
     branch: () => branch(options),
     rename: () => rename(),
     tag: () => tag(data, options)
