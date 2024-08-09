@@ -1,10 +1,4 @@
-/**
- * 公司项目的代码部署到Jenkins测试环境与生产环境，默认测试环境
- * eg:
- * mycli git deploy 测试环境
- * mycli git deploy prod 生产环境
- * 也可以部署github的
- */
+import { basename } from 'node:path'
 import open from "open";
 import readPkg from "read-pkg";
 import notifier from "node-notifier";
@@ -14,7 +8,7 @@ import { generateNewestTag } from "../tag";
 import clipboard from "clipboardy";
 import chalk from "chalk";
 
-interface Options {
+interface CommandOptions {
   commit: string;
   tag: string;
   debug: boolean;
@@ -25,10 +19,18 @@ interface JenkinsProject {
   name: string;
   id: string;
 }
-
+type GitActions = ('merge' | 'open' | 'copy' | 'tag')[];
+interface FlowOption {
+  condition: Boolean;
+  actions?: GitActions;
+  action?: Function;
+  inquire?: boolean;
+  targetBranch?: string;
+  alertWhenError?: boolean;
+}
 // git代码部署流程
 class Deploy extends BaseCommand {
-  constructor(private data: string[], private options: Options) {
+  constructor(private data: string[], private options: CommandOptions) {
     super();
   }
   async run() {
@@ -37,7 +39,7 @@ class Deploy extends BaseCommand {
       this.generateHelp();
       return;
     }
-    const remote = await this.git.remote();
+    const remoteUrl = await this.git.remote();
     const curBranch = await this.git.getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);
     const targetBranch =
@@ -48,21 +50,17 @@ class Deploy extends BaseCommand {
       {
         // 只提交到当前分支
         condition: this.options.current,
-        action: this.deployCurrent,
       },
       {
         // github项目
-        condition: remote.includes("github.com"),
-        action: this.deployToGithub,
+        condition: remoteUrl.includes("github.com"),
+        alertWhenError: true,
       },
       {
         // 测试阶段，从开发分支提交到release分支
         condition: targetBranch === "release" && isDevBranch, // dev -> release
-        action: this.deployToRelease,
-      },
-      {
-        condition: targetBranch === curBranch && curBranch === "release", // release -> release
-        action: this.deployCurrent,
+        actions: ['merge', 'open'],
+        targetBranch
       },
       {
         condition: curBranch === "release" && targetBranch === "master", // release -> master
@@ -74,52 +72,17 @@ class Deploy extends BaseCommand {
         },
       },
       {
-        // dev -> master or master -> master
-        condition:
-          (isDevBranch && targetBranch === "master") ||
-          (targetBranch === curBranch && curBranch === "master"),
-        action: this.deployToProduction,
-      },
-    ]);
-  }
-  private async deployToGithub() {
-    const flow: (string | CommandItem)[] = [
-      {
-        message: "git pull",
-        retryTimes: 20,
+        // dev -> master
+        condition: isDevBranch && targetBranch === "master",
+        inquire: true,
+        actions: ['tag', 'copy'],
       },
       {
-        message: "git push",
-        retryTimes: 20,
+        // master -> master
+        condition: targetBranch === curBranch && curBranch === "master",
+        actions: ['tag', 'copy'],
       },
-    ];
-    const gitStatus = await this.git.getPushStatus();
-    if (gitStatus === 1) {
-      flow.unshift("git add .", {
-        message: `git commit -m ${this.getFormattedCommitMessage()}`,
-        onError: () => { },
-      });
-    }
-    try {
-      await this.helper.sequenceExec(flow);
-    } catch (error) {
-      this.logger.error((error as Error).message);
-      notifier.notify({
-        title: "mycli通知",
-        message: "Github项目更新失败！",
-      });
-      return;
-    }
-    this.logger.success("Github项目更新成功");
-  }
-  private async deployCurrent() {
-    await this.helper.sequenceExec([
-      "git add .",
-      `git commit -m ${this.options.commit || "update"}`,
-      "git pull",
-      "git push",
     ]);
-    this.logger.success("部署成功");
   }
   private async deployToProduction() {
     const { tag } = this.options;
@@ -165,55 +128,6 @@ class Deploy extends BaseCommand {
       return;
     }
   }
-  private async deployToRelease() {
-    const curBranch = await this.git.getCurrentBranch();
-    try {
-      const flow = [
-        "git add .",
-        {
-          message: `git commit -m ${this.getFormattedCommitMessage()}`,
-          onError() { },
-        },
-        {
-          message: "git pull",
-          onError() { },
-        },
-        {
-          message: "git push",
-          onError() { },
-        },
-        `git checkout release`,
-        "git pull",
-        {
-          message: `git merge ${curBranch}`,
-          onError: async () => {
-            const ans = await this.helper.inquirer.prompt([
-              {
-                message: "代码合并失败，检测到代码有冲突，是否已解决？",
-                type: "confirm",
-                default: true,
-                name: "resolved",
-              },
-            ]);
-            if (!ans.resolved) {
-              throw new Error("exit");
-            }
-            await this.helper.sequenceExec([
-              "git add .",
-              "git commit -m conflict-fixed",
-            ]);
-          },
-        },
-        "git push",
-      ];
-      flow.push(`git checkout ${curBranch}`);
-      await this.helper.sequenceExec(flow);
-      await this.openDeployPage();
-    } catch (error) {
-      this.logger.error((error as Error).message);
-      return;
-    }
-  }
   private async deploySuccess(tag: string) {
     if (!tag) {
       this.logger.success("部署成功");
@@ -251,17 +165,97 @@ ${copyText}`);
     return commit;
   }
   private createSerial(
-    flowList: {
-      condition: Boolean;
-      action: Function;
-    }[]
+    flowList: FlowOption[]
   ): void {
     for (const flow of flowList) {
       if (flow.condition) {
-        flow.action.call(this);
+        if (typeof flow.action === 'function') {
+          flow.action.call(this);
+          return;
+        }
+        this.doAction(flow);
+      }
+    }
+  }
+  private async doAction(flow: FlowOption) {
+    const { actions, inquire, targetBranch } = flow;
+    const flows: (string | CommandItem)[] = [...this.getBaseAction()];
+    const tailFlows = [];
+    let tag = '';
+    const curBranch = await this.git.getCurrentBranch();
+    if (inquire) {
+      const { answer } = await this.helper.inquirer.prompt({
+        message: `确认更新到${targetBranch}分支？`,
+        name: "answer",
+        type: "confirm",
+      });
+      if (!answer) {
         return;
       }
     }
+    if (actions.includes('merge')) {
+      flows.push(
+        `git checkout ${targetBranch}`,
+        {
+          message: `git pull`,
+          onError: this.handleConflict
+        },
+        {
+          message: `git merge ${curBranch}`,
+          onError: this.handleConflict
+        },
+        'git push'
+      );
+      tailFlows.push(`git checkout ${curBranch}`);
+    }
+    if (actions.includes('tag')) {
+      tag = await generateNewestTag();
+      flows.push(`git tag ${tag}`);
+    }
+    if (actions.includes('open')) {
+      await this.openDeployPage();
+    }
+    if (actions.includes('copy')) {
+      await this.deploySuccess(tag);
+    }
+    try {
+      await this.helper.sequenceExec([...flows, ...tailFlows]);
+    } catch (error) {
+      if (flow.alertWhenError) {
+        notifier.notify({
+          title: "mycli通知",
+          message: `${basename(process.cwd())}项目更新失败！`,
+        });
+      }
+    }
+    if (!actions.includes('copy')) {
+      this.logger.success("部署成功");
+    }
+  }
+  private getBaseAction() {
+    return [
+      "git add .",
+      `git commit -m ${this.options.commit || "update"}`,
+      "git pull",
+      "git push"
+    ]
+  }
+  private async handleConflict() {
+    const ans = await this.helper.inquirer.prompt([
+      {
+        message: "代码合并失败，检测到代码有冲突，是否已解决？",
+        type: "confirm",
+        default: true,
+        name: "resolved",
+      },
+    ]);
+    if (!ans.resolved) {
+      throw new Error("exit");
+    }
+    await this.helper.sequenceExec([
+      "git add .",
+      "git commit -m conflict-fixed",
+    ]);
   }
   private async openDeployPage() {
     const pkg = await readPkg({
@@ -286,6 +280,7 @@ ${copyText}`);
 - 从开发分支合并到测试分支并部署
 - 从开发分支合并到主分支并部署
 - 从主分支部署
+- 部署至Github
 使用方法：
 ${chalk.cyan("git deploy prod")}
 参数：
@@ -297,6 +292,6 @@ ${chalk.cyan("git deploy prod")}
     });
   }
 }
-export default (data: string[], options: Options) => {
+export default (data: string[], options: CommandOptions) => {
   new Deploy(data, options).run();
 };
