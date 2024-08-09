@@ -29,7 +29,7 @@ class Spider extends BaseCommand {
   async run() {
     const { url, dest } = this;
     if (url.includes('zhihu.com')) {
-      this.logger.error('知乎不能爬取！');
+      this.logger.error('知乎不能爬取，用Puppeteer也不行，有中文乱码！');
       return;
     }
     const matchSource = Spider.sourceMap.find((item) => item.pattern.test(url));
