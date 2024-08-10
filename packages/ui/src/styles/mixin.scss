@@ -1,0 +1,13 @@
+// 单行文字截断
+@mixin textOverflow() {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+// 多行文字截断
+@mixin multiTextoverflow($line) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+  overflow: hidden;
+}

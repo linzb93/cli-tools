@@ -1,0 +1,27 @@
+.flex {
+  display: flex;
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flexalign-center {
+  display: flex;
+  align-items: center;
+}
+.flexalign-start {
+  display: flex;
+  align-items: start;
+}
+.flexalign-end {
+  display: flex;
+  align-items: end;
+}
+.flexpack-end {
+  display: flex;
+  justify-content: end;
+}
+.flexitem-1 {
+  flex: 1;
+}
