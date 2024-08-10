@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "dev": "echo 123",
+    "build": "echo 123"
+  }
+}

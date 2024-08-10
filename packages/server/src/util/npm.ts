@@ -1,7 +1,7 @@
 /* eslint-disable no-redeclare */
 import { execaCommand as execa } from "execa";
 import { isPlainObject, get } from "lodash-es";
-import { load, CheerioAPI, Node as CheerioNode } from "cheerio";
+import { load, CheerioAPI } from "cheerio";
 import axios from "axios";
 import inquirer from "./inquirer.js";
 import fs from "fs-extra";
@@ -22,19 +22,19 @@ interface InstallOptions {
 }
 /**
  * 安装npm依赖
- * @param name 
+ * @param name
  */
 async function install(name: string): Promise<void>;
 /**
  * 安装npm依赖，有选项
- * @param name 
+ * @param name
  */
 async function install(name: string, options: InstallOptions): Promise<void>;
 /**
  * 安装所有npm依赖
- * @param name 
+ * @param name
  */
-async function install(options: { cwd: InstallOptions['cwd'] }): Promise<void>;
+async function install(options: { cwd: InstallOptions["cwd"] }): Promise<void>;
 async function install(...args: any[]) {
   let pkgName = "";
   let options: InstallOptions = {};
@@ -71,10 +71,6 @@ async function install(...args: any[]) {
 interface RegData {
   description: string;
 }
-// 本来CheerioNode上应该有data属性的，但作者没写。
-interface ExtCheerioNode extends CheerioNode {
-  data: string;
-}
 
 export class Npm {
   private $: CheerioAPI;
@@ -88,7 +84,9 @@ export class Npm {
    * @param {string} type - 模块名称
    * @returns {string} - 模块信息
    */
-  get(type: 'repository' | 'weeklyDl' | 'lastPb' | 'description' | 'version'): string {
+  get(
+    type: "repository" | "weeklyDl" | "lastPb" | "description" | "version"
+  ): string {
     const { $ } = this;
     if (type === "repository") {
       return $("#repository").next().find("a").attr("href") as string;
@@ -127,7 +125,7 @@ async function getPage(pkg: string): Promise<Npm> {
       const list = $(".d0963384")
         .find(".db7ee1ac")
         .filter((index) => index <= 10)
-        .map((_, item) => (item.children[0] as ExtCheerioNode).data);
+        .map((_, item) => (item.children[0] as any).data);
       const choices = Array.prototype.slice.call(list);
       if (choices.length) {
         throw new Error("检测到您输入的npm依赖有误");
@@ -153,17 +151,15 @@ async function getPage(pkg: string): Promise<Npm> {
 const getNpmClient = () => {
   try {
     fs.accessSync("pnpm-lock.yaml");
-    return 'pnpm'
-  } catch {
-
-  }
+    return "pnpm";
+  } catch {}
   try {
     fs.accessSync("yarn.lock");
-    return 'yarn'
+    return "yarn";
   } catch {
-    return 'npm'
+    return "npm";
   }
-}
+};
 
 function getVersion(packageName: string): string {
   const match = packageName.match(/@([0-9a-z\.\-]+)@/);
@@ -180,7 +176,7 @@ async function getList(name: string) {
       versionList: [],
     };
   }
-  if (getNpmClient() === 'yarn') {
+  if (getNpmClient() === "yarn") {
     return {
       list: [name],
       versionList: [

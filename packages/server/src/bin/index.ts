@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 // 先处理debug模式
-if (process.argv.includes("--debug")) {
-  process.env.DEBUG = "*";
-}
+// if (process.argv.includes("--debug")) {
+//   process.env.DEBUG = "*";
+// }
 
 import { Command } from "commander";
 import ip from "@/commands/ip";
