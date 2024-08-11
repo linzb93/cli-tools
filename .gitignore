@@ -3,3 +3,4 @@ dist
 packages/server/data
 packages/server/config.secret.json
 *.yaml
+cache/

@@ -1,0 +1,6 @@
+{
+  "port": {
+    "development_fe": 6547,
+    "production": 9527
+  }
+}

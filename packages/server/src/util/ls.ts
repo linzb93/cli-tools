@@ -6,15 +6,15 @@ import { BaseType } from "./types";
 import { root } from "./helper";
 
 const { readJSONSync, writeFileSync } = fs;
-const resolve = (src: string) => path.resolve(root, src);
+const resolve = (src: string) => path.resolve(root, "../../cache", src);
 
 export default {
   get(key: string) {
-    const data = readJSONSync(resolve("./config.secret.json"));
+    const data = readJSONSync(resolve("./app.json"));
     return objectGet(data, key);
   },
   set(key: string, value: BaseType) {
-    const data = readJSONSync(resolve("./config.secret.json"));
+    const data = readJSONSync(resolve("./app.json"));
     const originValue = objectGet(data, key);
     let ret: BaseType;
     if (value === "!" && isBoolean(originValue)) {
@@ -25,7 +25,7 @@ export default {
       ret = value;
     }
     writeFileSync(
-      resolve("./config.secret.json"),
+      resolve("./app.json"),
       prettier.format(JSON.stringify(data), {
         parser: "json",
       })
