@@ -3,6 +3,12 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import pkg from "./package.json";
+import rootPkg from '../../package.json';
+
+const allDependencies = {
+  ...pkg.dependencies,
+  ...rootPkg.dependencies
+}
 
 export default defineConfig({
   resolve: {
@@ -21,7 +27,7 @@ export default defineConfig({
         entryFileNames: "cli.js",
       },
       external: [
-        ...Object.keys("dependencies" in pkg ? pkg.dependencies : {}),
+        ...Object.keys(allDependencies),
         /^node:.*/,
       ],
     },

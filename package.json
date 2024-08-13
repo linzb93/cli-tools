@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@linzb93/utils": "^0.0.14",
-    "axios": "^1.7.2",
+    "axios": "1.6.8",
     "chalk": "^5.3.0",
     "dayjs": "^1.9.6",
     "lodash-es": "^4.17.21",

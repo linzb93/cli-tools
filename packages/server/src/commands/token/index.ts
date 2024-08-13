@@ -23,7 +23,7 @@ class Token extends BaseCommand {
     const decoded = jwt.decode(tokenStr, {
       complete: this.options.complete,
     }) as AnyObject; // 解析数据格式不定
-    if (this.options.origin) {
+    if (this.options.origin || decoded === null) {
       console.log(decoded);
       return decoded;
     }

@@ -37,12 +37,12 @@ import repl from "@/commands/repl";
 const program = new Command();
 program.version("2.0.0");
 
-program.hook("preAction", (thisCommand) => {
-  fs.appendFile(
-    resolve(root, "data/track.txt"),
-    `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${thisCommand.args.join(" ")}\n`
-  );
-});
+// program.hook("preAction", (thisCommand) => {
+//   fs.appendFile(
+//     resolve(root, "data/track.txt"),
+//     `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${thisCommand.args.join(" ")}\n`
+//   );
+// });
 
 program
   .command("agent [sub-command]")
