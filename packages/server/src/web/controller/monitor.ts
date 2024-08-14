@@ -1,21 +1,17 @@
-import { Request } from "@/typings/api";
+import Router from "koa-router";
 import sql from "@/provider/sql";
 
+const router = new Router();
+export default router;
 // 获取项目列表
-export const getApps = async () => {
+router.post("/monitor/getApps", async (ctx) => {
   let list = await sql((db) => db.monitor);
-  return {
-    list: list || [],
-  };
-};
+  ctx.body = list || [];
+});
 
 // 保存已选的项目列表
-export const saveApps = async (
-  req: Request<{ siteId: string; name: string }[]>
-) => {
-  const { params } = req;
+router.post("/monitor/saveApps", async (ctx) => {
   await sql((db) => {
-    db.monitor = params;
+    db.monitor = ctx.body;
   });
-  return null;
-};
+});

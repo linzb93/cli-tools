@@ -1,11 +1,15 @@
 import { omit } from "lodash-es";
 import dayjs from "dayjs";
+import Router from "koa-router";
 import OSS, { OssConfig } from "ali-oss";
 import { basename } from "node:path";
 import pMap from "p-map";
 import sql from "@/provider/sql";
 import { HTTP_STATUS } from "@/provider/constant";
 import { Request, Database } from "@/typings/api";
+
+const router = new Router();
+export default router;
 
 // 根据id查找对应的OSS客户端
 async function findClient(id: number) {
@@ -26,52 +30,45 @@ async function findClient(id: number) {
 }
 
 // 获取已添加的客户端列表
-export const getProjectList = async () => {
-  return {
-    list: await sql((db) => db.oss.accounts),
-  };
-};
+router.post("/oss/getProjectList", async (ctx) => {
+  ctx.body = await sql((db) => db.oss.accounts);
+});
 
 // 添加客户端，目前仅支持阿里OSS
-export const createClient = async (req: Request<OssConfig>) => {
+router.post("/oss/createClient", async (ctx) => {
   await sql((db) => {
-    if (req.params.id) {
+    if (ctx.body.id) {
       // 是编辑
-      const index = db.oss.accounts.findIndex(
-        (acc) => acc.id === req.params.id
-      );
+      const index = db.oss.accounts.findIndex((acc) => acc.id === ctx.body.id);
       if (index > -1) {
-        db.oss.accounts[index] = req.params;
+        db.oss.accounts[index] = ctx.body;
       }
     } else {
       const id = db.oss.accounts.length
         ? Number(db.oss.accounts.at(-1).id + 1)
         : 1;
       db.oss.accounts.push({
-        ...req.params,
+        ...ctx.body,
         id,
       });
     }
   });
   return null;
-};
+});
 // 移除客户端
-export const removeClient = async (req: Request<{ id: number }>) => {
-  const { id } = req.params;
+router.post("/oss/removeClient", async (ctx) => {
+  const { id } = ctx.body;
   await sql((db) => {
     let { accounts } = db.oss;
     const index = accounts.findIndex((acc) => acc.id === id);
     accounts.splice(index, 1);
   });
-  return null;
-};
+});
 
 // 获取文件/目录列表
-export const getOssList = async (
-  req: Request<{ id: number; config: { prefix: string } }>
-) => {
+router.post("/oss/getFileList", async (ctx) => {
   // https://help.aliyun.com/zh/oss/developer-reference/list-objects-5?spm=a2c4g.11186623.0.i2
-  const { id, config } = req.params;
+  const { id, config } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -93,27 +90,19 @@ export const getOssList = async (
       name: obj.name.split("/").slice(-1)[0],
       url: obj.url.replace(/^https?:\/\/[^\/]+/, domain),
     }));
-  return {
-    list: result.prefixes
-      ? result.prefixes
-          .map((subDir) => ({
-            name: subDir.replace(/\/$/, "").split("/").slice(-1)[0],
-            type: "dir",
-          }))
-          .concat(objects)
-      : objects,
-  };
-};
+  ctx.body = result.prefixes
+    ? result.prefixes
+        .map((subDir) => ({
+          name: subDir.replace(/\/$/, "").split("/").slice(-1)[0],
+          type: "dir",
+        }))
+        .concat(objects)
+    : objects;
+});
 
 // 删除文件
-export const deleteFile = async (
-  req: Request<{
-    id: number;
-    path: string;
-    paths: string[];
-  }>
-) => {
-  const { id, path, paths } = req.params;
+router.post("/oss/deleteFile", async (ctx) => {
+  const { id, path, paths } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -128,36 +117,21 @@ export const deleteFile = async (
     await client.delete(path);
     await removeHistory(path);
   }
-  return null;
-};
+});
 
 // 创建目录
-export const createDirectory = async (
-  req: Request<{
-    id: number;
-    path: string;
-    name: string;
-  }>
-) => {
-  const { id, path: uploadPath, name } = req.params;
+router.post("/oss/createDirectory", async (ctx) => {
+  const { id, path: uploadPath, name } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
   }
   const { client } = projectRes;
   await client.put(`${uploadPath}${name}/`, Buffer.from(""));
-  return null;
-};
+});
 // 上传文件
-export const upload = async (
-  req: Request<{
-    id: number;
-    path: string;
-    name: string;
-    files: string[];
-  }>
-) => {
-  const { id, path: uploadPath, files } = req.params;
+router.post("/oss/upload", async (ctx) => {
+  const { id, path: uploadPath, files } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -169,41 +143,28 @@ export const upload = async (
     )
   );
   addHistory(files.map((file) => `${domain}/${uploadPath}${basename(file)}`));
-  return null;
-};
+});
 
 // 读取CSS代码设置
-export const getSetting = async () => {
-  return {
-    setting: await sql((db) => db.oss.setting),
-  };
-};
+router.post("/oss/getSetting", async (ctx) => {
+  ctx.body = await sql((db) => db.oss.setting);
+});
 // 修改CSS代码设置
-export const saveSetting = async (req: Request<Database["oss"]["setting"]>) => {
-  const { params } = req;
+router.post("/oss/saveSetting", async (ctx) => {
   await sql((db) => {
-    db.oss.setting = params;
+    db.oss.setting = ctx.body;
   });
-  return null;
-};
+});
+
 // 获取项目前缀，快捷使用
-export const getShortcut = async (req: Request<{ id: number }>) => {
-  const { params } = req;
+router.post("/oss/getShortcut", async (ctx) => {
   const { accounts } = await sql((db) => db.oss);
-  return {
-    shortcut: accounts.find((acc) => acc.id === Number(params.id)).shortcut,
-  };
-};
+  ctx.body = accounts.find((acc) => acc.id === Number(ctx.body.id)).shortcut;
+});
 
 // 获取上传记录
-export const getHistory = async (
-  req: Request<{
-    path: string;
-    pageSize: number;
-    pageIndex: number;
-  }>
-) => {
-  const { params } = req;
+router.post("/oss/getHistory", async (ctx) => {
+  const params = ctx.body;
   const history = await sql((db) => db.oss.history);
   if (!history || !history.length) {
     return {
@@ -214,11 +175,11 @@ export const getHistory = async (
   const start = (params.pageIndex - 1) * params.pageSize;
   const end = start + params.pageSize;
   const list = history.slice(start, end);
-  return {
+  ctx.body = {
     list,
     totalCount: history.length,
   };
-};
+});
 
 // 添加上传记录
 async function addHistory(filePaths: string[]) {
