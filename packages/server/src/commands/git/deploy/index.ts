@@ -46,7 +46,7 @@ class Deploy extends BaseCommand {
       (curBranch === "master" && data[0] === "test") || data[0] !== "prod"
         ? "release"
         : "master";
-    this.createSerial([
+    await this.createSerial([
       {
         // 只提交到当前分支
         condition: this.options.current,
@@ -75,58 +75,16 @@ class Deploy extends BaseCommand {
         // dev -> master
         condition: isDevBranch && targetBranch === "master",
         inquire: true,
-        actions: ['tag', 'copy'],
+        actions: ['merge', 'tag', 'copy'],
+        targetBranch
       },
       {
         // master -> master
         condition: targetBranch === curBranch && curBranch === "master",
         actions: ['tag', 'copy'],
+        targetBranch
       },
     ]);
-  }
-  private async deployToProduction() {
-    const { tag } = this.options;
-    const curBranch = await this.git.getCurrentBranch();
-    if (curBranch !== "master") {
-      const { answer } = await this.helper.inquirer.prompt({
-        message: "确认更新到正式站？",
-        name: "answer",
-        type: "confirm",
-      });
-      if (!answer) {
-        return;
-      }
-    }
-
-    const gitStatus = await this.git.getPushStatus();
-    let flow = [];
-    if (gitStatus === 1) {
-      flow.push("git add .", {
-        message: `git commit -m ${this.getFormattedCommitMessage()}`,
-        onError() { },
-      });
-    }
-    flow.push(
-      curBranch === "master" ? "" : `git checkout master`,
-      {
-        message: "git pull",
-        onError() { },
-      },
-      curBranch === "master" ? "" : `git merge ${curBranch}`,
-      "git push"
-    );
-    const newestTag = tag || (await generateNewestTag());
-    if (newestTag) {
-      flow.push(`git tag ${newestTag}`, `git push origin ${newestTag}`);
-    }
-    flow = flow.filter((item) => !!item);
-    try {
-      await this.helper.sequenceExec(flow);
-      await this.deploySuccess(newestTag);
-    } catch (error) {
-      this.logger.error((error as Error).message);
-      return;
-    }
   }
   private async deploySuccess(tag: string) {
     if (!tag) {
@@ -142,28 +100,6 @@ class Deploy extends BaseCommand {
 ${copyText}`);
     clipboard.writeSync(copyText);
   }
-  // commit message 规范化
-  private getFormattedCommitMessage() {
-    const standardCommitPrefixes = [
-      "chore",
-      "test",
-      "docs",
-      "chore",
-      "feat",
-      "fix",
-      "style",
-      "refactor",
-    ];
-    const { commit } = this.options;
-    if (
-      !commit ||
-      !standardCommitPrefixes.includes(commit.split(":")[0])
-    ) {
-      // 不规范
-      return `feat:${commit}`;
-    }
-    return commit;
-  }
   private createSerial(
     flowList: FlowOption[]
   ): void {
@@ -174,11 +110,12 @@ ${copyText}`);
           return;
         }
         this.doAction(flow);
+        return;
       }
     }
   }
   private async doAction(flow: FlowOption) {
-    const { actions, inquire, targetBranch } = flow;
+    const { actions = [], inquire, targetBranch } = flow;
     const flows: (string | CommandItem)[] = [...this.getBaseAction()];
     const tailFlows = [];
     let tag = '';
@@ -210,13 +147,9 @@ ${copyText}`);
     }
     if (actions.includes('tag')) {
       tag = await generateNewestTag();
-      flows.push(`git tag ${tag}`);
-    }
-    if (actions.includes('open')) {
-      await this.openDeployPage();
-    }
-    if (actions.includes('copy')) {
-      await this.deploySuccess(tag);
+      if (tag) {
+        flows.push(`git tag ${tag}`);
+      }
     }
     try {
       await this.helper.sequenceExec([...flows, ...tailFlows]);
@@ -226,10 +159,14 @@ ${copyText}`);
           title: "mycli通知",
           message: `${basename(process.cwd())}项目更新失败！`,
         });
+        return;
       }
     }
-    if (!actions.includes('copy')) {
-      this.logger.success("部署成功");
+    if (actions.includes('open')) {
+      await this.openDeployPage();
+    }
+    if (actions.includes('copy')) {
+      await this.deploySuccess(tag);
     }
   }
   private getBaseAction() {

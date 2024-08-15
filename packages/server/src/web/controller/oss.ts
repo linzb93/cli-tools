@@ -6,7 +6,6 @@ import { basename } from "node:path";
 import pMap from "p-map";
 import sql from "@/provider/sql";
 import { HTTP_STATUS } from "@/provider/constant";
-import { Request, Database } from "@/typings/api";
 
 const router = new Router();
 export default router;
