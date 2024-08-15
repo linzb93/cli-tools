@@ -9,7 +9,9 @@
     "dev:cli": "cross-env MODE=cli pnpm --filter \"cli\" dev",
     "dev:web": "cross-env MODE=web pnpm --filter \"cli\" dev",
     "build": "pnpm -r run build",
-    "build:cli": "pnpm --filter \"cli\" build",
+    "build:cli": "cross-env MODE=cli pnpm --filter \"cli\" build",
+    "build:web": "cross-env MODE=web pnpm --filter \"cli\" build",
+    "build:ui": "pnpm --filter \"ui\" build-only",
     "type-generate": "json2ts cache/app.json > cache/app.d.ts"
   },
   "keywords": [],
@@ -24,10 +26,12 @@
     "axios": "1.6.8",
     "chalk": "^5.3.0",
     "dayjs": "^1.9.6",
+    "fs-extra": "^8.1.0",
     "lodash-es": "^4.17.21",
     "p-map": "^5.3.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.12.5",
     "cross-env": "^7.0.3",

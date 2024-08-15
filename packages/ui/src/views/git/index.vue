@@ -78,18 +78,11 @@ const getList = async () => {
   duration.value = ((Date.now() - startTime) / 1000).toFixed(2)
 }
 
-interface Row {
-  name: string
-  folderName: string
-  path: string
-  status: number
-}
-
-const selected = shallowRef<Row[]>([])
-const handleSelectionChange = (rows: Row[]) => {
+const selected = shallowRef([])
+const handleSelectionChange = (rows) => {
   selected.value = rows
 }
-const openInEditor = (row?: any) => {
+const openInEditor = (row) => {
   if (row) {
     requestUtil.open('vscode', row.path)
     return
