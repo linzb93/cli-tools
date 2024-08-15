@@ -3,11 +3,24 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import pkg from "./package.json";
-import rootPkg from '../../package.json';
+import rootPkg from "../../package.json";
 
 const allDependencies = {
   ...pkg.dependencies,
-  ...rootPkg.dependencies
+  ...rootPkg.dependencies,
+};
+
+const input: {
+  cli?: string;
+  web?: string;
+} = {
+  cli: "src/bin/index.ts",
+  web: "src/web/router.ts",
+};
+if (process.env.MODE === "cli") {
+  delete input.web;
+} else if (process.env.MODE === "web") {
+  delete input.cli;
 }
 
 export default defineConfig({
@@ -20,16 +33,14 @@ export default defineConfig({
     target: "node14",
     outDir: "dist",
     minify: false,
+    emptyOutDir: !process.env.MODE,
     rollupOptions: {
-      input: "src/bin/index.ts",
+      input,
       output: {
         dir: "dist",
-        entryFileNames: "cli.js",
+        entryFileNames: "[name].js",
       },
-      external: [
-        ...Object.keys(allDependencies),
-        /^node:.*/,
-      ],
+      external: [...Object.keys(allDependencies), /^node:.*/],
     },
     lib: {
       entry: "./src/bin/index.ts",
