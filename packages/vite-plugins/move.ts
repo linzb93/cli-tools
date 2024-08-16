@@ -19,7 +19,9 @@ function copyFilesPlugin(filePath: string): Plugin {
         await fs.mkdir(path.dirname(dest), { recursive: true });
 
         // 复制文件
-        await fs.copy(src, dest);
+        await fs.move(src, dest, {
+          overwrite: true
+        });
         console.log(`Copied ${src} to ${dest}`);
       } catch (err) {
         console.error("Error copying files:", err);

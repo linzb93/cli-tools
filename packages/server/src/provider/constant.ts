@@ -19,5 +19,5 @@ export const HTTP_STATUS = {
   BUSINESSERROR: 7000, // 业务性异常
 };
 
-export const root = path.join(fileURLToPath(import.meta.url), "../../");
-export const tempPath = path.join(root, ".temp");
+export const cacheRoot = path.join(fileURLToPath(import.meta.url), "../../../../cache");
+export const tempPath = path.join(cacheRoot, ".temp");

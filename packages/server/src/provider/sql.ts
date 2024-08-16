@@ -1,10 +1,10 @@
 import { join, dirname } from "node:path";
 import fs from "node:fs";
 import { Low, JSONFile } from "lowdb";
-import { root } from "./constant";
+import { cacheRoot } from "./constant";
 import { Database } from "../typings/api";
 
-const dbPath = join(root, "app.json");
+const dbPath = join(cacheRoot, "app.json");
 try {
   fs.accessSync(dbPath);
 } catch (error) {
