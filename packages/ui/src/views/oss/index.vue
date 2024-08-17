@@ -9,12 +9,8 @@
     </el-table-column>
     <el-table-column label="操作">
       <template #default="scope">
-        <el-link type="primary" :underline="false" @click="jump(scope.row)"
-          >进入</el-link
-        >
-        <el-link type="primary" :underline="false" @click="edit(scope.row)"
-          >编辑</el-link
-        >
+        <el-link type="primary" :underline="false" @click="jump(scope.row)">进入</el-link>
+        <el-link type="primary" :underline="false" @click="edit(scope.row)">编辑</el-link>
         <delete-confirm delete-text="移除" @confirm="remove(scope.row)" />
       </template>
     </el-table-column>
@@ -55,70 +51,70 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import request from "@/helpers/request";
-import DeleteConfirm from "@/components/DeleteConfirm.vue";
-import { useOssStore } from "./store";
+import { ref, shallowRef, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import request from '@/helpers/request'
+import DeleteConfirm from '@/components/DeleteConfirm.vue'
+import { useOssStore } from './store'
 
-const router = useRouter();
-const ossStore = useOssStore();
+const router = useRouter()
+const ossStore = useOssStore()
 
-const list = ref([]);
+const list = ref([])
 const getList = async () => {
-  const data = await request("oss-get-project-list");
-  list.value = data.list;
-};
+  const data = await request('/oss/getProjectList')
+  list.value = data.list
+}
 onMounted(async () => {
-  const { setting } = await request("oss-get-setting");
+  const { setting } = await request('oss/getSetting')
   if (setting.fasterEnter === 1) {
-    router.replace(`/oss/detail?id=1`);
-    return;
+    router.replace(`/oss/detail?id=1`)
+    return
   }
-  getList();
-});
+  getList()
+})
 
-const visible = shallowRef(false);
+const visible = shallowRef(false)
 const add = () => {
-  visible.value = true;
-};
+  visible.value = true
+}
 const edit = (item) => {
-  visible.value = true;
-  form.value = { ...item };
-};
-const form = ref({});
+  visible.value = true
+  form.value = { ...item }
+}
+const form = ref({})
 const close = () => {
-  visible.value = false;
-};
+  visible.value = false
+}
 const submit = async () => {
-  await request("oss-create", form.value);
-  ElMessage.success(form.value.id ? "编辑成功" : "添加成功");
-  close();
-  getList();
-};
+  await request('/oss/create', form.value)
+  ElMessage.success(form.value.id ? '编辑成功' : '添加成功')
+  close()
+  getList()
+}
 const getPlatformName = (type) => {
   if (type === 1) {
-    return "阿里云";
+    return '阿里云'
   }
-  return "";
-};
+  return ''
+}
 const jump = (item) => {
-  ossStore.platform = item;
+  ossStore.platform = item
   router.push({
-    path: "/oss/detail/",
+    path: '/oss/detail/',
     query: {
-      id: item.id,
-    },
-  });
-};
+      id: item.id
+    }
+  })
+}
 const remove = async (item) => {
-  await request("oss-remove-account", {
-    id: item.id,
-  });
-  ElMessage.success("移除成功");
-  getList();
-};
+  await request('/oss/removeAccount', {
+    id: item.id
+  })
+  ElMessage.success('移除成功')
+  getList()
+}
 </script>
 <style lang="scss" scoped>
 .el-link + .el-link {

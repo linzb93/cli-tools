@@ -133,7 +133,8 @@
       <el-button
         type="primary"
         @click="
-          request('open-in-browser', {
+          requestUtil.open({
+            type: 'web',
             url: previewUrl
           })
         "
@@ -179,7 +180,7 @@ loading.value = true
 
 // 获取文件列表
 const getList = async () => {
-  const data = await request('oss-get-oss-list', {
+  const data = await request('/oss/getOssList', {
     id: Number(route.query.id),
     config: {
       prefix: fullPath.value
@@ -190,7 +191,7 @@ const getList = async () => {
   scrollTo(0, 800)
 }
 onMounted(async () => {
-  const { shortcut } = await request('oss-get-shortcut', {
+  const { shortcut } = await request('/oss/getShortcut', {
     id: Number(route.query.id)
   })
   if (shortcut) {
@@ -216,7 +217,7 @@ const handleSelectionChange = (selection) => {
 // 删除文件
 const del = async (item) => {
   const name = item.type === 'dir' ? `${item.name}/` : item.name
-  await request('oss-delete-file', {
+  await request('/oss/deleteFile', {
     id: Number(route.query.id),
     path: `${fullPath.value}${name}`
   })
@@ -236,7 +237,7 @@ const deleteMulti = () => {
     confirmButtonText: '删除',
     cancelButtonText: '取消'
   }).then(async () => {
-    await request('oss-delete-file', {
+    await request('/oss/deleteFile', {
       id: Number(route.query.id),
       paths: selected.value.map((item) => `${fullPath.value}${item.name}`)
     })
@@ -285,7 +286,7 @@ const createDir = () => {
         ElMessage.warning('存在同名文件夹，无需创建')
         return
       }
-      await request('oss-create-directory', {
+      await request('/oss/createDirectory', {
         id: Number(route.query.id),
         path: fullPath.value,
         name: value

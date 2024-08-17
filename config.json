@@ -3,5 +3,8 @@
     "development_fe": 6547,
     "production": 9527
   },
-  "static": "/"
+  "prefix": {
+    "static": "pages",
+    "api": "/api"
+  }
 }

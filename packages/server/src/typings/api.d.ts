@@ -38,6 +38,15 @@ export interface Database {
     template: string;
   };
   ipc: string;
+  schedule: {
+    git: {
+      dirs: {
+        path: string;
+        name: string;
+      }[];
+    };
+  };
+
   sync: {
     user: string;
     password: string;

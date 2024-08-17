@@ -1,9 +1,7 @@
 <template>
   <div>
     <div>
-      <el-button type="primary" @click="visible.apps = true"
-        >管理应用</el-button
-      >
+      <el-button type="primary" @click="visible.apps = true">管理应用</el-button>
     </div>
     <el-form label-width="110px" label-suffix="：" class="mt20">
       <el-form-item label="选择应用">
@@ -15,12 +13,9 @@
           ></el-checkbox>
         </template>
         <el-checkbox-group v-model="form.selected" v-if="apps.length">
-          <el-checkbox
-            v-for="app in apps"
-            :key="app.siteId"
-            :value="app.siteId"
-            >{{ app.name }}</el-checkbox
-          >
+          <el-checkbox v-for="app in apps" :key="app.siteId" :value="app.siteId">{{
+            app.name
+          }}</el-checkbox>
         </el-checkbox-group>
         <p v-else>无</p>
       </el-form-item>
@@ -28,10 +23,7 @@
         <el-radio-group v-model="form.dateValue" @change="radioChange">
           <el-radio-button :value="0">今日</el-radio-button>
           <el-radio-button :value="1"
-            >昨日<qa
-              class="ml10"
-              v-if="yesterdayInfo.is"
-              :content="yesterdayInfo.content"
+            >昨日<qa class="ml10" v-if="yesterdayInfo.is" :content="yesterdayInfo.content"
           /></el-radio-button>
           <el-radio-button :value="2">近7日</el-radio-button>
           <el-radio-button :value="3" class="date-picker-wrap">
@@ -64,11 +56,7 @@
           </el-table-column>
           <el-table-column label="发生页面" prop="url" />
           <el-table-column label="浏览量" prop="errorCount" width="100" />
-          <el-table-column
-            label="影响客户数"
-            prop="numberOfAffectedUsers"
-            width="100"
-          />
+          <el-table-column label="影响客户数" prop="numberOfAffectedUsers" width="100" />
           <el-table-column label="操作">
             <template #default="scope">
               <el-link
@@ -88,164 +76,156 @@
 </template>
 
 <script setup>
-import {
-  reactive,
-  shallowRef,
-  shallowReactive,
-  ref,
-  onMounted,
-  computed,
-} from "vue";
-import dayjs from "dayjs";
-import { pick } from "lodash-es";
-import pMap from "p-map";
-import { ElMessage } from "element-plus";
-import request from "@/helpers/request";
-import { service } from "./utils";
-import Qa from "@/components/Qa.vue";
-import AppManage from "./components/AppManage.vue";
-import CodeBeautify from "./components/CodeBeautify.vue";
+import { reactive, shallowRef, shallowReactive, ref, onMounted, computed } from 'vue'
+import dayjs from 'dayjs'
+import { pick } from 'lodash-es'
+import pMap from 'p-map'
+import { ElMessage } from 'element-plus'
+import request from '@/helpers/request'
+import { service } from './utils'
+import Qa from '@/components/Qa.vue'
+import AppManage from './components/AppManage.vue'
+import CodeBeautify from './components/CodeBeautify.vue'
 const visible = shallowReactive({
   apps: false,
-  code: false,
-});
+  code: false
+})
 
 const getSelectedApps = async () => {
-  const data = await request("monitor-get-apps");
-  apps.value = data.list;
-};
+  const data = await request('monitor/getApps')
+  apps.value = data.list
+}
 onMounted(() => {
-  getSelectedApps();
-});
+  getSelectedApps()
+})
 
 const resetSelectedApps = () => {
-  form.selected = [];
-  getSelectedApps();
-};
+  form.selected = []
+  getSelectedApps()
+}
 
-const apps = ref([]);
+const apps = ref([])
 const form = reactive({
   selected: [],
   dateValue: 0,
-  beginDate: dayjs().format("YYYY-MM-DD"),
-  endDate: dayjs().format("YYYY-MM-DD"),
-  range: [],
-});
+  beginDate: dayjs().format('YYYY-MM-DD'),
+  endDate: dayjs().format('YYYY-MM-DD'),
+  range: []
+})
 
 const dateRange = computed(() => {
   if (form.beginDate === form.endDate) {
-    return form.beginDate;
+    return form.beginDate
   }
-  return `${form.beginDate}~${form.endDate}`;
-});
+  return `${form.beginDate}~${form.endDate}`
+})
 
-const customerDatePicker = ref(null);
+const customerDatePicker = ref(null)
 const radioChange = (value) => {
   if (value === 3) {
-    customerDatePicker.value.focus();
+    customerDatePicker.value.focus()
   } else {
-    typeof customerDatePicker.value.blur === "function" &&
-      customerDatePicker.value.blur();
+    typeof customerDatePicker.value.blur === 'function' && customerDatePicker.value.blur()
     const map = [
       [0, 0],
       [1, 1],
-      [7, 0],
-    ];
-    form.beginDate = dayjs().subtract(map[value][0], "d").format("YYYY-MM-DD");
-    form.endDate = dayjs().subtract(map[value][1], "d").format("YYYY-MM-DD");
+      [7, 0]
+    ]
+    form.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD')
+    form.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
   }
-};
+}
 const changeDate = (range) => {
-  form.beginDate = dayjs(range[0]).format("YYYY-MM-DD");
-  form.endDate = dayjs(range[1]).format("YYYY-MM-DD");
-};
+  form.beginDate = dayjs(range[0]).format('YYYY-MM-DD')
+  form.endDate = dayjs(range[1]).format('YYYY-MM-DD')
+}
 
 const isSelectAll = computed(() => {
-  return form.selected.length === apps.value.length;
-});
+  return form.selected.length === apps.value.length
+})
 const selectAll = () => {
   if (form.selected.length < apps.value.length) {
-    form.selected = apps.value.map((item) => item.siteId);
+    form.selected = apps.value.map((item) => item.siteId)
   } else {
-    form.selected = [];
+    form.selected = []
   }
-};
+}
 
-const panels = ref([]);
+const panels = ref([])
 const generate = async () => {
   if (!form.selected.length) {
-    ElMessage.error("请至少选择一个应用");
-    return;
+    ElMessage.error('请至少选择一个应用')
+    return
   }
   const promiseList = form.selected.map((siteId) => {
     return {
       siteId,
       title: getAppName(siteId),
       action: () =>
-        service.post("/data/analysis/jsErrorCount", {
+        service.post('/data/analysis/jsErrorCount', {
           beginTime: `${form.beginDate} 00:00:00`,
           endTime: `${form.endDate} 23:59:59`,
-          orderKey: "errorCount",
+          orderKey: 'errorCount',
           orderByAsc: false,
           pageIndex: 1,
           pageSize: 100,
           siteId,
-          type: ["eventError", "consoleError"],
-          visitType: 0,
-        }),
-    };
-  });
+          type: ['eventError', 'consoleError'],
+          visitType: 0
+        })
+    }
+  })
   const data = await pMap(promiseList, async (item) => {
-    const result = await item.action();
+    const result = await item.action()
     return {
       siteId: item.siteId,
       title: item.title,
-      data: result.list,
-    };
-  });
-  panels.value = data;
-};
+      data: result.list
+    }
+  })
+  panels.value = data
+}
 const getAppName = (id) => {
-  const match = apps.value.find((item) => item.siteId === id);
-  return match ? match.name : "";
-};
+  const match = apps.value.find((item) => item.siteId === id)
+  return match ? match.name : ''
+}
 const renderContentColor = (row) => {
-  const { content } = row;
-  if (content.startsWith("Cannot read properties of undefined")) {
-    return "#F56C6C";
+  const { content } = row
+  if (content.startsWith('Cannot read properties of undefined')) {
+    return '#F56C6C'
   }
-  if (content.startsWith("Loading chunk")) {
-    return "#e1e1e1";
+  if (content.startsWith('Loading chunk')) {
+    return '#e1e1e1'
   }
-  return "";
-};
-const targetPath = shallowRef("");
+  return ''
+}
+const targetPath = shallowRef('')
 const focusError = async (row, siteId) => {
-  const res = await service.post("/data/analysis/getVisitInfo", {
-    ...pick(row, ["content", "url"]),
+  const res = await service.post('/data/analysis/getVisitInfo', {
+    ...pick(row, ['content', 'url']),
     beginTime: `${form.beginDate} 00:00:00`,
     endTime: `${form.endDate} 23:59:59`,
     pageIndex: 1,
     pageSize: 1,
     siteId,
-    type: ["eventError", "consoleError"],
-  });
-  const target = res.list[0];
-  const { errorMsg } = target;
-  const match = errorMsg.match(/(http.+\.js\:\d+\:\d+)/);
+    type: ['eventError', 'consoleError']
+  })
+  const target = res.list[0]
+  const { errorMsg } = target
+  const match = errorMsg.match(/(http.+\.js\:\d+\:\d+)/)
   if (match && match[1]) {
-    visible.code = true;
-    targetPath.value = match[1];
+    visible.code = true
+    targetPath.value = match[1]
   }
   // TODO:取错误定位前200个字符，后100个字符。去掉无用的代码，然后格式化，定位改成用箭头指示。
-};
+}
 
 const yesterdayInfo = {
   is: dayjs().day() === 1,
-  content: `获取的是${dayjs().subtract(3, "d").format("YYYY-MM-DD")}~${dayjs()
-    .subtract(1, "d")
-    .format("YYYY-MM-DD")}的报告`,
-};
+  content: `获取的是${dayjs().subtract(3, 'd').format('YYYY-MM-DD')}~${dayjs()
+    .subtract(1, 'd')
+    .format('YYYY-MM-DD')}的报告`
+}
 </script>
 <style scoped lang="scss">
 .date-picker-wrap {

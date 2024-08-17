@@ -47,7 +47,7 @@ import request, { useRequest } from '../../helpers/request'
 import * as requestUtil from '../../helpers/request/api'
 
 onMounted(async () => {
-  const setting = await request('schedule-get')
+  const setting = await request('/schedule/get')
   if (!setting) {
     return
   }
@@ -59,13 +59,13 @@ const gitForm = ref({
 })
 
 const save = async () => {
-  await request('schedule-save', {
+  await request('/schedule/save', {
     git: gitForm.value
   })
   ElMessage.success('保存成功')
 }
 const { fetch, loaded, result } = useRequest(
-  'schedule-git-scan-result',
+  '/schedule/gitScanResult',
   {},
   {
     showLoading: true

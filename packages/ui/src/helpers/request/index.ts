@@ -6,14 +6,8 @@ interface Option {
   showLoading?: boolean
 }
 
-// const request = createClient({
-//   invoke(name, data) {
-//     return window.ipcRenderer.invoke(name, JSON.stringify(data));
-//   },
-// });
-
 const service = axios.create({
-  baseURL: `http://localhost:${globalConfig.port.production}`
+  baseURL: `http://localhost:${globalConfig.port.production}${globalConfig.prefix.api}`
 })
 
 export default async function doRequest(path: string, params?: any, options?: Option) {

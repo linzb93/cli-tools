@@ -7,7 +7,9 @@ import pMap from "p-map";
 import sql from "@/provider/sql";
 import { HTTP_STATUS } from "@/provider/constant";
 
-const router = new Router();
+const router = new Router({
+  prefix: "/oss",
+});
 export default router;
 
 // 根据id查找对应的OSS客户端
@@ -29,12 +31,12 @@ async function findClient(id: number) {
 }
 
 // 获取已添加的客户端列表
-router.post("/oss/getProjectList", async (ctx) => {
+router.post("/getProjectList", async (ctx) => {
   ctx.body = await sql((db) => db.oss.accounts);
 });
 
 // 添加客户端，目前仅支持阿里OSS
-router.post("/oss/createClient", async (ctx) => {
+router.post("/createClient", async (ctx) => {
   await sql((db) => {
     if (ctx.body.id) {
       // 是编辑
@@ -55,7 +57,7 @@ router.post("/oss/createClient", async (ctx) => {
   return null;
 });
 // 移除客户端
-router.post("/oss/removeClient", async (ctx) => {
+router.post("/removeClient", async (ctx) => {
   const { id } = ctx.body;
   await sql((db) => {
     let { accounts } = db.oss;
@@ -65,8 +67,8 @@ router.post("/oss/removeClient", async (ctx) => {
 });
 
 // 获取文件/目录列表
-router.post("/oss/getFileList", async (ctx) => {
-  // https://help.aliyun.com/zh/oss/developer-reference/list-objects-5?spm=a2c4g.11186623.0.i2
+router.post("/getFileList", async (ctx) => {
+  // https://help.aliyun.com/zh/developer-reference/list-objects-5?spm=a2c4g.11186623.0.i2
   const { id, config } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
@@ -100,7 +102,7 @@ router.post("/oss/getFileList", async (ctx) => {
 });
 
 // 删除文件
-router.post("/oss/deleteFile", async (ctx) => {
+router.post("/deleteFile", async (ctx) => {
   const { id, path, paths } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
@@ -119,7 +121,7 @@ router.post("/oss/deleteFile", async (ctx) => {
 });
 
 // 创建目录
-router.post("/oss/createDirectory", async (ctx) => {
+router.post("/createDirectory", async (ctx) => {
   const { id, path: uploadPath, name } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
@@ -129,7 +131,7 @@ router.post("/oss/createDirectory", async (ctx) => {
   await client.put(`${uploadPath}${name}/`, Buffer.from(""));
 });
 // 上传文件
-router.post("/oss/upload", async (ctx) => {
+router.post("/upload", async (ctx) => {
   const { id, path: uploadPath, files } = ctx.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
@@ -145,24 +147,24 @@ router.post("/oss/upload", async (ctx) => {
 });
 
 // 读取CSS代码设置
-router.post("/oss/getSetting", async (ctx) => {
+router.post("/getSetting", async (ctx) => {
   ctx.body = await sql((db) => db.oss.setting);
 });
 // 修改CSS代码设置
-router.post("/oss/saveSetting", async (ctx) => {
+router.post("/saveSetting", async (ctx) => {
   await sql((db) => {
     db.oss.setting = ctx.body;
   });
 });
 
 // 获取项目前缀，快捷使用
-router.post("/oss/getShortcut", async (ctx) => {
+router.post("/getShortcut", async (ctx) => {
   const { accounts } = await sql((db) => db.oss);
   ctx.body = accounts.find((acc) => acc.id === Number(ctx.body.id)).shortcut;
 });
 
 // 获取上传记录
-router.post("/oss/getHistory", async (ctx) => {
+router.post("/getHistory", async (ctx) => {
   const params = ctx.body;
   const history = await sql((db) => db.oss.history);
   if (!history || !history.length) {

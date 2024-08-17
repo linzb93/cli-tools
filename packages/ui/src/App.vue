@@ -7,11 +7,11 @@
   </div>
 </template>
 <script setup>
-import Menus from "./components/Menus.vue";
-import { useGlobalStore } from "@/store";
+import Menus from './components/Menus.vue'
+import { useGlobalStore } from '@/store'
 
-const globalStore = useGlobalStore();
-// globalStore.getSetting();
+const globalStore = useGlobalStore()
+globalStore.getSetting()
 // globalStore.listenIpcConnected();
 </script>
 <style scoped>
