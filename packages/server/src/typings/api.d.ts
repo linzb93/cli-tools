@@ -37,6 +37,10 @@ export interface Database {
     platform: 1 | 2;
     template: string;
   };
+  menus: {
+    title: string;
+    to: string;
+  }[];
   ipc: string;
   schedule: {
     git: {

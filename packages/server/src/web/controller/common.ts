@@ -123,6 +123,13 @@ export default async (router: Router) => {
   //     };
   //   });
 
+  // 同步菜单
+  router.post("/syncMenus", async (ctx) => {
+    await sql((db) => {
+      db.menus = ctx.body;
+    });
+  });
+
   // 获取跨域脚本或接口
   router.post("/fetchApiCrossOrigin", async (ctx) => {
     const params = ctx.body;

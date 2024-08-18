@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import path from "node:path";
+import { join } from "node:path";
 
 export const HTTP_STATUS = {
   SUCCESS: 200, // 请求成功
@@ -18,6 +18,6 @@ export const HTTP_STATUS = {
   DATAEXPIRED: 6000, // 数据过期
   BUSINESSERROR: 7000, // 业务性异常
 };
-
-export const cacheRoot = path.join(fileURLToPath(import.meta.url), "../../../../cache");
-export const tempPath = path.join(cacheRoot, ".temp");
+export const root = join(fileURLToPath(import.meta.url), "../../../../");
+export const cacheRoot = join(root, "cache");
+export const tempPath = join(cacheRoot, ".temp");

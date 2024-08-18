@@ -13,7 +13,7 @@ import occ from "@/commands/occ";
 import fs from "fs-extra";
 import { resolve } from "node:path";
 import dayjs from "dayjs";
-import { root } from "@/util/helper";
+import { cacheRoot } from "@/provider/constant";
 import agent from "@/commands/agent";
 // import cg from "@/commands/cg";
 import clear from "@/commands/clear";
@@ -33,16 +33,18 @@ import npm from "@/commands/npm";
 import code from "@/commands/code";
 import time from "@/commands/time";
 import repl from "@/commands/repl";
+import server from "@/commands/server";
+import globalPkg from "../../../../package.json";
 
 const program = new Command();
-program.version("2.0.0");
+program.version(globalPkg.version);
 
-// program.hook("preAction", (thisCommand) => {
-//   fs.appendFile(
-//     resolve(root, "data/track.txt"),
-//     `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${thisCommand.args.join(" ")}\n`
-//   );
-// });
+program.hook("preAction", (thisCommand) => {
+  fs.appendFile(
+    resolve(cacheRoot, "track.txt"),
+    `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${thisCommand.args.join(" ")}\n`
+  );
+});
 
 program
   .command("agent [sub-command]")
@@ -239,6 +241,13 @@ program
   .option("--help", "显示帮助文档")
   .action((dir, option) => {
     tree(dir, option);
+  });
+
+program
+  .command("server [command]")
+  .option("--menus [name]", "菜单名称")
+  .action((command, option) => {
+    server(command, option);
   });
 
 program.parse(process.argv);
