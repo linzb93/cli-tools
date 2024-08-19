@@ -198,6 +198,14 @@ program.command("repl").action(() => {
 });
 
 program
+  .command("server [command]")
+  .option("--menus [name]", "菜单名称")
+  .option("-o, --open", "打开浏览器")
+  .action((command, option) => {
+    server(command, option);
+  });
+
+program
   .command("shortcut [name]")
   .option("--help", "显示帮助文档")
   .action((name) => {
@@ -241,13 +249,6 @@ program
   .option("--help", "显示帮助文档")
   .action((dir, option) => {
     tree(dir, option);
-  });
-
-program
-  .command("server [command]")
-  .option("--menus [name]", "菜单名称")
-  .action((command, option) => {
-    server(command, option);
   });
 
 program.parse(process.argv);

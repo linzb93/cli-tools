@@ -18,6 +18,7 @@ const apiRouter = new Router({
   prefix: "/api",
 });
 const menu = getCommandArgValue("menu");
+const shouldOpen = getCommandArgValue("open");
 
 apiRouter.use(async (ctx, next) => {
   await next();
@@ -48,6 +49,10 @@ app.listen(globalConfig.port.production, async () => {
   if (menu) {
     await open(
       `http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}#${menu}`
+    );
+  } else if (shouldOpen) {
+    await open(
+      `http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}`
     );
   }
   process.send?.("ok");

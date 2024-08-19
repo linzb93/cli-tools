@@ -7,6 +7,7 @@ import globalConfig from "../../../../../config.json";
 import sql from "@/provider/sql";
 interface Options {
   menus: boolean | string;
+  open: boolean;
 }
 
 export default async (command: string, options: Options) => {
@@ -16,6 +17,9 @@ export default async (command: string, options: Options) => {
   }
   console.log("正在启动服务器");
   let postArgs = [];
+  if (options.open) {
+    postArgs.push(`--open`);
+  }
   if (options.menus) {
     const menus = await sql((db) => db.menus);
     if (!menus.length) {
