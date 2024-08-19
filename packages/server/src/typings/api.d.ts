@@ -56,11 +56,11 @@ export interface Database {
     password: string;
   };
   oa: {
-    apiPrefix: string;
-    testPrefix: string;
-    userApiPrefix: string;
-    username: string;
-    password: string;
+    apiPrefix?: string;
+    testPrefix?: string;
+    userApiPrefix?: string;
+    username?: string;
+    password?: string;
   };
   monitor: {
     siteId: string;

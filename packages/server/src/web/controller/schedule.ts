@@ -3,7 +3,7 @@ import { join } from "node:path";
 import pReduce from "p-reduce";
 import Router from "koa-router";
 import pMap from "p-map";
-import gitUtil from "@/provider/git";
+import * as gitUtil from "@/provider/git/index";
 import sql from "@/provider/sql";
 import { HTTP_STATUS } from "@/provider/constant";
 

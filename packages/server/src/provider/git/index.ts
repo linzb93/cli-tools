@@ -4,7 +4,7 @@ import { execaCommand as execa } from "execa";
  * 获取代码提交状态
  * @return { number } 1: 未提交；2: 未推送；3: 已推送；4: 不在master/main分支上；0: 状态未知
  */
-const getPushStatus = async (
+export const getPushStatus = async (
   cwd = process.cwd()
 ): Promise<0 | 1 | 2 | 3 | 4> => {
   let stdout = "";
@@ -33,8 +33,4 @@ const getPushStatus = async (
     return 3;
   }
   return 0;
-};
-
-export default {
-  getPushStatus,
 };

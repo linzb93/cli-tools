@@ -2,21 +2,21 @@ import { join, basename } from "node:path";
 import http from "node:http";
 import fs from "node:fs";
 import open from "open";
-import fsp from "node:fs/promises";
+// import fsp from "node:fs/promises";
 import Router from "koa-router";
-// import { shell, clipboard, dialog, nativeImage } from "electron";
+// import { shell, clipboard, dialog } from "electron";
 import { execaCommand as execa } from "execa";
 import { sleep } from "@linzb93/utils";
 // import { createClient } from "webdav";
 import axios from "axios";
 import pMap from "p-map";
-import { cacheRoot } from "@/provider/constant";
+// import { cacheRoot } from "@/provider/constant";
 import sql from "@/provider/sql";
 import { copy, showOpenDialog } from "@/provider/helper";
 
 export default async (router: Router) => {
-  const account = await sql((db) => db.sync);
-  //   const syncClient = createClient("", account);
+  // const account = await sql((db) => db.sync);
+  // const syncClient = createClient("", account);
 
   // 复制文本
   router.post("/copy", async (ctx) => {

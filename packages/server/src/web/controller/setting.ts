@@ -12,6 +12,7 @@ router.post("/getSetting", async (ctx) => {
   }));
   ctx.body = result;
 });
+
 router.post("/saveSetting", async (ctx) => {
   const params = ctx.body;
   await sql((db) => {
@@ -19,7 +20,6 @@ router.post("/saveSetting", async (ctx) => {
     if (db.oa) {
       db.oa.apiPrefix = params.oaApiPrefix;
     } else {
-      //@ts-ignore
       db.oa = {
         apiPrefix: params.oaApiPrefix,
       };
