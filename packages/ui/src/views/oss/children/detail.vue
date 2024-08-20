@@ -167,7 +167,7 @@ import UploadHistory from '../components/UploadHistory.vue'
 const route = useRoute()
 
 const tableList = shallowRef([])
-const breadcrumb = ref([])
+const breadcrumb = shallowRef([])
 const fullPath = computed(() => breadcrumb.value.map((item) => `${item}/`).join(''))
 const visible = shallowReactive({
   progress: false,
@@ -207,7 +207,7 @@ const clickPath = (index) => {
 }
 
 // 多选
-const selected = ref([])
+const selected = shallowRef([])
 const handleSelectionChange = (selection) => {
   if (selection.every((item) => item.type !== 'dir')) {
     selected.value = selection
@@ -314,7 +314,7 @@ const {
   uploadingList
 } = useUpload(tableList.value)
 
-const setting = ref({
+const setting = shallowRef({
   pixel: 2,
   platform: 1,
   previewType: 1

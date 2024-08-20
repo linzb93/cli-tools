@@ -24,3 +24,10 @@ declare module "macos-open-file-dialog" {
   ): Promise<string>;
   export function openFolder(title: string): Promise<string>;
 }
+
+declare module "node-file-dialog" {
+  interface Options {
+    type: 'directory' | 'save-file' | 'open-file' | 'open-files'
+  }
+  export default function(options: Options):Promise<string>
+}

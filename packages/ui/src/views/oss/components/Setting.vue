@@ -38,14 +38,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { shallowRef } from "vue";
 import request from "@/helpers/request";
 import { ElMessage } from "element-plus";
 const props = defineProps({
   visible: Boolean,
 });
 const emit = defineEmits(["update:visible", "submit"]);
-const form = ref({
+const form = shallowRef({
   pixel: 2,
   platform: 1,
   previewType: 1,

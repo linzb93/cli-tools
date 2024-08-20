@@ -16,6 +16,6 @@ router.post("/getApps", async (ctx) => {
 // 保存已选的项目列表
 router.post("/saveApps", async (ctx) => {
   await sql((db) => {
-    db.monitor = ctx.body;
+    db.monitor = ctx.request.body;
   });
 });

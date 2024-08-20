@@ -8,7 +8,7 @@ const meituanParams = {
     base: "/",
     list: "/occ/order/getOrderInfoList",
     login: "/occ/order/replaceUserLogin",
-    userApi: "/meituan/home",
+    userApi: "/meituan/homeUserInfo",
   },
   getFindQuery(app: App) {
     return {

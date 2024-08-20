@@ -25,7 +25,8 @@ export default async (router: Router) => {
 
   // 下载文件
   router.post("/download", async (ctx) => {
-    if (Array.isArray(ctx.body)) {
+    const params = ctx.request.body;
+    if (Array.isArray(params)) {
       // 下载多份文件
       const result = await showOpenDialog({
         properties: ["openDirectory"],
@@ -34,7 +35,7 @@ export default async (router: Router) => {
         return {};
       }
       await pMap(
-        ctx.body,
+        params,
         (url: string) =>
           new Promise((resolve) => {
             http.get(url, (resp) => {
@@ -50,7 +51,7 @@ export default async (router: Router) => {
         { concurrency: 4 }
       );
     }
-    const url = ctx.body as string;
+    const url = params as string;
     const result = await showOpenDialog();
     if (result.canceled) {
       return {};
@@ -72,7 +73,7 @@ export default async (router: Router) => {
     await sleep(200);
   };
   router.post("/open", async (ctx) => {
-    const { type, url } = ctx.body;
+    const { type, url } = ctx.request.body;
     let callback: (param: string) => Promise<any>;
     if (type === "path") {
       callback = openPath;
@@ -90,9 +91,7 @@ export default async (router: Router) => {
 
   // 选择文件夹路径
   router.post("/get-selected-path", async (ctx) => {
-    const {
-      body: { multiSelections },
-    } = ctx;
+    const { request: { body: { multiSelections } } } = ctx;
     const result = await showOpenDialog({
       properties: multiSelections
         ? ["openDirectory", "multiSelections"]
@@ -126,25 +125,25 @@ export default async (router: Router) => {
   // 同步菜单
   router.post("/syncMenus", async (ctx) => {
     await sql((db) => {
-      db.menus = ctx.body;
+      db.menus = ctx.request.body;
     });
   });
 
   // 获取跨域脚本或接口
   router.post("/fetchApiCrossOrigin", async (ctx) => {
-    const params = ctx.body;
+    const params = ctx.request.body;
     try {
       const response = await axios({
         method: params.method || "get",
         url: params.url,
         data: params.data || {},
       });
-      return {
+      ctx.body = {
         success: true,
         result: response.data,
-      };
+      }
     } catch (error) {
-      return {
+      ctx.body = {
         success: false,
         message: error.message,
       };

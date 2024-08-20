@@ -13,6 +13,11 @@ import { useGlobalStore } from '@/store'
 const globalStore = useGlobalStore()
 globalStore.getSetting()
 // globalStore.listenIpcConnected();
+if (process.env.NODE_ENV === 'development') {
+  document.title = '我的工具箱（开发版）';
+} else {
+  document.title = '我的工具箱';
+}
 </script>
 <style scoped>
 .cont {

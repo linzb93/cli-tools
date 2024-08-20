@@ -27,13 +27,14 @@ router.post("/save", async (ctx) => {
   return null;
 });
 
-router.post("/gitScanResult", async () => {
+router.post("/gitScanResult", async (ctx) => {
   const schedule = await sql(async (db) => db.schedule);
   if (!schedule) {
-    return {
+    ctx.body = {
       code: HTTP_STATUS.BAD_REQUEST,
       message: "未初始化，请选择要扫描的文件夹",
     };
+    return;
   }
   const { git } = schedule;
   const allDirs = await pReduce(
@@ -65,8 +66,8 @@ router.post("/gitScanResult", async () => {
     },
     { concurrency: 5 }
   );
-  return {
-    list: result.filter((item) => ![0, 3].includes(item.status)),
+  ctx.body = {
+    list: result.filter((item) => ![0, 3].includes(item.status))
   };
 });
 

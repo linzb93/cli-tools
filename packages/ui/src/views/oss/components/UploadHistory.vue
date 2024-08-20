@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, reactive, shallowReactive, watch } from "vue";
+import { shallowRef, shallowReactive, watch } from "vue";
 import request from "@/helpers/request";
 import pathUtil from "@/helpers/path";
 const props = defineProps({

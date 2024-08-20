@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { shallowRef, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 import { useRoute } from 'vue-router'
@@ -68,7 +68,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:visible', 'refresh'])
 
-const list = ref([])
+const list = shallowRef([])
 
 const startUpload = async () => {
   await request('oss-upload', {

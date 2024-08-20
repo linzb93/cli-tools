@@ -1,6 +1,7 @@
 import clipboardy from "clipboardy";
 import notifier from "node-notifier";
 import * as macosOpenFileDialog from "macos-open-file-dialog";
+import winDialog from 'node-file-dialog';
 // import {root} from './constant';
 // import path from 'node:path';
 export const isWin = process.platform !== "darwin";
@@ -25,10 +26,18 @@ export const showOpenDialog = async (
   options: SystemDialogOptions = { multiSelections: false, properties: [""] }
 ) => {
   const { multiSelections } = options;
+  let path = "";
   if (isWin) {
-    //
+    try {
+      path = await winDialog({
+        type: 'open-file'
+      });
+    } catch (error) {
+      return {
+        canceled: false,
+      };
+    }
   } else {
-    let path = "";
     try {
       if (!multiSelections) {
         path = await macosOpenFileDialog.openFile("选择文件");
@@ -40,9 +49,9 @@ export const showOpenDialog = async (
         canceled: false,
       };
     }
-    return {
-      canceled: true,
-      path,
-    };
   }
+  return {
+    canceled: true,
+    path,
+  };
 };

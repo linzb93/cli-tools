@@ -7,7 +7,8 @@ interface Option {
 }
 
 const service = axios.create({
-  baseURL: `http://localhost:${globalConfig.port.production}${globalConfig.prefix.api}`
+  baseURL: `http://localhost:${globalConfig.port.production}${globalConfig.prefix.api}`,
+  timeout: 60000
 })
 
 export default async function doRequest(path: string, params?: any, options?: Option) {

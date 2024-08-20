@@ -44,7 +44,7 @@ watch(props, async ({ visible }) => {
     column = Number(seg[2]);
     return "";
   });
-  const { result } = await request("fetch-api-cross-origin", {
+  const { result } = await request("/fetchApiCrossOrigin", {
     url: realPath,
   });
   const splitedCode = result.split("\n");

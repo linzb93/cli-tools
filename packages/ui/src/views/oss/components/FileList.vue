@@ -6,7 +6,6 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, reactive, shallowReactive } from "vue";
 const props = defineProps({
   list: Array,
   tips: String,

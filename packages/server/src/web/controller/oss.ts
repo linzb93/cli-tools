@@ -37,19 +37,20 @@ router.post("/getProjectList", async (ctx) => {
 
 // 添加客户端，目前仅支持阿里OSS
 router.post("/createClient", async (ctx) => {
+  const params = ctx.request.body;
   await sql((db) => {
-    if (ctx.body.id) {
+    if (params.id) {
       // 是编辑
-      const index = db.oss.accounts.findIndex((acc) => acc.id === ctx.body.id);
+      const index = db.oss.accounts.findIndex((acc) => acc.id === params.id);
       if (index > -1) {
-        db.oss.accounts[index] = ctx.body;
+        db.oss.accounts[index] = params;
       }
     } else {
       const id = db.oss.accounts.length
         ? Number(db.oss.accounts.at(-1).id + 1)
         : 1;
       db.oss.accounts.push({
-        ...ctx.body,
+        ...params,
         id,
       });
     }
@@ -58,7 +59,7 @@ router.post("/createClient", async (ctx) => {
 });
 // 移除客户端
 router.post("/removeClient", async (ctx) => {
-  const { id } = ctx.body;
+  const { id } = ctx.request.body;
   await sql((db) => {
     let { accounts } = db.oss;
     const index = accounts.findIndex((acc) => acc.id === id);
@@ -69,7 +70,7 @@ router.post("/removeClient", async (ctx) => {
 // 获取文件/目录列表
 router.post("/getFileList", async (ctx) => {
   // https://help.aliyun.com/zh/developer-reference/list-objects-5?spm=a2c4g.11186623.0.i2
-  const { id, config } = ctx.body;
+  const { id, config } = ctx.request.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -103,7 +104,7 @@ router.post("/getFileList", async (ctx) => {
 
 // 删除文件
 router.post("/deleteFile", async (ctx) => {
-  const { id, path, paths } = ctx.body;
+  const { id, path, paths } = ctx.request.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -122,7 +123,7 @@ router.post("/deleteFile", async (ctx) => {
 
 // 创建目录
 router.post("/createDirectory", async (ctx) => {
-  const { id, path: uploadPath, name } = ctx.body;
+  const { id, path: uploadPath, name } = ctx.request.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -132,7 +133,7 @@ router.post("/createDirectory", async (ctx) => {
 });
 // 上传文件
 router.post("/upload", async (ctx) => {
-  const { id, path: uploadPath, files } = ctx.body;
+  const { id, path: uploadPath, files } = ctx.request.body;
   const projectRes = await findClient(id);
   if (projectRes.code !== 200) {
     return projectRes;
@@ -153,7 +154,7 @@ router.post("/getSetting", async (ctx) => {
 // 修改CSS代码设置
 router.post("/saveSetting", async (ctx) => {
   await sql((db) => {
-    db.oss.setting = ctx.body;
+    db.oss.setting = ctx.request.body;
   });
 });
 
@@ -165,7 +166,7 @@ router.post("/getShortcut", async (ctx) => {
 
 // 获取上传记录
 router.post("/getHistory", async (ctx) => {
-  const params = ctx.body;
+  const params = ctx.request.body;
   const history = await sql((db) => db.oss.history);
   if (!history || !history.length) {
     return {

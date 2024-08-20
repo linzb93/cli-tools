@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, onMounted } from 'vue'
+import { shallowRef, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import request from '@/helpers/request'
@@ -61,7 +61,7 @@ import { useOssStore } from './store'
 const router = useRouter()
 const ossStore = useOssStore()
 
-const list = ref([])
+const list = shallowRef([])
 const getList = async () => {
   const data = await request('/oss/getProjectList')
   list.value = data.list
@@ -83,7 +83,7 @@ const edit = (item) => {
   visible.value = true
   form.value = { ...item }
 }
-const form = ref({})
+const form = shallowRef({})
 const close = () => {
   visible.value = false
 }
