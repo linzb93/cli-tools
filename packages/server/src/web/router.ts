@@ -10,9 +10,9 @@ import { bodyParser } from "@koa/bodyparser";
 import globalConfig from "../../../../config.json";
 import ossRouter from "./controller/oss";
 import monitorRouter from "./controller/monitor";
-import iPhoneRouter from './controller/iPhone';
+import iPhoneRouter from "./controller/iPhone";
 import settingRouter from "./controller/setting";
-import scheduleRouter from './controller/schedule';
+import scheduleRouter from "./controller/schedule";
 import commonAPIs from "./controller/common";
 
 const app = new Koa();

@@ -8,21 +8,26 @@ import intoStream from "into-stream";
 import { tempPath } from "@/provider/constant";
 import config from "../../../../../config.json";
 
-const router = new Router();
+const router = new Router({
+  prefix: "/iPhone",
+});
 const upload = multer();
 export default router;
 
 // iPhone发往电脑
-router.post("/iPhone/send-copy-data", (ctx) => {
+router.post("/sendCopyData", (ctx) => {
   const { text } = ctx.request.body;
-  notify(text);
-  copy(decodeURIComponent(text));
+  const decodedText = decodeURIComponent(text);
+  notify(decodedText);
+  copy(decodedText);
 });
 
 // iPhone从电脑获取
-router.get("/iPhone/get-copy-data", (ctx) => {
+router.get("/getCopyData", (ctx) => {
   const copyData = readCopy();
-  ctx.body = encodeURIComponent(copyData);
+  ctx.body = {
+    text: encodeURIComponent(copyData),
+  };
 });
 
 // iPhone批量获取电脑图片地址
