@@ -43,6 +43,7 @@ import { ref, shallowRef } from 'vue'
 import { clone } from 'lodash-es'
 import { ElMessage } from 'element-plus'
 import { EditPen, Delete, Folder } from '@element-plus/icons-vue'
+import pathUtil from '@/helpers/path'
 import request from '@/helpers/request'
 import * as requestUtil from '@/helpers/request/api'
 import DeleteConfirm from '@/components/DeleteConfirm.vue'
@@ -91,15 +92,13 @@ const onDelete = (item) => {
   ElMessage.success('删除成功')
 }
 const selectDirs = async () => {
-  const { paths } = await request('/getDirectoryPath', {
-    multiSelections: true
-  })
+  const { path } = await request('/getDirectoryPath')
   emit('update:dirs', [
     ...props.dirs,
-    ...paths.map((item) => ({
-      path: item,
-      name: path.basename(item)
-    }))
+    {
+      path,
+      name: pathUtil.basename(path)
+    }
   ])
 }
 </script>

@@ -38,12 +38,10 @@ export interface Database {
   }[];
   ipc: string;
   schedule: {
-    git: {
-      dirs: {
-        path: string;
-        name: string;
-      }[];
-    };
+    gitDirs: {
+      path: string;
+      name: string;
+    }[];
   };
 
   sync: {

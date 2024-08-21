@@ -2,22 +2,15 @@ import { join, basename } from "node:path";
 import http from "node:http";
 import fs from "node:fs";
 import open from "open";
-// import fsp from "node:fs/promises";
 import Router from "koa-router";
-// import { shell, clipboard, dialog } from "electron";
 import { execaCommand as execa } from "execa";
 import { sleep } from "@linzb93/utils";
-// import { createClient } from "webdav";
 import axios from "axios";
 import pMap from "p-map";
-// import { cacheRoot } from "@/provider/constant";
 import sql from "@/provider/sql";
 import { copy, showOpenDialog } from "@/provider/helper";
 
 export default async (router: Router) => {
-  // const account = await sql((db) => db.sync);
-  // const syncClient = createClient("", account);
-
   // 复制文本
   router.post("/copy", async (ctx) => {
     copy(ctx.body);
@@ -91,36 +84,19 @@ export default async (router: Router) => {
 
   // 选择文件夹路径
   router.post("/getDirectoryPath", async (ctx) => {
-    const { request: { body: { multiSelections } } } = ctx;
     const result = await showOpenDialog({
-      properties: multiSelections
-        ? ["openDirectory", "multiSelections"]
-        : ["openDirectory"],
+      properties: ["openDirectory"],
     });
     if (result.canceled) {
-      return {
+      ctx.body = {
         path: "",
       };
+      return;
     }
-    if (multiSelections) {
-      return {
-        paths: result.path,
-      };
-    }
-    return {
-      path: result.path[0],
+    ctx.body = {
+      path: result.path,
     };
   });
-
-  // 同步
-  //   app.handle("sync", async () => {
-  //     fs.createReadStream(join(root, "sync.json")).pipe(
-  //       syncClient.createWriteStream("electron-lin-tools/sync.json")
-  //     );
-  //     return {
-  //       success: true,
-  //     };
-  //   });
 
   // 同步菜单
   router.post("/syncMenus", async (ctx) => {
@@ -141,7 +117,7 @@ export default async (router: Router) => {
       ctx.body = {
         success: true,
         result: response.data,
-      }
+      };
     } catch (error) {
       ctx.body = {
         success: false,

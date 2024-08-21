@@ -17,7 +17,7 @@ router.post("/get", async (ctx) => {
 });
 // 保存已选的项目列表
 router.post("/save", async (ctx) => {
-  const params = ctx.body;
+  const params = ctx.request.body;
   await sql((db) => {
     db.schedule = {
       ...params,
@@ -36,9 +36,8 @@ router.post("/gitScanResult", async (ctx) => {
     };
     return;
   }
-  const { git } = schedule;
   const allDirs = await pReduce(
-    git.dirs,
+    schedule.gitDirs,
     async (acc, dir) => {
       const dirs = await fsp.readdir(dir.path);
       return acc.concat(
@@ -67,7 +66,7 @@ router.post("/gitScanResult", async (ctx) => {
     { concurrency: 5 }
   );
   ctx.body = {
-    list: result.filter((item) => ![0, 3].includes(item.status))
+    list: result.filter((item) => ![0, 3].includes(item.status)),
   };
 });
 

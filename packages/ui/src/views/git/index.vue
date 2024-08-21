@@ -4,7 +4,7 @@
       <span>Git项目同步检查</span>
     </h2>
     <el-form-item label="选择项目">
-      <select-dirs v-model:dirs="gitForm.dirs" />
+      <select-dirs v-model:dirs="setting.gitDirs" />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="save">保存</el-button>
@@ -45,23 +45,19 @@ import { ElMessage } from 'element-plus'
 import SelectDirs from './components/SelectDirs.vue'
 import request, { useRequest } from '../../helpers/request'
 import * as requestUtil from '../../helpers/request/api'
-
+const setting = ref({
+  gitDirs: []
+})
 onMounted(async () => {
-  const setting = await request('/schedule/get')
-  if (!setting) {
+  const res = await request('/schedule/get')
+  if (!res) {
     return
   }
-  gitForm.value = setting.git
-})
-
-const gitForm = ref({
-  dirs: []
+  setting.value = res
 })
 
 const save = async () => {
-  await request('/schedule/save', {
-    git: gitForm.value
-  })
+  await request('/schedule/save', setting.value)
   ElMessage.success('保存成功')
 }
 const { fetch, loaded, result } = useRequest(
@@ -73,8 +69,12 @@ const { fetch, loaded, result } = useRequest(
 )
 const duration = shallowRef('0')
 const getList = async () => {
+  if (!setting.value.gitDirs.length) {
+    ElMessage.error('请选择扫描的目录')
+    return
+  }
   const startTime = Date.now()
-  fetch()
+  await fetch()
   duration.value = ((Date.now() - startTime) / 1000).toFixed(2)
 }
 

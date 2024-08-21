@@ -1,7 +1,7 @@
 import clipboardy from "clipboardy";
 import notifier from "node-notifier";
 import * as macosOpenFileDialog from "macos-open-file-dialog";
-import winDialog from 'node-file-dialog';
+import winDialog from "node-file-dialog";
 // import {root} from './constant';
 // import path from 'node:path';
 export const isWin = process.platform !== "darwin";
@@ -23,14 +23,15 @@ interface SystemDialogOptions {
   multiSelections?: boolean;
 }
 export const showOpenDialog = async (
-  options: SystemDialogOptions = { multiSelections: false, properties: ["openDirectory"] }
+  options: SystemDialogOptions = {
+    properties: ["openDirectory"],
+  }
 ) => {
-  const { multiSelections } = options;
   let path = "";
   if (isWin) {
     try {
       path = await winDialog({
-        type: 'directory'
+        type: "directory",
       });
     } catch (error) {
       return {
@@ -39,11 +40,7 @@ export const showOpenDialog = async (
     }
   } else {
     try {
-      if (!multiSelections) {
-        path = await macosOpenFileDialog.openFile("选择文件");
-      } else {
-        path = await macosOpenFileDialog.openMultipleFiles("选择文件");
-      }
+      path = await macosOpenFileDialog.openFolder("选择目录");
     } catch (error) {
       return {
         canceled: true,

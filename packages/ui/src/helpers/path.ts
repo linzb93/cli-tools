@@ -1,4 +1,4 @@
-const isWin = process.platform === "win32";
+const isWin = process.platform === 'win32'
 
 export default {
   /**
@@ -7,7 +7,8 @@ export default {
    * @returns 文件名
    */
   basename(path: string) {
-    return path.split(isWin ? "\\" : "/").at(-1);
+    const seg = path.split(isWin ? '\\' : '/')
+    return seg.at(-1) || seg.at(-2)
   },
   /**
    *
@@ -15,7 +16,7 @@ export default {
    * @returns 后缀名，不含`.`号
    */
   extname(path: string) {
-    const base = this.basename(path) as string;
-    return base.split(".")[1] ? base.split(".")[1].toLowerCase() : '';
-  },
-};
+    const base = this.basename(path) as string
+    return base.split('.')[1] ? base.split('.')[1].toLowerCase() : ''
+  }
+}
