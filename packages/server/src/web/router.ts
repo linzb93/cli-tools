@@ -10,6 +10,7 @@ import { bodyParser } from "@koa/bodyparser";
 import globalConfig from "../../../../config.json";
 import ossRouter from "./controller/oss";
 import monitorRouter from "./controller/monitor";
+import iPhoneRouter from './controller/iPhone';
 import settingRouter from "./controller/setting";
 import scheduleRouter from './controller/schedule';
 import commonAPIs from "./controller/common";
@@ -44,6 +45,7 @@ app.use(
 commonAPIs(apiRouter);
 apiRouter.use(ossRouter.routes());
 apiRouter.use(monitorRouter.routes());
+apiRouter.use(iPhoneRouter.routes());
 apiRouter.use(settingRouter.routes());
 apiRouter.use(scheduleRouter.routes());
 app.use(apiRouter.routes());

@@ -67,7 +67,7 @@ const getList = async () => {
   list.value = data.list
 }
 onMounted(async () => {
-  const { setting } = await request('oss/getSetting')
+  const setting = await request('oss/getSetting')
   if (setting.fasterEnter === 1) {
     router.replace(`/oss/detail?id=1`)
     return

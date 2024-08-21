@@ -11,6 +11,9 @@ export default defineConfig({
   server: {
     port: globalConfig.port.development_fe
   },
+  define: {
+    'process.platform': JSON.stringify(process.platform)
+  },
   plugins: [
     vue(),
     cdn({

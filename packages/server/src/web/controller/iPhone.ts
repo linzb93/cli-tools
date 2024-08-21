@@ -14,7 +14,7 @@ export default router;
 
 // iPhone发往电脑
 router.post("/iPhone/send-copy-data", (ctx) => {
-  const { text } = ctx.body;
+  const { text } = ctx.request.body;
   notify(text);
   copy(decodeURIComponent(text));
 });

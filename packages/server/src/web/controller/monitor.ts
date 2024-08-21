@@ -7,9 +7,8 @@ const router = new Router({
 export default router;
 // 获取项目列表
 router.post("/getApps", async (ctx) => {
-  let list = await sql((db) => db.monitor);
   ctx.body = {
-    list: list || [],
+    list: (await sql((db) => db.monitor)) || [],
   };
 });
 

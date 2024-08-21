@@ -90,7 +90,7 @@ export default async (router: Router) => {
   });
 
   // 选择文件夹路径
-  router.post("/get-selected-path", async (ctx) => {
+  router.post("/getDirectoryPath", async (ctx) => {
     const { request: { body: { multiSelections } } } = ctx;
     const result = await showOpenDialog({
       properties: multiSelections

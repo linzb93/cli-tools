@@ -19,22 +19,22 @@ export const notify = (content: string) => {
   });
 };
 interface SystemDialogOptions {
-  properties: ("openDirectory" | "multiSelections" | "")[];
+  properties: ("openDirectory" | "multiSelections")[];
   multiSelections?: boolean;
 }
 export const showOpenDialog = async (
-  options: SystemDialogOptions = { multiSelections: false, properties: [""] }
+  options: SystemDialogOptions = { multiSelections: false, properties: ["openDirectory"] }
 ) => {
   const { multiSelections } = options;
   let path = "";
   if (isWin) {
     try {
       path = await winDialog({
-        type: 'open-file'
+        type: 'directory'
       });
     } catch (error) {
       return {
-        canceled: false,
+        canceled: true,
       };
     }
   } else {
@@ -46,12 +46,12 @@ export const showOpenDialog = async (
       }
     } catch (error) {
       return {
-        canceled: false,
+        canceled: true,
       };
     }
   }
   return {
-    canceled: true,
+    canceled: false,
     path,
   };
 };

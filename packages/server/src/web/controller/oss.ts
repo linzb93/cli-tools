@@ -32,7 +32,9 @@ async function findClient(id: number) {
 
 // 获取已添加的客户端列表
 router.post("/getProjectList", async (ctx) => {
-  ctx.body = await sql((db) => db.oss.accounts);
+  ctx.body = {
+    list: await sql((db) => db.oss.accounts)
+  };
 });
 
 // 添加客户端，目前仅支持阿里OSS
@@ -92,7 +94,7 @@ router.post("/getFileList", async (ctx) => {
       name: obj.name.split("/").slice(-1)[0],
       url: obj.url.replace(/^https?:\/\/[^\/]+/, domain),
     }));
-  ctx.body = result.prefixes
+  const list = result.prefixes
     ? result.prefixes
         .map((subDir) => ({
           name: subDir.replace(/\/$/, "").split("/").slice(-1)[0],
@@ -100,6 +102,7 @@ router.post("/getFileList", async (ctx) => {
         }))
         .concat(objects)
     : objects;
+    ctx.body = {list};
 });
 
 // 删除文件
@@ -161,7 +164,9 @@ router.post("/saveSetting", async (ctx) => {
 // 获取项目前缀，快捷使用
 router.post("/getShortcut", async (ctx) => {
   const { accounts } = await sql((db) => db.oss);
-  ctx.body = accounts.find((acc) => acc.id === Number(ctx.body.id)).shortcut;
+  ctx.body = {
+    shortcut: accounts.find((acc) => acc.id === Number(ctx.request.body.id)).shortcut
+  };
 });
 
 // 获取上传记录

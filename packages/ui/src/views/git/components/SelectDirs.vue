@@ -91,7 +91,7 @@ const onDelete = (item) => {
   ElMessage.success('删除成功')
 }
 const selectDirs = async () => {
-  const { paths } = await request('get-selected-path', {
+  const { paths } = await request('/getDirectoryPath', {
     multiSelections: true
   })
   emit('update:dirs', [

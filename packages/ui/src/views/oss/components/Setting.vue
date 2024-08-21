@@ -53,8 +53,8 @@ const form = shallowRef({
 });
 
 const getSetting = async () => {
-  const data = await request("oss-get-setting");
-  form.value = data.setting;
+  const data = await request("/oss/getSetting");
+  form.value = data;
   emit("submit", form.value);
 };
 getSetting();

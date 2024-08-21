@@ -7,8 +7,7 @@
       <el-icon
         @click="startSync"
         class="sub-btn curp"
-        title="同步"
-        :class="{ loading: syncing }"
+        title="同步菜单"
       >
         <Refresh />
       </el-icon>
@@ -56,6 +55,7 @@
 <script setup>
 import { shallowReactive, ref, shallowRef } from "vue";
 import { ElMessage } from "element-plus";
+import { omit } from "lodash-es";
 import { useRoute, useRouter } from "vue-router";
 import {
   Refresh,
@@ -107,7 +107,6 @@ const isActive = (menu) => {
 };
 
 // 同步
-const syncing = shallowRef(false);
 const visible = shallowRef(false);
 const account = shallowReactive({
   user: "",
@@ -119,13 +118,8 @@ const rules = {
 };
 const accountRef = ref(null);
 const startSync = async () => {
-  syncing.value = true;
-  const result = await request("sync");
-  if (!result.success) {
-    // 未登录账号
-    visible.value = true;
-  }
-  syncing.value = false;
+  await request("syncMenus", list.map(item => omit(item, ['icon'])));
+  ElMessage.success("同步成功");
 };
 const jump = (item) => {
   if (item.unpublished) {
@@ -141,9 +135,6 @@ const save = () => {
     }
     await request("login", ...account);
     ElMessage.success("登录成功");
-    syncing.value = true;
-    await request("sync");
-    syncing.value = false;
   });
 };
 </script>

@@ -167,7 +167,7 @@ import UploadHistory from '../components/UploadHistory.vue'
 const route = useRoute()
 
 const tableList = shallowRef([])
-const breadcrumb = shallowRef([])
+const breadcrumb = ref([])
 const fullPath = computed(() => breadcrumb.value.map((item) => `${item}/`).join(''))
 const visible = shallowReactive({
   progress: false,
@@ -180,7 +180,7 @@ loading.value = true
 
 // 获取文件列表
 const getList = async () => {
-  const data = await request('/oss/getOssList', {
+  const data = await request('/oss/getFileList', {
     id: Number(route.query.id),
     config: {
       prefix: fullPath.value

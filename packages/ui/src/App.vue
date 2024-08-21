@@ -26,3 +26,8 @@ if (process.env.NODE_ENV === 'development') {
   overflow: auto;
 }
 </style>
+<style>
+#app {
+  height: 100%;
+}
+</style>
