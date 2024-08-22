@@ -8,7 +8,8 @@ import { sleep } from "@linzb93/utils";
 import axios from "axios";
 import pMap from "p-map";
 import sql from "@/provider/sql";
-import { copy, showOpenDialog } from "@/provider/helper";
+import { copy } from "@/provider/helper";
+import { showOpenDialog, showSaveDialog } from "@/provider/dialog";
 
 export default async (router: Router) => {
   // 复制文本
@@ -21,11 +22,10 @@ export default async (router: Router) => {
     const params = ctx.request.body;
     if (Array.isArray(params)) {
       // 下载多份文件
-      const result = await showOpenDialog({
-        properties: ["openDirectory"],
-      });
-      if (result.canceled) {
-        return {};
+      const result = await showSaveDialog();
+      if (!result) {
+        ctx.body = {};
+        return;
       }
       await pMap(
         params,
@@ -34,9 +34,7 @@ export default async (router: Router) => {
             http.get(url, (resp) => {
               if (resp.statusCode === 200) {
                 resp
-                  .pipe(
-                    fs.createWriteStream(join(result.path[0], basename(url)))
-                  )
+                  .pipe(fs.createWriteStream(join(result, basename(url))))
                   .on("finish", resolve);
               }
             });
@@ -45,14 +43,15 @@ export default async (router: Router) => {
       );
     }
     const url = params as string;
-    const result = await showOpenDialog();
-    if (result.canceled) {
-      return {};
+    const result = await showSaveDialog();
+    if (!result) {
+      ctx.body = {};
+      return;
     }
     await new Promise((resolve) => {
       http.get(url, (resp) => {
         if (resp.statusCode === 200) {
-          resp.pipe(fs.createWriteStream(result.path)).on("finish", resolve);
+          resp.pipe(fs.createWriteStream(result)).on("finish", resolve);
         }
       });
     });
@@ -84,17 +83,15 @@ export default async (router: Router) => {
 
   // 选择文件夹路径
   router.post("/getDirectoryPath", async (ctx) => {
-    const result = await showOpenDialog({
-      properties: ["openDirectory"],
-    });
-    if (result.canceled) {
+    const result = await showOpenDialog("directory");
+    if (!result) {
       ctx.body = {
         path: "",
       };
       return;
     }
     ctx.body = {
-      path: result.path,
+      path: result,
     };
   });
 

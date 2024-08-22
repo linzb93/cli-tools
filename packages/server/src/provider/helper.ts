@@ -2,7 +2,7 @@ import clipboardy from "clipboardy";
 import notifier from "node-notifier";
 import * as macosOpenFileDialog from "macos-open-file-dialog";
 import winDialog from "node-file-dialog";
-import iconv from 'iconv-lite';
+import iconv from "iconv-lite";
 // import {root} from './constant';
 // import path from 'node:path';
 export const isWin = process.platform !== "darwin";
@@ -23,34 +23,3 @@ interface SystemDialogOptions {
   properties: ("openDirectory" | "multiSelections")[];
   multiSelections?: boolean;
 }
-export const showOpenDialog = async (
-  options: SystemDialogOptions = {
-    properties: ["openDirectory"],
-  }
-) => {
-  let path = "";
-  if (isWin) {
-    try {
-      const paths = await winDialog({
-        type: "directory",
-      });
-      path = iconv.decode(Buffer.from(paths[0]), 'Windows936');
-    } catch (error) {
-      return {
-        canceled: true,
-      };
-    }
-  } else {
-    try {
-      path = await macosOpenFileDialog.openFolder("选择目录");
-    } catch (error) {
-      return {
-        canceled: true,
-      };
-    }
-  }
-  return {
-    canceled: false,
-    path,
-  };
-};
