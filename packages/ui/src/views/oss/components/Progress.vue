@@ -71,7 +71,7 @@ const emit = defineEmits(['update:visible', 'refresh'])
 const list = shallowRef([])
 
 const startUpload = async () => {
-  await request('oss-upload', {
+  await request('/oss/upload', {
     id: Number(route.query.id),
     path: props.path,
     files: list.value.map((item) => item.path)
