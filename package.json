@@ -13,6 +13,7 @@
     "build:web": "cross-env MODE=web pnpm --filter \"cli\" build",
     "build:ui": "pnpm --filter \"ui\" build-only",
     "build:web-all": "npm run build:web && npm run build:ui",
+    "build:exe": "node packages/exe/index.js",
     "type-generate": "json2ts cache/app.json > cache/app.d.ts"
   },
   "keywords": [],

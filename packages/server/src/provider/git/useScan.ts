@@ -13,9 +13,8 @@ export default async function useScan() {
     scanProjects: false,
   });
   const schedule = await sql(async (db) => db.schedule);
-  const { git } = schedule;
   const allDirs = await pReduce(
-    git.dirs,
+    schedule.gitDirs,
     async (acc, dir) => {
       const dirs = await fsp.readdir(dir.path);
       return acc.concat(
