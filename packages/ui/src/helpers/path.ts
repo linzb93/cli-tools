@@ -7,7 +7,7 @@ export default {
    * @returns 文件名
    */
   basename(path: string) {
-    const seg = path.split(isWin ? '\\' : '/')
+    const seg = path.split(/\\|\//)
     return seg.at(-1) || seg.at(-2)
   },
   /**

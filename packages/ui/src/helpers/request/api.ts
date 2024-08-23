@@ -5,7 +5,7 @@ import request from ".";
  * @param {string} text 复制的文本
  */
 export const copy = (text: string) => {
-  request("copy", text);
+  request("/copy", {text});
   ElMessage.success("复制成功");
 };
 
@@ -16,7 +16,7 @@ export const copy = (text: string) => {
  */
 export const download = async (url: string | string[]) => {
   try {
-    await request("download", url);
+    await request("/download", {url});
   } catch (error) {
     return;
   }
@@ -30,7 +30,7 @@ export const open = (
   type: "vscode" | "path" | "web",
   url: string | string[]
 ) => {
-  request("open", {
+  request("/open", {
     type,
     url,
   });

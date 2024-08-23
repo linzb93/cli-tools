@@ -14,12 +14,12 @@ import { showOpenDialog, showSaveDialog } from "@/provider/dialog";
 export default async (router: Router) => {
   // 复制文本
   router.post("/copy", async (ctx) => {
-    copy(ctx.body);
+    copy(ctx.request.body.text);
   });
 
   // 下载文件
   router.post("/download", async (ctx) => {
-    const params = ctx.request.body;
+    const params = ctx.request.body.url;
     if (Array.isArray(params)) {
       // 下载多份文件
       const result = await showSaveDialog();

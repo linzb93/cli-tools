@@ -1,7 +1,9 @@
 import argparse
 import tkinter as tk
 from tkinter import filedialog
-
+import io
+import sys;
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
 def open_file_dialog(type):
     root = tk.Tk()
     root.withdraw() 
