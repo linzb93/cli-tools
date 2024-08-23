@@ -149,6 +149,7 @@ ${copyText}`);
       tag = await generateNewestTag();
       if (tag) {
         flows.push(`git tag ${tag}`);
+        flows.push(`git push origin ${tag}`);
       }
     }
     try {
