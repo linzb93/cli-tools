@@ -63,5 +63,21 @@ app.listen(globalConfig.port.production, async () => {
 function getCommandArgValue(key: string) {
   const args = process.argv.slice(2);
   const match = args.find((arg) => arg.startsWith(`--${key}`));
-  return match ? match.replace(`--${key}`, "") : "";
+  if (match) {
+    const replaced = match.replace(`--${key}`, "");
+    if (replaced === "") {
+      return true;
+    }
+    if (!isNaN(Number(replaced))) {
+      return Number(replaced);
+    }
+    if (replaced === "true") {
+      return true;
+    }
+    if (replaced === "false") {
+      return false;
+    }
+    return replaced;
+  }
+  return "";
 }
