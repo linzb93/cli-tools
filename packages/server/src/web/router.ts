@@ -8,7 +8,6 @@ import serve from "koa-static-server";
 import { omit } from "lodash-es";
 import { bodyParser } from "@koa/bodyparser";
 import globalConfig from "../../../../config.json";
-import ossRouter from "./controller/oss";
 import monitorRouter from "./controller/monitor";
 import iPhoneRouter from "./controller/iPhone";
 import settingRouter from "./controller/setting";
@@ -43,7 +42,6 @@ app.use(
   })
 );
 commonAPIs(apiRouter);
-apiRouter.use(ossRouter.routes());
 apiRouter.use(monitorRouter.routes());
 apiRouter.use(iPhoneRouter.routes());
 apiRouter.use(settingRouter.routes());
