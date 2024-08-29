@@ -26,6 +26,10 @@ const routes = [
     component: () => import('./views/git/index.vue')
   },
   {
+    path: '/vue',
+    component: () => import('./views/vue/index.vue')
+  },
+  {
     path: '/setting',
     component: () => import('./views/setting/index.vue')
   }
