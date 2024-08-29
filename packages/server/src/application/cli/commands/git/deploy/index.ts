@@ -1,4 +1,4 @@
-import { basename } from 'node:path'
+import { basename } from "node:path";
 import open from "open";
 import readPkg from "read-pkg";
 import notifier from "node-notifier";
@@ -7,8 +7,9 @@ import BaseCommand from "../../../shared/BaseCommand";
 import { generateNewestTag } from "../tag";
 import clipboard from "clipboardy";
 import chalk from "chalk";
-import * as git from '../../../shared/git';
-import * as helper from '../../../shared/helper';
+import * as git from "../../../shared/git";
+import * as helper from "../../../shared/helper";
+import gitAtom from "@/service/git/atom";
 
 interface CommandOptions {
   commit: string;
@@ -21,7 +22,7 @@ interface JenkinsProject {
   name: string;
   id: string;
 }
-type GitActions = ('merge' | 'open' | 'copy' | 'tag')[];
+type GitActions = ("merge" | "open" | "copy" | "tag")[];
 interface FlowOption {
   condition: Boolean;
   actions?: GitActions;
@@ -61,8 +62,8 @@ class Deploy extends BaseCommand {
       {
         // 测试阶段，从开发分支提交到release分支
         condition: targetBranch === "release" && isDevBranch, // dev -> release
-        actions: ['merge', 'open'],
-        targetBranch
+        actions: ["merge", "open"],
+        targetBranch,
       },
       {
         condition: curBranch === "release" && targetBranch === "master", // release -> master
@@ -77,14 +78,14 @@ class Deploy extends BaseCommand {
         // dev -> master
         condition: isDevBranch && targetBranch === "master",
         inquire: true,
-        actions: ['merge', 'tag', 'copy'],
-        targetBranch
+        actions: ["merge", "tag", "copy"],
+        targetBranch,
       },
       {
         // master -> master
         condition: targetBranch === curBranch && curBranch === "master",
-        actions: ['tag', 'copy'],
-        targetBranch
+        actions: ["tag", "copy"],
+        targetBranch,
       },
     ]);
   }
@@ -102,12 +103,10 @@ class Deploy extends BaseCommand {
 ${copyText}`);
     clipboard.writeSync(copyText);
   }
-  private createSerial(
-    flowList: FlowOption[]
-  ): void {
+  private createSerial(flowList: FlowOption[]): void {
     for (const flow of flowList) {
       if (flow.condition) {
-        if (typeof flow.action === 'function') {
+        if (typeof flow.action === "function") {
           flow.action.call(this);
           return;
         }
@@ -120,7 +119,7 @@ ${copyText}`);
     const { actions = [], inquire, targetBranch } = flow;
     const flows: (string | CommandItem)[] = [...this.getBaseAction()];
     const tailFlows = [];
-    let tag = '';
+    let tag = "";
     const curBranch = await git.getCurrentBranch();
     if (inquire) {
       const { answer } = await this.inquirer.prompt({
@@ -132,22 +131,16 @@ ${copyText}`);
         return;
       }
     }
-    if (actions.includes('merge')) {
+    if (actions.includes("merge")) {
       flows.push(
         `git checkout ${targetBranch}`,
-        {
-          message: `git pull`,
-          onError: this.handleConflict
-        },
-        {
-          message: `git merge ${curBranch}`,
-          onError: this.handleConflict
-        },
-        'git push'
+        gitAtom.pull(),
+        gitAtom.merge(curBranch),
+        "git push"
       );
       tailFlows.push(`git checkout ${curBranch}`);
     }
-    if (actions.includes('tag')) {
+    if (actions.includes("tag")) {
       tag = await generateNewestTag();
       if (tag) {
         flows.push(`git tag ${tag}`);
@@ -165,10 +158,10 @@ ${copyText}`);
         return;
       }
     }
-    if (actions.includes('open')) {
+    if (actions.includes("open")) {
       await this.openDeployPage();
     }
-    if (actions.includes('copy')) {
+    if (actions.includes("copy")) {
       await this.deploySuccess(tag);
     }
   }
@@ -177,25 +170,8 @@ ${copyText}`);
       "git add .",
       `git commit -m ${this.options.commit || "update"}`,
       "git pull",
-      "git push"
-    ]
-  }
-  private async handleConflict() {
-    const ans = await this.inquirer.prompt([
-      {
-        message: "代码合并失败，检测到代码有冲突，是否已解决？",
-        type: "confirm",
-        default: true,
-        name: "resolved",
-      },
-    ]);
-    if (!ans.resolved) {
-      throw new Error("exit");
-    }
-    await sequenceExec([
-      "git add .",
-      "git commit -m conflict-fixed",
-    ]);
+      "git push",
+    ];
   }
   private async openDeployPage() {
     const pkg = await readPkg({
@@ -208,7 +184,8 @@ ${copyText}`);
     if (jenkins) {
       const { name, id } = jenkins;
       await open(
-        `http://${helper.isWin ? "192.168.0.32:8080" : "218.66.91.50:13379"
+        `http://${
+          helper.isWin ? "192.168.0.32:8080" : "218.66.91.50:13379"
         }/view/${name}/job/${id}/`
       );
     }

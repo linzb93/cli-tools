@@ -1,10 +1,9 @@
 import * as cheerio from "cheerio";
 import axios from "axios";
 import chalk from "chalk";
-import Table from "cli-table3";
 import open from "open";
 import BaseCommand from "../../shared/BaseCommand";
-import * as helper from '../../shared/helper';
+import * as helper from "../../shared/helper";
 
 interface Options {
   example: boolean;
