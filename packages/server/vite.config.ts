@@ -14,8 +14,8 @@ const input: {
   cli?: string;
   web?: string;
 } = {
-  cli: "src/bin/index.ts",
-  web: "src/web/router.ts",
+  cli: "src/application/cli/bin.ts",
+  web: "src/application/web/router.ts",
 };
 if (process.env.MODE === "cli") {
   delete input.web;
