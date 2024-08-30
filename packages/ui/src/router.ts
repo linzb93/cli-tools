@@ -6,14 +6,6 @@ const routes = [
     component: () => import('./views/home/index.vue')
   },
   {
-    path: '/oss',
-    component: () => import('./views/oss/index.vue')
-  },
-  {
-    path: '/oss/detail',
-    component: () => import('./views/oss/children/detail.vue')
-  },
-  {
     path: '/iPhone',
     component: () => import('./views/iPhone/index.vue')
   },

@@ -24,10 +24,10 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, reactive, shallowReactive, onMounted } from 'vue'
+import { ref, shallowRef, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/helpers/request'
-import EditDialog from './components/EditDialog';
+import EditDialog from './components/EditDialog.vue';
 
 // 列表
 const list = ref([])
