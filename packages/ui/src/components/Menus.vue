@@ -41,6 +41,7 @@ import { omit } from 'lodash-es'
 import { useRoute, useRouter } from 'vue-router'
 import { Refresh, Iphone, HomeFilled, Setting, View, Clock } from '@element-plus/icons-vue'
 import request from '@/helpers/request'
+import { VueIcon } from '@/components/icons'
 
 const route = useRoute()
 const router = useRouter()
@@ -55,6 +56,11 @@ const list = [
     title: 'iPhone同步',
     to: '/iPhone',
     icon: Iphone
+  },
+  {
+    title: 'Vue项目管理',
+    to: '/vue',
+    icon: VueIcon
   },
   {
     title: '监控系统',

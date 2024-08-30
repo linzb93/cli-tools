@@ -5,7 +5,7 @@ import {
 import inquirer from "@/application/cli/shared/inquirer";
 
 async function handleConflict() {
-  const ans = await inquirer.prompt([
+  const { resolved } = await inquirer.prompt([
     {
       message: "代码合并失败，检测到代码有冲突，是否已解决？",
       type: "confirm",
@@ -13,7 +13,7 @@ async function handleConflict() {
       name: "resolved",
     },
   ]);
-  if (!ans.resolved) {
+  if (!resolved) {
     throw new Error("exit");
   }
   await sequenceExec(["git add .", "git commit -m conflict-fixed"]);

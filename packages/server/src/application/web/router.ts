@@ -12,6 +12,7 @@ import monitorRouter from "./controller/monitor";
 import iPhoneRouter from "./controller/iPhone";
 import settingRouter from "./controller/setting";
 import scheduleRouter from "./controller/schedule";
+import vueRouter from "./controller/vue";
 import commonAPIs from "./controller/common";
 
 const app = new Koa();
@@ -46,6 +47,7 @@ apiRouter.use(monitorRouter.routes());
 apiRouter.use(iPhoneRouter.routes());
 apiRouter.use(settingRouter.routes());
 apiRouter.use(scheduleRouter.routes());
+apiRouter.use(vueRouter.routes());
 app.use(apiRouter.routes());
 app.listen(globalConfig.port.production, async () => {
   if (menu) {

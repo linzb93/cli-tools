@@ -4,6 +4,11 @@ interface AnyObject {
 
 export interface Database {
   lastModifiedTime: string;
+  vue: {
+    name: string;
+    path: string;
+    id: number;
+  }[];
   oss: {
     accounts: {
       id: number;

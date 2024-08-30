@@ -1,10 +1,13 @@
 <template>
-  <el-dialog :model-value="visible" title="编辑项目" width="400px">
+  <el-dialog :model-value="visible" title="编辑项目" width="400px" @close="close">
     <el-form ref="formRef" :model="form" :rules="rules">
       <el-form-item label="名称" prop="name">
-        <el-input />
+        <el-input v-model="form.name" />
       </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button type="primary" @click="submit">提交</el-button>
+    </template>
   </el-dialog>
 </template>
 
