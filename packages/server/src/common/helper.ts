@@ -1,9 +1,11 @@
 import clipboardy from "clipboardy";
 import notifier from "node-notifier";
-export const isWin = process.platform !== "darwin";
+import { Writable } from "node:stream";
 import logger from "./logger";
 import chalk from "chalk";
 
+import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
+export const isWin = process.platform !== "darwin";
 export const copy = (text: string) => {
   clipboardy.writeSync(text);
 };
@@ -42,3 +44,33 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
     .join("\n");
   return `${mainTitle}\n${chalk.gray(formattedTips)}`;
 };
+
+export const validate = (obj: any, descriptor: ValidatorRules): void => {
+  const Schema = (ValidatorSchema as any).default;
+  const validator = new Schema(descriptor);
+  validator.validate(obj, (errors: Error, fields: any) => {
+    if (!errors) {
+      return;
+    }
+    const target = fields[Object.keys(fields)[0]];
+    logger.error(`${chalk.red("[参数验证不通过]")} ${target[0].message}`);
+    process.exit(1);
+  });
+};
+export const isURL = (text: string): boolean => {
+  return text.startsWith("http://") || text.startsWith("https://");
+};
+/**
+ * 按行分割文件。
+ * @param {string} fileContent 文件内容
+ * @returns {string[]} 分割后的文件内容数组
+ */
+export const splitByLine = (fileContent: string): string[] => {
+  const eol = fileContent.includes("\r\n") ? "\r\n" : "\n";
+  return fileContent === "" ? [] : fileContent.split(eol);
+};
+export const emptyWritableStream = new Writable({
+  write(data, enc, callback) {
+    callback();
+  },
+});

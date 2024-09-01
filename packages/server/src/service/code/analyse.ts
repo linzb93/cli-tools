@@ -1,10 +1,10 @@
-import BaseCommand from "../../shared/BaseCommand";
+import BaseCommand from "@/common/BaseCommand";
 import Table from "cli-table3";
 import fs from "fs-extra";
 import pMap from "p-map";
 import { globby } from "globby";
 import chalk from "chalk";
-import * as helper from '../../shared/helper';
+import * as helper from "@/common/helper";
 interface IModule {
   access(): Promise<boolean>;
   maxLength: {
@@ -100,17 +100,20 @@ const javascriptModule: IModule = {
 };
 
 const table = new Table({
-  head: ['', chalk.green("文件地址"), chalk.green("行数")],
+  head: ["", chalk.green("文件地址"), chalk.green("行数")],
   colAligns: ["left", "left", "center"],
 });
 
-class Analyse extends BaseCommand {
+export default class extends BaseCommand {
   private modules: IModule[] = [];
-  constructor(private data: string[]) {
-    super();
-  }
+  private data: string[];
   addModule(...modules: IModule[]) {
     this.modules = modules;
+  }
+  async main(prefix: string[]) {
+    this.data = prefix;
+    this.addModule(vueModule, javascriptModule);
+    this.run();
   }
   async run() {
     this.spinner.text = "正在分析";
@@ -143,7 +146,7 @@ class Analyse extends BaseCommand {
     table.push(
       ...result
         .sort((prev, next) => (prev.lines > next.lines ? -1 : 1))
-        .map((item,index) => {
+        .map((item, index) => {
           return [
             (index + 1).toString(),
             chalk.cyan(item.file),
@@ -169,10 +172,4 @@ class Analyse extends BaseCommand {
       }
     }
   }
-}
-
-export default function (prefix: string[]) {
-  const util = new Analyse(prefix);
-  util.addModule(vueModule, javascriptModule);
-  util.run();
 }

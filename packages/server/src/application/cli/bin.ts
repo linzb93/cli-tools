@@ -23,7 +23,6 @@ import kill from "./commands/kill";
 import lixi from "./commands/lixi";
 import mock from "./commands/mock";
 // import monitor from "@/commands/monitor";
-import spider from "./commands/spider";
 import shortcut from "./commands/shortcut";
 import getSize from "./commands/size";
 import token from "./commands/token";
@@ -73,12 +72,9 @@ program
     clear(filename, options);
   });
 
-program
-  .command("code [sub-command] [rest...]")
-  .option("--help", "显示帮助文档")
-  .action((subCommand: string, rest) => {
-    code(subCommand, rest);
-  });
+program.command("code [sub-command]").action((subCommand) => {
+  code(subCommand);
+});
 
 program
   .command("color <text>")
@@ -218,14 +214,6 @@ program
   .option("--help", "显示帮助文档")
   .action((filename, options) => {
     getSize(filename, options);
-  });
-
-program
-  .command("spider <url>")
-  .option("--dest <dest>", "下载目标文件夹")
-  .option("--help", "显示帮助文档")
-  .action((url, option) => {
-    spider(url, option);
   });
 
 program.command("time <time>").action((data) => {

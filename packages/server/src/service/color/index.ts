@@ -1,31 +1,30 @@
 import convert from "color-convert";
 import chalk from "chalk";
 import clipboard from "clipboardy";
-import BaseCommand from "../../shared/BaseCommand";
-import * as helper from '../../shared/helper';
-interface Options {
+import BaseCommand from "@/common/BaseCommand";
+import * as helper from "@/common/helper";
+export interface Options {
   get: boolean;
   help?: boolean;
 }
 
-class ColorConvert extends BaseCommand {
-  constructor(private text: string, private options: Options) {
+export default class extends BaseCommand {
+  constructor() {
     super();
   }
-  run() {
-    let { text, options } = this;
+  main(text: string, options: Options) {
     if (options.help) {
       this.generateHelp();
       return;
     }
     let ret = convert.hex.rgb(text).join(", ");
     let blockColor = `#${text}`;
-    if (this.text.startsWith("#")) {
+    if (text.startsWith("#")) {
       blockColor = text;
-      text = this.text.slice(1);
+      text = text.slice(1);
       ret = convert.hex.rgb(text).join(", ");
-    } else if (this.text.includes(",")) {
-      text = this.text.replace(/\s/g, "");
+    } else if (text.includes(",")) {
+      text = text.replace(/\s/g, "");
       const colorNumberList = text.split(",").map((item) => Number(item)) as [
         number,
         number,
@@ -55,9 +54,3 @@ color '255,255,255' => '#fff'`,
     });
   }
 }
-/**
- * eg: mycli color '#fff' or mycli color '255,255,255'
- */
-export default (text: string, options: Options) => {
-  return new ColorConvert(text, options).run();
-};

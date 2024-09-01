@@ -1,15 +1,15 @@
 import axios, { AxiosInstance } from "axios";
 import open from "open";
 import clipboard from "clipboardy";
-import BaseCommand from "../../shared/BaseCommand";
+import BaseCommand from "@/common/BaseCommand";
 import appMap from "./appMap";
 import { App } from "./types";
-import { AnyObject } from "../../shared/types";
+import { AnyObject } from "@/common/types";
 import chalk from "chalk";
-import ls from '../../shared/ls';
-import * as helper from '../../shared/helper';
+import ls from "@/common/ls";
+import * as helper from "@/common/helper";
 import { sleep } from "@linzb93/utils";
-interface Options {
+export interface Options {
   token: string | boolean;
   pc: boolean;
   copy: boolean;
@@ -21,21 +21,24 @@ interface Options {
 /**
  * OCC管理
  */
-class OCC extends BaseCommand {
+export default class extends BaseCommand {
   private currentApp: App;
   private memberId: string = "";
   private service: AxiosInstance;
-  constructor(private input: string[], private options: Options) {
+  private options: Options;
+  private input: string[];
+  constructor() {
     super();
   }
-  async run() {
-    const { options } = this;
+  async main(input: string[], options: Options) {
+    this.options = options;
+    this.input = input;
     if (options.help) {
       this.generateHelp();
       return;
     }
     this.setMatchApp();
-    const { shop, url,shopResult } = await this.getShop();
+    const { shop, url, shopResult } = await this.getShop();
     const shopName = this.currentApp.getShopName(shop);
     if (options.token) {
       // 读取token
@@ -66,7 +69,10 @@ class OCC extends BaseCommand {
       this.spinner.succeed(`获取店铺【${shopName}】信息成功!`);
       console.log(data.result);
     } else {
-      const newUrl = typeof this.currentApp.getOpenUrl === 'function' ? this.currentApp.getOpenUrl(shopResult) : url;
+      const newUrl =
+        typeof this.currentApp.getOpenUrl === "function"
+          ? this.currentApp.getOpenUrl(shopResult)
+          : url;
       if (
         options.pc &&
         ["4", "73", "36", "75"].includes(this.currentApp.appKey)
@@ -128,7 +134,7 @@ class OCC extends BaseCommand {
   private async getShop(): Promise<{
     shop: AnyObject;
     url: string;
-    shopResult: any
+    shopResult: any;
   }> {
     const { options, currentApp } = this;
     let shop = {};
@@ -156,7 +162,7 @@ class OCC extends BaseCommand {
       currentApp.getLoginQuery(shop, currentApp)
     );
     return {
-      shopResult:result,
+      shopResult: result,
       url:
         typeof currentApp.getToken === "function"
           ? currentApp.getToken(result)
@@ -199,9 +205,7 @@ class OCC extends BaseCommand {
         return `${match.prefix}${match.url.base}`;
       }
       return `${
-        this.options.test
-          ? ls.get("oa.testPrefix")
-          : ls.get("oa.apiPrefix")
+        this.options.test ? ls.get("oa.testPrefix") : ls.get("oa.apiPrefix")
       }${match.url.base}`;
     })();
     this.service = axios.create({
@@ -223,7 +227,7 @@ class OCC extends BaseCommand {
   }
   private generateHelp() {
     helper.generateHelpDoc({
-      title: 'occ',
+      title: "occ",
       content: `OCC各平台数据获取。
 使用方法：
 ${chalk.cyan(`occ [appName] [shopId]`)}。
@@ -247,11 +251,7 @@ appName 选项：
 - pc: 访问PC端应用
 - copy: 复制店铺地址
 - user: 查看该门店信息
-      `
-    })
+      `,
+    });
   }
 }
-
-export default (input: string[], options: Options) => {
-  new OCC(input, options).run();
-};

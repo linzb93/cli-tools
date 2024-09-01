@@ -5,10 +5,11 @@ import sizeOf from "image-size";
 import through from "through2";
 import del from "del";
 import path from "node:path";
-import BaseCommand from "../../shared/BaseCommand";
-import * as helper from '../../shared/helper';
+import BaseCommand from "@/common/BaseCommand";
+import * as helper from "@/common/helper";
+import { root } from "@/common/constant";
 
-interface Options {
+export interface Options {
   rect: boolean;
 }
 interface Dimensions {
@@ -16,24 +17,8 @@ interface Dimensions {
   height: number | undefined;
 }
 
-class GetSize extends BaseCommand {
-  constructor(private filePath: string, private options: Options) {
-    super();
-    helper.validate(
-      {
-        file: filePath,
-      },
-      {
-        file: {
-          validator: (_, value) =>
-            helper.isURL(value) || helper.isPath(value),
-          message: "请输入图片网址，或本地地址",
-        },
-      }
-    );
-  }
-  async run() {
-    let { filePath } = this;
+export default class extends BaseCommand {
+  async main(filePath: string, options: Options) {
     if (helper.isURL(filePath)) {
       let res: AxiosResponse;
       // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
@@ -48,11 +33,8 @@ class GetSize extends BaseCommand {
       }
       let size = 0;
       const extname = this.getExtname(filePath);
-      const targetName = path.resolve(
-        helper.root,
-        `temp/getSizeImage${extname}`
-      );
-      const settingRect = this.options.rect;
+      const targetName = path.resolve(root, `temp/getSizeImage${extname}`);
+      const settingRect = options.rect;
       await new Promise((resolve) => {
         res.data
           .pipe(
@@ -109,7 +91,3 @@ class GetSize extends BaseCommand {
     return ".png";
   }
 }
-
-export default (filePath: string, options: Options) => {
-  new GetSize(filePath, options).run();
-};

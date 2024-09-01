@@ -1,7 +1,7 @@
-import kill from "../../commands/kill";
+import kill from "../kill";
 import BaseCommand from "../../shared/BaseCommand";
 import { CacheItem } from ".";
-import * as helper from '../../shared/helper';
+import * as helper from "../../shared/helper";
 interface DbData {
   items: Required<CacheItem>[];
 }

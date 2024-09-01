@@ -1,12 +1,12 @@
-import BaseCommand from "../../shared/BaseCommand";
-import * as helper from '../../shared/helper';
+import BaseCommand from "@/common/BaseCommand";
+import * as helper from "@/common/helper";
 import chalk from "chalk";
 
 class Shortcut extends BaseCommand {
   constructor(private name: string) {
     super();
   }
-  run() {
+  main() {
     const map = [
       {
         type: "common",
@@ -87,9 +87,7 @@ class Shortcut extends BaseCommand {
   ${panel.children
     .map(
       (item) =>
-        `${chalk.blue(item.title)} ${
-          helper.isWin ? item.windows : item.mac
-        }`
+        `${chalk.blue(item.title)} ${helper.isWin ? item.windows : item.mac}`
     )
     .join("\n  ")}`;
           })
@@ -120,5 +118,5 @@ class Shortcut extends BaseCommand {
 }
 
 export default (name: string) => {
-  new Shortcut(name).run();
+  new Shortcut(name).main();
 };

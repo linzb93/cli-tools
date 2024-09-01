@@ -1,28 +1,25 @@
 import { fork } from "node:child_process";
-import BaseCommand from "../../shared/BaseCommand";
+import BaseCommand from "@/common/BaseCommand";
 import chalk from "chalk";
 import internalIp from "internal-ip";
 import path from "node:path";
-import * as helper from '../../shared/helper';
-interface IOptions {
+import * as helper from "@/common/helper";
+import { root } from "@/common/constant";
+export interface IOptions {
   help: boolean;
 }
 /**
  * 在子进程中启动服务，退出父进程。
  * 只能用在HTTP服务中，TCP和IPC在父进程退出后也会自动结束
  */
-class Fork extends BaseCommand {
-  constructor(private filename: string, private options: IOptions) {
-    super();
-  }
-  async run() {
-    const { options } = this;
+export default class extends BaseCommand {
+  async main(filename: string, options: IOptions) {
     if (options.help) {
       this.generateHelp();
       return;
     }
-    const child = fork(path.resolve(process.cwd(), this.filename), {
-      cwd: helper.root,
+    const child = fork(path.resolve(process.cwd(), filename), {
+      cwd: root,
       detached: true,
       stdio: [null, null, null, "ipc"],
     });
@@ -43,7 +40,3 @@ fork app.js`,
     });
   }
 }
-
-export default (filename: string, options: IOptions) => {
-  new Fork(filename, options).run();
-};

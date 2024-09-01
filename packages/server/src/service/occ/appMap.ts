@@ -1,4 +1,4 @@
-import ls from "../../shared/ls";
+import ls from "@/common/ls";
 import { App } from "./types";
 
 const meituanParams = {
@@ -61,7 +61,7 @@ const appMap: App[] = [
     appKey: "4",
     serviceName: "经营神器-美团",
     defaultId: "15983528161",
-    testDefaultId: '15983528161',
+    testDefaultId: "15983528161",
     ...meituanParams,
   },
   {
@@ -77,7 +77,7 @@ const appMap: App[] = [
     appKey: "73",
     serviceName: "评价神器-美团",
     defaultId: "16499283381",
-    testDefaultId:"16499283381",
+    testDefaultId: "16499283381",
     ...meituanParams,
   },
   {
@@ -101,7 +101,7 @@ const appMap: App[] = [
     appKey: "85",
     serviceName: "点金大师-美团",
     defaultId: "16668523733",
-    testDefaultId:"16668523733",
+    testDefaultId: "16668523733",
     ...meituanParams,
   },
   {
@@ -111,7 +111,7 @@ const appMap: App[] = [
     platform: 8,
     searchKey: "param",
     defaultId: "16928614773",
-    testDefaultId:"16928614773",
+    testDefaultId: "16928614773",
     ...meituanParams,
   },
   {
@@ -155,11 +155,13 @@ const appMap: App[] = [
     },
     getOpenUrl(res) {
       return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(
-                            res.createTime
-                        )}&id=${encodeURIComponent(res.id)}&phoneNumber=${encodeURIComponent(
-                            res.phoneNumber
-                        )}&shopNumber=${encodeURIComponent(res.shopNumber)}&token=${encodeURIComponent(res.token)}`
-    }
+        res.createTime
+      )}&id=${encodeURIComponent(res.id)}&phoneNumber=${encodeURIComponent(
+        res.phoneNumber
+      )}&shopNumber=${encodeURIComponent(
+        res.shopNumber
+      )}&token=${encodeURIComponent(res.token)}`;
+    },
   },
   {
     name: "outer",

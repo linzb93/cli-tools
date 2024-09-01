@@ -4,23 +4,16 @@ import chalk from "chalk";
 import axios from "axios";
 import { load } from "cheerio";
 import Table from "cli-table3";
-import BaseCommand from "../../shared/BaseCommand";
-import * as helper from '../../shared/helper';
-interface Options {
+import BaseCommand from "@/common/BaseCommand";
+import * as helper from "@/common/helper";
+export interface Options {
   help?: boolean;
 }
 
-class Ip extends BaseCommand {
-  constructor(private data?: string[], private options?: Options) {
-    super();
-  }
-  async run() {
-    if (this.options.help) {
-      this.generateHelp();
-      return;
-    }
-    if (this.data[0] === "get") {
-      this.getIpLocation();
+export default class extends BaseCommand {
+  async main(data?: string[], options?: Options) {
+    if (data[0] === "get") {
+      this.getIpLocation(data[1]);
       return;
     }
     this.spinner.text = "正在获取IP";
@@ -40,9 +33,8 @@ class Ip extends BaseCommand {
   /**
    * 获取IP归属地
    */
-  private async getIpLocation() {
+  private async getIpLocation(ip: string) {
     this.spinner.text = "正在查询IP信息";
-    const ip = this.data[1];
     const { data: html } = await axios.get(
       `https://www.ip138.com/iplookup.php?ip=${ip}&action=2`
     );
@@ -75,21 +67,4 @@ class Ip extends BaseCommand {
     this.spinner.succeed(`查询成功
 ${table.toString()}`);
   }
-  private generateHelp() {
-    helper.generateHelpDoc({
-      title: "ip",
-      content: `查询本机内网/公网IP，或者查询IP归属地
-使用方法：
-ip - 查询本机内网和公网IP
-ip get '127.0.0.1' - 查询IP归属地`,
-    });
-  }
-}
-
-export default (data: string[], options: Options) => {
-  new Ip(data, options).run();
-};
-
-export function get() {
-  return new Ip().get();
 }
