@@ -1,30 +1,25 @@
+import BaseCommand from "@/common/BaseCommand";
+import * as git from "@/common/git";
 import clipboard from "clipboardy";
-import BaseCommand from "../../../shared/BaseCommand";
-import deleteTag from "./delete";
+import { sequenceExec } from "@/common/promiseFn";
 import readPkg from "read-pkg";
 import { last } from "lodash-es";
-import * as git from '../../../shared/git';
-import { sequenceExec } from "../../../shared/promiseFn";
-import * as helper from '../../../shared/helper';
-interface Options {
+import deleteAction from "./batchDelete";
+export interface Options {
   delete?: boolean;
   last?: boolean;
   get?: boolean;
   help?: boolean;
 }
 
-class Tag extends BaseCommand {
-  constructor(private datas: string[], private options: Options) {
-    super();
-  }
-  async run() {
-    const { options } = this;
-    if (options.help) {
-      this.generateHelp();
-      return;
-    }
+export default class extends BaseCommand {
+  async main(data: string[], options: Options) {
     if (options.delete) {
-      deleteTag();
+      deleteAction({
+        name: "tag",
+        choices: await git.tag(),
+        deleteFn: git.deleteTag,
+      });
       return;
     }
     const gitTags = await git.tag();
@@ -47,16 +42,13 @@ class Tag extends BaseCommand {
       }
     } else {
       let output = "";
-      const input = this.datas[0];
+      const input = data[0];
       if (!input) {
         output = await this.generateNewestTag();
       } else {
         output = input.startsWith("v") ? input : `v${input}`;
       }
-      await sequenceExec([
-        `git tag ${output}`,
-        `git push origin ${output}`,
-      ]);
+      await sequenceExec([`git tag ${output}`, `git push origin ${output}`]);
       const projectConf = await readPkg({
         cwd: process.cwd(),
       });
@@ -100,27 +92,4 @@ ${ret}`);
     }
     return "";
   }
-  private generateHelp() {
-    helper.generateHelpDoc({
-      title: "git tag",
-      content: `git项目获取、添加、删除tag。建议tag的格式是"v" + 版本号
-使用方法：
-打tag：git tag v2.1.1.2
-获取最近10个tag: git tag --last=10。没有这个选项的话就是获取所有的tag。
-参数：
-- delete: 删除tag，包括本地和远端的
-- last=: 获取最近几个tag
-- get: 获取并复制最近的一次tag`,
-    });
-  }
 }
-
-function tag(datas: string[], options: Options): void {
-  new Tag(datas, options).run();
-}
-
-export default tag;
-
-export const generateNewestTag = () => {
-  return new Tag([], {}).generateNewestTag();
-};

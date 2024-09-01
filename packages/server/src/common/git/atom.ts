@@ -1,8 +1,5 @@
-import {
-  CommandItem,
-  sequenceExec,
-} from "../../application/cli/shared/promiseFn";
-import inquirer from "@/application/cli/shared/inquirer";
+import { CommandItem, sequenceExec } from "@/common/promiseFn";
+import inquirer from "@/common/inquirer";
 
 async function handleConflict() {
   const { resolved } = await inquirer.prompt([

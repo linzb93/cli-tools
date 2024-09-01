@@ -1,18 +1,15 @@
-import BaseCommand from "../../shared/BaseCommand";
-import { sequenceExec } from '../../shared/promiseFn';
+import { sequenceExec } from "@/common/promiseFn";
+import logger from "@/common/logger";
+import gitAtom from "@/common/git/atom";
+import { CommandItem } from "@/common/promiseFn";
 
-class Pull extends BaseCommand {
-  async run() {
-    await sequenceExec([
-      {
-        message: "git push",
-        retryTimes: 20,
-      },
-    ]);
-    this.logger.success("代码推送成功");
-  }
-}
-
-export default () => {
-  new Pull().run();
+export default async () => {
+  const actionObj = gitAtom.push() as CommandItem;
+  await sequenceExec([
+    {
+      ...actionObj,
+      retryTimes: 30,
+    },
+  ]);
+  logger.success("代码推送成功");
 };

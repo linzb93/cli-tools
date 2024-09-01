@@ -2,9 +2,9 @@ import { CheckboxQuestion } from "inquirer";
 import pMap from "p-map";
 import { reactive } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
-import logger from "../../../shared/logger";
-import inquirer from "../../../shared/inquirer";
-import spinner from "../../../shared/spinner";
+import logger from "@/common/logger";
+import inquirer from "@/common/inquirer";
+import spinner from "@/common/spinner";
 
 interface IOptions {
   name: string;

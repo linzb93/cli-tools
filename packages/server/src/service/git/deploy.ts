@@ -1,0 +1,165 @@
+import { basename } from "node:path";
+import BaseCommand from "@/common/BaseCommand";
+import readPkg from "read-pkg";
+import { notify } from "@/common/helper";
+import { CommandItem, sequenceExec } from "@/common/promiseFn";
+import Tag from "./tag";
+import clipboard from "clipboardy";
+import { getCurrentBranch, remote } from "@/common/git";
+import gitAtom from "@/common/git/atom";
+import { openDeployPage } from "@/common/jenkins";
+
+export interface Options {
+  commit: string;
+  tag: string;
+  debug: boolean;
+  current: boolean;
+  help: boolean;
+}
+
+type GitActions = ("merge" | "open" | "copy" | "tag")[];
+
+interface FlowOption {
+  condition: Boolean;
+  actions?: GitActions;
+  actionFn?: () => void;
+  inquire?: boolean;
+  targetBranch?: string;
+  alertWhenError?: boolean;
+}
+
+export default class extends BaseCommand {
+  private maps: FlowOption[] = [];
+  private options: Options;
+  async main(data: string[], options: Options) {
+    const remoteUrl = await remote();
+    const curBranch = await getCurrentBranch();
+    const isDevBranch = !["release", "master"].includes(curBranch);
+    const targetBranch =
+      (curBranch === "master" && data[0] === "test") || data[0] !== "prod"
+        ? "release"
+        : "master";
+    // 只提交到当前分支
+    this.register({
+      condition: options.current,
+    });
+    // github项目
+    this.register({
+      condition: remoteUrl.includes("github.com"),
+      alertWhenError: true,
+    });
+    // 测试阶段，从开发分支提交到release分支
+    this.register({
+      condition: targetBranch === "release" && isDevBranch, // dev -> release
+      actions: ["merge", "open"],
+      targetBranch,
+    });
+    this.register({
+      condition: curBranch === "release" && targetBranch === "master", // release -> master
+      actionFn: () => {
+        this.logger.error(
+          "不允许直接从release分支合并到master分支，请从开发分支合并",
+          true
+        );
+      },
+    });
+    this.register({
+      // dev -> master
+      condition: isDevBranch && targetBranch === "master",
+      inquire: true,
+      actions: ["merge", "tag", "copy"],
+      targetBranch,
+    });
+    this.register({
+      // master -> master
+      condition: targetBranch === curBranch && curBranch === "master",
+      actions: ["tag", "copy"],
+      targetBranch,
+    });
+    await this.run();
+  }
+  private register(options: FlowOption) {
+    this.maps.push(options);
+  }
+  private async run() {
+    for (const flow of this.maps) {
+      if (flow.condition) {
+        if (typeof flow.actionFn === "function") {
+          flow.actionFn.call(this);
+          return;
+        }
+        this.doAction(flow);
+        return;
+      }
+    }
+  }
+  private async doAction(flow: FlowOption) {
+    const { actions = [], inquire, targetBranch } = flow;
+    const flows: (string | CommandItem)[] = [...this.getBaseAction()];
+    const tailFlows = [];
+    let tag = "";
+    const curBranch = await getCurrentBranch();
+    if (inquire) {
+      const { answer } = await this.inquirer.prompt({
+        message: `确认更新到${targetBranch}分支？`,
+        name: "answer",
+        type: "confirm",
+      });
+      if (!answer) {
+        return;
+      }
+    }
+    if (actions.includes("merge")) {
+      flows.push(
+        `git checkout ${targetBranch}`,
+        gitAtom.pull(),
+        gitAtom.merge(curBranch),
+        "git push"
+      );
+      tailFlows.push(`git checkout ${curBranch}`);
+    }
+    if (actions.includes("tag")) {
+      tag = await new Tag().generateNewestTag();
+      if (tag) {
+        flows.push(`git tag ${tag}`);
+        flows.push(`git push origin ${tag}`);
+      }
+    }
+    try {
+      await sequenceExec([...flows, ...tailFlows]);
+    } catch (error) {
+      if (flow.alertWhenError) {
+        notify(`${basename(process.cwd())}项目更新失败！`);
+        return;
+      }
+    }
+    if (actions.includes("open")) {
+      await openDeployPage();
+    }
+    if (actions.includes("copy")) {
+      await this.deploySuccess(tag);
+    }
+  }
+  private getBaseAction() {
+    return [
+      "git add .",
+      `git commit -m ${this.options.commit || "update"}`,
+      "git pull",
+      "git push",
+    ];
+  }
+  private async deploySuccess(tag: string) {
+    if (!tag) {
+      this.logger.success("部署成功");
+      return;
+    }
+    const projectConf = await readPkg({
+      cwd: process.cwd(),
+    });
+    const jenkins = projectConf.jenkins;
+    const copyText = `${jenkins.id.replace(/[\-|_]test$/, "")}，${tag}`;
+    this.logger.success(`部署成功，复制填入更新文档：
+${copyText}`);
+    clipboard.writeSync(copyText);
+  }
+}

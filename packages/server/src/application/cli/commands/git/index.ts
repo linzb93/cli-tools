@@ -6,7 +6,7 @@ import rename from "./rename";
 import branch from "./branch";
 import scan from "./scan";
 import tag from "./tag";
-import * as helper from '../../shared/helper';
+import * as helper from "../../shared/helper";
 
 export default function (subCommand: string, data: string[], options: any) {
   if (options.help && !subCommand) {
