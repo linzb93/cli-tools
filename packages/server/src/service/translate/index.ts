@@ -4,12 +4,13 @@ import chalk from "chalk";
 import { CheerioAPI } from "cheerio";
 import open from "open";
 
-interface Options {
+export interface Options {
   /**
    * @default false
    * 是否显示示例
    */
   example: boolean;
+  help: boolean;
 }
 
 /**

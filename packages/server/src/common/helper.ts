@@ -2,6 +2,7 @@ import clipboardy from "clipboardy";
 import notifier from "node-notifier";
 export const isWin = process.platform !== "darwin";
 import logger from "./logger";
+import chalk from "chalk";
 
 export const copy = (text: string) => {
   clipboardy.writeSync(text);
@@ -28,4 +29,16 @@ export const generateHelpDoc = (options: HelpDocOptions) => {
     padding: 1,
     content: options.content,
   });
+};
+export const showWeakenTips = (mainTitle: string, tips: string): string => {
+  const tipsSeg = tips.split(/\n/);
+  const formattedTips = tipsSeg
+    .map((line, index, list) => {
+      if (index === list.length - 1) {
+        return `└─ ${line}`;
+      }
+      return `├─ ${line}`;
+    })
+    .join("\n");
+  return `${mainTitle}\n${chalk.gray(formattedTips)}`;
 };

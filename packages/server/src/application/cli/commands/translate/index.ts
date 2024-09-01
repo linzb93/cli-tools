@@ -1,10 +1,5 @@
-import Translate from "@/service/translate";
+import Translate, { Options } from "@/service/translate";
 import { generateHelpDoc } from "@/common/helper";
-
-interface Options {
-  example: boolean;
-  help: boolean;
-}
 
 function generateHelp() {
   generateHelpDoc({
@@ -20,6 +15,7 @@ eng hello
 export default (text: string, options: Options) => {
   if (options.help) {
     generateHelp();
+    return;
   }
   new Translate().main(text, options);
 };

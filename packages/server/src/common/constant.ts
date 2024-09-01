@@ -21,3 +21,4 @@ export const HTTP_STATUS = {
 export const root = join(fileURLToPath(import.meta.url), "../../../../");
 export const cacheRoot = join(root, "cache");
 export const tempPath = join(cacheRoot, ".temp");
+export const isWin = process.platform === "win32";
