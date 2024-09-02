@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import timestampFormat from '@/service/time';
+import Time from "@/service/time";
 import BaseCommand from "@/common/BaseCommand";
 import { AnyObject } from "@/common/types";
-import * as helper from '@/common/helper';
+import * as helper from "@/common/helper";
 
 export interface Options {
   origin?: boolean; // 原始数据，时间戳没有解析成标准时间格式
@@ -34,7 +34,7 @@ export default class extends BaseCommand {
         const timestamp = decoded[key];
         return {
           ...obj,
-          [key]: timestampFormat(timestamp),
+          [key]: new Time().get(timestamp),
         };
       }
       return {

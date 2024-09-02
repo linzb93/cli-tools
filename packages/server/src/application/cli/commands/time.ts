@@ -1,5 +1,5 @@
-import time, {Options} from '@/service/time';
+import Time from "@/service/time";
 
-export default function (timeParam:string, options?: Options) {
-    time(timeParam, options);
+export default function (timeParam: string) {
+  new Time().main(timeParam);
 }
