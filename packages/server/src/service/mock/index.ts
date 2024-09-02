@@ -5,16 +5,17 @@ import { flatten, omit } from "lodash-es";
 import clipboardy from "clipboardy";
 import { reactive } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
-import {sleep} from '@linzb93/utils';
+import { sleep } from "@linzb93/utils";
 import pMap from "p-map";
 import path from "node:path";
-import BaseCommand from "../../shared/BaseCommand";
-import set from "./set";
-import { AnyObject } from "../../shared/types";
-import * as helper from '../../shared/helper';
-import ls from '../../shared/ls';
+import BaseCommand from "@/common/BaseCommand";
+// import set from "./set";
+import { AnyObject } from "@/common/types";
+import * as helper from "@/common/helper";
+import ls from "@/common/ls";
+import { root } from "@/common/constant";
 
-interface Options {
+export interface Options {
   force: boolean;
   single: boolean | string;
   update: boolean;
@@ -62,24 +63,16 @@ service.interceptors.response.use(
   (err) => err
 );
 
-class Mock extends BaseCommand {
+export default class extends BaseCommand {
   action: string;
-  private cookie: string;
+  private cookie = "";
   private subProcess: ChildProcess | undefined;
   private current: any | undefined;
   private options: Options;
-  constructor(action: string, options: Options) {
-    super();
+  async main(action: string, options: Options) {
     this.action = action;
     this.options = options;
-    this.cookie = "";
     this.genCooie();
-  }
-  async run() {
-    if (this.action === "set") {
-      set();
-      return;
-    }
     if (this.action === "restart") {
       await this.restart();
       return;
@@ -209,10 +202,10 @@ class Mock extends BaseCommand {
   private async createServer() {
     const { prefix, id }: { prefix: string; id: string } = this.current;
     const child = fork(
-      path.resolve(helper.root, "dist/commands/mock/server.js"),
+      path.resolve(root, "dist/commands/mock/server.js"),
       [`--prefix=${prefix}`, `--id=${id}`],
       {
-        cwd: helper.root,
+        cwd: root,
         detached: true,
         stdio: [null, null, null, "ipc"],
       }
@@ -233,9 +226,9 @@ class Mock extends BaseCommand {
     this.createServer();
   }
   private genCooie() {
-    this.cookie = `_yapi_uid=${ls.get(
-      "mock.uid"
-    )}; _yapi_token=${ls.get("mock.token")}`;
+    this.cookie = `_yapi_uid=${ls.get("mock.uid")}; _yapi_token=${ls.get(
+      "mock.token"
+    )}`;
   }
   private async getApiList(id: string): Promise<FetchList> {
     try {
@@ -324,10 +317,6 @@ class Mock extends BaseCommand {
     return omit(data, ["$schema"]);
   }
 }
-
-export default (action: string, options: Options) => {
-  new Mock(action, options).run();
-};
 
 function render(src: any) {
   const ret = {} as any;

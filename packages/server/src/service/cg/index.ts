@@ -4,10 +4,11 @@ import axios from "axios";
 import chalk from "chalk";
 import dayjs from "dayjs";
 import { isNumber } from "lodash-es";
-import BaseCommand from "../../shared/BaseCommand";
-import * as helper from '../../shared/helper';
-import ls from '../../shared/ls';
-interface Options {
+import BaseCommand from "@/common/BaseCommand";
+import * as helper from "@/common/helper";
+import ls from "@/common/ls";
+import { root } from "@/common/constant";
+export interface Options {
   realtime: boolean;
   debug: boolean;
   full: boolean;
@@ -24,19 +25,14 @@ interface User {
   amount: number;
 }
 
-class Cg extends BaseCommand {
-  constructor(
-    private action: string,
-    private data: string,
-    private options: Options
-  ) {
-    super();
-  }
-  async run() {
-    if (this.options.help) {
-      this.generateHelp();
-      return;
-    }
+export default class extends BaseCommand {
+  private action: string;
+  private data: string;
+  private options: Options;
+  async main(action: string, data: string, options: Options) {
+    this.action = action;
+    this.data = data;
+    this.options = options;
     if (this.action === "get") {
       this.getTodayResults();
       return;
@@ -54,10 +50,10 @@ class Cg extends BaseCommand {
     }
     this.spinner.text = "正在启动服务器";
     const child = fork(
-      path.resolve(helper.root, "dist/commands/cg/server.js"),
+      path.resolve(root, "dist/commands/cg/server.js"),
       [...helper.processArgvToFlags(this.options)],
       {
-        cwd: helper.root,
+        cwd: root,
         detached: true,
         stdio: [null, null, null, "ipc"],
       }
@@ -194,25 +190,4 @@ class Cg extends BaseCommand {
       this.logger.success("今日预测推送成功");
     }
   }
-  generateHelp() {
-    helper.generateHelpDoc({
-      title: "cg",
-      content: `
-公司冲高业绩查看。达到设定目标时会有弹窗提醒。
-使用方法：
-${chalk.cyan("cg --realtime")}
-选项：
- - realtime: 每3分钟更新一次数据，否则每1小时更新一次。
-其他命令：
-- cg get: 获取当前业绩。
-- cg user: 获取所有人的预测结果。
-选项：
-  - full: 同时显示当前业绩和所有人的预测结果，否则只显示预测结果。
-- cg set [price]: 设置当日的预测业绩。
-      `,
-    });
-  }
 }
-export default (action: string, data: string, options: Options) => {
-  new Cg(action, data, options).run();
-};

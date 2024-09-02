@@ -2,13 +2,13 @@ import path from "node:path";
 import { fork } from "node:child_process";
 import chalk from "chalk";
 import { pick } from "lodash-es";
-import BaseCommand from "../../shared/BaseCommand";
-import { onShutdown } from "../../shared/schedule";
-import stopAgent from "./stop";
+import BaseCommand from "@/common/BaseCommand";
+import { onShutdown } from "@/common/schedule";
 import { ChildProcessEmitData } from "./types";
-import * as helper from '../../shared/helper';
-import ls from '../../shared/ls';
-interface Options {
+import * as helper from "@/common/helper";
+import ls from "@/common/ls";
+import { root } from "@/common/constant";
+export interface Options {
   proxy: string;
   port: string;
   copy: boolean;
@@ -32,20 +32,8 @@ interface DbData {
  * 开启代理服务器。
  * Vue项目不需要用这个，请在vue.config.js中的devServer.proxy中设置。
  */
-class Agent extends BaseCommand {
-  constructor(private subCommand: string, private options: Options) {
-    super();
-  }
-  async run() {
-    const { subCommand, options } = this;
-    if (options.help) {
-      this.generateHelp();
-      return;
-    }
-    if (subCommand === "stop") {
-      stopAgent();
-      return;
-    }
+export default class extends BaseCommand {
+  async main(subCommand: string, options: Options) {
     if (subCommand !== undefined) {
       this.logger.error("命令不存在，请重新输入");
       return;
@@ -106,14 +94,10 @@ class Agent extends BaseCommand {
       }
     }
     const child = fork(
-      path.resolve(helper.root, "dist/commands/agent/server.js"),
-      [
-        ...helper.processArgvToFlags(
-          pick(options, ["proxy", "port", "copy"])
-        ),
-      ],
+      path.resolve(root, "dist/commands/agent/server.js"),
+      [...helper.processArgvToFlags(pick(options, ["proxy", "port", "copy"]))],
       {
-        cwd: helper.root,
+        cwd: root,
         detached: true,
         stdio: [null, null, null, "ipc"],
       }
@@ -147,24 +131,4 @@ class Agent extends BaseCommand {
       }
     );
   }
-  private generateHelp() {
-    helper.generateHelpDoc({
-      title: "agent",
-      content: `生成代理服务器。会将代理信息存入数据库文件中。
-使用方法：
-${chalk.cyan(`agent --proxy=https://www.example.com --port=5050`)}
-选项：
- - proxy：代理的地址。如果没有输入的话，会从数据库文件中读取已存储的代理列表让用户选择。
- - port: 端口号
- 
- ${chalk.cyan(
-   `agent stop --port=5050`
- )} - 关闭代理服务，如果port没有输入的话，会让用户选择。
-`,
-    });
-  }
 }
-
-export default (subCommand: string, options: Options) => {
-  new Agent(subCommand, options).run();
-};

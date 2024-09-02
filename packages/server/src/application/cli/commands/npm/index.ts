@@ -1,4 +1,4 @@
-import { generateHelpDoc } from '../../shared/helper';
+import { generateHelpDoc } from "@/common/helper";
 import has from "./has";
 import install from "./install";
 import search from "./search";
