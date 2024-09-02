@@ -7,23 +7,20 @@ import chalk from "chalk";
 import { debounce } from "lodash-es";
 import fs from "fs-extra";
 import dayjs from "dayjs";
-import BaseCommand from "../../shared/BaseCommand";
+import BaseCommand from "@/common/BaseCommand";
 
 /**
  * 监控文件变化，重启服务。
  * 这个只是练手，项目主要还是靠nodemon实现这个功能。
  */
-class Monitor extends BaseCommand {
-  private entryFile: string;
+export default class extends BaseCommand {
+  private entryFile = '';
+  private filename:string;
+  private combinedOptions:any;
   private subProcess: ChildProcess | undefined;
-  constructor(
-    private filename: string | undefined,
-    private combinedOptions: string[]
-  ) {
-    super();
-    this.entryFile = "";
-  }
-  async run() {
+  async main(filename: string, combinedOptions: string[]) {
+    this.filename = filename;
+    this.combinedOptions = combinedOptions;
     const watcher = this.createWatcher();
     watcher.on(
       "change",
@@ -108,7 +105,3 @@ class Monitor extends BaseCommand {
     this.startServer();
   }
 }
-
-export default (filename: string, combinedOptions: string[]) => {
-  new Monitor(filename, combinedOptions).run();
-};

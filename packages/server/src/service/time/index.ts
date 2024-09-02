@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
-import logger from "../../shared/logger";
-interface Options {
+import logger from "@/common/logger";
+export interface Options {
     silent: boolean
 }
 

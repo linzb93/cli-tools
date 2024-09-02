@@ -32,6 +32,7 @@ export default class extends BaseCommand {
   private maps: FlowOption[] = [];
   private options: Options;
   async main(data: string[], options: Options) {
+    this.options = options;
     const remoteUrl = await remote();
     const curBranch = await getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);

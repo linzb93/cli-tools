@@ -1,30 +1,26 @@
 import jwt from "jsonwebtoken";
-import timestampFormat from '../time';
-import BaseCommand from "../../shared/BaseCommand";
-import { AnyObject } from "../../shared/types";
-import * as helper from '../../shared/helper';
+import timestampFormat from '@/service/time';
+import BaseCommand from "@/common/BaseCommand";
+import { AnyObject } from "@/common/types";
+import * as helper from '@/common/helper';
 
-interface Options {
+export interface Options {
   origin?: boolean; // 原始数据，时间戳没有解析成标准时间格式
   complete?: boolean; // 完整数据，包括算法等
   help?: boolean;
 }
 
-class Token extends BaseCommand {
-  constructor(private tokenStr: string, private options: Options) {
-    super();
-  }
-  async run() {
-    const { options } = this;
+export default class extends BaseCommand {
+  async main(tk: string, options: Options) {
     if (options.help) {
       this.generateHelp();
       return;
     }
-    const tokenStr = this.tokenStr.replace(/^(.+_)?/, "");
+    const tokenStr = tk.replace(/^(.+_)?/, "");
     const decoded = jwt.decode(tokenStr, {
-      complete: this.options.complete,
+      complete: options.complete,
     }) as AnyObject; // 解析数据格式不定
-    if (this.options.origin || decoded === null) {
+    if (options.origin || decoded === null) {
       console.log(decoded);
       return decoded;
     }
@@ -61,7 +57,3 @@ token <token>
     });
   }
 }
-
-export default (data: string, options: Options) => {
-  return new Token(data, options).run();
-};

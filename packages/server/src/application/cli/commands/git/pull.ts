@@ -5,11 +5,15 @@ import { CommandItem } from "@/common/promiseFn";
 
 export default async () => {
   const actionObj = gitAtom.pull() as CommandItem;
-  await sequenceExec([
-    {
-      ...actionObj,
-      retryTimes: 30,
-    },
-  ]);
-  logger.success("代码拉取成功");
+  try {
+    await sequenceExec([
+      {
+        ...actionObj,
+        retryTimes: 100,
+      },
+    ]);
+    logger.success("代码拉取成功");
+  } catch (error) {
+    logger.error('代码拉取失败');
+  }
 };

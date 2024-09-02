@@ -3,7 +3,6 @@ import has from "./has";
 import install from "./install";
 import search from "./search";
 import uninstall from "./uninstall";
-import analyse from "./analyse";
 
 interface IOption {
   help?: boolean;
@@ -23,7 +22,6 @@ export default function (subCommand: string, data: string[], options: IOption) {
     install: () => install(data, options),
     search: () => search(data, options),
     uninstall: () => uninstall(data, options),
-    analyse: () => analyse(),
   };
   if (commandMap[subCommand]) {
     commandMap[subCommand]();
@@ -34,7 +32,6 @@ function generateHelp() {
   generateHelpDoc({
     title: "npm",
     content: `npm命令支持下列子命令，请输入子命令 + "--help"选项查看：
-- analyse:分析npm依赖
 - has: 有安装某个依赖
 - install：安装依赖，支持从本地通过"file:"的方式引入
 - search: 查询单个/多个npm模块的信息

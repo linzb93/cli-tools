@@ -1,8 +1,8 @@
 import path from "node:path";
 import fs from "fs-extra";
 import clipboardy from "clipboardy";
-import BaseCommand from "../../shared/BaseCommand";
-interface Options {
+import BaseCommand from "@/common/BaseCommand";
+export interface Options {
   level: number;
   ignore: string;
   copy: boolean;
@@ -16,11 +16,29 @@ const characters = {
   last: "└",
 };
 
-class Tree extends BaseCommand {
+export default class extends BaseCommand {
   private outputList: string[];
   private ignoreDirs: string[];
-  constructor(private dir: string, private options: Options) {
+  private dir:string;
+  private options: Options;
+  constructor() {
     super();
+    
+  }
+  async main(dir: string, options: Options) {
+    this.init(dir, options);
+    const root = process.cwd();
+    await this.readdir(root);
+    if (this.options.copy) {
+      clipboardy.writeSync(this.outputList.join("\n"));
+      this.logger.success("复制成功");
+    } else {
+      for (const line of this.outputList) {
+        console.log(line);
+      }
+    }
+  }
+  private init(dir: string, options: Options) {
     this.dir = dir || ".";
     const defaultOptions = {
       level: 1,
@@ -37,18 +55,6 @@ class Tree extends BaseCommand {
       this.ignoreDirs = defaultIgnoreDirs;
     }
     this.outputList = [];
-  }
-  async run() {
-    const root = process.cwd();
-    await this.readdir(root);
-    if (this.options.copy) {
-      clipboardy.writeSync(this.outputList.join("\n"));
-      this.logger.success("复制成功");
-    } else {
-      for (const line of this.outputList) {
-        console.log(line);
-      }
-    }
   }
   private async readdir(root: string, level = 0, paddings: number[] = []) {
     const dirs = (await fs.readdir(root)).filter(
@@ -79,7 +85,3 @@ class Tree extends BaseCommand {
     }
   }
 }
-
-export default async (dir: string, options: Options) => {
-  await new Tree(dir, options).run();
-};

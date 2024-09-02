@@ -1,18 +1,18 @@
 import { fork } from "node:child_process";
 import { resolve } from "node:path";
 import { root } from "@/common/constant";
-import kill from "../kill";
-import inquirer from "../../shared/inquirer";
-import globalConfig from "../../../../../../../config.json";
+import Kill from "../kill";
+import inquirer from "@/common/inquirer";
+import globalConfig from "../../../../../config.json";
 import sql from "@/common/sql";
-interface Options {
+export interface Options {
   menus: boolean | string;
   open: boolean;
 }
 
 export default async (command: string, options: Options) => {
   if (command === "stop") {
-    kill(["port", globalConfig.port.production.toString()]);
+    new Kill().main(["port", globalConfig.port.production.toString()]);
     return;
   }
   console.log("正在启动服务器");
