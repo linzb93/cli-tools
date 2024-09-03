@@ -1,10 +1,9 @@
 import dayjs from "dayjs";
 import Base from "./Base";
-import Cg from '@/service/cg';
+import Cg from "@/service/cg";
 import ls from "@/common/ls";
 import { notify } from "@/common/helper";
-import { userForcastList } from '@/model/http/cg'
-
+import { userForcastList } from "@/model/http/cg";
 
 export default class extends Base {
   private cgService: Cg;
@@ -14,7 +13,7 @@ export default class extends Base {
     normal: "0 0 * * * *",
     dutyDate: "0 */5 * * * *",
   };
-  cron = '';
+  cron = "";
   private targets = [
     {
       num: 20000,
@@ -23,12 +22,12 @@ export default class extends Base {
     {
       num: 30000,
       passed: false,
-    }
-  ]
+    },
+  ];
   constructor() {
     super();
     this.cgService = new Cg();
-    const isDutyDate = dayjs().diff(this.onDutyDate, 'd') === 0;
+    const isDutyDate = dayjs().diff(this.onDutyDate, "d") === 0;
     this.cron = isDutyDate ? this.crons.dutyDate : this.crons.normal;
     this.checkTodayForecastSubmitted();
   }
@@ -48,13 +47,12 @@ export default class extends Base {
     } catch (error) {
       //
     }
-
   }
   private async checkTodayForecastSubmitted() {
     const data = await userForcastList();
-    const currentUser = ls.get('cg.author');
-    if (!data.find(item => item.author === currentUser)) {
-      notify('您今日还未预测，请与10点前提交预测结果');
+    const currentUser = ls.get("cg.author");
+    if (!data.result.find((item) => item.author === currentUser)) {
+      notify("您今日还未预测，请与10点前提交预测结果");
     }
   }
 }

@@ -144,7 +144,7 @@ export default class extends BaseCommand {
   private getBaseAction() {
     return [
       "git add .",
-      `git commit -m ${this.options.commit || "update"}`,
+      gitAtom.commit(this.options.commit),
       "git pull",
       "git push",
     ];
