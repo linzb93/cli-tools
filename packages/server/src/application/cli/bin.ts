@@ -15,7 +15,7 @@ import { resolve } from "node:path";
 import dayjs from "dayjs";
 import { cacheRoot } from "@/common/constant";
 import agent from "./commands/agent";
-// import cg from "./commands/cg";
+import cg from "./commands/cg";
 import clear from "./commands/clear";
 import color from "./commands/color";
 import fork from "./commands/fork";
@@ -55,14 +55,14 @@ program
     agent(subCommand, options);
   });
 
-// program
-//   .command("cg [action] [...rest]")
-//   .option("--realtime", "实时更新")
-//   .option("-f, --full", "全部")
-//   .option('--help', '显示帮助文档')
-//   .action((action, rest, options) => {
-//     cg(action, rest, options);
-//   });
+program
+  .command("cg [action] [...rest]")
+  .option("--realtime", "实时更新")
+  .option("-f, --full", "全部")
+  .option('--help', '显示帮助文档')
+  .action((action, rest, options) => {
+    cg(action, rest, options);
+  });
 
 program
   .command("clear <filename>")

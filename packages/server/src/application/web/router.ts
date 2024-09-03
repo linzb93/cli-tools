@@ -14,7 +14,7 @@ import settingRouter from "./controller/setting";
 import scheduleRouter from "./controller/schedule";
 import vueRouter from "./controller/vue";
 import commonAPIs from "./controller/common";
-import { registerSchedule } from "./schedule";
+import schedule from "./schedule";
 import CgSchedule from "./schedule/Cg";
 
 const app = new Koa();
@@ -53,7 +53,8 @@ apiRouter.use(vueRouter.routes());
 app.use(apiRouter.routes());
 
 // 注册定时任务
-registerSchedule(CgSchedule);
+schedule.register(CgSchedule);
+schedule.start();
 
 app.listen(globalConfig.port.production, async () => {
   if (menu) {

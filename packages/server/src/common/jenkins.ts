@@ -17,7 +17,7 @@ export const openDeployPage = async () => {
     const { name, id } = jenkins;
     await open(
       `http://${
-        isWin ? ls.get("jenkins.ur.internal") : ls.get("jenkins.url.public")
+        isWin ? ls.get("jenkins.url.internal") : ls.get("jenkins.url.public")
       }/view/${name}/job/${id}/`
     );
   }

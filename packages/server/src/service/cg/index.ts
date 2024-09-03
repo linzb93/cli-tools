@@ -1,13 +1,9 @@
-import { fork } from "node:child_process";
-import path from "node:path";
-import axios from "axios";
 import chalk from "chalk";
 import dayjs from "dayjs";
 import { isNumber } from "lodash-es";
 import BaseCommand from "@/common/BaseCommand";
-import * as helper from "@/common/helper";
 import ls from "@/common/ls";
-import { root } from "@/common/constant";
+import { getPerformance, userForcastList, setUserForcast } from '@/model/http/cg';
 export interface Options {
   realtime: boolean;
   debug: boolean;
@@ -15,11 +11,6 @@ export interface Options {
   help?: boolean;
 }
 
-interface DbData {
-  data: {
-    forecast: boolean;
-  };
-}
 interface User {
   name: string;
   amount: number;
@@ -34,7 +25,7 @@ export default class extends BaseCommand {
     this.data = data;
     this.options = options;
     if (this.action === "get") {
-      this.getTodayResults();
+      this.renderTodayResult();
       return;
     }
     if (this.action === "user") {
@@ -46,140 +37,74 @@ export default class extends BaseCommand {
       (this.action !== undefined && isNumber(Number(this.action)))
     ) {
       this.setForecast();
-      return;
     }
-    this.spinner.text = "正在启动服务器";
-    const child = fork(
-      path.resolve(root, "dist/commands/cg/server.js"),
-      [...helper.processArgvToFlags(this.options)],
-      {
-        cwd: root,
-        detached: true,
-        stdio: [null, null, null, "ipc"],
-      }
-    );
-    child.on(
-      "message",
-      async ({
-        port,
-        currentPerformance,
-      }: {
-        port: string;
-        currentPerformance: number;
-        msg: string;
-      }) => {
-        const db = helper.createDB("cg");
-        await db.read();
-        const { data } = db as DbData;
-        this.spinner.succeed(
-          `今日业绩监控服务已启动：${chalk.yellow(port)}端口。\n${
-            currentPerformance !== 0
-              ? `最新业绩：${chalk.magenta(currentPerformance)}元`
-              : "服务器故障，无法获取最新业绩"
-          }。\n服务将每过${chalk.cyan(
-            this.options.realtime ? "3分钟" : "1小时"
-          )}获取一次最新业绩。${
-            !data.forecast
-              ? `\n${chalk.red("今日预测还未提交，请尽快提交")}`
-              : ""
-          }`
-        );
-        child.unref();
-        child.disconnect();
-        process.exit(0);
-      }
-    );
   }
-  private async getTodayResults() {
+  private async renderTodayResult() {
     this.spinner.text = "正在获取今日业绩";
     try {
-      const { data } = await axios.post(
-        ls.get("cg.oldPrefix") + "/AppApi/GetDkdData"
-      );
-      const res = data.Result.Total.TodayTurnover;
+      const [todayData, monthData] = await this.getPerformanceData();
       this.spinner.succeed(
-        `今日业绩：${chalk.yellow(res)}，本月业绩：${chalk.yellow(
-          data.Result.Total.MonthTurnover
-        )} ${chalk.gray(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}]`)}`
-      );
+        `今日业绩：${chalk.yellow(todayData)}，本月业绩：${chalk.yellow(
+          monthData
+        )} ${chalk.gray(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}]`)}`)
     } catch (error) {
-      this.spinner.fail("服务器故障，请稍后再试", true);
+      this.spinner.fail(error);
     }
   }
-  async get() {
+  /**
+   * 返回本日业绩和本月业绩
+   */
+  async getPerformanceData() {
     try {
-      const { data } = await axios.post(
-        ls.get("cg.oldPrefix") + "/AppApi/GetDkdData"
-      );
-      const res = data.Result.Total.TodayTurnover;
-      return res;
+      const data = await getPerformance();
+      return [
+        data.Result.Total.TodayTurnover,
+        data.Result.Total.MonthTurnover
+      ];
     } catch (error) {
-      return null;
+      throw new Error('服务器故障，请稍后再试');
     }
   }
   private async getForecast() {
     this.spinner.text = "正在获取预测数据";
+    const promiseMap = [
+      userForcastList().then((data) => data.result)
+    ];
     if (this.options.full) {
-      Promise.all([
-        axios
-          .post(ls.get("cg.oldPrefix") + "/AppApi/GetDkdData")
-          .then(({ data }) => data.Result.Total),
-        axios
-          .post(ls.get("oa.apiPrefix") + "/dkd/ad/forecast/query")
-          .then(({ data }) => data.result),
-      ])
-        .then(([Total, list]) => {
-          if (list.length === 0) {
-            this.spinner.succeed(
-              `当前业绩：${Total.TodayTurnover}，本月业绩：${Total.MonthTurnover}。预测还未开始。`
-            );
-            return;
-          }
-          this.spinner.succeed(
-            `${chalk.gray(`[${dayjs().format("HH:mm:ss")}]`)}当前业绩：${
-              Total.TodayTurnover
-            }，本月业绩：${Total.MonthTurnover}。预测结果如下：`
-          );
-          console.log(
-            list
-              .map((user: User, index: number) => {
-                const output = `${index + 1}. ${user.name}: ${user.amount}`;
-                if (index === 0) {
-                  return chalk.bold.yellow(output);
-                }
-                return output;
-              })
-              .join("\n")
-          );
-        })
-        .catch(() => {
-          this.spinner.fail("服务器故障，请稍后再试");
-        });
-    } else {
-      axios
-        .post(ls.get("oa.apiPrefix") + "/dkd/ad/forecast/query")
-        .then(({ data }) => data.result)
-        .then((list) => {
-          this.spinner.succeed(`预测结果如下：`);
-          console.log(
-            list
-              .map((user: User, index: number) => {
-                const output = `${index + 1}. ${user.name}: ${user.amount}`;
-                if (index === 0) {
-                  return chalk.bold.yellow(output);
-                }
-                return output;
-              })
-              .join("\n")
-          );
-        });
+      promiseMap.push(this.getPerformanceData())
     }
+    Promise.all(promiseMap)
+      .then((resList) => {
+        let totalText = '';
+        if (resList.length > 1) {
+          const [todayData, monthData] = resList[1];
+          totalText += `当前业绩：${chalk.yellow(todayData)}，本月业绩：${chalk.yellow(monthData)}。`;
+          if (!resList[0].length) {
+            totalText += '预测还未开始。';
+          } else {
+            totalText += '预测结果如下：'
+          }
+        }
+        this.spinner.succeed(`${totalText}`);
+        if (resList[0].length) {
+          console.log(
+            resList[0]
+              .map((user: User, index: number) => {
+                const output = `${index + 1}. ${user.name}: ${user.amount}`;
+                if (index === 0) {
+                  return chalk.bold.yellow(output);
+                }
+                return output;
+              })
+              .join("\n")
+          );
+        }
+      });
   }
   private async setForecast() {
-    const performance = this.data || Number(this.action);
+    const performance = Number(this.data) || Number(this.action);
     const cgData = ls.get("cg");
-    const { data: fetchData } = await axios.post(
-      ls.get("oa.apiPrefix") + "/dkd/ad/forecast/insert",
+    const { data: fetchData } = await setUserForcast(
       {
         name: cgData.author,
         nameId: cgData.nameId,
