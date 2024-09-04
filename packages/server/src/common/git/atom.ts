@@ -1,4 +1,4 @@
-import { CommandItem, sequenceExec } from "@/common/promiseFn";
+import { sequenceExec } from "@/common/promiseFn";
 import inquirer from "@/common/inquirer";
 
 async function handleConflict() {
@@ -15,14 +15,12 @@ async function handleConflict() {
   }
   await sequenceExec(["git add .", "git commit -m conflict-fixed"]);
 }
-interface GitAtomMap {
-  [key: string]: (...params: any[]) => string | CommandItem;
-}
-const gitAtom: GitAtomMap = {
+
+const gitAtom = {
   commit(message: string) {
     const msg = message ? `feat:${message}` : `feat:update`;
     return {
-      message: msg,
+      message: `git commit -m ${msg}`,
       onError: handleConflict,
     };
   },
