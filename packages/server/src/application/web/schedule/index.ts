@@ -1,8 +1,7 @@
-import { CronJob } from 'cron';
-import BaseApp from './Base';
-import logger from '@/common/logger';
+import { CronJob } from "cron";
+import BaseApp from "./Base";
 
-type AppType = new () => BaseApp
+type AppType = new () => BaseApp;
 
 const apps: BaseApp[] = [];
 
@@ -11,20 +10,11 @@ const register = (App: AppType) => {
 };
 
 const start = () => {
-  apps.forEach(app => {
-    logger.web(app.cron);
-    new CronJob(
-      app.cron,
-      () => {
-        logger.web(`${app.name}定时事件触发`);
-        app.onTick();
-      },
-      null,
-      true,
-    );
-  })
-}
+  apps.forEach((app) => {
+    new CronJob(app.cron, app.onTick, null, true);
+  });
+};
 export default {
   register,
-  start
-}
+  start,
+};

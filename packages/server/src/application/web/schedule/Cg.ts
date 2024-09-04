@@ -6,14 +6,12 @@ import { notify } from "@/common/helper";
 import { userForcastList } from "@/model/http/cg";
 
 export default class extends Base {
-  name = '部门业绩';
+  name = "部门业绩";
   private cgService: Cg;
   serveDateRange = ["2024-09-01", "2024-09-30"];
   private onDutyDate = "2024-09-25";
   private crons = {
-    // normal: "0 0 * * * *",
-    // test
-    normal: "0 */1 * * * *",
+    normal: "0 0 * * * *",
     dutyDate: "0 */5 * * * *",
   };
   cron = "";
@@ -43,7 +41,7 @@ export default class extends Base {
         }
         if (target.num <= todayData) {
           target.passed = true;
-          notify(`今日业绩：${todayData}，本月业绩：${monthData}`);
+          notify(`今日业绩：${todayData}，本月业绩：${monthData}。`);
           return;
         }
       }
@@ -54,7 +52,7 @@ export default class extends Base {
   private async checkTodayForecastSubmitted() {
     const data = await userForcastList();
     const currentUser = ls.get("cg.author");
-    if (!data.result.find((item) => item.author === currentUser)) {
+    if (!data.result.find((item) => item.name === currentUser)) {
       notify("您今日还未预测，请与10点前提交预测结果");
     }
   }
