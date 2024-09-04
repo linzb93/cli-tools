@@ -27,18 +27,22 @@ type Map = {
 export default class extends BaseCommand {
   private maps: Map[] = [];
   main(name: string, options: Options) {
+    // 本项目
     this.register("cli", {
       type: "editor",
       to: ls.get("code.cli"),
     });
+    // 测试用的项目
     this.register("test", {
       type: "editor",
       to: ls.get("code.tools"),
     });
+    // npm全局安装目录
     this.register("global", {
       type: "editor",
       to: globalNpm,
     });
+    // Windows和macOS命令行文档
     this.register("cmd", {
       type: "open",
       async to() {
@@ -47,6 +51,7 @@ export default class extends BaseCommand {
           : "https://www.yuque.com/linzb93/fedocs/tu3wft";
       },
     });
+    // 源代码目录
     this.register("source", {
       type: "editor",
       to: this.openSource(options),

@@ -7,7 +7,7 @@ export default class extends BaseCommand {
     const time = this.get(timeParam);
     console.log(time);
   }
-  get(timeParam: string) {
+  get(timeParam: string | number) {
     const time = timeParam.toString();
     if ((time.length !== 10 && time.length !== 13) || !/^\d+$/.test(time)) {
       logger.error("请输入正确的时间戳格式", true);
@@ -15,7 +15,6 @@ export default class extends BaseCommand {
     }
     const targetDayjs =
       time.length === 10 ? dayjs(Number(time) * 1000) : dayjs(Number(time));
-    const outputFormat = targetDayjs.format("YYYY-MM-DD HH:mm:ss");
-    return outputFormat;
+    return targetDayjs.format("YYYY-MM-DD HH:mm:ss");
   }
 }

@@ -2,6 +2,7 @@ import { fork } from "node:child_process";
 import { resolve } from "node:path";
 import { root } from "@/common/constant";
 import Kill from "../kill";
+import detectPort from "detect-port";
 import inquirer from "@/common/inquirer";
 import globalConfig from "../../../../../config.json";
 import sql from "@/common/sql";
@@ -11,8 +12,13 @@ export interface Options {
 }
 
 export default async (command: string, options: Options) => {
+  const port = globalConfig.port.production;
   if (command === "stop") {
-    new Kill().main(["port", globalConfig.port.production.toString()]);
+    new Kill().main(["port", port.toString()]);
+    return;
+  }
+  if (await detectPort(port) === port) {
+    console.log('服务已启动，无需重新打开');
     return;
   }
   console.log("正在启动服务器");
@@ -51,6 +57,6 @@ export default async (command: string, options: Options) => {
   });
   child.on("error", (error) => {
     console.log(error);
-    process.exit(0);
+    process.exit(1);
   });
 };

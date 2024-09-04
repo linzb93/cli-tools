@@ -17,8 +17,11 @@ export interface Options {
  * 使用有道词典API翻译。
  */
 export default class extends BaseCommand {
-  private isC2E: boolean;
-  private text: string;
+  /**
+   * 是否是中文翻译成英文
+   */
+  private isC2E = false;
+  private text = '';
   async main(text: string, options: Options): Promise<void> {
     this.isC2E = !/[a-z]+/.test(text);
     this.text = text;
@@ -37,13 +40,12 @@ export default class extends BaseCommand {
 
 翻译结果：
 ${meanings.join("\n\n")}`;
-    const examplesOutput = `${
-      !examples
+    const examplesOutput = `${!examples
         ? ""
         : `
 示例语句：
 ${examples}`
-    }`;
+      }`;
     this.logger.box({
       title: this.isC2E ? "中文 => 英文" : "英文 => 中文",
       borderColor: "red",
