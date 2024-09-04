@@ -1,4 +1,4 @@
-import { CheckboxQuestion } from "inquirer";
+import { CheckboxQuestion, ChoiceOptions } from "inquirer";
 import pMap from "p-map";
 import { reactive } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
@@ -8,7 +8,7 @@ import spinner from "@/common/spinner";
 
 interface IOptions {
   name: string;
-  choices: string[];
+  choices: (string | ChoiceOptions)[];
   deleteFn: (item: string, opt?: { includeRemote: boolean }) => Promise<void>;
 }
 

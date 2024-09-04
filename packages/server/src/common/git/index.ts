@@ -142,10 +142,29 @@ export const reset = async ({
   await execa(`git reset ${id} ${filename}`);
   await execa(`git checkout ${id} ${filename}`);
 };
+
+interface RemoteOptions {
+  remote: boolean;
+}
+
 /**
- * 获取所有tag
+ * 只用于git tag 和 branch
  */
-export const tag = async (): Promise<string[]> => {
+interface ResultItem {
+  name: string;
+  hasLocal: boolean;
+  hasRemote: boolean;
+}
+
+/**
+ * 获取所有tag。
+ * 受Git客户端限制，远端的tag只能获取部分，
+ * 如果要获取所有远端的tag，需要先拉取所有tag到本地。
+ */
+export const tag = async (options?: RemoteOptions): Promise<string[]> => {
+  if (options?.remote) {
+    await execa("git fetch --tags");
+  }
   const { stdout } = await execa("git tag");
   return stdout === "" ? [] : stdout.split("\n");
 };
@@ -172,9 +191,63 @@ export const deleteTag = async (
 /**
  * 获取分支列表
  */
-export const getBranchs = async () => {
-  const { stdout } = await execa("git branch --format='%(refname:short)'");
-  return stdout.split("\n");
+
+export const getBranches = async (
+  options?: RemoteOptions
+): Promise<ResultItem[]> => {
+  const remoteFlag = (() => {
+    if (!options) {
+      return "--all";
+    }
+    if (options.remote) {
+      return "-r";
+    }
+    return "";
+  })();
+  const { stdout } = await execa(
+    `git branch --format='%(refname:short)' ${remoteFlag}`
+  );
+  if (!options) {
+  }
+  const splited = stdout.split("\n");
+  if (!options) {
+    return splited
+      .filter((line) => line !== "origin/HEAD")
+      .reduce((acc: ResultItem[], line) => {
+        if (!line.startsWith("origin/")) {
+          return acc.concat({
+            name: line,
+            hasLocal: true,
+            hasRemote: false,
+          });
+        }
+        const localName = line.replace(/^origin\//, "");
+        const match = acc.find((item) => item.name === localName);
+        if (match) {
+          match.hasRemote = true;
+          return acc;
+        }
+        return acc.concat({
+          name: localName,
+          hasLocal: false,
+          hasRemote: true,
+        });
+      }, []);
+  }
+  if (options.remote) {
+    return splited
+      .filter((line) => line !== "origin/HEAD")
+      .map((line) => ({
+        name: line,
+        hasRemote: true,
+        hasLocal: false,
+      }));
+  }
+  return splited.map((line) => ({
+    name: line,
+    hasRemote: true,
+    hasLocal: false,
+  }));
 };
 
 /**
@@ -191,8 +264,8 @@ export const deleteBranch = async (
   } = {}
 ): Promise<void> => {
   if (includeRemote) {
-    await execa(`git push origin :refs/tags/${tag}`, { cwd });
+    await execa(`git push origin -d ${branch}`, { cwd });
   } else {
-    await execa(`git branch -d ${tag}`, { cwd });
+    await execa(`git branch -d ${branch}`, { cwd });
   }
 };
