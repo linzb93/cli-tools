@@ -22,14 +22,6 @@ export default class extends BaseCommand {
     // ipv6就不要了，时间很久，不知道能不能获取。
   }
   /**
-   * 获取内网IP。
-   * @returns {Promise<string>} 内网IP地址
-   */
-  async get() {
-    const iIp = await internalIp.v4();
-    return iIp;
-  }
-  /**
    * 获取IP归属地
    */
   private async getIpLocation(ip: string) {
@@ -48,6 +40,10 @@ export default class extends BaseCommand {
         return [label, data];
       })
       .toArray();
+      if (!output[1]) {
+        this.logger.info('无搜索结果');
+        return;
+      }
     const table = new Table();
     table.push(
       {
