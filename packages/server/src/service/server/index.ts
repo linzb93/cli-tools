@@ -17,7 +17,7 @@ export default async (command: string, options: Options) => {
     new Kill().main(["port", port.toString()]);
     return;
   }
-  if (await detectPort(port) === port) {
+  if (await detectPort(port) !== port) {
     console.log('服务已启动，无需重新打开');
     return;
   }

@@ -6,11 +6,14 @@ import { notify } from "@/common/helper";
 import { userForcastList } from "@/model/http/cg";
 
 export default class extends Base {
+  name = '部门业绩';
   private cgService: Cg;
   serveDateRange = ["2024-09-01", "2024-09-30"];
   private onDutyDate = "2024-09-25";
   private crons = {
-    normal: "0 0 * * * *",
+    // normal: "0 0 * * * *",
+    // test
+    normal: "0 */1 * * * *",
     dutyDate: "0 */5 * * * *",
   };
   cron = "";

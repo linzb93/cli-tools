@@ -1,9 +1,14 @@
 import readline from "node:readline";
 import spinner from './spinner';
 import chalk from "chalk";
+import dayjs from "dayjs";
+import {resolve} from 'node:path';
+import fs from 'fs-extra';
 import logSymbols from "log-symbols";
 import terminalSize from "terminal-size";
 import stringWidth from "string-width";
+import { cacheRoot } from "./constant";
+
 function hook(callback: () => void) {
   let isStop = false;
   if (spinner.isSpinning) {
@@ -89,4 +94,18 @@ export default {
     }
     console.log(chalk[options.borderColor](`-`.repeat(columns)));
   },
+  // cli输出日志
+  cli(content: string) {
+    fs.appendFile(
+      resolve(cacheRoot, "track.txt"),
+      `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${content}\n`
+    );
+  },
+  // server输出日志
+  web(content: string) {
+    fs.appendFile(
+      resolve(cacheRoot, "serverLog.txt"),
+      `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${content}\n`
+    );
+  }
 };

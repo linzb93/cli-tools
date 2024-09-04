@@ -10,10 +10,7 @@ import ip from "./commands/ip";
 import open from "./commands/open";
 import translate from "./commands/translate";
 import occ from "./commands/occ";
-import fs from "fs-extra";
-import { resolve } from "node:path";
-import dayjs from "dayjs";
-import { cacheRoot } from "@/common/constant";
+import logger from "@/common/logger";
 import agent from "./commands/agent";
 import cg from "./commands/cg";
 import clear from "./commands/clear";
@@ -39,10 +36,7 @@ const program = new Command();
 program.version(globalPkg.version);
 
 program.hook("preAction", (thisCommand) => {
-  fs.appendFile(
-    resolve(cacheRoot, "track.txt"),
-    `[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ${thisCommand.args.join(" ")}\n`
-  );
+  logger.cli(thisCommand.args.join(" "));
 });
 
 program
