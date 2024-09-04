@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execaCommand as execa } from "execa";
-import { isWin } from "./helper";
+import { isWin } from "./constant";
 
 const pythonExecutePath = join(
   fileURLToPath(import.meta.url),

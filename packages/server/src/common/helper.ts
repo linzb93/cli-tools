@@ -9,16 +9,18 @@ import { Low, JSONFile } from "lowdb";
 import { root } from "./constant";
 import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
 
-export const isWin = process.platform !== "darwin";
 export const copy = (text: string) => {
   clipboardy.writeSync(text);
 };
 export const readCopy = () => {
   return clipboardy.readSync();
 };
+/**
+ * 发送系统通知
+ */
 export const notify = (content: string) => {
   notifier.notify({
-    title: "店客多通知",
+    title: "cli通知",
     message: content,
   });
 };
@@ -28,6 +30,9 @@ interface HelpDocOptions {
   content: string;
 }
 
+/**
+ * 生成命令帮助文档
+ */
 export const generateHelpDoc = (options: HelpDocOptions) => {
   logger.box({
     title: `${options.title}命令帮助文档`,
@@ -36,6 +41,9 @@ export const generateHelpDoc = (options: HelpDocOptions) => {
     content: options.content,
   });
 };
+/**
+ * 显示提示，在发生外部错误的时候使用
+ */
 export const showWeakenTips = (mainTitle: string, tips: string): string => {
   const tipsSeg = tips.split(/\n/);
   const formattedTips = tipsSeg
@@ -49,6 +57,11 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
   return `${mainTitle}\n${chalk.gray(formattedTips)}`;
 };
 
+/**
+ * @deprecated 将用commander封装
+ * 
+ * 校验输出。
+ */
 export const validate = (obj: any, descriptor: ValidatorRules): void => {
   const Schema = (ValidatorSchema as any).default;
   const validator = new Schema(descriptor);
@@ -73,12 +86,17 @@ export const splitByLine = (fileContent: string): string[] => {
   const eol = fileContent.includes("\r\n") ? "\r\n" : "\n";
   return fileContent === "" ? [] : fileContent.split(eol);
 };
+/**
+ * 空的写入流
+ */
 export const emptyWritableStream = new Writable({
   write(data, enc, callback) {
     callback();
   },
 });
-// 判断一个字符串是否是本地路径
+/**
+ * 判断一个字符串是否是本地路径
+ */
 export const isPath = (value: string): boolean => {
   return (
     value.startsWith("/") ||

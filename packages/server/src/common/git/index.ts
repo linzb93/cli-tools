@@ -1,6 +1,8 @@
 import { execaCommand as execa } from "execa";
 
-// 判断是否是Git项目
+/**
+ * 判断是否是Git项目
+ */
 export const isGit = async ({ cwd = process.cwd() }): Promise<boolean> => {
   try {
     await execa("git rev-parse --is-inside-work-tree", {
@@ -20,7 +22,9 @@ interface CloneOptions {
   cwd: string;
 }
 
-// git clone 项目
+/**
+ * git clone 项目
+ */
 export const clone = async (options: CloneOptions): Promise<string> => {
   const { url, branch, dirName, shallow, cwd } = options;
   try {
@@ -66,7 +70,10 @@ export const push = async ({
   }
 };
 
-// 获取远端地址
+/**
+ * 获取远端地址
+ * @returns {string} 远端地址
+ */
 export const remote = async (): Promise<string> => {
   const { stdout: data } = await execa("git remote -v");
   return (data.split(/\n/)[0].match(/http\S+/) as RegExpMatchArray)[0];
@@ -107,17 +114,24 @@ export const getPushStatus = async (
   return 0;
 };
 
-// 获取当前分支名称
+/**
+ * 获取当前分支名称
+ * @returns {string} 分支名称
+ */
 export const getCurrentBranch = async (): Promise<string> => {
   const { stdout } = await execa("git branch --show-current");
   return stdout;
 };
-// 获取最近一次提交
+/**
+ * 获取最近一次提交记录
+ */
 export const getHeadSecondCommit = async (): Promise<string> => {
   const { stdout } = await execa("git log --format=oneline -2");
   return stdout.split("\n")[1].split(" ")[0];
 };
-// 代码重置
+/**
+ * Git代码重置
+ */
 export const reset = async ({
   filename,
   id,
@@ -128,12 +142,16 @@ export const reset = async ({
   await execa(`git reset ${id} ${filename}`);
   await execa(`git checkout ${id} ${filename}`);
 };
-// 获取所有tag
+/**
+ * 获取所有tag
+ */
 export const tag = async (): Promise<string[]> => {
   const { stdout } = await execa("git tag");
   return stdout === "" ? [] : stdout.split("\n");
 };
-// 删除tag
+/**
+ * 删除tag
+ */
 export const deleteTag = async (
   tag: string,
   {
@@ -151,13 +169,17 @@ export const deleteTag = async (
   }
 };
 
-// 获取分支列表
+/**
+ * 获取分支列表
+ */
 export const getBranchs = async () => {
   const { stdout } = await execa("git branch --format='%(refname:short)'");
   return stdout.split("\n");
 };
 
-// 删除分支
+/**
+ * 删除分支
+ */
 export const deleteBranch = async (
   branch: string,
   {

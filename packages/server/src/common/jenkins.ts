@@ -1,6 +1,6 @@
 import open from "open";
 import readPkg from "read-pkg";
-import { isWin } from "./constant";
+import { isInWorkEnv } from "./constant";
 import ls from "./ls";
 
 interface JenkinsProject {
@@ -8,17 +8,19 @@ interface JenkinsProject {
   id: string;
 }
 
+/**
+ * 打开公司内部Jenkins部署页面
+ */
 export const openDeployPage = async () => {
   const projectConf = await readPkg({
     cwd: process.cwd(),
   });
   const jenkins = projectConf.jenkins as JenkinsProject;
   if (jenkins) {
-    const { name, id } = jenkins;
     await open(
       `http://${
-        isWin ? ls.get("jenkins.url.internal") : ls.get("jenkins.url.public")
-      }/view/${name}/job/${id}/`
+        isInWorkEnv ? ls.get("jenkins.url.internal") : ls.get("jenkins.url.public")
+      }/view/${jenkins.name}/job/${jenkins.id}/` 
     );
   }
 };

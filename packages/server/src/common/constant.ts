@@ -1,5 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import internalIp from "internal-ip";
+import ls from "./ls";
 
 export const HTTP_STATUS = {
   SUCCESS: 200, // 请求成功
@@ -18,7 +20,26 @@ export const HTTP_STATUS = {
   DATAEXPIRED: 6000, // 数据过期
   BUSINESSERROR: 7000, // 业务性异常
 };
+/**
+ * cli项目根目录
+ */
 export const root = join(fileURLToPath(import.meta.url), "../../../../");
+/**
+ * 存放缓存文件的目录
+ */
 export const cacheRoot = join(root, "cache");
+/**
+ * 存放临时文件的目录，每天会清空一次
+ */
 export const tempPath = join(cacheRoot, ".temp");
+/**
+ * 是否是Windows系统
+ */
 export const isWin = process.platform === "win32";
+
+/**
+ * 是否是在公司电脑上运行
+ */
+export const isInWorkEnv = (async () => {
+  return await internalIp.v4() === ls.get('ip.internal')
+})()

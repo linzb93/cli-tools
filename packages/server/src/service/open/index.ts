@@ -5,7 +5,7 @@ import fs from "fs-extra";
 import globalNpm from "global-modules";
 import ls from "@/common/ls";
 import vscode from "@/common/vscode";
-import { isWin } from "@/common/helper";
+import { isWin } from "@/common/constant";
 import { pLocate } from "@/common/promiseFn";
 
 export interface Options {

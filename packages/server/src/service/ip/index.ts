@@ -5,7 +5,6 @@ import axios from "axios";
 import { load } from "cheerio";
 import Table from "cli-table3";
 import BaseCommand from "@/common/BaseCommand";
-import * as helper from "@/common/helper";
 export interface Options {
   help?: boolean;
 }

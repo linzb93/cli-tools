@@ -1,6 +1,6 @@
 import BaseCommand from "@/common/BaseCommand";
-import * as helper from "@/common/helper";
 import chalk from "chalk";
+import { isWin } from "@/common/constant";
 
 class Shortcut extends BaseCommand {
   constructor(private name: string) {
@@ -87,7 +87,7 @@ class Shortcut extends BaseCommand {
   ${panel.children
     .map(
       (item) =>
-        `${chalk.blue(item.title)} ${helper.isWin ? item.windows : item.mac}`
+        `${chalk.blue(item.title)} ${isWin ? item.windows : item.mac}`
     )
     .join("\n  ")}`;
           })
@@ -107,7 +107,7 @@ class Shortcut extends BaseCommand {
             .map(
               (item) =>
                 `${chalk.blue(item.title)} ${
-                  helper.isWin ? item.windows : item.mac
+                  isWin ? item.windows : item.mac
                 }`
             )
             .join("\n")
