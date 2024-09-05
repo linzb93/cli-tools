@@ -152,7 +152,7 @@ export default class extends BaseCommand {
       gitAtom.push(),
     ];
     if (options.onlyPush) {
-      commands = commands.filter((cmd: any) => cmd.message === 'git pull');
+      commands = commands.filter((cmd: any) => cmd.message !== 'git pull');
     }
     return commands;
   }

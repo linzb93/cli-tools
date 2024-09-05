@@ -36,14 +36,14 @@ export default class extends BaseCommand {
       return;
     }
     this.spinner.text = '正在删除所选分支';
-    const errorBranches: string[] = [];
+    const errorBranches: ResultItem[] = [];
     await pMap(selected, async (branchItem) => {
       // 先删除本地分支，如果成功再删除远端分支
       if (branchItem.hasLocal) {
         try {
           await deleteBranch(branchItem.name);
         } catch (error) {
-          errorBranches.push(branchItem.name);
+          errorBranches.push(branchItem);
           return;
         }
       }
@@ -51,10 +51,10 @@ export default class extends BaseCommand {
         try {
           await deleteBranch(branchItem.name, { remote: true });
         } catch (error) {
-          errorBranches.push(branchItem.name);
+          errorBranches.push(branchItem);
           return;
         }
-        
+
       }
     }, { concurrency: 4 });
     this.spinner.stop();
@@ -62,7 +62,15 @@ export default class extends BaseCommand {
       this.logger.success('删除成功');
     } else {
       this.logger.warn(`以下分支没有删除，请确认代码是否已提交或合并：
-${errorBranches.join(',')}`)
+${errorBranches.map(item => {
+        let output = item.name;
+        if (item.hasLocal) {
+          output += chalk.yellow("(local)");
+        } else {
+          output += chalk.blue("(remote)");
+        }
+        return output;
+      }).join(',')}`)
     }
   }
 }

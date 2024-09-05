@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import dayjs from "dayjs";
-import { isNumber } from "lodash-es";
 import BaseCommand from "@/common/BaseCommand";
 import ls from "@/common/ls";
 import {
@@ -8,8 +7,8 @@ import {
   userForcastList,
   setUserForcast,
 } from "@/model/http/cg";
+
 export interface Options {
-  realtime: boolean;
   full: boolean;
   help?: boolean;
 }
@@ -20,26 +19,17 @@ interface User {
 }
 
 export default class extends BaseCommand {
-  private action: string;
-  private data: string;
-  private options: Options;
   async main(action: string, data: string, options: Options) {
-    this.action = action;
-    this.data = data;
-    this.options = options;
-    if (this.action === "get") {
+    if (action === "get") {
       this.renderTodayResult();
       return;
     }
-    if (this.action === "user") {
-      this.getForecast();
+    if (action === "user") {
+      this.getForecast(options);
       return;
     }
-    if (
-      this.action === "set" ||
-      (this.action !== undefined && isNumber(Number(this.action)))
-    ) {
-      this.setForecast();
+    if (action === "set") {
+      this.setForecast(data);
     }
   }
   private async renderTodayResult() {
@@ -66,10 +56,10 @@ export default class extends BaseCommand {
       throw new Error("服务器故障，请稍后再试");
     }
   }
-  private async getForecast() {
+  private async getForecast(options: Options) {
     this.spinner.text = "正在获取预测数据";
     const promiseMap: any[] = [userForcastList().then((data) => data.result)];
-    if (this.options.full) {
+    if (options.full) {
       promiseMap.push(this.getPerformanceData());
     }
     Promise.all(promiseMap).then((resList) => {
@@ -101,8 +91,8 @@ export default class extends BaseCommand {
       }
     });
   }
-  private async setForecast() {
-    const performance = Number(this.data) || Number(this.action);
+  private async setForecast(data: string) {
+    const performance = Number(data);
     const cgData = ls.get("cg");
     const { data: fetchData } = await setUserForcast({
       name: cgData.author,
