@@ -3,8 +3,8 @@ import axios from "axios";
 import { fork, ChildProcess } from "node:child_process";
 import { flatten, omit } from "lodash-es";
 import clipboardy from "clipboardy";
-import { reactive } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+// import { reactive } from "@vue/reactivity";
+// import { watch } from "@vue/runtime-core";
 import { sleep } from "@linzb93/utils";
 import pMap from "p-map";
 import path from "node:path";
@@ -154,18 +154,11 @@ export default class extends BaseCommand {
       })
     );
     const source = (db.data as ApiList).items;
-    const counter = reactive({
+    const counter = {
       add: 0,
       update: 0,
       total: 0,
-    });
-    watch(counter, (data) => {
-      this.spinner.text = `已扫描 ${chalk.cyan(
-        data.total
-      )} 个，其中新增 ${chalk.green(data.add)} 个，更新 ${chalk.yellow(
-        data.update
-      )} 个`;
-    });
+    };
     (db.data as ApiList).items = await pMap(
       result,
       async (item: any) => {

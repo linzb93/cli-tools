@@ -3,9 +3,12 @@ import { fileURLToPath } from "node:url";
 import Koa from "koa";
 import open from "open";
 import Router from "koa-router";
+import http from "http";
 import cors from "@koa/cors";
 import serve from "koa-static-server";
+import io from "socket.io";
 import { omit } from "lodash-es";
+import socketHandler from "./socket";
 import { bodyParser } from "@koa/bodyparser";
 import globalConfig from "../../../../../config.json";
 import monitorRouter from "./controller/monitor";
@@ -55,6 +58,12 @@ app.use(apiRouter.routes());
 // 注册定时任务
 schedule.register(CgSchedule);
 schedule.start();
+
+// socket
+const server = http.createServer(app.callback());
+//@ts-ignore
+const ws = io(server);
+socketHandler(ws);
 
 app.listen(globalConfig.port.production, async () => {
   if (menu) {
