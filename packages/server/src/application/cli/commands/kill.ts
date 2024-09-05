@@ -16,5 +16,5 @@ export default async (args: Params, options?: IOption) => {
     generateHelp();
     return;
   }
-  await new Kill().main(args, options);
+  await new Kill().main(args);
 };

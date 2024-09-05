@@ -10,7 +10,7 @@ export interface IOption {
 
 export type Params = [string] | [string, string];
 export default class extends BaseCommand {
-  async main(args: Params, options?: IOption) {
+  async main(args: Params) {
     if (args.length === 1) {
       if (!numberRE.test(args[0])) {
         this.logger.error("端口号或者进程ID格式不正确，只能输入数字");

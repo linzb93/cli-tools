@@ -41,8 +41,8 @@ export default class extends BaseCommand {
 翻译结果：
 ${meanings.join("\n\n")}`;
     const examplesOutput = `${!examples
-        ? ""
-        : `
+      ? ""
+      : `
 示例语句：
 ${examples}`
       }`;

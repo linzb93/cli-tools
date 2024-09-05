@@ -19,12 +19,7 @@ const characters = {
 export default class extends BaseCommand {
   private outputList: string[];
   private ignoreDirs: string[];
-  private dir:string;
   private options: Options;
-  constructor() {
-    super();
-    
-  }
   async main(dir: string, options: Options) {
     this.init(dir, options);
     const root = process.cwd();
@@ -38,8 +33,7 @@ export default class extends BaseCommand {
       }
     }
   }
-  private init(dir: string, options: Options) {
-    this.dir = dir || ".";
+  private init(dir = '.', options: Options) {
     const defaultOptions = {
       level: 1,
     };

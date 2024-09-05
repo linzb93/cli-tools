@@ -5,6 +5,7 @@ import Kill from "../kill";
 import detectPort from "detect-port";
 import inquirer from "@/common/inquirer";
 import globalConfig from "../../../../../config.json";
+import open from "open";
 import sql from "@/common/sql";
 export interface Options {
   menus: boolean | string;
@@ -19,6 +20,11 @@ export default async (command: string, options: Options) => {
   }
   if (await detectPort(port) !== port) {
     console.log('服务已启动，无需重新打开');
+    if (options.open) {
+      await open(
+        `http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}`
+      );
+    }
     return;
   }
   console.log("正在启动服务器");
