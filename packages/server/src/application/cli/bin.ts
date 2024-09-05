@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 // 先处理debug模式
-// if (process.argv.includes("--debug")) {
-//   process.env.DEBUG = "*";
-// }
+if (process.argv.includes("--debug")) {
+  process.env.DEBUG = "*";
+}
 
 import { Command } from "commander";
 import ip from "./commands/ip";
@@ -107,7 +107,9 @@ program
   .option("--tag <name>", "tag名称")
   .option("-i,--install", "安装")
   .option("--last <len>", "最近几次")
+  .option('--head <len>', '前面几个')
   .option("--help", "显示帮助文档")
+  .option("--only-push", "只推送")
   .action((subCommand, rest, cmd) => {
     git(subCommand, rest, cmd);
   });
@@ -233,4 +235,4 @@ program
     tree(dir, option);
   });
 
-program.parse(process.argv);
+program.parse(process.argv.filter(cmd => cmd !== '--debug'));

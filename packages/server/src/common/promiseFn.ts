@@ -62,9 +62,6 @@ export interface CommandItem {
 }
 export const sequenceExec = async (
   commandList: (string | CommandItem)[],
-  options?: {
-    debug: boolean;
-  }
 ) => {
   for (const commandItem of commandList) {
     const command =
@@ -79,7 +76,7 @@ export const sequenceExec = async (
           : ""
       }`
     );
-    if (options?.debug) {
+    if (process.env.DEBUG) {
       continue;
     }
     try {

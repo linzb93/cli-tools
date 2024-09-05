@@ -10,7 +10,6 @@ import {
 } from "@/model/http/cg";
 export interface Options {
   realtime: boolean;
-  debug: boolean;
   full: boolean;
   help?: boolean;
 }

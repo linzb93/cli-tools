@@ -4,25 +4,23 @@ import clipboard from "clipboardy";
 import { sequenceExec } from "@/common/promiseFn";
 import readPkg from "read-pkg";
 import { last } from "lodash-es";
-import deleteAction from "./batchDelete";
+import pMap from "p-map";
+
 export interface Options {
   delete?: boolean;
   last?: boolean;
   get?: boolean;
   help?: boolean;
+  head: number;
 }
 
 export default class extends BaseCommand {
   async main(data: string[], options: Options) {
     if (options.delete) {
-      deleteAction({
-        name: "tag",
-        choices: await git.tag(),
-        deleteFn: git.deleteTag,
-      });
+      await this.batchDelete(options);
       return;
     }
-    const gitTags = await git.tag();
+    const gitTags = await git.getTags();
     // 输出最近几个
     if (options.last) {
       this.logger.success(
@@ -63,7 +61,7 @@ ${ret}`);
    * 生成最新的tag
    */
   async generateNewestTag(): Promise<string> {
-    const gitTags = await git.tag();
+    const gitTags = await git.getTags();
     if (gitTags.length === 0) {
       return "";
     }
@@ -91,5 +89,53 @@ ${ret}`);
       }
     }
     return "";
+  }
+  /**
+   * 批量删除分支
+   */
+  private async batchDelete(options: Options) {
+    this.spinner.text = '正在获取所有标签';
+    await git.pull();
+    const tags = await git.getTags();
+    if (!tags) {
+      this.spinner.succeed('没有标签需要删除');
+      return;
+    }
+    let selected: string[] = [];
+    if (options.head) {
+      this.spinner.stop();
+      const list = tags.slice(0, Number(options.head));
+      this.logger.info(`您需要删除的标签有：${list.join(',')}`);
+      const answer = await this.inquirer.prompt({
+        message: '确认删除？',
+        type: 'confirm',
+        name: 'is'
+      });
+      if (answer.is) {
+        selected = list;
+      }
+    } else {
+      const answer = await this.inquirer.prompt({
+        message: '请选择要删除的标签',
+        type: "checkbox",
+        choices: tags,
+        name: 'selected'
+      });
+      selected = answer.selected;
+    }
+    if (!selected.length) {
+      this.spinner.fail('您没有选择任何标签，已退出');
+      return;
+    }
+    this.spinner.text = "开始删除";
+    await pMap(selected, async (item: string) => {
+      await git.deleteTag(item);
+      try {
+        git.deleteTag(item, { remote: true });
+      } catch (error) {
+        return;
+      }
+    }, { concurrency: 4 });
+    this.spinner.succeed('删除成功');
   }
 }

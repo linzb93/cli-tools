@@ -150,7 +150,7 @@ interface RemoteOptions {
 /**
  * 只用于git tag 和 branch
  */
-interface ResultItem {
+export interface ResultItem {
   name: string;
   hasLocal: boolean;
   hasRemote: boolean;
@@ -161,7 +161,7 @@ interface ResultItem {
  * 受Git客户端限制，远端的tag只能获取部分，
  * 如果要获取所有远端的tag，需要先拉取所有tag到本地。
  */
-export const tag = async (options?: RemoteOptions): Promise<string[]> => {
+export const getTags = async (options?: RemoteOptions): Promise<string[]> => {
   if (options?.remote) {
     await execa("git fetch --tags");
   }
@@ -173,18 +173,12 @@ export const tag = async (options?: RemoteOptions): Promise<string[]> => {
  */
 export const deleteTag = async (
   tag: string,
-  {
-    includeRemote,
-    cwd = process.cwd(),
-  }: {
-    includeRemote?: boolean;
-    cwd?: string;
-  } = {}
+  options?: RemoteOptions
 ): Promise<void> => {
-  if (includeRemote) {
-    await execa(`git push origin :refs/tags/${tag}`, { cwd });
+  if (options?.remote) {
+    await execa(`git push origin :refs/tags/${tag}`, { cwd:process.cwd() });
   } else {
-    await execa(`git tag -d ${tag}`, { cwd });
+    await execa(`git tag -d ${tag}`, { cwd:process.cwd() });
   }
 };
 
@@ -205,10 +199,8 @@ export const getBranches = async (
     return "";
   })();
   const { stdout } = await execa(
-    `git branch --format='%(refname:short)' ${remoteFlag}`
+    `git branch --format=%(refname:short) ${remoteFlag}`
   );
-  if (!options) {
-  }
   const splited = stdout.split("\n");
   if (!options) {
     return splited
@@ -255,17 +247,11 @@ export const getBranches = async (
  */
 export const deleteBranch = async (
   branch: string,
-  {
-    includeRemote,
-    cwd = process.cwd(),
-  }: {
-    includeRemote?: boolean;
-    cwd?: string;
-  } = {}
+  options?: RemoteOptions
 ): Promise<void> => {
-  if (includeRemote) {
-    await execa(`git push origin -d ${branch}`, { cwd });
+  if (options?.remote) {
+    await execa(`git push origin -d ${branch}`, { cwd: process.cwd() });
   } else {
-    await execa(`git branch -d ${branch}`, { cwd });
+    await execa(`git branch -d ${branch}`, { cwd: process.cwd() });
   }
 };

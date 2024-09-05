@@ -7,17 +7,17 @@ import Tag from "./tag";
 import clipboard from "clipboardy";
 import { getCurrentBranch, remote } from "@/common/git";
 import gitAtom from "@/common/git/atom";
-import { openDeployPage } from "@/common/jenkins";
+import { openDeployPage, getProjectName } from "@/common/jenkins";
 
 export interface Options {
   commit: string;
   tag: string;
-  debug: boolean;
   current: boolean;
   help: boolean;
+  onlyPush: boolean;
 }
 
-type GitActions = ("merge" | "open" | "copy" | "tag")[];
+type GitActions = ("merge" | "open" | "copy" | "tag"| "return")[];
 
 interface FlowOption {
   condition: Boolean;
@@ -117,7 +117,6 @@ export default class extends BaseCommand {
         gitAtom.merge(curBranch),
         "git push"
       );
-      tailFlows.push(`git checkout ${curBranch}`);
     }
     if (actions.includes("tag")) {
       tag = await new Tag().generateNewestTag();
@@ -125,6 +124,9 @@ export default class extends BaseCommand {
         flows.push(`git tag ${tag}`);
         flows.push(`git push origin ${tag}`);
       }
+    }
+    if (actions.includes('return')) {
+      tailFlows.push(`git checkout ${curBranch}`);
     }
     try {
       await sequenceExec([...flows, ...tailFlows]);
@@ -142,23 +144,25 @@ export default class extends BaseCommand {
     }
   }
   private getBaseAction() {
-    return [
+    const { options } = this;
+    let commands = [
       "git add .",
       gitAtom.commit(this.options.commit),
-      "git pull",
-      "git push",
+      gitAtom.pull(),
+      gitAtom.push(),
     ];
+    if (options.onlyPush) {
+      commands = commands.filter((cmd: any) => cmd.message === 'git pull');
+    }
+    return commands;
   }
   private async deploySuccess(tag: string) {
     if (!tag) {
       this.logger.success("部署成功");
       return;
     }
-    const projectConf = await readPkg({
-      cwd: process.cwd(),
-    });
-    const jenkins = projectConf.jenkins;
-    const copyText = `${jenkins.id.replace(/[\-|_]test$/, "")}，${tag}`;
+    const { onlineId } = await getProjectName();
+    const copyText = `${onlineId}，${tag}`;
     this.logger.success(`部署成功，复制填入更新文档：
 ${copyText}`);
     clipboard.writeSync(copyText);
