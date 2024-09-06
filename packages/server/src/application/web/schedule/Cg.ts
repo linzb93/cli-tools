@@ -1,13 +1,12 @@
 import dayjs from "dayjs";
 import Base from "./Base";
-import Cg from "@/service/cg";
 import ls from "@/common/ls";
 import { notify } from "@/common/helper";
-import { userForcastList } from "@/model/http/cg";
+import { getPerformanceData } from "@/service/cg/data";
+import { userForcastList } from '@/model/http/cg';
 
 export default class extends Base {
   name = "部门业绩";
-  private cgService: Cg;
   serveDateRange = ["2024-09-01", "2024-09-30"];
   private onDutyDate = "2024-09-25";
   private crons = {
@@ -27,14 +26,13 @@ export default class extends Base {
   ];
   constructor() {
     super();
-    this.cgService = new Cg();
     const isDutyDate = dayjs().diff(this.onDutyDate, "d") === 0;
     this.cron = isDutyDate ? this.crons.dutyDate : this.crons.normal;
     this.checkTodayForecastSubmitted();
   }
   async onTick() {
     try {
-      const [todayData, monthData] = await this.cgService.getPerformanceData();
+      const [todayData, monthData] = await getPerformanceData();
       for (const target of this.targets) {
         if (target.passed) {
           continue;

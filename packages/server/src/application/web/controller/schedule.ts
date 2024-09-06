@@ -1,9 +1,4 @@
-import fsp from "node:fs/promises";
-import { join } from "node:path";
-import pReduce from "p-reduce";
 import Router from "koa-router";
-import pMap from "p-map";
-import * as gitUtil from "@/common/git/index";
 import sql from "@/common/sql";
 import { HTTP_STATUS } from "@/common/constant";
 import useScan from "@/common/git/useScan";

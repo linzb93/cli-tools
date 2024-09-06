@@ -3,10 +3,10 @@ import dayjs from "dayjs";
 import BaseCommand from "@/common/BaseCommand";
 import ls from "@/common/ls";
 import {
-  getPerformance,
   userForcastList,
   setUserForcast,
 } from "@/model/http/cg";
+import {getPerformanceData} from './data';
 
 export interface Options {
   full: boolean;
@@ -35,7 +35,7 @@ export default class extends BaseCommand {
   private async renderTodayResult() {
     this.spinner.text = "正在获取今日业绩";
     try {
-      const [todayData, monthData] = await this.getPerformanceData();
+      const [todayData, monthData] = await getPerformanceData();
       this.spinner.succeed(
         `今日业绩：${chalk.yellow(todayData)}，本月业绩：${chalk.yellow(
           monthData
@@ -45,22 +45,12 @@ export default class extends BaseCommand {
       this.spinner.fail(error);
     }
   }
-  /**
-   * 返回本日业绩和本月业绩
-   */
-  async getPerformanceData() {
-    try {
-      const data = await getPerformance();
-      return [data.Result.Total.TodayTurnover, data.Result.Total.MonthTurnover];
-    } catch (error) {
-      throw new Error("服务器故障，请稍后再试");
-    }
-  }
+  
   private async getForecast(options: Options) {
     this.spinner.text = "正在获取预测数据";
     const promiseMap: any[] = [userForcastList().then((data) => data.result)];
     if (options.full) {
-      promiseMap.push(this.getPerformanceData());
+      promiseMap.push(getPerformanceData());
     }
     Promise.all(promiseMap).then((resList) => {
       let totalText = "";
