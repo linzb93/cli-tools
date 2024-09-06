@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "packageManager": "pnpm@9.1.4",
   "scripts": {
     "dev:ui": "pnpm --filter \"ui\" dev",
     "dev:cli": "cross-env MODE=cli pnpm --filter \"cli\" dev",
@@ -12,8 +13,7 @@
     "build:cli": "cross-env MODE=cli pnpm --filter \"cli\" build",
     "build:web": "cross-env MODE=web pnpm --filter \"cli\" build",
     "build:ui": "pnpm --filter \"ui\" build-only",
-    "build:web-all": "npm run build:web && npm run build:ui",
-    "type-generate": "json2ts cache/app.json > cache/app.d.ts"
+    "build:web-all": "npm run build:web && npm run build:ui"
   },
   "keywords": [],
   "author": "",

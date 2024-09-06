@@ -1,6 +1,27 @@
 import { sequenceExec } from "@/common/promiseFn";
 import inquirer from "@/common/inquirer";
 
+function fmtCommitMsg(commit:string) {
+  if (!commit) {
+    return 'feat:update';
+  }
+  const prefixes = ['feat:','fix:','docs:','style:','refactor:','test:','chore'];
+  const match = prefixes.find(item => commit.startsWith(item));
+  if (match) {
+    return commit;
+  }
+  if (commit.includes('修复') || commit.includes('bug')) {
+    return `fix:${commit}`;
+  }
+  if (commit.includes('重构')) {
+    return `refactor:${commit}`;
+  }
+  if (commit.includes('用例')) {
+    return `test:${commit}`;
+  }
+  return `feat:${commit}`;
+}
+
 async function handleConflict() {
   const { resolved } = await inquirer.prompt([
     {
@@ -18,9 +39,8 @@ async function handleConflict() {
 
 const gitAtom = {
   commit(message: string) {
-    const msg = message ? `feat:${message}` : `feat:update`;
     return {
-      message: `git commit -m ${msg}`,
+      message: `git commit -m ${fmtCommitMsg(message)}`,
       onError: handleConflict,
     };
   },

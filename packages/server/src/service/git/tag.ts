@@ -7,10 +7,23 @@ import { last } from "lodash-es";
 import pMap from "p-map";
 
 export interface Options {
+  /**
+   * @default false
+   * 是否进入批量删除标签模式
+   */
   delete?: boolean;
+  /**
+   * 获取最后几个标签
+   */
   last?: boolean;
+  /**
+   * 输出标签，默认行为是打标签
+   */
   get?: boolean;
   help?: boolean;
+  /**
+   * 获取前面几个标签，在批量删除标签模式使用
+   */
   head: number;
 }
 

@@ -4,7 +4,7 @@ import pReduce from "p-reduce";
 import * as gitUtil from "./index";
 import fsp from "node:fs/promises";
 import pMap from "p-map";
-import { Observable, last, skipLast } from 'rxjs';
+import { Observable, last, skipLast, interval, throttle } from 'rxjs';
 
 export default async function useScan() {
   const schedule = await sql(async (db) => db.schedule);
@@ -40,7 +40,7 @@ export default async function useScan() {
           status,
         };
       },
-      { concurrency: 5 }
+      { concurrency: 4 }
     )
       .then(list => {
         observer.next(list.filter(item => [1, 2, 4].includes(item.status)));
@@ -48,7 +48,7 @@ export default async function useScan() {
       });
   });
   return [
-    obs$.pipe(skipLast(1)),
+    obs$.pipe(skipLast(1)).pipe(throttle(() => interval(3000))),
     obs$.pipe(last())
   ]
 }

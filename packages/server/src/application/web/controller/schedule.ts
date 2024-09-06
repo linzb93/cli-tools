@@ -6,6 +6,7 @@ import pMap from "p-map";
 import * as gitUtil from "@/common/git/index";
 import sql from "@/common/sql";
 import { HTTP_STATUS } from "@/common/constant";
+import useScan from "@/common/git/useScan";
 
 const router = new Router({
   prefix: "/schedule",
@@ -36,38 +37,18 @@ router.post("/gitScanResult", async (ctx) => {
     };
     return;
   }
-  const allDirs = await pReduce(
-    schedule.gitDirs,
-    async (acc, dir) => {
-      const dirs = await fsp.readdir(dir.path);
-      return acc.concat(
-        await pMap(dirs, async (subDir) => {
-          return {
-            dir: subDir,
-            prefix: dir.path,
-            folderName: dir.name,
-          };
-        })
-      );
-    },
-    []
-  );
-  const result = await pMap(
-    allDirs,
-    async (dirInfo) => {
-      const full = join(dirInfo.prefix, dirInfo.dir);
-      return {
-        name: dirInfo.dir,
-        path: full,
-        folderName: dirInfo.folderName,
-        status: await gitUtil.getPushStatus(full),
-      };
-    },
-    { concurrency: 5 }
-  );
-  ctx.body = {
-    list: result.filter((item) => ![0, 3].includes(item.status)),
-  };
+  ctx.set('Content-Type', 'text/event-stream');
+  ctx.set('Cache-Control', 'no-cache');
+  ctx.set('Connection', 'keep-alive');
+  const [counter$, list$] = await useScan();
+  counter$.subscribe(count => {
+    ctx.res.write(count);
+  });
+  list$.subscribe((list: any) => {
+    ctx.res.end(ctx.body = {
+      list: list.filter((item) => ![0, 3].includes(item.status)),
+    })
+  })
 });
 
 export default router;
