@@ -53,7 +53,7 @@ program
   .command("cg [action] [...rest]")
   .option("--realtime", "实时更新")
   .option("-f, --full", "全部")
-  .option('--help', '显示帮助文档')
+  .option("--help", "显示帮助文档")
   .action((action, rest, options) => {
     cg(action, rest, options);
   });
@@ -107,7 +107,7 @@ program
   .option("--tag <name>", "tag名称")
   .option("-i,--install", "安装")
   .option("--last <len>", "最近几次")
-  .option('--head <len>', '前面几个')
+  .option("--head <len>", "前面几个")
   .option("--help", "显示帮助文档")
   .option("--only-push", "只推送")
   .action((subCommand, rest, cmd) => {
@@ -193,6 +193,7 @@ program
   .command("server [command]")
   .option("--menus [name]", "菜单名称")
   .option("-o, --open", "打开浏览器")
+  .option("--stop", "关闭服务")
   .action((command, option) => {
     server(command, option);
   });
@@ -235,4 +236,4 @@ program
     tree(dir, option);
   });
 
-program.parse(process.argv.filter(cmd => cmd !== '--debug'));
+program.parse(process.argv.filter((cmd) => cmd !== "--debug"));

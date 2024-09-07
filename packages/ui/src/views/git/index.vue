@@ -43,7 +43,7 @@
 import { shallowRef, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import SelectDirs from './components/SelectDirs.vue'
-import request, { useRequest } from '../../helpers/request'
+import request, { useRequest, baseURL } from '../../helpers/request'
 import * as requestUtil from '../../helpers/request/api'
 const setting = ref({
   gitDirs: []
@@ -73,9 +73,13 @@ const getList = async () => {
     ElMessage.error('请选择扫描的目录')
     return
   }
-  const startTime = Date.now()
-  await fetch()
-  duration.value = ((Date.now() - startTime) / 1000).toFixed(2)
+  // const startTime = Date.now()
+  // await fetch()
+  const es = new EventSource(baseURL + '/schedule/gitScanResult')
+  es.onmessage = (event) => {
+    console.log(event.data)
+  }
+  // duration.value = ((Date.now() - startTime) / 1000).toFixed(2)
 }
 
 const selected = shallowRef([])

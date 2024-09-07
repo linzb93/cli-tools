@@ -5,9 +5,9 @@ import globalConfig from '../../../../../config.json'
 interface Option {
   showLoading?: boolean
 }
-
+export const baseURL = `http://localhost:${globalConfig.port.production}${globalConfig.prefix.api}`
 const service = axios.create({
-  baseURL: `http://localhost:${globalConfig.port.production}${globalConfig.prefix.api}`,
+  baseURL,
   timeout: 60000
 })
 
