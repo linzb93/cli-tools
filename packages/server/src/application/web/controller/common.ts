@@ -2,59 +2,59 @@ import { join, basename } from "node:path";
 import http from "node:http";
 import fs from "node:fs";
 import open from "open";
-import Router from "koa-router";
+import { Router } from "express";
 import { execaCommand as execa } from "execa";
 import { sleep } from "@linzb93/utils";
 import axios from "axios";
+import responseFmt from "../shared/response";
 import pMap from "p-map";
 import sql from "@/common/sql";
 import { copy } from "@/common/helper";
+import { HTTP_STATUS } from "@/common/constant";
 import { showOpenDialog, showSaveDialog } from "@/common/dialog";
 
 export default async (router: Router) => {
   // 复制文本
-  router.post("/copy", async (ctx) => {
-    copy(ctx.request.body.text);
+  router.post("/copy", (req, res) => {
+    copy(req.body.text);
+    res.send(responseFmt());
   });
 
   // 下载文件
-  router.post("/download", async (ctx) => {
-    const params = ctx.request.body.url;
-    if (Array.isArray(params)) {
-      // 下载多份文件
-      const result = await showSaveDialog();
-      if (!result) {
-        ctx.body = {};
-        return;
-      }
-      await pMap(
-        params,
-        (url: string) =>
-          new Promise((resolve) => {
-            http.get(url, (resp) => {
-              if (resp.statusCode === 200) {
-                resp
-                  .pipe(fs.createWriteStream(join(result, basename(url))))
-                  .on("finish", resolve);
-              }
-            });
-          }),
-        { concurrency: 4 }
-      );
-    }
-    const url = params as string;
-    const result = await showSaveDialog();
-    if (!result) {
-      ctx.body = {};
-      return;
-    }
-    await new Promise((resolve) => {
-      http.get(url, (resp) => {
-        if (resp.statusCode === 200) {
-          resp.pipe(fs.createWriteStream(result)).on("finish", resolve);
+  router.post("/download", (req, res) => {
+    const params = req.body.url;
+    showSaveDialog()
+      .then((result) => {
+        if (!result) {
+          throw new Error("未选择保存目录");
         }
+        const list = Array.isArray(params) ? params : [params];
+        return pMap(
+          list,
+          (url: string) =>
+            new Promise((resolve) => {
+              http.get(url, (resp) => {
+                if (resp.statusCode === 200) {
+                  resp
+                    .pipe(fs.createWriteStream(join(result, basename(url))))
+                    .on("finish", resolve);
+                }
+              });
+            }),
+          { concurrency: 4 }
+        );
+      })
+      .then(() => {
+        res.send(responseFmt());
+      })
+      .catch((e) => {
+        res.send(
+          responseFmt({
+            code: HTTP_STATUS.BAD_REQUEST,
+            message: e,
+          })
+        );
       });
-    });
   });
 
   // 打开网页或本地目录、VSCode项目
@@ -64,8 +64,8 @@ export default async (router: Router) => {
     await execa(`code ${path}`);
     await sleep(200);
   };
-  router.post("/open", async (ctx) => {
-    const { type, url } = ctx.request.body;
+  router.post("/open", (req, res) => {
+    const { type, url } = req.body;
     let callback: (param: string) => Promise<any>;
     if (type === "path") {
       callback = openPath;
@@ -74,52 +74,68 @@ export default async (router: Router) => {
     } else {
       callback = openInVSCode;
     }
-    if (Array.isArray(url)) {
-      await pMap(url, callback, { concurrency: 4 });
-    } else {
-      await callback(url);
-    }
+    new Promise((resolve) => {
+      if (Array.isArray(url)) {
+        pMap(url, callback, { concurrency: 4 }).then(resolve);
+      } else {
+        callback(url).then(resolve);
+      }
+    }).then(() => {
+      res.send(responseFmt());
+    });
   });
 
   // 选择文件夹路径
-  router.post("/getDirectoryPath", async (ctx) => {
-    const result = await showOpenDialog("directory");
-    if (!result) {
-      ctx.body = {
-        path: "",
-      };
-      return;
-    }
-    ctx.body = {
-      path: result,
-    };
+  router.post("/getDirectoryPath", async (_, res) => {
+    showOpenDialog("directory").then((result) => {
+      if (!result) {
+        res.send(
+          responseFmt({
+            path: "",
+          })
+        );
+        return;
+      }
+      res.send(
+        responseFmt({
+          path: result,
+        })
+      );
+    });
   });
 
   // 同步菜单
-  router.post("/syncMenus", async (ctx) => {
-    await sql((db) => {
-      db.menus = ctx.request.body;
+  router.post("/syncMenus", (req, res) => {
+    sql((db) => {
+      db.menus = req.body;
+    }).then(() => {
+      res.send(responseFmt());
     });
   });
 
   // 获取跨域脚本或接口
-  router.post("/fetchApiCrossOrigin", async (ctx) => {
-    const params = ctx.request.body;
-    try {
-      const response = await axios({
-        method: params.method || "get",
-        url: params.url,
-        data: params.data || {},
+  router.post("/fetchApiCrossOrigin", (req, res) => {
+    const params = req.body;
+    axios({
+      method: params.method || "get",
+      url: params.url,
+      data: params.data || {},
+    })
+      .then((response) => {
+        res.send(
+          responseFmt({
+            result: response.data,
+          })
+        );
+      })
+      .catch((error) => {
+        res.send(
+          responseFmt({
+            message: error.message,
+            result: null,
+            code: HTTP_STATUS.BAD_REQUEST,
+          })
+        );
       });
-      ctx.body = {
-        success: true,
-        result: response.data,
-      };
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        message: error.message,
-      };
-    }
   });
 };

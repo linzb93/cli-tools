@@ -4,27 +4,31 @@ import pReduce from "p-reduce";
 import * as gitUtil from "./index";
 import fsp from "node:fs/promises";
 import pMap from "p-map";
-import { Observable, last, skipLast, interval, throttle } from 'rxjs';
+import { Observable, last, skipLast } from "rxjs";
 
 export default async function useScan() {
-  const schedule = await sql(async (db) => db.schedule);
+  const gitDirs = await sql(async (db) => db.gitDirs);
   const allDirs = await pReduce(
-    schedule.gitDirs,
+    gitDirs,
     async (acc, dir) => {
       const dirs = await fsp.readdir(dir.path);
       return acc.concat(
-        await pMap(dirs, async (subDir) => {
-          return {
-            dir: subDir,
-            prefix: dir.path,
-            folderName: dir.name,
-          };
-        }, { concurrency: 4 })
+        await pMap(
+          dirs,
+          async (subDir) => {
+            return {
+              dir: subDir,
+              prefix: dir.path,
+              folderName: dir.name,
+            };
+          },
+          { concurrency: 4 }
+        )
       );
     },
     []
   );
-  const obs$ = new Observable(observer => {
+  const obs$ = new Observable((observer) => {
     let counter = 0;
     pMap(
       allDirs,
@@ -41,14 +45,10 @@ export default async function useScan() {
         };
       },
       { concurrency: 4 }
-    )
-      .then(list => {
-        observer.next(list.filter(item => [1, 2, 4].includes(item.status)));
-        observer.complete();
-      });
+    ).then((list) => {
+      observer.next(list.filter((item) => [1, 2, 4].includes(item.status)));
+      observer.complete();
+    });
   });
-  return [
-    obs$.pipe(skipLast(1)).pipe(throttle(() => interval(3000))),
-    obs$.pipe(last())
-  ]
+  return [obs$.pipe(skipLast(1)), obs$.pipe(last())];
 }

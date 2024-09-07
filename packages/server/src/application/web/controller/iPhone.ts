@@ -1,33 +1,33 @@
-import fs from "node:fs";
-import { join } from "node:path";
-import Router from "koa-router";
+// import fs from "node:fs";
+// import { join } from "node:path";
+import { Router } from "express";
 import { notify, copy, readCopy } from "@/common/helper";
-import { Observable, debounceTime } from "rxjs";
-import multer from "@koa/multer";
-import intoStream from "into-stream";
-import { tempPath } from "@/common/constant";
-import config from "../../../../../../config.json";
+// import { Observable, debounceTime } from "rxjs";
+import multer from "multer";
+// import intoStream from "into-stream";
+// import { tempPath } from "@/common/constant";
+// import config from "../../../../../../config.json";
+import responseFmt from "../shared/response";
 
-const router = new Router({
-  prefix: "/iPhone",
-});
+const router = Router({});
 const upload = multer();
 export default router;
 
 // iPhone发往电脑
-router.post("/sendCopyData", (ctx) => {
-  const { text } = ctx.request.body;
+router.post("/sendCopyData", (req, res) => {
+  const { text } = req.body;
   const decodedText = decodeURIComponent(text);
   notify(decodedText);
   copy(decodedText);
+  res.send(responseFmt());
 });
 
 // iPhone从电脑获取
-router.get("/getCopyData", (ctx) => {
+router.get("/getCopyData", (_, res) => {
   const copyData = readCopy();
-  ctx.body = {
-    text: encodeURIComponent(copyData),
-  };
+  res.send({
+    text: copyData,
+  });
 });
 
 // iPhone批量获取电脑图片地址

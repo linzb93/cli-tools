@@ -1,21 +1,22 @@
-import Router from "koa-router";
+import { Router } from "express";
 import sql from "@/common/sql";
+import responseFmt from "../shared/response";
+const router = Router();
 
-const router = new Router();
-
-router.post("/getSetting", async (ctx) => {
-  const result = await sql((db) => ({
+router.post("/get", (_, res) => {
+  sql((db) => ({
     ipc: db.ipc,
     oaApiPrefix: db.oa ? db.oa.apiPrefix : "",
     user: db.sync ? db.sync.user : "",
     password: db.sync ? db.sync.password : "",
-  }));
-  ctx.body = result;
+  })).then((result) => {
+    res.send(responseFmt(result));
+  });
 });
 
-router.post("/saveSetting", async (ctx) => {
-  const params = ctx.body;
-  await sql((db) => {
+router.post("/save", (req, res) => {
+  const params = req.body;
+  sql((db) => {
     db.ipc = params.ipc;
     if (db.oa) {
       db.oa.apiPrefix = params.oaApiPrefix;
@@ -28,8 +29,9 @@ router.post("/saveSetting", async (ctx) => {
       user: params.user,
       password: params.password,
     };
+  }).then(() => {
+    res.send(responseFmt());
   });
-  return null;
 });
 
 export default router;

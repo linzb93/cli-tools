@@ -4,13 +4,14 @@
       <span>Git项目同步检查</span>
     </h2>
     <el-form-item label="选择项目">
-      <select-dirs v-model:dirs="setting.gitDirs" />
+      <select-dirs v-model:dirs="gitDirs" />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="save">保存</el-button>
       <el-button type="primary" @click="getList">查看结果</el-button>
     </el-form-item>
   </el-form>
+  <p>已扫描{{ data }}个</p>
   <template v-if="loaded">
     <el-alert class="mt30" type="info" :closable="false">扫描完成，用时{{ duration }}秒</el-alert>
     <div class="mt20">
@@ -45,41 +46,30 @@ import { ElMessage } from 'element-plus'
 import SelectDirs from './components/SelectDirs.vue'
 import request, { useRequest, baseURL } from '../../helpers/request'
 import * as requestUtil from '../../helpers/request/api'
-const setting = ref({
-  gitDirs: []
-})
+import useSSE from '@/hooks/useSSE'
+const gitDirs = ref([])
 onMounted(async () => {
   const res = await request('/schedule/get')
   if (!res) {
     return
   }
-  setting.value = res
+  gitDirs.value = res.list
 })
 
 const save = async () => {
-  await request('/schedule/save', setting.value)
+  await request('/schedule/save', gitDirs.value)
   ElMessage.success('保存成功')
 }
-const { fetch, loaded, result } = useRequest(
-  '/schedule/gitScanResult',
-  {},
-  {
-    showLoading: true
-  }
-)
+const { fetchData, data, loaded, result } = useSSE(baseURL + '/schedule/gitScanResult')
 const duration = shallowRef('0')
 const getList = async () => {
-  if (!setting.value.gitDirs.length) {
+  if (!gitDirs.value.length) {
     ElMessage.error('请选择扫描的目录')
     return
   }
-  // const startTime = Date.now()
-  // await fetch()
-  const es = new EventSource(baseURL + '/schedule/gitScanResult')
-  es.onmessage = (event) => {
-    console.log(event.data)
-  }
-  // duration.value = ((Date.now() - startTime) / 1000).toFixed(2)
+  const startTime = Date.now()
+  await fetchData()
+  duration.value = ((Date.now() - startTime) / 1000).toFixed(2)
 }
 
 const selected = shallowRef([])

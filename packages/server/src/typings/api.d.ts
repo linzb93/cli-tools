@@ -9,29 +9,6 @@ export interface Database {
     path: string;
     id: number;
   }[];
-  oss: {
-    accounts: {
-      id: number;
-      platform?: string;
-      name?: string;
-      domain?: string;
-      shortcut?: string;
-      region: string;
-      accessKeyId: string;
-      accessKeySecret: string;
-      bucket: string;
-    }[];
-    setting: {
-      pixel: 1 | 2;
-      platform: 1 | 2;
-      previewType: 1 | 2;
-      fasterEnter: 1 | 2;
-    };
-    history: {
-      path: string;
-      createTime: string;
-    }[];
-  };
   css: {
     pixio: 1 | 2;
     platform: 1 | 2;
@@ -42,12 +19,10 @@ export interface Database {
     to: string;
   }[];
   ipc: string;
-  schedule: {
-    gitDirs: {
-      path: string;
-      name: string;
-    }[];
-  };
+  gitDirs: {
+    path: string;
+    name: string;
+  }[];
 
   sync: {
     user: string;

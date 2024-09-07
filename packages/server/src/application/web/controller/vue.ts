@@ -1,68 +1,73 @@
 import { basename } from "node:path";
-import Router from "koa-router";
+import { Router } from "express";
 import sql from "@/common/sql";
 import { showOpenDialog } from "@/common/dialog";
-const router = new Router({
-  prefix: "/vue",
-});
+import responseFmt from "../shared/response";
 
-router.post("/getList", async (ctx) => {
-  const result = await sql((db) => {
+const router = Router({});
+
+router.post("/getList", (_, res) => {
+  sql((db) => {
     if (!db.vue) {
       return [];
     }
     return db.vue;
+  }).then((list) => {
+    res.send(responseFmt({ list }));
   });
-  ctx.body = {
-    list: result,
-  };
 });
 
-router.post("/select", async (ctx) => {
-  const dir = await showOpenDialog("directory");
-  await sql((db) => {
-    if (!db.vue) {
-      db.vue = [
-        {
-          id: 1,
+router.post("/select", (_, res) => {
+  showOpenDialog("directory")
+    .then((dir) => {
+      return sql((db) => {
+        if (!db.vue) {
+          db.vue = [
+            {
+              id: 1,
+              name: basename(dir),
+              path: dir,
+            },
+          ];
+          return;
+        }
+        const last = db.vue.at(-1);
+        const id = last.id + 1;
+        db.vue.push({
+          id,
           name: basename(dir),
           path: dir,
-        },
-      ];
-      return;
-    }
-    const last = db.vue.at(-1);
-    const id = last.id + 1;
-    db.vue.push({
-      id,
-      name: basename(dir),
-      path: dir,
+        });
+      });
+    })
+    .then(() => {
+      res.send(responseFmt());
     });
-  });
-  ctx.body = {};
 });
 
-router.post("/edit", async (ctx) => {
-  const { id, name } = ctx.request.body;
-  await sql((db) => {
+router.post("/edit", (req, res) => {
+  const { id, name } = req.body;
+  sql((db) => {
     const match = db.vue.find((item) => item.id === id);
     if (!match) {
       return;
     }
     match.name = name;
+  }).then(() => {
+    res.send(responseFmt());
   });
-  ctx.body = {};
 });
 
-router.post("/delete", async (ctx) => {
-  const { id } = ctx.request.body;
-  await sql((db) => {
+router.post("/delete", (req, res) => {
+  const { id } = req.body;
+  sql((db) => {
     const matchIndex = db.vue.findIndex((item) => item.id === id);
     if (matchIndex > -1) {
       db.vue.splice(matchIndex, 1);
     }
+  }).then(() => {
+    res.send(responseFmt());
   });
-  ctx.body = {};
 });
 
 export default router;

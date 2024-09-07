@@ -1,20 +1,24 @@
-import Router from "koa-router";
+import { Router } from "express";
 import sql from "@/common/sql";
-
-const router = new Router({
-  prefix: "/monitor",
-});
+import responseFmt from "../shared/response";
+const router = Router({});
 export default router;
 // 获取项目列表
-router.post("/getApps", async (ctx) => {
-  ctx.body = {
-    list: (await sql((db) => db.monitor)) || [],
-  };
+router.post("/getApps", (_, res) => {
+  sql((db) => db.monitor).then((list) => {
+    res.send(
+      responseFmt({
+        list: list || [],
+      })
+    );
+  });
 });
 
 // 保存已选的项目列表
-router.post("/saveApps", async (ctx) => {
-  await sql((db) => {
-    db.monitor = ctx.request.body;
+router.post("/saveApps", (req, res) => {
+  sql((db) => {
+    db.monitor = req.body;
+  }).then(() => {
+    res.send(responseFmt());
   });
 });
