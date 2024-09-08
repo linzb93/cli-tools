@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import dayjs from "dayjs";
 import BaseCommand from "@/common/BaseCommand";
-import ls from "@/common/ls";
+import sql from "@/common/sql";
 import { userForcastList, setUserForcast } from "@/model/http/cg";
 import { getPerformanceData } from "./shared";
 
@@ -80,7 +80,7 @@ export default class extends BaseCommand {
   }
   private async setForecast(data: string) {
     const performance = Number(data);
-    const cgData = ls.get("cg");
+    const cgData = await sql((db) => db.cg);
     const { data: fetchData } = await setUserForcast({
       name: cgData.author,
       nameId: cgData.nameId,

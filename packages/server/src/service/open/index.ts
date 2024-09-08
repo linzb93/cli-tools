@@ -1,6 +1,7 @@
 import BaseCommand from "@/common/BaseCommand";
 import { join, basename } from "node:path";
 import open from "open";
+import sql from "@/common/sql";
 import fs from "fs-extra";
 import globalNpm from "global-modules";
 import ls from "@/common/ls";
@@ -26,16 +27,16 @@ type Map = {
 
 export default class extends BaseCommand {
   private maps: Map[] = [];
-  main(name: string, options: Options) {
+  async main(name: string, options: Options) {
     // 本项目
     this.register("cli", {
       type: "editor",
-      to: ls.get("code.cli"),
+      to: await sql((db) => db.open.cli),
     });
     // 测试用的项目
     this.register("test", {
       type: "editor",
-      to: ls.get("code.tools"),
+      to: await sql((db) => db.open.tools),
     });
     // npm全局安装目录
     this.register("global", {
@@ -83,7 +84,7 @@ export default class extends BaseCommand {
   }
   private openSource(options: Options) {
     return async () => {
-      const sourceDir = ls.get("open.source");
+      const sourceDir = await sql((db) => db.open.source);
       const dirs = await fs.readdir(sourceDir);
       if (options.name) {
         let matchPath: string;

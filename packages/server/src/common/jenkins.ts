@@ -1,7 +1,7 @@
 import open from "open";
 import readPkg from "read-pkg";
 import { isInWorkEnv } from "./constant";
-import ls from "./ls";
+import sql from "./sql";
 
 interface JenkinsProject {
   name: string;
@@ -12,13 +12,13 @@ interface JenkinsProject {
  * 打开公司内部Jenkins部署页面
  */
 export const openDeployPage = async () => {
-  const {id, name} = await getProjectName();
+  const { id, name } = await getProjectName();
   if (id) {
-    await open(
-      `http://${
-        isInWorkEnv ? ls.get("jenkins.url.internal") : ls.get("jenkins.url.public")
-      }/view/${name}/job/${id}/` 
+    const isWork = await isInWorkEnv();
+    const origin = await sql((db) =>
+      isWork ? db.jenkins.url.internal : db.jenkins.url.public
     );
+    await open(`http://${origin}/view/${name}/job/${id}/`);
   }
 };
 
@@ -33,12 +33,12 @@ export const getProjectName = async (): Promise<{
   const jenkins = projectConf.jenkins as JenkinsProject;
   if (!jenkins) {
     return {
-      name: '',
-      id: '',
+      name: "",
+      id: "",
     };
   }
   return {
     ...jenkins,
-    onlineId: jenkins.id.replace(/[\-|_]test$/, "")
+    onlineId: jenkins.id.replace(/[\-|_]test$/, ""),
   };
-}
+};

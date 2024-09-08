@@ -4,6 +4,7 @@ import ls from "@/common/ls";
 import { notify } from "@/common/helper";
 import { getPerformanceData } from "@/service/cg/shared";
 import { userForcastList } from "@/model/http/cg";
+import sql from "@/common/sql";
 
 export default class extends Base {
   name = "部门业绩";
@@ -49,7 +50,7 @@ export default class extends Base {
   }
   private async checkTodayForecastSubmitted() {
     const data = await userForcastList();
-    const currentUser = ls.get("cg.author");
+    const currentUser = await sql((db) => db.cg.author);
     if (!data.result.find((item) => item.name === currentUser)) {
       notify("您今日还未预测，请与10点前提交预测结果");
     }

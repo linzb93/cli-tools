@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import internalIp from "internal-ip";
-import ls from "./ls";
+import sql from "./sql";
 
 export const HTTP_STATUS = {
   SUCCESS: 200, // 请求成功
@@ -40,6 +40,6 @@ export const isWin = process.platform === "win32";
 /**
  * 是否是在公司电脑上运行
  */
-export const isInWorkEnv = (async () => {
-  return (await internalIp.v4()) === ls.get("ip.internal");
-})();
+export const isInWorkEnv = async () => {
+  return (await internalIp.v4()) === (await sql((db) => db.ip.internal));
+};

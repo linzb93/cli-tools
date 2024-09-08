@@ -4,6 +4,7 @@ import clipboard from "clipboardy";
 import BaseCommand from "@/common/BaseCommand";
 import appMap from "./appMap";
 import { App } from "./types";
+import sql from "@/common/sql";
 import { AnyObject } from "@/common/types";
 import chalk from "chalk";
 import ls from "@/common/ls";
@@ -57,8 +58,9 @@ export default class extends BaseCommand {
       // 获取店铺的用户信息
       const token = this.getToken(url);
       this.spinner.text = "正在获取用户信息";
+      const prefix = await sql((db) => db.oa.userApiPrefix);
       const { data } = await axios.post(
-        ls.get("oa.userApiPrefix") + this.currentApp.url.userApi,
+        prefix + this.currentApp.url.userApi,
         {},
         {
           headers: {

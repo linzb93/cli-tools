@@ -1,6 +1,5 @@
 import serviceGenerator, { Response } from "./base";
-import ls from "@/common/ls";
-
+import sql from "@/common/sql";
 const service = serviceGenerator({
   baseURL: "",
 });
@@ -18,7 +17,8 @@ interface DkdData {
  * 获取今日以及本月业绩
  */
 export const getPerformance = async () => {
-  const res = await service.post(`${ls.get("cg.oldPrefix")}/AppApi/GetDkdData`);
+  const prefix = await sql((db) => db.cg.oldPrefix);
+  const res = await service.post(`${prefix}/AppApi/GetDkdData`);
   return res.data as DkdData;
 };
 
@@ -33,9 +33,8 @@ type ForecastResult = Response<
  * 获取用户预测结果列表
  */
 export const userForcastList = async () => {
-  const res = await service.post(
-    `${ls.get("oa.apiPrefix")}/dkd/ad/forecast/query`
-  );
+  const prefix = await sql((db) => db.oa.apiPrefix);
+  const res = await service.post(`${prefix}/dkd/ad/forecast/query`);
   return res.data as ForecastResult;
 };
 
@@ -47,9 +46,7 @@ interface ForcastParams {
 /**
  * 提交今日预测
  */
-export const setUserForcast = (params: ForcastParams) => {
-  return service.post(
-    `${ls.get("oa.apiPrefix")}/dkd/ad/forecast/insert`,
-    params
-  );
+export const setUserForcast = async (params: ForcastParams) => {
+  const prefix = await sql((db) => db.oa.apiPrefix);
+  return service.post(`${prefix}/dkd/ad/forecast/insert`, params);
 };

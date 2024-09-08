@@ -2,6 +2,7 @@ import chalk from "chalk";
 import axios from "axios";
 import { fork, ChildProcess } from "node:child_process";
 import { flatten, omit } from "lodash-es";
+import sql from "@/common/sql";
 import clipboardy from "clipboardy";
 // import { reactive } from "@vue/reactivity";
 // import { watch } from "@vue/runtime-core";
@@ -12,7 +13,6 @@ import BaseCommand from "@/common/BaseCommand";
 // import set from "./set";
 import { AnyObject } from "@/common/types";
 import * as helper from "@/common/helper";
-import ls from "@/common/ls";
 import { root } from "@/common/constant";
 
 export interface Options {
@@ -72,7 +72,7 @@ export default class extends BaseCommand {
   async main(action: string, options: Options) {
     this.action = action;
     this.options = options;
-    this.genCooie();
+    await this.genCooie();
     if (this.action === "restart") {
       await this.restart();
       return;
@@ -218,10 +218,9 @@ export default class extends BaseCommand {
     (this.subProcess as ChildProcess).kill();
     this.createServer();
   }
-  private genCooie() {
-    this.cookie = `_yapi_uid=${ls.get("mock.uid")}; _yapi_token=${ls.get(
-      "mock.token"
-    )}`;
+  private async genCooie() {
+    const mockData = await sql((db) => db.mock);
+    this.cookie = `_yapi_uid=${mockData.uid}; _yapi_token=${mockData.token}`;
   }
   private async getApiList(id: string): Promise<FetchList> {
     try {
@@ -250,8 +249,10 @@ export default class extends BaseCommand {
     if (!is) {
       process.exit(0);
     }
-    ls.set("mock.token", clipboardy.readSync());
-    this.genCooie();
+    await sql((db) => {
+      db.mock.token = clipboardy.readSync();
+    });
+    await this.genCooie();
   }
   private async update(id: string) {
     const res = (await service({

@@ -5,6 +5,7 @@ import npm, { Npm } from "@/common/npm";
 import BaseCommand from "@/common/BaseCommand";
 import { SecretDB } from "@/common/types";
 import { pRetry } from "@/common/promiseFn";
+import sql from "@/common/sql";
 import * as helper from "@/common/helper";
 import ls from "@/common/ls";
 import vscode from "@/common/vscode";
@@ -49,7 +50,7 @@ export default class extends BaseCommand {
     );
     this.spinner.text = "正在下载";
     let dirName: string = "";
-    const openMap = ls.get("open") as SecretDB["open"];
+    const openMap = await sql((db) => db.open);
     if (!options.dir) {
       options.dir = "source";
     } else if (!openMap[options.dir]) {

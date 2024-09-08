@@ -4,16 +4,21 @@ interface AnyObject {
 
 export interface Database {
   lastModifiedTime: string;
+  open: {
+    [key: string]: string;
+  };
+  code: {
+    [key: string]: string;
+  };
+  mock: {
+    token: string;
+    uid: string;
+  };
   vue: {
     name: string;
     path: string;
     id: number;
   }[];
-  css: {
-    pixio: 1 | 2;
-    platform: 1 | 2;
-    template: string;
-  };
   menus: {
     title: string;
     to: string;
@@ -43,5 +48,15 @@ export interface Database {
     author: string;
     nameId: number;
     oldPrefix: string;
+  };
+  ip: {
+    internal: string;
+    public: string;
+  };
+  jenkins: {
+    url: {
+      internal: string;
+      public: string;
+    };
   };
 }
