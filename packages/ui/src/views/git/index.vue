@@ -44,7 +44,7 @@
 import { shallowRef, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import SelectDirs from './components/SelectDirs.vue'
-import request, { useRequest, baseURL } from '../../helpers/request'
+import request, { baseURL } from '../../helpers/request'
 import * as requestUtil from '../../helpers/request/api'
 import useSSE from '@/hooks/useSSE'
 const gitDirs = ref([])
