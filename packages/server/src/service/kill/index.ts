@@ -8,11 +8,11 @@ export interface IOption {
   help?: boolean;
 }
 
-export type Params = [string] | [string, string];
+export type Params = [number] | [string, number];
 export default class extends BaseCommand {
-  async main(args: Params) {
+  async main(...args: Params) {
     if (args.length === 1) {
-      if (!numberRE.test(args[0])) {
+      if (!numberRE.test(args[0].toString())) {
         this.logger.error("端口号或者进程ID格式不正确，只能输入数字");
         return;
       }
@@ -39,14 +39,14 @@ export default class extends BaseCommand {
       }
       this.logger.success(`进程 ${chalk.yellow(id)} 关闭成功`);
     } else if (args.length === 2) {
-      const [target, idStr] = args;
-      let id;
+      const [target, idArg] = args;
+      let id: number;
       if (target === "port") {
-        if (!numberRE.test(idStr)) {
+        if (!numberRE.test(idArg.toString())) {
           this.logger.error("端口号格式不正确，只能输入数字", true);
           return;
         }
-        id = Number(idStr);
+        id = Number(idArg);
         try {
           await this.killPort(id.toString());
           this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
@@ -55,11 +55,11 @@ export default class extends BaseCommand {
           this.logger.error(`端口 ${chalk.yellow(id)} 不存在`);
         }
       } else if (target === "pid") {
-        if (!numberRE.test(idStr)) {
+        if (!numberRE.test(idArg.toString())) {
           this.logger.error("进程ID格式不正确，只能输入数字");
           return;
         }
-        id = Number(idStr);
+        id = Number(idArg);
         if (id < 1000 && !(await this.confirm())) {
           return;
         }
