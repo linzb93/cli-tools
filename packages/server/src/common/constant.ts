@@ -31,7 +31,7 @@ export const cacheRoot = join(root, "cache");
 /**
  * 存放临时文件的目录，每天会清空一次
  */
-export const tempPath = join(cacheRoot, ".temp");
+export const tempPath = join(cacheRoot, "temp");
 /**
  * 是否是Windows系统
  */
@@ -41,5 +41,5 @@ export const isWin = process.platform === "win32";
  * 是否是在公司电脑上运行
  */
 export const isInWorkEnv = (async () => {
-  return await internalIp.v4() === ls.get('ip.internal')
-})()
+  return (await internalIp.v4()) === ls.get("ip.internal");
+})();

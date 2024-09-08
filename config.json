@@ -5,6 +5,7 @@
   },
   "prefix": {
     "static": "pages",
+    "temp": "/temp",
     "api": "/api"
   }
 }

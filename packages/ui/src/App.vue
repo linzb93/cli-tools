@@ -14,10 +14,17 @@ const globalStore = useGlobalStore()
 globalStore.getSetting()
 // globalStore.listenIpcConnected();
 if (process.env.NODE_ENV === 'development') {
-  document.title = '我的工具箱（开发版）';
+  document.title = '我的工具箱（开发版）'
 } else {
-  document.title = '我的工具箱';
+  document.title = '我的工具箱'
 }
+
+document.body.addEventListener('dragover', function (event) {
+  event.preventDefault()
+})
+document.body.addEventListener('drop', function (event) {
+  event.preventDefault()
+})
 </script>
 <style scoped>
 .cont {

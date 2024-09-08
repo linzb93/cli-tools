@@ -1,6 +1,11 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import http from "node:http";
+/**
+ * 不要用Koa，生态太差了，不如express
+ */
 import express, { Router } from "express";
+import { tempPath } from "@/common/constant";
 import cors from "cors";
 import bodyParser from "body-parser";
 import globalConfig from "../../../../../config.json";
@@ -12,6 +17,7 @@ import vueRouter from "./controller/vue";
 import commonAPIs from "./controller/common";
 import schedule from "./schedule";
 import CgSchedule from "./schedule/Cg";
+// import registerSocket from "./socket";
 
 const app = express();
 const apiRouter = Router();
@@ -25,6 +31,12 @@ app.use(
     join(dirname(fileURLToPath(import.meta.url)), globalConfig.prefix.static)
   )
 );
+app.use(globalConfig.prefix.temp, express.static(tempPath));
+
+app.use((req, res, next) => {
+  console.log(req.path);
+  next();
+});
 
 commonAPIs(apiRouter);
 apiRouter.use("/monitor", monitorRouter);
@@ -38,6 +50,9 @@ app.use("/api", apiRouter);
 schedule.register(CgSchedule);
 schedule.start();
 
-app.listen(globalConfig.port.production, async () => {
+const server = http.createServer(app);
+// registerSocket(server);
+
+server.listen(globalConfig.port.production, async () => {
   process.send?.("ok");
 });

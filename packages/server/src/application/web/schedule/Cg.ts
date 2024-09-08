@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import Base from "./Base";
 import ls from "@/common/ls";
 import { notify } from "@/common/helper";
-import { getPerformanceData } from "@/service/cg/data";
-import { userForcastList } from '@/model/http/cg';
+import { getPerformanceData } from "@/service/cg/shared";
+import { userForcastList } from "@/model/http/cg";
 
 export default class extends Base {
   name = "部门业绩";

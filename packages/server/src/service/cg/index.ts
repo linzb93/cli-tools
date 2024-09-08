@@ -2,11 +2,8 @@ import chalk from "chalk";
 import dayjs from "dayjs";
 import BaseCommand from "@/common/BaseCommand";
 import ls from "@/common/ls";
-import {
-  userForcastList,
-  setUserForcast,
-} from "@/model/http/cg";
-import {getPerformanceData} from './data';
+import { userForcastList, setUserForcast } from "@/model/http/cg";
+import { getPerformanceData } from "./shared";
 
 export interface Options {
   full: boolean;
@@ -45,7 +42,7 @@ export default class extends BaseCommand {
       this.spinner.fail(error);
     }
   }
-  
+
   private async getForecast(options: Options) {
     this.spinner.text = "正在获取预测数据";
     const promiseMap: any[] = [userForcastList().then((data) => data.result)];

@@ -3,9 +3,10 @@
   <div
     class="drop-box"
     :class="{ active: active }"
-    @dragover.prevent="active = true"
-    @dragleave="active = false"
+    @dragover.prevent.self="active = true"
+    @dragleave.prevent="active = false"
     @drop="dropFile"
+    @dragleave="active = false"
   >
     <p v-if="visibleFiles.length === 0" class="center">请将需要同步的图片拖拽至此</p>
     <div class="sended-img" v-else>
@@ -20,6 +21,11 @@
       <div class="more" v-if="visibleFiles.length > max">+{{ visibleFiles.length - max }}</div>
     </div>
   </div>
+  <div class="mt20">
+    <el-button type="primary" @click="startSync">同步</el-button>
+    <el-button type="primary" @click="startSave">保存</el-button>
+  </div>
+
   <el-dialog title="收到图片" v-model="visible" width="580px" @closed="closed">
     <el-image
       v-for="img in receiveList.filter((_, index) => index < max)"
@@ -37,48 +43,47 @@
 </template>
 
 <script setup lang="ts">
-import { cloneDeep } from 'lodash-es'
 import { shallowRef, ref } from 'vue'
-import { handleMainPost } from '@/helpers/util'
-import request from '@/helpers/request'
+import request, { baseURL } from '@/helpers/request'
 import * as requestUtil from '@/helpers/request/api'
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 /**
  * 显示的图片最大张数
  */
 const max = 3
 
-type FileItem = Blob & {
-  path: string
-}
 const visibleFiles = ref<string[]>([])
-const realFiles = ref<FileItem[]>([])
 const active = shallowRef(false)
 
-// 拖拽上传
+/**
+ * 拖拽上传
+ */
 const dropFile = async (event: any) => {
   active.value = false
-  const fList: FileItem[] = event.dataTransfer.files
-  visibleFiles.value = visibleFiles.value.concat(
-    Array.from(fList).map((file) => URL.createObjectURL(file))
-  )
-  realFiles.value = realFiles.value.concat(Array.from(fList).map((item: any) => item.path))
+  const fList = event.dataTransfer.files
+  visibleFiles.value.push(await uploadImage(fList[0]))
 }
 
-// iPhone批量获取电脑图片地址
-handleMainPost('iPhone-get-img', () => {
-  const list = cloneDeep(realFiles.value)
-  realFiles.value = []
-  return list
-})
+/**
+ * 上传图片
+ * @param file 图片文件
+ */
+const uploadImage = async (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await axios.post(baseURL + '/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return res.data.result.url
+}
 
 // iPhone批量上传图片
 const receiveList = ref<string[]>([])
 const visible = shallowRef(false)
-handleMainPost('iPhone-upload-img', (url: string) => {
-  receiveList.value.push(url)
-  visible.value = true
-})
 
 // 下载
 const startDownload = async () => {
@@ -97,6 +102,22 @@ const startDrag = async (url: string) => {
   await request('drag', {
     url
   })
+}
+
+const startSync = async () => {
+  if (!visibleFiles.value.length) {
+    ElMessage.error('请先上传图片再同步')
+    return
+  }
+  await request('/iPhone/sync', visibleFiles.value)
+  ElMessage.success('上传成功，等待同步')
+}
+const startSave = async () => {
+  try {
+    await request('/iPhone/save')
+  } catch (error) {
+    ElMessage.error('没有图片可以保存')
+  }
 }
 </script>
 <style lang="scss" scoped>
