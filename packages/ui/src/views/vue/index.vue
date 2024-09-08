@@ -35,6 +35,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
 import request from '@/helpers/request'
 import EditDialog from './components/EditDialog.vue'
+import useSSE from '@/hooks/useSSE'
 
 // 列表
 const list = ref([])
@@ -57,6 +58,8 @@ const addProject = async () => {
   await request('/vue/select')
   getList()
 }
+
+const { loaded, data } = useSSE(`/vue/build-serve?cwd`)
 // 打包后启动
 const buildServe = (row) => {}
 
