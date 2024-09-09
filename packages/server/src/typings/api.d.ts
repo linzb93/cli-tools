@@ -4,12 +4,6 @@ interface AnyObject {
 
 export interface Database {
   lastModifiedTime: string;
-  collectors: {
-    id: number;
-    name: string;
-    url: string;
-    visible: boolean;
-  }[];
   open: {
     [key: string]: string;
   };
