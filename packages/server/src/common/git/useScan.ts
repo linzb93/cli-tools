@@ -4,7 +4,7 @@ import pReduce from "p-reduce";
 import * as gitUtil from "./index";
 import fsp from "node:fs/promises";
 import pMap from "p-map";
-import { Observable, last, skipLast } from "rxjs";
+import { Observable, last, skip, skipLast, first } from "rxjs";
 
 export default async function useScan() {
   const gitDirs = await sql(async (db) => db.gitDirs);
@@ -30,6 +30,7 @@ export default async function useScan() {
   );
   const obs$ = new Observable((observer) => {
     let counter = 0;
+    observer.next(allDirs.length);
     pMap(
       allDirs,
       async (dirInfo) => {
@@ -50,5 +51,9 @@ export default async function useScan() {
       observer.complete();
     });
   });
-  return [obs$.pipe(skipLast(1)), obs$.pipe(last())];
+  return {
+    total$: obs$.pipe(first()),
+    counter$: obs$.pipe(skip(1), skipLast(1)),
+    list$: obs$.pipe(last()),
+  };
 }

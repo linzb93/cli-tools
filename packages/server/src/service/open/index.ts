@@ -31,12 +31,12 @@ export default class extends BaseCommand {
     // 本项目
     this.register("cli", {
       type: "editor",
-      to: await sql((db) => db.open.cli),
+      to: await sql((db) => db.code.cli),
     });
     // 测试用的项目
     this.register("test", {
       type: "editor",
-      to: await sql((db) => db.open.tools),
+      to: await sql((db) => db.code.tools),
     });
     // npm全局安装目录
     this.register("global", {

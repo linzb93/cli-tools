@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import prettier from "prettier";
 import { get as objectGet, set as objectSet, isBoolean } from "lodash-es";
 import path from "node:path";
-import { BaseType } from "./types";
+import { BaseType } from "@/typings";
 import { cacheRoot } from "./constant";
 
 const { readJSONSync, writeFileSync } = fs;

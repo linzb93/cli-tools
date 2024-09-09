@@ -34,7 +34,10 @@ router.get("/gitScanResult", (req, res) => {
       }
       return useScan();
     })
-    .then(([counter$, list$]) => {
+    .then(({ counter$, list$, total$ }) => {
+      // total$.subscribe((total:number) => {
+      //   res.write(sse(total));
+      // })
       counter$.subscribe((count) => {
         res.write(sse(count));
       });

@@ -54,6 +54,7 @@
     "p-reduce": "^3.0.0",
     "pascal-case": "^3.1.2",
     "prettier": "^2.5.1",
+    "progress": "^2.0.3",
     "public-ip": "^5.0.0",
     "read-pkg": "^5.2.0",
     "rxjs": "^7.8.1",
@@ -81,6 +82,7 @@
     "@types/node-ipc": "^9.2.3",
     "@types/node-notifier": "^8.0.2",
     "@types/prettier": "^2.4.3",
+    "@types/progress": "^2.0.7",
     "@types/semver": "^7.3.9",
     "@types/through2": "^2.0.36",
     "@vitest/coverage-v8": "^1.6.0"

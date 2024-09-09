@@ -3,7 +3,7 @@ import notifier from "node-notifier";
 import { Writable } from "node:stream";
 import logger from "./logger";
 import chalk from "chalk";
-import { AnyObject } from "./types";
+import { AnyObject } from "@/typings";
 import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
 
 export const copy = (text: string) => {
@@ -56,7 +56,7 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
 
 /**
  * @deprecated 将用commander封装
- * 
+ *
  * 校验输出。
  */
 export const validate = (obj: any, descriptor: ValidatorRules): void => {
