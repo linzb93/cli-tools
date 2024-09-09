@@ -1,12 +1,9 @@
 import clipboardy from "clipboardy";
 import notifier from "node-notifier";
 import { Writable } from "node:stream";
-import path from "node:path";
 import logger from "./logger";
 import chalk from "chalk";
 import { AnyObject } from "./types";
-import { Low, JSONFile } from "lowdb";
-import { root } from "./constant";
 import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
 
 export const copy = (text: string) => {
@@ -138,17 +135,4 @@ export const processArgvToFlags = (
     return "";
   });
   return isStr ? ret.join(" ") : ret;
-};
-
-/**
- * 创建本地数据库文件实例
- * @param {string} pathName 数据库文件地址，支持放在嵌套文件夹里
- * @returns {Low} 数据库实例
- */
-export const createDB = (pathName: string): Low => {
-  const url = pathName.includes(".")
-    ? `data/${pathName.replace(/\./g, "/")}.json`
-    : `data/${pathName}.json`;
-  const adapter = new JSONFile(path.resolve(root, url));
-  return new Low(adapter);
 };

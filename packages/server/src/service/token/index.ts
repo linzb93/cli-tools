@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import Time from "@/service/time";
 import BaseCommand from "@/common/BaseCommand";
-import { AnyObject } from "@/common/types";
+import { AnyObject } from "@/typings";
 import * as helper from "@/common/helper";
 
 export interface Options {

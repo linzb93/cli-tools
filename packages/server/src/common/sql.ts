@@ -1,30 +1,16 @@
-import { join, dirname } from "node:path";
-import fs from "node:fs";
+import { join } from "node:path";
+
 import { Low, JSONFile } from "lowdb";
 import { cacheRoot } from "./constant";
 import { Database } from "../typings/api";
 
-const dbPath = join(cacheRoot, "app.json");
-try {
-  fs.accessSync(dbPath);
-} catch (error) {
-  fs.mkdirSync(dirname(dbPath), {
-    recursive: true,
-  });
-  fs.writeFileSync(
-    dbPath,
-    JSON.stringify({
-      vue: [],
-      oss: [],
-    }),
-    {}
-  );
-}
-const db = new Low(new JSONFile(dbPath));
+
 
 export default async function sql<T>(
   callback: (data: Database) => T
 ): Promise<T> {
+  const dbPath = join(cacheRoot, "app.json");
+  const db = new Low(new JSONFile(dbPath));
   await db.read();
   const data = db.data as unknown as Database;
   let result: any;

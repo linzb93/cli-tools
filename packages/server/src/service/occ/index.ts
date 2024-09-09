@@ -5,7 +5,7 @@ import BaseCommand from "@/common/BaseCommand";
 import appMap from "./appMap";
 import { App } from "./types";
 import sql from "@/common/sql";
-import { AnyObject } from "@/common/types";
+import { AnyObject } from "@/typings";
 import chalk from "chalk";
 import ls from "@/common/ls";
 import * as helper from "@/common/helper";

@@ -1,4 +1,4 @@
-import { AnyObject } from "@/common/types";
+import { AnyObject } from "@/typings";
 
 export interface App {
   name: string;

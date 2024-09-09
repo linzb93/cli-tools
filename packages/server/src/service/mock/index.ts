@@ -11,8 +11,8 @@ import pMap from "p-map";
 import path from "node:path";
 import BaseCommand from "@/common/BaseCommand";
 // import set from "./set";
-import { AnyObject } from "@/common/types";
-import * as helper from "@/common/helper";
+import { AnyObject } from "@/typings";
+// import * as helper from "@/common/helper";
 import { root } from "@/common/constant";
 
 export interface Options {
@@ -70,127 +70,127 @@ export default class extends BaseCommand {
   private current: any | undefined;
   private options: Options;
   async main(action: string, options: Options) {
-    this.action = action;
-    this.options = options;
-    await this.genCooie();
-    if (this.action === "restart") {
-      await this.restart();
-      return;
-    }
-    let db = helper.createDB("yapi");
-    await db.read();
-    let answer = {
-      project: "",
-      prefix: "",
-      id: "",
-    };
-    if ((db.data as ProjectList).items.length === 0) {
-      this.logger.error("没有项目可以选择");
-      return;
-    }
-    if ((db.data as ProjectList).items.length === 1) {
-      const target = (db.data as any).items[0];
-      answer = {
-        ...target,
-        project: target.id,
-      };
-    } else {
-      answer = (await this.inquirer.prompt({
-        message: "请选择项目",
-        type: "list",
-        choices: (db.data as ProjectList).items.map((item) => ({
-          value: item.id,
-          name: `${chalk.yellow(item.name)}(${chalk.green(item.prefix)})`,
-        })),
-        name: "project",
-      })) as ProjectItem;
-    }
-    db = helper.createDB(`yapi.${answer.project}`);
-    await db.read();
-    if (this.options.single) {
-      let target = "";
-      if (typeof this.options.single === "string") {
-        const match = (db.data as ApiList).items.find(
-          (item) => item.path === this.options.single
-        );
-        if (match) {
-          target = match.id;
-        }
-      } else {
-        // 更新单一接口
-        const answer = await this.inquirer.prompt({
-          type: "list",
-          choices: (db.data as ApiList).items.map((item) => ({
-            value: item.id,
-            name: `${chalk.green(item.title)}: ${chalk.gray(item.path)}`,
-          })),
-          name: "target",
-          message: "请选择要更新的接口",
-        });
-        target = answer.target;
-      }
-      const json = await this.update(target);
-      const match = (db.data as ApiList).items.find(
-        (item) => item.id === target
-      );
-      if (match) {
-        match.json = json;
-      }
-      await db.write();
-      this.logger.success(`接口更新成功`);
-      return;
-    }
-    // 同步api
-    const list = await this.getApiList(answer.project);
+    // this.action = action;
+    // this.options = options;
+    // await this.genCooie();
+    // if (this.action === "restart") {
+    //   await this.restart();
+    //   return;
+    // }
+    // let db = helper.createDB("yapi");
+    // await db.read();
+    // let answer = {
+    //   project: "",
+    //   prefix: "",
+    //   id: "",
+    // };
+    // if ((db.data as ProjectList).items.length === 0) {
+    //   this.logger.error("没有项目可以选择");
+    //   return;
+    // }
+    // if ((db.data as ProjectList).items.length === 1) {
+    //   const target = (db.data as any).items[0];
+    //   answer = {
+    //     ...target,
+    //     project: target.id,
+    //   };
+    // } else {
+    //   answer = (await this.inquirer.prompt({
+    //     message: "请选择项目",
+    //     type: "list",
+    //     choices: (db.data as ProjectList).items.map((item) => ({
+    //       value: item.id,
+    //       name: `${chalk.yellow(item.name)}(${chalk.green(item.prefix)})`,
+    //     })),
+    //     name: "project",
+    //   })) as ProjectItem;
+    // }
+    // db = helper.createDB(`yapi.${answer.project}`);
+    // await db.read();
+    // if (this.options.single) {
+    //   let target = "";
+    //   if (typeof this.options.single === "string") {
+    //     const match = (db.data as ApiList).items.find(
+    //       (item) => item.path === this.options.single
+    //     );
+    //     if (match) {
+    //       target = match.id;
+    //     }
+    //   } else {
+    //     // 更新单一接口
+    //     const answer = await this.inquirer.prompt({
+    //       type: "list",
+    //       choices: (db.data as ApiList).items.map((item) => ({
+    //         value: item.id,
+    //         name: `${chalk.green(item.title)}: ${chalk.gray(item.path)}`,
+    //       })),
+    //       name: "target",
+    //       message: "请选择要更新的接口",
+    //     });
+    //     target = answer.target;
+    //   }
+    //   const json = await this.update(target);
+    //   const match = (db.data as ApiList).items.find(
+    //     (item) => item.id === target
+    //   );
+    //   if (match) {
+    //     match.json = json;
+    //   }
+    //   await db.write();
+    //   this.logger.success(`接口更新成功`);
+    //   return;
+    // }
+    // // 同步api
+    // const list = await this.getApiList(answer.project);
 
-    const result = flatten(
-      list.map((item) => {
-        return item.list.map((sub) => ({
-          path: sub.path,
-          title: sub.title,
-          updateTime: sub.up_time,
-          id: sub._id,
-        }));
-      })
-    );
-    const source = (db.data as ApiList).items;
-    const counter = {
-      add: 0,
-      update: 0,
-      total: 0,
-    };
-    (db.data as ApiList).items = await pMap(
-      result,
-      async (item: any) => {
-        const match = source.find((s) => s.id === item.id);
-        counter.total++;
-        if (!match) {
-          counter.add++;
-          return {
-            ...item,
-            json: await this.update(item.id),
-          };
-        }
-        if (match.updateTime < item.updateTime || this.options.force) {
-          counter.update++;
-          return {
-            ...item,
-            json: await this.update(item.id),
-          };
-        }
-        return match;
-      },
-      { concurrency: 10 }
-    );
-    await db.write();
-    this.spinner.succeed();
-    if (this.options.update) {
-      return;
-    }
-    this.logger.info("正在启动服务器...");
-    await sleep(500);
-    this.current = answer;
-    await this.createServer();
+    // const result = flatten(
+    //   list.map((item) => {
+    //     return item.list.map((sub) => ({
+    //       path: sub.path,
+    //       title: sub.title,
+    //       updateTime: sub.up_time,
+    //       id: sub._id,
+    //     }));
+    //   })
+    // );
+    // const source = (db.data as ApiList).items;
+    // const counter = {
+    //   add: 0,
+    //   update: 0,
+    //   total: 0,
+    // };
+    // (db.data as ApiList).items = await pMap(
+    //   result,
+    //   async (item: any) => {
+    //     const match = source.find((s) => s.id === item.id);
+    //     counter.total++;
+    //     if (!match) {
+    //       counter.add++;
+    //       return {
+    //         ...item,
+    //         json: await this.update(item.id),
+    //       };
+    //     }
+    //     if (match.updateTime < item.updateTime || this.options.force) {
+    //       counter.update++;
+    //       return {
+    //         ...item,
+    //         json: await this.update(item.id),
+    //       };
+    //     }
+    //     return match;
+    //   },
+    //   { concurrency: 10 }
+    // );
+    // await db.write();
+    // this.spinner.succeed();
+    // if (this.options.update) {
+    //   return;
+    // }
+    // this.logger.info("正在启动服务器...");
+    // await sleep(500);
+    // this.current = answer;
+    // await this.createServer();
   }
   private async createServer() {
     const { prefix, id }: { prefix: string; id: string } = this.current;

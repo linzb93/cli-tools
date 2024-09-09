@@ -3,7 +3,6 @@ import axios, { AxiosResponse } from "axios";
 import * as cheerio from "cheerio";
 import npm, { Npm } from "@/common/npm";
 import BaseCommand from "@/common/BaseCommand";
-import { SecretDB } from "@/common/types";
 import { pRetry } from "@/common/promiseFn";
 import sql from "@/common/sql";
 import * as helper from "@/common/helper";
