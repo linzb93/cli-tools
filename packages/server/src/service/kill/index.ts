@@ -1,102 +1,112 @@
 import rawKillPort from "kill-port";
+import detectPort from "detect-port";
 import iconv from "iconv-lite";
+import { last, isPlainObject } from "lodash-es";
 import chalk from "chalk";
 import BaseCommand from "@/common/BaseCommand";
 const numberRE = /[1-9][0-9]*/;
 
 export interface IOption {
   help?: boolean;
+  log: boolean;
 }
 
 export type Params = [number] | [string, number];
 export default class extends BaseCommand {
-  async main(...args: Params) {
-    if (args.length === 1) {
-      if (!numberRE.test(args[0].toString())) {
-        this.logger.error("端口号或者进程ID格式不正确，只能输入数字");
-        return;
+  private options: IOption = {
+    log: true,
+  };
+  async main(...args: any[]) {
+    if (
+      (args.length === 2 && isPlainObject(args[1])) ||
+      (args.length === 3 && isPlainObject(args[2]))
+    ) {
+      this.options = last(args);
+    }
+    if (!(await this.validate(args))) {
+      return;
+    }
+    let type = "pid";
+    let num = 0;
+    if (typeof args[0] === "number") {
+      type = "port";
+      num = args[0];
+    } else if (args[0] === "pid") {
+      num = args[1];
+    } else if (args[0] === "port") {
+      num = args[1];
+      type = "port";
+    }
+    if (type === "port") {
+      this.killPort(num.toString());
+      return;
+    }
+    this.killProcess(num);
+  }
+  /**
+   * 校验参数合法性
+   */
+  async validate(args: any): Promise<boolean> {
+    const num = typeof args[0] === "number" ? args[0] : args[1];
+    if (!numberRE.test(num.toString())) {
+      this.logger.error("端口号格式不正确，只能输入数字");
+      return false;
+    }
+    if (num < 1000) {
+      this.logger.error("请输入1000以上的进程ID或端口号");
+      return false;
+    }
+    if ((await detectPort(num)) === num) {
+      if (this.options.log) {
+        this.logger.warn("进程未被占用，无需解除");
       }
-      const id = Number(args[0]);
-      if (id < 1000 && !(await this.confirm())) {
-        return;
+      return false;
+    }
+    return true;
+  }
+  /**
+   * 退出进程
+   */
+  killProcess(id: number) {
+    try {
+      process.kill(id);
+      if (this.options.log) {
+        this.logger.success(`进程ID为${chalk.yellow(id)}的进程关闭成功`);
       }
-      try {
-        await this.killPort(id.toString());
-        this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
-        return;
-      } catch {
-        //
-      }
-      try {
-        process.kill(id);
-      } catch (error) {
-        this.logger.error(
-          `不存在端口号为 ${chalk.yellow(id)} 的或进程ID为 ${chalk.yellow(
-            id
-          )} 的进程`
-        );
-        return;
-      }
-      this.logger.success(`进程 ${chalk.yellow(id)} 关闭成功`);
-    } else if (args.length === 2) {
-      const [target, idArg] = args;
-      let id: number;
-      if (target === "port") {
-        if (!numberRE.test(idArg.toString())) {
-          this.logger.error("端口号格式不正确，只能输入数字", true);
-          return;
-        }
-        id = Number(idArg);
-        try {
-          await this.killPort(id.toString());
-          this.logger.success(`端口 ${chalk.yellow(id)} 关闭成功`);
-          return;
-        } catch (error) {
-          this.logger.error(`端口 ${chalk.yellow(id)} 不存在`);
-        }
-      } else if (target === "pid") {
-        if (!numberRE.test(idArg.toString())) {
-          this.logger.error("进程ID格式不正确，只能输入数字");
-          return;
-        }
-        id = Number(idArg);
-        if (id < 1000 && !(await this.confirm())) {
-          return;
-        }
-        try {
-          process.kill(id);
-          this.logger.success(`进程 ${chalk.yellow(id)} 关闭成功`);
-        } catch (error) {
-          this.logger.error(`进程ID为 ${chalk.yellow(id)} 的进程不存在`);
-          return;
-        }
-      } else {
-        this.logger.error("命令不正确，请输入进程ID: pid，或者端口号: port");
+    } catch (error) {
+      if (this.options.log) {
+        this.logger.error(`不存在进程ID为 ${chalk.yellow(id)} 的进程`);
       }
     }
   }
-  private async confirm(): Promise<boolean> {
-    const ans = await this.inquirer.prompt([
-      {
-        type: "confirm",
-        message: "您可能要关闭系统进程，确认是否继续？",
-        name: "data",
-        default: false,
-      },
-    ]);
-    return ans.data;
-  }
-  private async killPort(port: string): Promise<null> {
-    return new Promise((resolve, reject) => {
-      rawKillPort(port, "tcp")
-        .then((data) => {
-          if (data.stderr) {
-            reject(iconv.decode(Buffer.from(data.stderr), "utf8"));
-          } else {
-            resolve(null);
-          }
-        })
-        .catch(reject);
-    });
+
+  /**
+   * 退出端口进程，需要做error处理
+   * @param port
+   * @returns
+   */
+  private async killPort(port: string) {
+    const action = () =>
+      new Promise((resolve, reject) => {
+        rawKillPort(port, "tcp")
+          .then((data) => {
+            if (data.stderr) {
+              reject(iconv.decode(Buffer.from(data.stderr), "utf8"));
+            } else {
+              resolve(null);
+            }
+          })
+          .catch(reject);
+      });
+    try {
+      await action();
+      if (this.options.log) {
+        this.logger.success(`端口号为${chalk.yellow(port)}的进程关闭成功`);
+      }
+    } catch (error) {
+      if (this.options.log) {
+        this.logger.error(`端口号为${chalk.yellow(port)}的进程关闭失败`);
+      }
+    }
   }
 }

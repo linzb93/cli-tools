@@ -17,7 +17,9 @@ export default class extends BaseCommand {
   async main(command: string, options: Options) {
     const port = globalConfig.port.production;
     if (command === "stop") {
-      new Kill().main("port", port);
+      new Kill().main("port", port, {
+        log: false,
+      });
       return;
     }
     if ((await detectPort(port)) !== port) {
