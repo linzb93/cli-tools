@@ -1,3 +1,16 @@
+process.on('unhandledRejection', e => {
+  process.send?.({
+    type: 'message',
+    message: e
+  })
+});
+process.on('unhandledRejection', e => {
+  process.send?.({
+    type: 'message',
+    message: e
+  })
+})
+
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import http from "node:http";

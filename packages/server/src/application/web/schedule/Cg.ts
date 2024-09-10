@@ -10,11 +10,15 @@ export default class extends Base {
   serveDateRange = ["2024-09-01", "2024-09-30"];
   private onDutyDate = "2024-09-25";
   private crons = {
-    normal: "0 0 * * * *",
+    normal: "0 */30 * * * *",
     dutyDate: "0 */5 * * * *",
   };
   cron = "";
-  private targets = [1, 2, 3, 4].map(item => item * 10000);
+  private targets = [1, 2, 3, 4].map(item => ({
+    value: item * 10000,
+    passed: false,
+  }));
+  private isFinished = false;
   constructor() {
     super();
     const isDutyDate = dayjs().diff(this.onDutyDate, "d") === 0;
@@ -22,11 +26,19 @@ export default class extends Base {
     this.checkTodayForecastSubmitted();
   }
   async onTick() {
+    if (this.isFinished) {
+      return;
+    }
     try {
       const [todayData, monthData] = await getPerformanceData();
       for (let i = this.targets.length - 1; i >= 0; i--) {
-        if (this.targets[i] <= todayData) {
+        const item = this.targets[i];
+        if (item.value <= todayData && !item.passed) {
           notify(`今日业绩：${todayData}，本月业绩：${monthData}。`);
+          item.passed = true;
+          if (i === this.targets.length - 1) {
+            this.isFinished = true;
+          }
           return;
         }
       }

@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import logger from "@/common/logger";
 import BaseApp from "./Base";
 import cronstrue from 'cronstrue';
 import "cronstrue/locales/zh_CN"
@@ -13,13 +14,17 @@ const register = (App: AppType) => {
 
 const start = () => {
   apps.forEach((app) => {
-    process.send?.({
-      type: 'message',
-      message: `定时任务：${app.name}，${cronstrue.toString(app.cron, {
+    const message = `定时任务：${app.name}，${cronstrue.toString(app.cron, {
         locale: 'zh_CN'
       })}执行一次。`
+    process.send?.({
+      type: 'message',
+      message
     })
-    new CronJob(app.cron, app.onTick.bind(app), null, true);
+    new CronJob(app.cron, () => {
+      logger.web(message);
+      app.onTick.bind(app);
+    }, null, true);
   });
 };
 export default {
