@@ -1,5 +1,6 @@
 import { fork } from "node:child_process";
 import { resolve } from "node:path";
+import dayjs from "dayjs";
 import BaseCommand from "@/common/BaseCommand";
 import { root } from "@/common/constant";
 import Kill from "../kill";
@@ -8,8 +9,10 @@ import inquirer from "@/common/inquirer";
 import globalConfig from "../../../../../config.json";
 import open from "open";
 import sql from "@/common/sql";
+import chalk from "chalk";
+
 export interface Options {
-  menus: boolean | string;
+  menu: boolean | string;
   open: boolean;
 }
 
@@ -18,7 +21,7 @@ export default class extends BaseCommand {
     const port = globalConfig.port.production;
     if (command === "stop") {
       new Kill().main("port", port, {
-        log: false,
+        log: true,
       });
       return;
     }
@@ -32,12 +35,19 @@ export default class extends BaseCommand {
       detached: true,
       stdio: [null, null, null, "ipc"],
     });
-    child.on("message", async () => {
-      console.log(`服务在${globalConfig.port.production}端口启动。`);
-      await this.openPage(options);
-      child.unref();
-      child.disconnect();
-      process.exit(0);
+    child.on("message", async (msgData:any) => {
+      if (msgData.type === 'message') {
+        console.log(msgData.message);
+        return;
+      }
+      if (msgData.type === 'quit') {
+        console.log(`${chalk.yellow(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)} 服务在${globalConfig.port.production}端口启动。`);
+        await this.openPage(options);
+        child.unref();
+        child.disconnect();
+        process.exit(0);
+      }
+      
     });
     child.on("error", (error) => {
       console.log(error);
@@ -51,10 +61,10 @@ export default class extends BaseCommand {
       );
       return;
     }
-    if (options.menus) {
+    if (options.menu) {
       const menus = await sql((db) => db.menus);
       let menu = "";
-      if (options.menus === true && menus && menus.length) {
+      if (options.menu === true && menus && menus.length) {
         const { answer } = await inquirer.prompt({
           type: "list",
           name: "answer",
@@ -66,7 +76,7 @@ export default class extends BaseCommand {
         });
         menu = answer;
       } else {
-        menu = options.menus as string;
+        menu = options.menu as string;
       }
       await open(
         `http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}/#${menu}`

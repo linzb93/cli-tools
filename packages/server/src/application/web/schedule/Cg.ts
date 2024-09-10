@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import Base from "./Base";
-import ls from "@/common/ls";
 import { notify } from "@/common/helper";
 import { getPerformanceData } from "@/service/cg/shared";
 import { userForcastList } from "@/model/http/cg";
@@ -15,16 +14,7 @@ export default class extends Base {
     dutyDate: "0 */5 * * * *",
   };
   cron = "";
-  private targets = [
-    {
-      num: 20000,
-      passed: false,
-    },
-    {
-      num: 30000,
-      passed: false,
-    },
-  ];
+  private targets = [1, 2, 3, 4].map(item => item * 10000);
   constructor() {
     super();
     const isDutyDate = dayjs().diff(this.onDutyDate, "d") === 0;
@@ -34,12 +24,8 @@ export default class extends Base {
   async onTick() {
     try {
       const [todayData, monthData] = await getPerformanceData();
-      for (const target of this.targets) {
-        if (target.passed) {
-          continue;
-        }
-        if (target.num <= todayData) {
-          target.passed = true;
+      for (let i = this.targets.length - 1; i >= 0; i--) {
+        if (this.targets[i] <= todayData) {
           notify(`今日业绩：${todayData}，本月业绩：${monthData}。`);
           return;
         }

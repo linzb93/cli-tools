@@ -191,9 +191,8 @@ program.command("repl").action(() => {
 
 program
   .command("server [command]")
-  .option("--menus [name]", "菜单名称")
+  .option("--menu [name]", "菜单名称")
   .option("-o, --open", "打开浏览器")
-  .option("--stop", "关闭服务")
   .action((command, option) => {
     server(command, option);
   });

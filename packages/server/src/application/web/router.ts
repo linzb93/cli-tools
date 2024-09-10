@@ -54,5 +54,7 @@ const server = http.createServer(app);
 // registerSocket(server);
 
 server.listen(globalConfig.port.production, async () => {
-  process.send?.("ok");
+  process.send?.({
+    type: 'quit'
+  });
 });
