@@ -1,5 +1,9 @@
-import Fork, { IOptions } from "@/service/fork";
+import Fork from "@/service/fork";
 import { generateHelpDoc } from "@/common/helper";
+
+interface IOptions {
+  help: boolean;
+}
 
 function generateHelp() {
   generateHelpDoc({
@@ -15,5 +19,5 @@ export default (filename: string, options: IOptions) => {
     generateHelp();
     return;
   }
-  new Fork().main(filename, options);
+  new Fork().main(filename);
 };

@@ -19,7 +19,6 @@ import fork from "./commands/fork";
 import kill from "./commands/kill";
 import lixi from "./commands/lixi";
 import mock from "./commands/mock";
-// import monitor from "@/commands/monitor";
 import shortcut from "./commands/shortcut";
 import getSize from "./commands/size";
 import token from "./commands/token";
@@ -141,15 +140,6 @@ program
   .action((action, options) => {
     mock(action, options);
   });
-
-// program
-//   .command("mon [filename]")
-//   .option("--help", "显示帮助文档")
-//   .allowUnknownOption()
-//   .action((file, _, options) => {
-//     const combinedOptions = options.args.slice(1);
-//     monitor(file, combinedOptions);
-//   });
 
 program
   .command("npm [sub-command] [rest...]")
