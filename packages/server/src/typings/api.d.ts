@@ -37,6 +37,7 @@ export interface Database {
     apiPrefix?: string;
     testPrefix?: string;
     userApiPrefix?: string;
+    oldApiPrefix?: string;
     username?: string;
     password?: string;
   };

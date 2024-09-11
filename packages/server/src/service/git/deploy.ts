@@ -18,12 +18,12 @@ export interface Options {
 }
 
 type GitActions = (
-  "merge"    // 合并代码
-  | "open"   // 打开部署网站
-  | "copy"   // 复制地址和tag
-  | "tag"    // 打tag
-  | "return" // 返回之前的分支
-)[];
+  | "merge" // 合并代码
+  | "open" // 打开部署网站
+  | "copy" // 复制地址和tag
+  | "tag" // 打tag
+  | "return"
+)[]; // 返回之前的分支
 
 interface FlowOption {
   condition: Boolean;
@@ -58,7 +58,7 @@ export default class extends BaseCommand {
     // 测试阶段，从开发分支提交到release分支
     this.register({
       condition: targetBranch === "release" && isDevBranch, // dev -> release
-      actions: ["merge", "open"],
+      actions: ["merge", "open", "return"],
       targetBranch,
     });
     this.register({
@@ -131,7 +131,7 @@ export default class extends BaseCommand {
         flows.push(`git push origin ${tag}`);
       }
     }
-    if (actions.includes('return')) {
+    if (actions.includes("return")) {
       tailFlows.push(`git checkout ${curBranch}`);
     }
     try {
@@ -158,7 +158,7 @@ export default class extends BaseCommand {
       gitAtom.push(),
     ];
     if (options.onlyPush) {
-      commands = commands.filter((cmd: any) => cmd.message !== 'git pull');
+      commands = commands.filter((cmd: any) => cmd.message !== "git pull");
     }
     return commands;
   }

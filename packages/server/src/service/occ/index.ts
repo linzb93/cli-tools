@@ -7,15 +7,32 @@ import { App } from "./types";
 import sql from "@/common/sql";
 import { AnyObject } from "@/typings";
 import ls from "@/common/ls";
-import {showWeakenTips} from "@/common/helper";
+import { showWeakenTips } from "@/common/helper";
 import { sleep } from "@linzb93/utils";
 export interface Options {
+  /**
+   * 是否只获取token，默认是打开网页
+   */
   token: string | boolean;
+  /**
+   * 是否打开PC端网页，默认打开的是移动端网页
+   */
   pc: boolean;
+  /**
+   * 是否复制店铺完整地址（含未处理的token）
+   */
   copy: boolean;
-  full: boolean;
+  /**
+   * 是否在获取地址后调用user api获取用户信息
+   */
   user: boolean;
+  /**
+   * 是否打开测试站网址，或者复制测试站的token
+   */
   test: boolean;
+  /**
+   * 查看帮助文档
+   */
   help: boolean;
 }
 /**
@@ -108,19 +125,13 @@ export default class extends BaseCommand {
       listData = res.data;
     } catch (error) {
       this.spinner.fail(
-        showWeakenTips(
-          "服务器故障，请稍后再试。",
-          (error as Error).message
-        )
+        showWeakenTips("服务器故障，请稍后再试。", (error as Error).message)
       );
       process.exit(1);
     }
     if (!listData.result) {
       this.spinner.fail(
-        showWeakenTips(
-          "服务器故障，请稍后再试。",
-          JSON.stringify(listData)
-        ),
+        showWeakenTips("服务器故障，请稍后再试。", JSON.stringify(listData)),
         true
       );
     } else if (!listData.result.list.length) {
@@ -136,7 +147,7 @@ export default class extends BaseCommand {
     const { options, currentApp } = this;
     let shop = {};
     let shopName = "";
-    if (options.full || currentApp.needGetList) {
+    if (currentApp.needGetList) {
       const list = await this.getSearchList();
       shop = list[0];
       shopName = this.currentApp.getShopName(list[0]);

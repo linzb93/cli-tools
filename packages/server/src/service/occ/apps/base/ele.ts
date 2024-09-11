@@ -1,14 +1,14 @@
 import { App } from "../../types";
-import Base from './';
+import Base from "./";
 export default abstract class Ele extends Base {
   /**
-   * 名称（缩写）
+   * appKey，各应用不一样
    */
-  abstract name:string;
+  abstract appKey: string;
   /**
    * 平台值
    */
-  platform = 8;
+  platform = 11;
   needGetList = true;
   searchKey = "param";
   /**

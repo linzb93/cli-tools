@@ -1,10 +1,10 @@
 import { App } from "../../types";
-import Base from './';
+import Base from "./";
 export default abstract class Meituan extends Base {
   /**
-   * 名称（缩写）
+   * appKey，各应用不一样
    */
-  abstract name:string;
+  abstract appKey: string;
   /**
    * 平台值
    */
