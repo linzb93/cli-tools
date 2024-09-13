@@ -1,6 +1,6 @@
 import { sequenceExec } from "@/common/promiseFn";
 import logger from "@/common/logger";
-import gitAtom from "@/common/git/atom";
+import gitAtom from "@/service/git/atom";
 import { CommandItem } from "@/common/promiseFn";
 
 export default async () => {
@@ -14,6 +14,6 @@ export default async () => {
     ]);
     logger.success("代码推送成功");
   } catch (error) {
-    logger.error('代码拉取失败');
+    logger.error("代码拉取失败");
   }
 };

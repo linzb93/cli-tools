@@ -1,12 +1,11 @@
 import { basename } from "node:path";
 import BaseCommand from "@/common/BaseCommand";
-import readPkg from "read-pkg";
 import { notify } from "@/common/helper";
 import { CommandItem, sequenceExec } from "@/common/promiseFn";
 import Tag from "./tag";
 import clipboard from "clipboardy";
-import { getCurrentBranch, remote } from "@/common/git";
-import gitAtom from "@/common/git/atom";
+import { getCurrentBranch, remote } from "./shared";
+import gitAtom from "./atom";
 import { openDeployPage, getProjectName } from "@/common/jenkins";
 
 export interface Options {

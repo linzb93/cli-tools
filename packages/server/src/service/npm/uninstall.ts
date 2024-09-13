@@ -3,7 +3,7 @@ import path from "node:path";
 import globalNpm from "global-modules";
 import readPkg, { NormalizedPackageJson } from "read-pkg";
 import BaseCommand from "@/common/BaseCommand";
-import npm from "@/common/npm";
+import npm from "./shared";
 
 export interface Options {
   global?: boolean;

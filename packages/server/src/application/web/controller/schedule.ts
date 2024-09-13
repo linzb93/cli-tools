@@ -1,7 +1,7 @@
 import { Router } from "express";
 import sql from "@/common/sql";
 import { HTTP_STATUS } from "@/common/constant";
-import useScan from "@/common/git/useScan";
+import useScan from "@/service/git/useScan";
 import responseFmt from "../shared/response";
 import logger from "@/common/logger";
 import { sse, setHeader } from "../shared/sse";

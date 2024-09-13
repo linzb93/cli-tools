@@ -1,5 +1,5 @@
 import BaseCommand from "@/common/BaseCommand";
-import * as git from "@/common/git";
+import * as git from "./shared";
 import clipboard from "clipboardy";
 import { sequenceExec } from "@/common/promiseFn";
 import readPkg from "read-pkg";
@@ -107,48 +107,52 @@ ${ret}`);
    * 批量删除分支
    */
   private async batchDelete(options: Options) {
-    this.spinner.text = '正在获取所有标签';
+    this.spinner.text = "正在获取所有标签";
     await git.pull();
     const tags = await git.getTags();
     if (!tags) {
-      this.spinner.succeed('没有标签需要删除');
+      this.spinner.succeed("没有标签需要删除");
       return;
     }
     let selected: string[] = [];
     if (options.head) {
       this.spinner.stop();
       const list = tags.slice(0, Number(options.head));
-      this.logger.info(`您需要删除的标签有：${list.join(',')}`);
+      this.logger.info(`您需要删除的标签有：${list.join(",")}`);
       const answer = await this.inquirer.prompt({
-        message: '确认删除？',
-        type: 'confirm',
-        name: 'is'
+        message: "确认删除？",
+        type: "confirm",
+        name: "is",
       });
       if (answer.is) {
         selected = list;
       }
     } else {
       const answer = await this.inquirer.prompt({
-        message: '请选择要删除的标签',
+        message: "请选择要删除的标签",
         type: "checkbox",
         choices: tags,
-        name: 'selected'
+        name: "selected",
       });
       selected = answer.selected;
     }
     if (!selected.length) {
-      this.spinner.fail('您没有选择任何标签，已退出');
+      this.spinner.fail("您没有选择任何标签，已退出");
       return;
     }
     this.spinner.text = "开始删除";
-    await pMap(selected, async (item: string) => {
-      await git.deleteTag(item);
-      try {
-        git.deleteTag(item, { remote: true });
-      } catch (error) {
-        return;
-      }
-    }, { concurrency: 4 });
-    this.spinner.succeed('删除成功');
+    await pMap(
+      selected,
+      async (item: string) => {
+        await git.deleteTag(item);
+        try {
+          git.deleteTag(item, { remote: true });
+        } catch (error) {
+          return;
+        }
+      },
+      { concurrency: 4 }
+    );
+    this.spinner.succeed("删除成功");
   }
 }

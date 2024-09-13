@@ -3,7 +3,7 @@ import chalk from "chalk";
 import Table from "cli-table3";
 import { AxiosError } from "axios";
 import BaseCommand from "@/common/BaseCommand";
-import npm from "@/common/npm";
+import npm from "./shared";
 
 export interface Options {
   open?: boolean;

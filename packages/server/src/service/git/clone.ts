@@ -6,9 +6,8 @@ import BaseCommand from "@/common/BaseCommand";
 import { pRetry } from "@/common/promiseFn";
 import sql from "@/common/sql";
 import * as helper from "@/common/helper";
-import ls from "@/common/ls";
 import vscode from "@/common/vscode";
-import * as git from "@/common/git";
+import * as git from "./shared";
 export interface Options {
   dir: string;
   open?: boolean;

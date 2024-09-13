@@ -1,7 +1,7 @@
 import sql from "@/common/sql";
 import { join } from "node:path";
 import pReduce from "p-reduce";
-import * as gitUtil from "./index";
+import * as gitUtil from "./shared";
 import fsp from "node:fs/promises";
 import pMap from "p-map";
 import { Observable, last, skip, skipLast, first } from "rxjs";

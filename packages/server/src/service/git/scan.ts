@@ -1,7 +1,7 @@
 import { basename } from "node:path";
 import Table from "cli-table3";
 import BaseCommand from "@/common/BaseCommand";
-import useScan from "@/common/git/useScan";
+import useScan from "./useScan";
 import chalk from "chalk";
 import progress from "@/common/progress";
 

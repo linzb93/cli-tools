@@ -1,22 +1,30 @@
 import { sequenceExec } from "@/common/promiseFn";
 import inquirer from "@/common/inquirer";
 
-function fmtCommitMsg(commit:string) {
+function fmtCommitMsg(commit: string) {
   if (!commit) {
-    return 'feat:update';
+    return "feat:update";
   }
-  const prefixes = ['feat:','fix:','docs:','style:','refactor:','test:','chore'];
-  const match = prefixes.find(item => commit.startsWith(item));
+  const prefixes = [
+    "feat:",
+    "fix:",
+    "docs:",
+    "style:",
+    "refactor:",
+    "test:",
+    "chore",
+  ];
+  const match = prefixes.find((item) => commit.startsWith(item));
   if (match) {
     return commit;
   }
-  if (commit.includes('修复') || commit.includes('bug')) {
+  if (commit.includes("修复") || commit.includes("bug")) {
     return `fix:${commit}`;
   }
-  if (commit.includes('重构')) {
+  if (commit.includes("重构")) {
     return `refactor:${commit}`;
   }
-  if (commit.includes('用例')) {
+  if (commit.includes("用例")) {
     return `test:${commit}`;
   }
   return `feat:${commit}`;

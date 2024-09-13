@@ -3,7 +3,7 @@ import axios from "axios";
 import { relative } from "node:path";
 import BaseCommand from "@/common/BaseCommand";
 import * as helper from "@/common/helper";
-import npm from "@/common/npm";
+import npm from "./shared";
 export interface Options {
   dev?: boolean;
   help?: boolean;
