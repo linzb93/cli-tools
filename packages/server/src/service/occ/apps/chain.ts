@@ -1,6 +1,6 @@
 import sql from "@/common/sql";
 import Base from "./base";
-import { getChainList, getChainShopInfo } from '@/model/http/occ';
+import { getChainList, getChainShopInfo } from "@/model/http/occ";
 
 export default class extends Base {
   name = "chain";
@@ -9,23 +9,24 @@ export default class extends Base {
   defaultId = "13023942325";
   testDefaultId = "13023942325";
   prefix = "";
-  url = {
-    base: "/chain/occ",
-    list: "/oa/dkdAccountDetails/accountAnalysisList",
-    login: "/dkdAccount/oa/getAccountToken",
-  };
   async getShopUrl(keyword: string, isTest: boolean) {
-    return getChainList({
-      searchParam: keyword,
-    }, isTest)
+    return getChainList(
+      {
+        searchParam: keyword,
+      },
+      isTest
+    )
       .then((res) => {
-        return getChainShopInfo({
-          id: res.list[0].dkdAccountInfo.id,
-        }, isTest)
+        return getChainShopInfo(
+          {
+            id: res.list[0].dkdAccountInfo.id,
+          },
+          isTest
+        );
       })
-      .then(res => {
+      .then((res) => {
         return this.getOpenUrl(res);
-      })
+      });
   }
   getOpenUrl(res: any) {
     return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(

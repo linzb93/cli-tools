@@ -1,9 +1,20 @@
 import clipboard from "clipboardy";
-import open from 'open';
+import open from "open";
+import chalk from "chalk";
 import BaseCommand from "@/common/BaseCommand";
-import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Outer } from './apps';
-import BaseApp from './apps/base'
-
+import {
+  Mtjysq,
+  Mtzxsq,
+  Mtpjsq,
+  Mtimsq,
+  Mtyxsq,
+  Mtaibdsq,
+  Mtdjds,
+  Elejysq,
+  Chain,
+  Outer,
+} from "./apps";
+import BaseApp from "./apps/base";
 
 export interface Options {
   /**
@@ -23,7 +34,7 @@ export interface Options {
    */
   user: boolean;
   /**
-   * 是否打开测试站网址，或者复制测试站的token
+   * 是否在测试站操作
    */
   test: boolean;
   /**
@@ -44,11 +55,11 @@ export default class extends BaseCommand {
   /**
    * 从输入中获取的应用名称
    */
-  private appName = '';
+  private appName = "";
   /**
    * 搜索内容，支持门店ID或门店名称关键字
    */
-  private searchKeyword = '';
+  private searchKeyword = "";
   async main(input: string[], options: Options) {
     this.options = options;
     this.setArgs(input);
@@ -74,7 +85,7 @@ export default class extends BaseCommand {
   }
   private setArgs(input: string[]) {
     if (!input.length) {
-      this.appName = 'jysq';
+      this.appName = "jysq";
       return;
     }
     if (input.length === 2) {
@@ -87,7 +98,7 @@ export default class extends BaseCommand {
         this.appName = input[0];
         // searchKeyword 用App里面的默认ID
       } else {
-        this.appName = 'jysq';
+        this.appName = "jysq";
         this.searchKeyword = input[0];
       }
     }
@@ -97,21 +108,29 @@ export default class extends BaseCommand {
       const app = new App();
       if (app.name === this.appName) {
         this.currentApp = app;
-        if (this.searchKeyword === '') {
-          this.searchKeyword = this.options.test ? app.testDefaultId : app.defaultId;
+        if (this.searchKeyword === "") {
+          this.searchKeyword = this.options.test
+            ? app.testDefaultId
+            : app.defaultId;
         }
         break;
       }
     }
   }
   private async search() {
-    let url = '';
+    let url = "";
+    this.spinner.text = `${chalk.yellow(
+      `【${this.currentApp.serviceName}】`
+    )}正在获取店铺${chalk.cyan(this.searchKeyword)}地址`;
     try {
-      const res = (await this.currentApp.getShopUrl(this.searchKeyword, this.options.test)) as any;
+      const res = (await this.currentApp.getShopUrl(
+        this.searchKeyword,
+        this.options.test
+      )) as any;
       url = res;
     } catch (error) {
-      console.log(error)
-      return '';
+      this.spinner.fail(error);
+      process.exit(1);
     }
     return url;
   }
@@ -138,7 +157,10 @@ export default class extends BaseCommand {
       // 获取店铺的用户信息
       const token = this.getToken(url);
       this.spinner.text = "正在获取用户信息";
-      const data = (await this.currentApp.getUserInfo(token, options.test)) as any;
+      const data = (await this.currentApp.getUserInfo(
+        token,
+        options.test
+      )) as any;
       this.spinner.succeed(`获取店铺【${shopName}】信息成功!`);
       console.log(data);
       return;
@@ -146,7 +168,7 @@ export default class extends BaseCommand {
     if (options.pc) {
       if (this.currentApp.hasPC) {
         //
-        await open(url.replace('app',''));
+        await open(url.replace("app", ""));
       } else {
         this.spinner.fail(`${this.currentApp.serviceName}没有PC端`);
       }

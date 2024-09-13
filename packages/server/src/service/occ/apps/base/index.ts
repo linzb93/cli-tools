@@ -32,7 +32,7 @@ export default abstract class {
    * 获取用户信息
    * @param {string} token - 用户token
    */
-  async getUserInfo(token:string,isTest: boolean):Promise<string> {
+  async getUserInfo(token: string, isTest: boolean): Promise<string> {
     return token;
   }
 }
