@@ -125,7 +125,7 @@ export default class extends BaseCommand {
       );
     }
     if (actions.includes("tag")) {
-      tag = await new Tag().generateNewestTag();
+      tag = this.options.tag || (await new Tag().generateNewestTag());
       if (tag) {
         flows.push(`git tag ${tag}`);
         flows.push(`git push origin ${tag}`);
