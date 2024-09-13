@@ -1,5 +1,5 @@
-import { App } from "../../types";
 import Base from "./";
+import {getMeituanShopUrl,getMeituanUserInfo} from '@/model/http/occ';
 export default abstract class Meituan extends Base {
   /**
    * appKey，各应用不一样
@@ -10,30 +10,14 @@ export default abstract class Meituan extends Base {
    */
   platform = 8;
   searchKey = "param";
-  /**
-   * 各类URL
-   */
-  url = {
-    base: "/",
-    list: "/occ/order/getOrderInfoList",
-    login: "/occ/order/replaceUserLogin",
-    userApi: "/meituan/homeUserInfo",
-  };
-  getFindQuery(app: App) {
-    return {
-      appKey: app.appKey,
-      platform: app.platform,
-      serviceName: app.serviceName,
-    };
+  async getShopUrl(keyword: string, isTest: boolean): Promise<string> {
+    return getMeituanShopUrl({
+      appKey: this.appKey,
+      memberId: keyword,
+      platform: this.platform,
+    }, isTest);
   }
-  getLoginQuery(item: any, app: App) {
-    return {
-      appKey: app.appKey,
-      memberId: item.memberId,
-      platform: app.platform,
-    };
-  }
-  getShopName(shop: any) {
-    return shop.memberName || shop.memberId;
+  async getUserInfo(token: string, isTest: boolean): Promise<string> {
+    return getMeituanUserInfo(token, isTest);
   }
 }

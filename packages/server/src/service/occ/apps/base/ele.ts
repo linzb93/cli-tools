@@ -1,4 +1,4 @@
-import { App } from "../../types";
+import {getEleShopUrl, getEleShopList,getEleUserInfo} from '@/model/http/occ';
 import Base from "./";
 export default abstract class Ele extends Base {
   /**
@@ -9,32 +9,21 @@ export default abstract class Ele extends Base {
    * 平台值
    */
   platform = 11;
-  needGetList = true;
-  searchKey = "param";
-  /**
-   * 各类URL
-   */
-  url = {
-    base: "/eleOcc",
-    list: "/manage/getOrderList",
-    login: "/auth/onelogin",
-    userApi: "/home/getUserInfo",
-  };
-  getFindQuery(app: App) {
-    return {
-      appId: app.appId,
-      platform: app.platform,
-      serviceName: app.serviceName,
-    };
+  searchKey = '';
+  async getShopUrl(keyword: string, isTest: boolean): Promise<string> {
+    return getEleShopList({
+      appId: this.appKey,
+      platform: this.platform,
+    },isTest)
+    .then((res) => {
+      return  getEleShopUrl({
+        appId: this.appKey,
+        shopId: keyword,
+        userId: res.list[0].userId
+      }, isTest)
+    });
   }
-  getLoginQuery(item: any, app: App) {
-    return {
-      appId: item.appId,
-      shopId: item.shopId,
-      userId: item.userId,
-    };
-  }
-  getShopName(shop: any) {
-    return shop.shopName || shop.shopId;
+  async getUserInfo(token: string, isTest: boolean): Promise<string> {
+    return getEleUserInfo(token, isTest);
   }
 }

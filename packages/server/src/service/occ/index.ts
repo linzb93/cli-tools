@@ -1,14 +1,10 @@
-import axios, { AxiosInstance } from "axios";
-import open from "open";
 import clipboard from "clipboardy";
+import open from 'open';
 import BaseCommand from "@/common/BaseCommand";
-import appMap from "./appMap";
-import { App } from "./types";
-import sql from "@/common/sql";
-import { AnyObject } from "@/typings";
-import ls from "@/common/ls";
-import { showWeakenTips } from "@/common/helper";
-import { sleep } from "@linzb93/utils";
+import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Outer } from './apps';
+import BaseApp from './apps/base'
+
+
 export interface Options {
   /**
    * 是否只获取token，默认是打开网页
@@ -35,24 +31,92 @@ export interface Options {
    */
   help: boolean;
 }
-/**
- * OCC管理
- */
+
+type AppCtor = new () => BaseApp;
+
 export default class extends BaseCommand {
-  private currentApp: App;
-  private memberId: string = "";
-  private service: AxiosInstance;
+  private apps: AppCtor[] = [];
   private options: Options;
-  private input: string[];
-  constructor() {
-    super();
-  }
+  /**
+   * 当前匹配的应用
+   */
+  private currentApp: BaseApp;
+  /**
+   * 从输入中获取的应用名称
+   */
+  private appName = '';
+  /**
+   * 搜索内容，支持门店ID或门店名称关键字
+   */
+  private searchKeyword = '';
   async main(input: string[], options: Options) {
     this.options = options;
-    this.input = input;
-    this.setMatchApp();
-    const { shop, url, shopResult } = await this.getShop();
-    const shopName = this.currentApp.getShopName(shop);
+    this.setArgs(input);
+    this.registerApp(Mtjysq);
+    this.registerApp(Mtzxsq);
+    this.registerApp(Mtpjsq);
+    this.registerApp(Mtimsq);
+    this.registerApp(Mtyxsq);
+    this.registerApp(Mtdjds);
+    this.registerApp(Mtaibdsq);
+    this.registerApp(Elejysq);
+    this.registerApp(Chain);
+    this.registerApp(Outer);
+    await this.run();
+  }
+  registerApp(app: AppCtor) {
+    this.apps.push(app);
+  }
+  private async run() {
+    this.setMachApp();
+    const url = await this.search();
+    await this.afterSearch(url, this.searchKeyword);
+  }
+  private setArgs(input: string[]) {
+    if (!input.length) {
+      this.appName = 'jysq';
+      return;
+    }
+    if (input.length === 2) {
+      this.appName = input[0];
+      this.searchKeyword = input[1];
+      return;
+    }
+    if (input.length === 1) {
+      if (/^[a-z]+$/.test(input[0])) {
+        this.appName = input[0];
+        // searchKeyword 用App里面的默认ID
+      } else {
+        this.appName = 'jysq';
+        this.searchKeyword = input[0];
+      }
+    }
+  }
+  private setMachApp() {
+    for (const App of this.apps) {
+      const app = new App();
+      if (app.name === this.appName) {
+        this.currentApp = app;
+        if (this.searchKeyword === '') {
+          this.searchKeyword = this.options.test ? app.testDefaultId : app.defaultId;
+        }
+        break;
+      }
+    }
+  }
+  private async search() {
+    let url = '';
+    try {
+      const res = (await this.currentApp.getShopUrl(this.searchKeyword, this.options.test)) as any;
+      url = res;
+    } catch (error) {
+      console.log(error)
+      return '';
+    }
+    return url;
+  }
+  private async afterSearch(url: string, shopName: string) {
+    const { options } = this;
     if (options.token) {
       // 读取token
       const token = this.getToken(url);
@@ -60,165 +124,50 @@ export default class extends BaseCommand {
       this.spinner.succeed(
         `【${this.currentApp.serviceName}】已复制店铺【${shopName}】 的token\n${token}`
       );
-    } else if (options.copy) {
+      return;
+    }
+    if (options.copy) {
       // 复制店铺入口地址
       clipboard.writeSync(url);
       this.spinner.succeed(
         `【${this.currentApp.serviceName}】已复制店铺【${shopName}】的地址:\n${url}`
       );
-    } else if (options.user) {
+      return;
+    }
+    if (options.user) {
       // 获取店铺的用户信息
       const token = this.getToken(url);
       this.spinner.text = "正在获取用户信息";
-      const prefix = await sql((db) => db.oa.userApiPrefix);
-      const { data } = await axios.post(
-        prefix + this.currentApp.url.userApi,
-        {},
-        {
-          headers: {
-            token,
-          },
-        }
-      );
+      const data = (await this.currentApp.getUserInfo(token, options.test)) as any;
       this.spinner.succeed(`获取店铺【${shopName}】信息成功!`);
-      console.log(data.result);
-    } else {
-      const newUrl =
-        typeof this.currentApp.getOpenUrl === "function"
-          ? this.currentApp.getOpenUrl(shopResult)
-          : url;
-      if (
-        options.pc &&
-        ["4", "73", "36", "75"].includes(this.currentApp.appKey)
-      ) {
-        // 只有美团经营神器、装修神器、评价神器和IM神器有PC端
-        open(newUrl.replace("app", ""));
+      console.log(data);
+      return;
+    }
+    if (options.pc) {
+      if (this.currentApp.hasPC) {
+        //
+        await open(url.replace('app',''));
       } else {
-        open(newUrl);
+        this.spinner.fail(`${this.currentApp.serviceName}没有PC端`);
       }
-      this.spinner.succeed(
-        `【${this.currentApp.serviceName}】店铺【${shopName}】打开成功`
-      );
+      return;
     }
-  }
-  /**
-   * 获取店铺搜索列表
-   * @param pageSize
-   * @returns
-   */
-  private async getSearchList(): Promise<any[]> {
-    this.spinner.text = `【${this.currentApp.serviceName}】正在获取店铺信息`;
-    const { service, memberId, currentApp } = this;
-    const listSearchParams = {
-      ...this.currentApp.getFindQuery(this.currentApp),
-      pageIndex: 1,
-      pageSize: 1,
-      [this.currentApp.searchKey]: memberId,
-    };
-    let listData: {
-      result: {
-        list: AnyObject[];
-      };
-    };
-    try {
-      const res = await service.post(currentApp.url.list, listSearchParams, {});
-      listData = res.data;
-    } catch (error) {
-      this.spinner.fail(
-        showWeakenTips("服务器故障，请稍后再试。", (error as Error).message)
-      );
-      process.exit(1);
-    }
-    if (!listData.result) {
-      this.spinner.fail(
-        showWeakenTips("服务器故障，请稍后再试。", JSON.stringify(listData)),
-        true
-      );
-    } else if (!listData.result.list.length) {
-      this.spinner.fail("未找到店铺", true);
-    }
-    return listData.result.list;
-  }
-  private async getShop(): Promise<{
-    shop: AnyObject;
-    url: string;
-    shopResult: any;
-  }> {
-    const { options, currentApp } = this;
-    let shop = {};
-    let shopName = "";
-    if (currentApp.needGetList) {
-      const list = await this.getSearchList();
-      shop = list[0];
-      shopName = this.currentApp.getShopName(list[0]);
-    } else {
-      shop = {
-        memberId: this.memberId,
-      };
-      shopName = this.memberId;
-    }
-    if (options.token) {
-      this.spinner.text = `【${currentApp.serviceName}】正在获取token:${shopName}`;
-    } else {
-      this.spinner.text = `【${currentApp.serviceName}】正在获取店铺信息:${shopName}`;
-    }
-    await sleep(1500);
-    const {
-      data: { result },
-    } = await this.service.post(
-      currentApp.url.login,
-      currentApp.getLoginQuery(shop, currentApp)
-    );
-    return {
-      shopResult: result,
-      url:
-        typeof currentApp.getToken === "function"
-          ? currentApp.getToken(result)
-          : result,
-      shop,
-    };
-  }
-  /**
-   * 根据命令行入参判断是要读取哪个app的
-   */
-  private setMatchApp() {
-    const { input } = this;
-    let match: App;
-    let memberId = "";
-    if (!input.length) {
-      match = appMap.find((app) => app.name === "jysq");
-      memberId = !this.options.test ? match.defaultId : match.testDefaultId;
-    } else if (input.length === 1) {
-      if (isNaN(Number(input[0]))) {
-        match = appMap.find((app) => app.name === input[0]);
-        if (!match) {
-          throw new Error("项目不存在，请重新输入");
-        }
-        memberId = !this.options.test ? match.defaultId : match.testDefaultId;
-      } else {
-        match = appMap.find((app) => app.name === "jysq");
-        memberId = input[0];
-      }
-    } else if (input.length === 2) {
-      match = appMap.find((app) => app.name === input[0]);
-      if (!match) {
-        throw new Error("项目不存在，请重新输入");
-      }
-      memberId = input[1];
-    }
-    this.currentApp = match;
-    this.memberId = memberId;
-    const baseURL = (() => {
-      if (match.prefix) {
-        return `${match.prefix}${match.url.base}`;
-      }
-      return `${
-        this.options.test ? ls.get("oa.testPrefix") : ls.get("oa.apiPrefix")
-      }${match.url.base}`;
-    })();
-    this.service = axios.create({
-      baseURL,
-    });
+    // const newUrl =
+    //     typeof this.currentApp.getOpenUrl === "function"
+    //       ? this.currentApp.getOpenUrl(shopResult)
+    //       : url;
+    //       if (
+    //         this.currentApp.hasPC
+    //       ) {
+    //         // 只有美团经营神器、装修神器、评价神器和IM神器有PC端
+    //         open(newUrl.replace("app", ""));
+    //       } else {
+    //         open(newUrl);
+    //       }
+    //       this.spinner.succeed(
+    //         `【${this.currentApp.serviceName}】店铺【${shopName}】打开成功`
+    //       );
+    await open(url);
   }
   /**
    * 根据应用登录页地址获取token

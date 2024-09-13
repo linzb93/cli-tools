@@ -1,5 +1,3 @@
-import { App } from "../../types";
-
 export default abstract class {
   appKey: string;
   /**
@@ -24,23 +22,17 @@ export default abstract class {
    */
   hasPC = false;
   abstract searchKey: string;
-  /**
-   * 各类URL
-   */
-  abstract url: {
-    base: string;
-    list: string;
-    login: string;
-    user?: string;
-  };
-  abstract getFindQuery(app: App): any;
-  abstract getLoginQuery(item: any, app: App): any;
-  /**
-   * 获取店铺名称，如果不存在的话获取店铺ID
-   */
-  abstract getShopName(shop: any): string;
 
-  getOpenUrl(res:any) {
-    return ''
+  /**
+   * 根据搜索关键词获取店铺地址
+   * @param {string} keyword - 搜索关键词
+   */
+  abstract getShopUrl(keyword: string, isTest: boolean): Promise<string>;
+  /**
+   * 获取用户信息
+   * @param {string} token - 用户token
+   */
+  async getUserInfo(token:string,isTest: boolean):Promise<string> {
+    return token;
   }
 }
