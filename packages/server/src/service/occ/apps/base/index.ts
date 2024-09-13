@@ -1,6 +1,7 @@
 import { App } from "../../types";
 
 export default abstract class {
+  appKey: string;
   /**
    * 名称（缩写）
    */
@@ -18,6 +19,10 @@ export default abstract class {
    * （测试站）当没有传入查询ID时，使用的默认ID，一般是测试账号
    */
   abstract testDefaultId: string;
+  /**
+   * 应用是否有PC端
+   */
+  hasPC = false;
   abstract searchKey: string;
   /**
    * 各类URL
@@ -34,4 +39,8 @@ export default abstract class {
    * 获取店铺名称，如果不存在的话获取店铺ID
    */
   abstract getShopName(shop: any): string;
+
+  getOpenUrl(res:any) {
+    return ''
+  }
 }

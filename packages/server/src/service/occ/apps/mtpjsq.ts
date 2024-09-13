@@ -6,4 +6,5 @@ export default class extends MeituanBase {
   serviceName = "评价神器-美团";
   defaultId = "16499283381";
   testDefaultId = "16499283381";
+  hasPC = true;
 }
