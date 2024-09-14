@@ -12,7 +12,7 @@ function fmtCommitMsg(commit: string) {
     "style:",
     "refactor:",
     "test:",
-    "chore",
+    "chore:",
   ];
   const match = prefixes.find((item) => commit.startsWith(item));
   if (match) {

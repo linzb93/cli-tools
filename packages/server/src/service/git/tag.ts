@@ -51,24 +51,25 @@ export default class extends BaseCommand {
         this.logger.success(last);
         clipboard.writeSync(last);
       }
-    } else {
-      let output = "";
-      const input = data[0];
-      if (!input) {
-        output = await this.generateNewestTag();
-      } else {
-        output = input.startsWith("v") ? input : `v${input}`;
-      }
-      await sequenceExec([`git tag ${output}`, `git push origin ${output}`]);
-      const projectConf = await readPkg({
-        cwd: process.cwd(),
-      });
-      const jenkins = projectConf.jenkins;
-      const ret = `${jenkins.id.replace(/[\-|_]test$/, "")}。${output}`;
-      this.logger.success(`部署成功，复制填入更新文档：
-${ret}`);
-      clipboard.writeSync(ret);
+      return;
     }
+    let output = "";
+    const input = data[0];
+    if (!input) {
+      output = await this.generateNewestTag();
+    } else {
+      output = input.startsWith("v") ? input : `v${input}`;
+    }
+    await sequenceExec([`git tag ${output}`, `git push origin ${output}`]);
+    const projectConf = await readPkg({
+      cwd: process.cwd(),
+    });
+    const jenkins = projectConf.jenkins;
+    const ret = `${jenkins.id.replace(/[\-|_]test$/, "")}。${output}`;
+    this.logger.success(`部署成功，复制填入更新文档：
+${ret}`);
+    clipboard.writeSync(ret);
+
   }
   /**
    * 生成最新的tag

@@ -12,12 +12,12 @@ import sql from "@/common/sql";
 import chalk from "chalk";
 
 export interface Options {
-  menu: boolean | string;
-  open: boolean;
+  menu?: boolean | string;
+  open?: boolean;
 }
 
 export default class extends BaseCommand {
-  async main(command: string, options: Options) {
+  async main(command?: string, options?: Options) {
     const port = globalConfig.port.production;
     if (command === "stop") {
       new Kill().main("port", port, {
@@ -54,14 +54,14 @@ export default class extends BaseCommand {
       process.exit(1);
     });
   }
-  private async openPage(options: Options) {
-    if (options.open) {
+  private async openPage(options?: Options) {
+    if (options?.open) {
       await open(
         `http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}`
       );
       return;
     }
-    if (options.menu) {
+    if (options?.menu) {
       const menus = await sql((db) => db.menus);
       let menu = "";
       if (options.menu === true && menus && menus.length) {

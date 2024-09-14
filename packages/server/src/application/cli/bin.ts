@@ -10,7 +10,6 @@ import ip from "./commands/ip";
 import open from "./commands/open";
 import translate from "./commands/translate";
 import occ from "./commands/occ";
-import logger from "@/common/logger";
 import agent from "./commands/agent";
 import cg from "./commands/cg";
 import clear from "./commands/clear";
@@ -30,12 +29,13 @@ import time from "./commands/time";
 import repl from "./commands/repl";
 import server from "./commands/server";
 import globalPkg from "../../../../../package.json";
+import init from "@/service/init";
 
 const program = new Command();
 program.version(globalPkg.version);
 
 program.hook("preAction", (thisCommand) => {
-  logger.cli(thisCommand.args.join(" "));
+  init(thisCommand);
 });
 
 program

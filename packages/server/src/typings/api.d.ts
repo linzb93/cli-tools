@@ -28,7 +28,6 @@ export interface Database {
     path: string;
     name: string;
   }[];
-
   sync: {
     user: string;
     password: string;

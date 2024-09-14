@@ -4,7 +4,6 @@ import open from "open";
 import sql from "@/common/sql";
 import fs from "fs-extra";
 import globalNpm from "global-modules";
-import ls from "@/common/ls";
 import vscode from "@/common/vscode";
 import { isWin } from "@/common/constant";
 import { pLocate } from "@/common/promiseFn";

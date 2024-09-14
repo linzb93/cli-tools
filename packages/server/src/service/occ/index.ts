@@ -167,28 +167,12 @@ export default class extends BaseCommand {
     }
     if (options.pc) {
       if (this.currentApp.hasPC) {
-        //
         await open(url.replace("app", ""));
       } else {
         this.spinner.fail(`${this.currentApp.serviceName}没有PC端`);
       }
       return;
     }
-    // const newUrl =
-    //     typeof this.currentApp.getOpenUrl === "function"
-    //       ? this.currentApp.getOpenUrl(shopResult)
-    //       : url;
-    //       if (
-    //         this.currentApp.hasPC
-    //       ) {
-    //         // 只有美团经营神器、装修神器、评价神器和IM神器有PC端
-    //         open(newUrl.replace("app", ""));
-    //       } else {
-    //         open(newUrl);
-    //       }
-    //       this.spinner.succeed(
-    //         `【${this.currentApp.serviceName}】店铺【${shopName}】打开成功`
-    //       );
     await open(url);
   }
   /**
