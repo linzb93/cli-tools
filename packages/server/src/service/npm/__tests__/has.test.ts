@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import Has from "./has";
+import Has from "../has";
 
 describe("npm has", () => {
   it("一个存在的npm模块", async () => {

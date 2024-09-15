@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import Search from "./search";
+import Search from "../search";
 
 describe("npm search", () => {
   it.todo("获取单个npm模块信息", async () => {

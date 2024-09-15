@@ -3,8 +3,17 @@ import fs from "fs-extra";
 import clipboardy from "clipboardy";
 import BaseCommand from "@/common/BaseCommand";
 export interface Options {
+  /**
+   * 遍历的层数，不填为遍历全部
+   */
   level: number;
+  /**
+   * 忽视的目录
+   */
   ignore: string;
+  /**
+   * 是否复制生成的树文本进剪贴板
+   */
   copy: boolean;
 }
 
@@ -33,7 +42,7 @@ export default class extends BaseCommand {
       }
     }
   }
-  private init(dir = '.', options: Options) {
+  private init(dir = ".", options: Options) {
     const defaultOptions = {
       level: 1,
     };

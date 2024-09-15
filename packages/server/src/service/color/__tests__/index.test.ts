@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import Color from "./";
+import Color from "..";
 
 describe("color", () => {
   it("rgb to hex", () => {

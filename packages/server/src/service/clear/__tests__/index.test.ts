@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "fs-extra";
 import { resolve } from "node:path";
-import Clear from ".";
+import Clear from "..";
 
 describe("clear", () => {
   const filename = "clear-test.txt";

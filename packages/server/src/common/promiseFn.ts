@@ -60,9 +60,7 @@ export interface CommandItem {
   retryTimes?: number;
   onError?: Function;
 }
-export const sequenceExec = async (
-  commandList: (string | CommandItem)[],
-) => {
+export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
   for (const commandItem of commandList) {
     const command =
       typeof commandItem === "string" ? commandItem : commandItem.message;

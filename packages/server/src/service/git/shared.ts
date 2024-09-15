@@ -176,9 +176,9 @@ export const deleteTag = async (
   options?: RemoteOptions
 ): Promise<void> => {
   if (options?.remote) {
-    await execa(`git push origin :refs/tags/${tag}`, { cwd:process.cwd() });
+    await execa(`git push origin :refs/tags/${tag}`, { cwd: process.cwd() });
   } else {
-    await execa(`git tag -d ${tag}`, { cwd:process.cwd() });
+    await execa(`git tag -d ${tag}`, { cwd: process.cwd() });
   }
 };
 

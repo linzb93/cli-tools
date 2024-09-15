@@ -56,7 +56,6 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
 
 /**
  * @deprecated 将用commander封装
- *
  * 校验输出。
  */
 export const validate = (obj: any, descriptor: ValidatorRules): void => {
@@ -71,9 +70,7 @@ export const validate = (obj: any, descriptor: ValidatorRules): void => {
     process.exit(1);
   });
 };
-export const isURL = (text: string): boolean => {
-  return text.startsWith("http://") || text.startsWith("https://");
-};
+export const isURL = (text: string): boolean => !!text.match(/^https?\:\:/);
 /**
  * 按行分割文件。
  * @param {string} fileContent 文件内容
@@ -92,7 +89,7 @@ export const emptyWritableStream = new Writable({
   },
 });
 /**
- * 判断一个字符串是否是本地路径
+ * 判断一个字符串是否是本地路径，兼容Windows和macOS系统
  */
 export const isPath = (value: string): boolean => {
   return (
