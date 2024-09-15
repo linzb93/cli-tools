@@ -6,7 +6,7 @@ import rename from "./rename";
 import branch from "./branch";
 import scan from "./scan";
 import tag from "./tag";
-import * as helper from "@/common/helper";
+import { generateHelpDoc } from "@/common/helper";
 
 export default function (subCommand: string, data: string[], options: any) {
   if (options.help && !subCommand) {
@@ -29,7 +29,7 @@ export default function (subCommand: string, data: string[], options: any) {
 }
 
 function generateHelp() {
-  helper.generateHelpDoc({
+  generateHelpDoc({
     title: "git",
     content: `git命令支持下列子命令，请输入子命令 + "--help"选项查看：
 - clone: 将远程仓库复制到本地，支持选择文件夹。

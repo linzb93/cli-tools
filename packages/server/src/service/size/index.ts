@@ -6,7 +6,7 @@ import through from "through2";
 import del from "del";
 import path from "node:path";
 import BaseCommand from "@/common/BaseCommand";
-import * as helper from "@/common/helper";
+import { isURL, emptyWritableStream } from "@/common/helper";
 import { root } from "@/common/constant";
 
 export interface Options {
@@ -19,7 +19,7 @@ interface Dimensions {
 
 export default class extends BaseCommand {
   async main(filePath: string, options: Options) {
-    if (helper.isURL(filePath)) {
+    if (isURL(filePath)) {
       let res: AxiosResponse;
       // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
       filePath = filePath.replace(/\s/g, ",");
@@ -45,9 +45,7 @@ export default class extends BaseCommand {
             })
           )
           .pipe(
-            settingRect
-              ? fs.createWriteStream(targetName)
-              : helper.emptyWritableStream
+            settingRect ? fs.createWriteStream(targetName) : emptyWritableStream
           )
           .on("finish", () => {
             resolve(null);

@@ -2,7 +2,7 @@ import semver, { SemVer } from "semver";
 import axios from "axios";
 import { relative } from "node:path";
 import BaseCommand from "@/common/BaseCommand";
-import * as helper from "@/common/helper";
+import { isPath } from "@/common/helper";
 import npm from "./shared";
 export interface Options {
   dev?: boolean;
@@ -16,7 +16,7 @@ export default class extends BaseCommand {
     this.pkg = pkgs[0];
     this.options = options;
     const { pkg, spinner } = this;
-    if (helper.isPath(pkg)) {
+    if (isPath(pkg)) {
       // 是本地的
       const relativePath = relative(pkg, process.cwd());
       npm.install(relativePath);

@@ -2,7 +2,6 @@ import convert from "color-convert";
 import chalk from "chalk";
 import clipboard from "clipboardy";
 import BaseCommand from "@/common/BaseCommand";
-import * as helper from "@/common/helper";
 export interface Options {
   get: boolean;
   help?: boolean;
@@ -13,10 +12,6 @@ export default class extends BaseCommand {
     super();
   }
   main(text: string, options: Options) {
-    if (options.help) {
-      this.generateHelp();
-      return;
-    }
     let ret = convert.hex.rgb(text).join(", ");
     let blockColor = `#${text}`;
     if (text.startsWith("#")) {
@@ -44,13 +39,5 @@ export default class extends BaseCommand {
       `${chalk.green("[已复制]")}${chalk.hex(blockColor).bold(ret)}`
     );
     clipboard.writeSync(ret);
-  }
-  private generateHelp() {
-    helper.generateHelpDoc({
-      title: "color",
-      content: `转换颜色显示
-color '#333' => '51,51,51'
-color '255,255,255' => '#fff'`,
-    });
   }
 }

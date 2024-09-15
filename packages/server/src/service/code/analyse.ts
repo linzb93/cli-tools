@@ -4,7 +4,7 @@ import fs from "fs-extra";
 import pMap from "p-map";
 import { globby } from "globby";
 import chalk from "chalk";
-import * as helper from "@/common/helper";
+import { splitByLine } from "@/common/helper";
 interface IModule {
   access(): Promise<boolean>;
   maxLength: {
@@ -120,7 +120,7 @@ export default class extends BaseCommand {
     const { files, max } = await this.getMatchFiles();
     const accumulator = await pMap(files, async (file) => {
       const content = await fs.readFile(file, "utf8");
-      const lineLength = helper.splitByLine(content).length;
+      const lineLength = splitByLine(content).length;
       let type = "normal";
       if (lineLength > max.danger) {
         type = "danger";

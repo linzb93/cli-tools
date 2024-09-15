@@ -5,7 +5,7 @@ import npm, { Npm } from "@/common/npm";
 import BaseCommand from "@/common/BaseCommand";
 import { pRetry } from "@/common/promiseFn";
 import sql from "@/common/sql";
-import * as helper from "@/common/helper";
+import { validate, isURL } from "@/common/helper";
 import vscode from "@/common/vscode";
 import * as git from "./shared";
 export interface Options {
@@ -28,11 +28,7 @@ export default class extends BaseCommand {
     this.source = data[0];
     this.options = opt;
     const { source, options } = this;
-    if (options.help) {
-      this.generateHelp();
-      return;
-    }
-    helper.validate(
+    validate(
       {
         source,
       },
@@ -140,32 +136,17 @@ ${(error as Error).message}`);
     return `${repo}.git`;
   }
   private isGitUrl(url: string): boolean {
-    return helper.isURL(url) || this.isGitSSH(url);
+    return isURL(url) || this.isGitSSH(url);
   }
   private isGitSSH(url: string): boolean {
     return url.startsWith("git@") && url.endsWith(".git");
   }
   private toGitUrl(url: string): string {
-    if (helper.isURL(url)) {
+    if (isURL(url)) {
       return url.endsWith(".git") ? url : `${url}.git`;
     }
     return url
       .replace(/git@([a-z\.]+\.com)\:/, "https://$1/")
       .replace(/[^\.git]$/, ".git");
-  }
-  private generateHelp() {
-    helper.generateHelpDoc({
-      title: "git clone",
-      content: `支持从github、git地址或者npm网站clone项目。
-使用方法：
-git clone <url>
-参数：
-- <url>: git地址、github搜索关键词、npm网站搜索关键词
-选项：
-- dir: clone的地址
-- from=github: 从github clone
-- open: clone结束后使用vscode打开
-- install: 安装npm依赖`,
-    });
   }
 }

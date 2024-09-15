@@ -3,9 +3,7 @@ import { fork } from "node:child_process";
 import chalk from "chalk";
 import { pick } from "lodash-es";
 import BaseCommand from "@/common/BaseCommand";
-import { onShutdown } from "@/common/schedule";
 import { ChildProcessEmitData } from "./types";
-import * as helper from "@/common/helper";
 import { root } from "@/common/constant";
 export interface Options {
   proxy: string;
