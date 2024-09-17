@@ -4,8 +4,6 @@ import { Low, JSONFile } from "lowdb";
 import { cacheRoot } from "./constant";
 import { Database } from "../typings/api";
 
-
-
 export default async function sql<T>(
   callback: (data: Database) => T
 ): Promise<T> {

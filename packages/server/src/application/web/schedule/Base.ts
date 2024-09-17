@@ -8,11 +8,12 @@ export default abstract class {
    */
   serveDateRange: string[] = [];
   /**
-   * Cron格式
+   * 下次执行的时间（时间戳）
    */
-  cron = ''
+  nextExecuateTime: number;
+  abstract interval: number;
   /**
    * 任务触发时间到，触发回调
    */
-  abstract onTick(): void
+  abstract onTick(): void;
 }

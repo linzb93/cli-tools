@@ -9,8 +9,6 @@ function generateHelp() {
 公司冲高业绩查看。达到设定目标时会有弹窗提醒。
 使用方法：
 ${chalk.cyan("cg --realtime")}
-选项：
-- realtime: 每3分钟更新一次数据，否则每1小时更新一次。
 其他命令：
 - cg get: 获取当前业绩。
 - cg user: 获取所有人的预测结果。

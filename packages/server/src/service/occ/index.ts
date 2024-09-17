@@ -129,7 +129,8 @@ export default class extends BaseCommand {
       )) as any;
       url = res;
     } catch (error) {
-      this.spinner.fail(error);
+      this.spinner.fail("请求失败");
+      console.log(error);
       process.exit(1);
     }
     return url;

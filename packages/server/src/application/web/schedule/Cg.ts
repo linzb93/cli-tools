@@ -9,12 +9,12 @@ export default class extends Base {
   name = "部门业绩";
   serveDateRange = ["2024-09-01", "2024-09-30"];
   private onDutyDate = "2024-09-25";
-  private crons = {
-    normal: "0 */30 * * * *",
-    dutyDate: "0 */5 * * * *",
+  interval = 0;
+  private intervalMap = {
+    normal: 1000 * 60 * 60,
+    dutyDate: 1000 * 60 * 10,
   };
-  cron = "";
-  private targets = [1, 2, 3, 4].map(item => ({
+  private targets = [1, 2, 3, 4].map((item) => ({
     value: item * 10000,
     passed: false,
   }));
@@ -22,7 +22,9 @@ export default class extends Base {
   constructor() {
     super();
     const isDutyDate = dayjs().diff(this.onDutyDate, "d") === 0;
-    this.cron = isDutyDate ? this.crons.dutyDate : this.crons.normal;
+    this.interval = isDutyDate
+      ? this.intervalMap.dutyDate
+      : this.intervalMap.normal;
     this.checkTodayForecastSubmitted();
   }
   async onTick() {
