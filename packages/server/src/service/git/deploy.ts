@@ -11,8 +11,18 @@ import { openDeployPage, getProjectName } from "@/common/jenkins";
 export interface Options {
   commit: string;
   tag: string;
+  /**
+   * 发布到当前分支，只执行基础操作
+   */
   current: boolean;
   help: boolean;
+  /**
+   * 发布到生产分支(master)
+   */
+  prod: boolean;
+  /**
+   * 只推送，不拉取代码。（一般用于Github项目）
+   */
   onlyPush: boolean;
 }
 
@@ -42,7 +52,7 @@ export default class extends BaseCommand {
     const curBranch = await getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);
     const targetBranch =
-      (curBranch === "master" && data[0] === "test") || data[0] !== "prod"
+      (curBranch === "master" && data[0] === "test") || options.prod
         ? "release"
         : "master";
     // 只提交到当前分支

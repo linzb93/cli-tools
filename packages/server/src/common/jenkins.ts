@@ -22,6 +22,10 @@ export const openDeployPage = async () => {
   }
 };
 
+/**
+ * 根据项目package.json中的jenkins属性值获取对应jenkins信息
+ * @returns 
+ */
 export const getProjectName = async (): Promise<{
   name: string;
   id: string;

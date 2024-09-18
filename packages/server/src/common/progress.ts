@@ -1,3 +1,6 @@
+/**
+ * cli进度条
+ */
 import Progress from "progress";
 import chalk from "chalk";
 

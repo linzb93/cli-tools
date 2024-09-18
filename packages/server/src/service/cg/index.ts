@@ -49,34 +49,33 @@ export default class extends BaseCommand {
     if (options.full) {
       promiseMap.push(getPerformanceData());
     }
-    Promise.all(promiseMap).then((resList) => {
-      let totalText = "";
-      if (resList.length > 1) {
-        const [todayData, monthData] = resList[1];
-        totalText += `当前业绩：${chalk.yellow(
-          todayData
-        )}，本月业绩：${chalk.yellow(monthData)}。`;
-        if (!resList[0].length) {
-          totalText += "预测还未开始。";
-        } else {
-          totalText += "预测结果如下：";
-        }
-      }
-      this.spinner.succeed(`${totalText}`);
-      if (resList[0].length) {
-        console.log(
-          resList[0]
-            .map((user: User, index: number) => {
-              const output = `${index + 1}. ${user.name}: ${user.amount}`;
-              if (index === 0) {
-                return chalk.bold.yellow(output);
-              }
-              return output;
-            })
-            .join("\n")
-        );
-      }
-    });
+    const resList = await Promise.all(promiseMap);
+    let totalText = "";
+    if (resList.length > 1) {
+      const [todayData, monthData] = resList[1];
+      totalText += `当前业绩：${chalk.yellow(
+        todayData
+      )}，本月业绩：${chalk.yellow(monthData)}。`; 
+    }
+    if (!resList[0].length) {
+      totalText += "预测还未开始。";
+    } else {
+      totalText += "预测结果如下：";
+    }
+    this.spinner.succeed(`${totalText}`);
+    if (resList[0].length) {
+      console.log(
+        resList[0]
+          .map((user: User, index: number) => {
+            const output = `${index + 1}. ${user.name}: ${user.amount}`;
+            if (index === 0) {
+              return chalk.bold.yellow(output);
+            }
+            return output;
+          })
+          .join("\n")
+      );
+    }
   }
   private async setForecast(data: string) {
     const performance = Number(data);

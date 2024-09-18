@@ -24,7 +24,7 @@ import token from "./commands/token";
 import tree from "./commands/tree";
 import git from "./commands/git";
 import npm from "./commands/npm";
-import code from "./commands/code";
+import analyse from "./commands/analyse";
 import time from "./commands/time";
 import repl from "./commands/repl";
 import server from "./commands/server";
@@ -65,8 +65,8 @@ program
     clear(filename, options);
   });
 
-program.command("code [sub-command]").action((subCommand) => {
-  code(subCommand);
+program.command("analyse [sub-command]").action((subCommand) => {
+  analyse(subCommand);
 });
 
 program
@@ -107,6 +107,7 @@ program
   .option("-i,--install", "安装")
   .option("--last <len>", "最近几次")
   .option("--head <len>", "前面几个")
+  .option("--prod", "生产分支")
   .option("--help", "显示帮助文档")
   .option("--only-push", "只推送")
   .action((subCommand, rest, cmd) => {

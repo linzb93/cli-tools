@@ -5,13 +5,10 @@ interface Setting {
 }
 
 export class Spinner {
-  private spinner: Ora;
+  private spinner = ora({
+    interval: 100,
+  });
   private setting: Setting;
-  constructor() {
-    this.spinner = ora({
-      interval: 100,
-    });
-  }
   get text() {
     return this.spinner.text;
   }
