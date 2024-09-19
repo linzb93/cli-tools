@@ -115,13 +115,8 @@ export function isValidKey(
 /**
  * 将对象转换成命令行参数格式
  * @param {object} options 输入的对象
- * @param {boolean} isStr 是否将对象转成字符串，否则就是数组
- * @returns
  */
-export const processArgvToFlags = (
-  options: AnyObject,
-  isStr?: boolean
-): string | string[] => {
+export const generateProcessArgv = (options:AnyObject) => {
   const ret = Object.keys(options).map((opt) => {
     if (isValidKey(opt, options)) {
       if (options[opt] === true) {
@@ -131,5 +126,5 @@ export const processArgvToFlags = (
     }
     return "";
   });
-  return isStr ? ret.join(" ") : ret;
-};
+  return process.argv.slice(0, 2).concat(ret);
+}

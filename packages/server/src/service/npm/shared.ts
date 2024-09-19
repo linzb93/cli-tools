@@ -14,59 +14,6 @@ import inquirer from "@/common/inquirer";
  * npm public API: https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
  * or cnpm: https://registry.npmmirror.com/ 版本号支持缩写
  */
-interface InstallOptions {
-  devDependencies?: boolean;
-  dependencies?: boolean;
-  global?: boolean;
-  cwd?: string;
-}
-/**
- * 安装npm依赖
- * @param name
- */
-async function install(name: string): Promise<void>;
-/**
- * 安装npm依赖，有选项
- * @param name
- */
-async function install(name: string, options: InstallOptions): Promise<void>;
-/**
- * 安装所有npm依赖
- * @param name
- */
-async function install(options: { cwd: InstallOptions["cwd"] }): Promise<void>;
-async function install(...args: any[]) {
-  let pkgName = "";
-  let options: InstallOptions = {};
-  if (args.length === 1) {
-    if (isPlainObject(args[0])) {
-      options = args[0];
-    } else if (typeof args[0] === "string") {
-      pkgName = args[0];
-    }
-  } else if (args.length === 2) {
-    pkgName = args[0];
-    options = args[1];
-  }
-  const {
-    devDependencies,
-    dependencies,
-    global: optGlobal,
-    ...restOpts
-  } = options;
-  const params = ["install"];
-  if (pkgName) {
-    params.push(pkgName);
-    if (dependencies) {
-      params.push("-S");
-    } else if (devDependencies) {
-      params.push("-D");
-    } else if (optGlobal) {
-      params.push("-g");
-    }
-  }
-  await execa(`npm ${params.join(" ")}`, restOpts);
-}
 
 interface RegData {
   description: string;
@@ -210,7 +157,6 @@ async function getList(name: string) {
 }
 
 const npm = {
-  install,
   getPage,
   getVersion,
   getList,

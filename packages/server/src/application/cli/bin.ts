@@ -17,7 +17,7 @@ import color from "./commands/color";
 import fork from "./commands/fork";
 import kill from "./commands/kill";
 import lixi from "./commands/lixi";
-import mock from "./commands/mock";
+// import mock from "./commands/mock";
 import shortcut from "./commands/shortcut";
 import getSize from "./commands/size";
 import token from "./commands/token";
@@ -104,12 +104,12 @@ program
   .option("--latest", "获取最新版的")
   .option("--type <type>", "类型")
   .option("--tag <name>", "tag名称")
-  .option("-i,--install", "安装")
   .option("--last <len>", "最近几次")
   .option("--head <len>", "前面几个")
   .option("--prod", "生产分支")
   .option("--help", "显示帮助文档")
   .option("--only-push", "只推送")
+  .allowUnknownOption()
   .action((subCommand, rest, cmd) => {
     git(subCommand, rest, cmd);
   });
@@ -132,15 +132,15 @@ program.command("lixi").action(() => {
   lixi();
 });
 
-program
-  .command("mock [action]")
-  .option("--force", "强制更新所有接口并启动服务器")
-  .option("--single [path]", "更新单一接口")
-  .option("--update", "只更新接口")
-  .option("--help", "显示帮助文档")
-  .action((action, options) => {
-    mock(action, options);
-  });
+// program
+//   .command("mock [action]")
+//   .option("--force", "强制更新所有接口并启动服务器")
+//   .option("--single [path]", "更新单一接口")
+//   .option("--update", "只更新接口")
+//   .option("--help", "显示帮助文档")
+//   .action((action, options) => {
+//     mock(action, options);
+//   });
 
 program
   .command("npm [sub-command] [rest...]")

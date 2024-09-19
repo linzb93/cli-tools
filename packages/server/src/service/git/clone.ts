@@ -12,7 +12,6 @@ export interface Options {
   dir: string;
   open?: boolean;
   from?: string;
-  install?: boolean;
   help: boolean;
 }
 /**
@@ -81,12 +80,6 @@ export default class extends BaseCommand {
       this.spinner.fail(`下载失败:
 ${(error as Error).message}`);
       return;
-    }
-    if (options.install) {
-      this.spinner.text = "正在安装依赖";
-      await npm.install({
-        cwd: join(openMap[options.dir], basename(remoteDir, ".git")),
-      });
     }
     this.spinner.succeed("下载成功");
     if (options.open) {

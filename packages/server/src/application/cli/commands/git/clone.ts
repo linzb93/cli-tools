@@ -11,8 +11,7 @@ git clone <url>
 选项：
 - dir: clone的地址
 - from=github: 从github clone
-- open: clone结束后使用vscode打开
-- install: 安装npm依赖`,
+- open: clone结束后使用vscode打开`,
   });
 }
 
