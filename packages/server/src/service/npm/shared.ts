@@ -3,9 +3,9 @@ import { execaCommand as execa } from "execa";
 import { isPlainObject, get } from "lodash-es";
 import { load, CheerioAPI } from "cheerio";
 import axios from "axios";
-import inquirer from "@/common/inquirer";
 import fs from "fs-extra";
 import readPkg from "read-pkg";
+import inquirer from "@/common/inquirer";
 
 /**
  * 总体思路：

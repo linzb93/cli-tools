@@ -1,4 +1,4 @@
-import ora, { Ora } from "ora";
+import ora from "ora";
 import logSymbols from "log-symbols";
 interface Setting {
   showTime: boolean;

@@ -1,7 +1,7 @@
-import path from "node:path";
+import {basename, join, resolve} from "node:path";
 import axios, { AxiosResponse } from "axios";
 import * as cheerio from "cheerio";
-import npm, { Npm } from "@/common/npm";
+import npm, { Npm } from "@/service/npm/shared";
 import BaseCommand from "@/common/BaseCommand";
 import { pRetry } from "@/common/promiseFn";
 import sql from "@/common/sql";
@@ -67,7 +67,7 @@ export default class extends BaseCommand {
         () =>
           git.clone({
             url: remoteDir,
-            dirName: path.basename(remoteDir, ".git"),
+            dirName: basename(remoteDir, ".git"),
             cwd: openMap[options.dir],
           }),
         {
@@ -85,12 +85,12 @@ ${(error as Error).message}`);
     if (options.install) {
       this.spinner.text = "正在安装依赖";
       await npm.install({
-        cwd: path.join(openMap[options.dir], path.basename(remoteDir, ".git")),
+        cwd: join(openMap[options.dir], basename(remoteDir, ".git")),
       });
     }
     this.spinner.succeed("下载成功");
     if (options.open) {
-      await vscode.open(path.resolve(openMap[options.dir], dirName));
+      await vscode.open(resolve(openMap[options.dir], dirName));
     }
   }
   private async getCloneUrl(): Promise<string> {

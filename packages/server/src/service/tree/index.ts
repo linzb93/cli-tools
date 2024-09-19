@@ -1,4 +1,4 @@
-import path from "node:path";
+import {resolve} from "node:path";
 import fs from "fs-extra";
 import clipboardy from "clipboardy";
 import BaseCommand from "@/common/BaseCommand";
@@ -65,7 +65,7 @@ export default class extends BaseCommand {
     );
     for (let i = 0; i < dirs.length; i++) {
       const dir = dirs[i];
-      const stat = await fs.stat(path.resolve(root, dir));
+      const stat = await fs.stat(resolve(root, dir));
       const preText = paddings
         .map((count) => `${characters.border} ${" ".repeat(count)}`)
         .join("");
@@ -73,7 +73,7 @@ export default class extends BaseCommand {
       if (stat.isDirectory()) {
         this.outputList.push(`${filePreText}${characters.contain} ${dir}`);
         if (level < this.options.level) {
-          await this.readdir(path.resolve(root, dir), level + 1, [
+          await this.readdir(resolve(root, dir), level + 1, [
             ...paddings,
             Math.ceil(dir.length / 2),
           ]);

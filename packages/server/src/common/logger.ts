@@ -1,12 +1,12 @@
 import readline from "node:readline";
-import spinner from './spinner';
+import {resolve} from 'node:path';
 import chalk from "chalk";
 import dayjs from "dayjs";
-import {resolve} from 'node:path';
 import fs from 'fs-extra';
 import logSymbols from "log-symbols";
 import terminalSize from "terminal-size";
 import stringWidth from "string-width";
+import spinner from './spinner';
 import { cacheRoot } from "./constant";
 
 function hook(callback: () => void) {

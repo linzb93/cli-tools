@@ -1,8 +1,8 @@
 import { basename } from "node:path";
+import chalk from "chalk";
 import Table from "cli-table3";
 import BaseCommand from "@/common/BaseCommand";
 import useScan from "./useScan";
-import chalk from "chalk";
 import progress from "@/common/progress";
 
 const table = new Table({

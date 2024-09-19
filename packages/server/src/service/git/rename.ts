@@ -1,8 +1,8 @@
+import { basename, extname, join } from "node:path";
 import fs from "fs-extra";
 import glob from "glob";
 import chalk from "chalk";
 import { execaCommand as execa } from "execa";
-import path from "node:path";
 import { camelCase, kebabCase, filter } from "lodash-es";
 import pMap from "p-map";
 import { pascalCase } from "pascal-case";
@@ -24,18 +24,18 @@ export default class extends BaseCommand {
         const stat = fs.statSync(file);
         let filename;
         if (stat.isDirectory()) {
-          filename = path.basename(file);
+          filename = basename(file);
           if (!this.isCamelCase(filename)) {
             await this.doAction(
-              camelCase(path.join(file, "../", filename)),
+              camelCase(join(file, "../", filename)),
               file
             );
           }
         } else {
-          filename = path.basename(file).split(".")[0];
-          const extname = path.extname(file);
+          filename = basename(file).split(".")[0];
+          const ext = extname(file);
           // TODO: 要转换的是文件名，不是整个路径
-          if (extname === ".js") {
+          if (ext === ".js") {
             if (this.isPascalCase(filename)) {
               //
             } else if (
@@ -43,33 +43,33 @@ export default class extends BaseCommand {
               !this.isKebabCase(filename)
             ) {
               await this.doAction(
-                path.join(file, "../", `${kebabCase(filename)}.js`),
+                join(file, "../", `${kebabCase(filename)}.js`),
                 file
               );
             } else if (!this.isCamelCase(filename)) {
               await this.doAction(
-                path.join(file, "../", `${camelCase(filename)}.js`),
+                join(file, "../", `${camelCase(filename)}.js`),
                 file
               );
             }
-          } else if (extname === ".vue") {
+          } else if (ext === ".vue") {
             if (this.isVuePage(file)) {
               if (!this.isCamelCase(filename)) {
                 await this.doAction(
-                  path.join(file, "../", `${camelCase(filename)}.vue`),
+                  join(file, "../", `${camelCase(filename)}.vue`),
                   file
                 );
               }
             } else if (!this.isPascalCase(filename)) {
               await this.doAction(
-                path.join(file, "../", `${pascalCase(filename)}.vue`),
+                join(file, "../", `${pascalCase(filename)}.vue`),
                 file
               );
             }
           } else {
             if (!this.isKebabCase(filename)) {
               await this.doAction(
-                path.join(file, "../", `${kebabCase(filename)}.${extname}`),
+                join(file, "../", `${kebabCase(filename)}.${extname}`),
                 file
               );
             }

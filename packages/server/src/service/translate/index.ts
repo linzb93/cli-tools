@@ -1,8 +1,8 @@
-import BaseCommand from "@/common/BaseCommand";
-import { getPageUrl, getHtml } from "@/model/spider/translate";
 import chalk from "chalk";
 import { CheerioAPI } from "cheerio";
 import open from "open";
+import BaseCommand from "@/common/BaseCommand";
+import { getPageUrl, getHtml } from "@/model/spider/translate";
 
 export interface Options {
   /**

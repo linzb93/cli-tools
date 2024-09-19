@@ -1,5 +1,4 @@
 import { join } from "node:path";
-
 import { Low, JSONFile } from "lowdb";
 import { cacheRoot } from "./constant";
 import { Database } from "../typings/api";

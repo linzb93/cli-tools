@@ -6,6 +6,7 @@ import { Command } from "commander";
 import sql from "@/common/sql";
 import { tempPath } from "@/common/constant";
 import { sleep } from "@linzb93/utils";
+
 export default async (command: Command) => {
   // 记录每次使用的命令
   logger.cli(command.args.join(" "));

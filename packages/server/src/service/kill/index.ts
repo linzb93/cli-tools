@@ -4,6 +4,7 @@ import iconv from "iconv-lite";
 import { last, isPlainObject } from "lodash-es";
 import chalk from "chalk";
 import BaseCommand from "@/common/BaseCommand";
+
 const numberRE = /[1-9][0-9]*/;
 
 export interface IOption {

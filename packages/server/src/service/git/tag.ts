@@ -1,10 +1,10 @@
-import BaseCommand from "@/common/BaseCommand";
-import * as git from "./shared";
 import clipboard from "clipboardy";
-import { sequenceExec } from "@/common/promiseFn";
 import readPkg from "read-pkg";
 import { last } from "lodash-es";
 import pMap from "p-map";
+import BaseCommand from "@/common/BaseCommand";
+import * as git from "./shared";
+import { sequenceExec } from "@/common/promiseFn";
 
 export interface Options {
   /**

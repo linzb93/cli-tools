@@ -1,9 +1,9 @@
-import BaseCommand from "@/common/BaseCommand";
 import { join, basename } from "node:path";
 import open from "open";
 import sql from "@/common/sql";
 import fs from "fs-extra";
 import globalNpm from "global-modules";
+import BaseCommand from "@/common/BaseCommand";
 import vscode from "@/common/vscode";
 import { isWin } from "@/common/constant";
 import { pLocate } from "@/common/promiseFn";

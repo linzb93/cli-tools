@@ -1,15 +1,15 @@
-import { fork } from "node:child_process";
 import { resolve } from "node:path";
+import { fork } from "node:child_process";
+import open from "open";
 import dayjs from "dayjs";
+import detectPort from "detect-port";
+import chalk from "chalk";
 import BaseCommand from "@/common/BaseCommand";
 import { root } from "@/common/constant";
 import Kill from "../kill";
-import detectPort from "detect-port";
 import inquirer from "@/common/inquirer";
 import globalConfig from "../../../../../config.json";
-import open from "open";
 import sql from "@/common/sql";
-import chalk from "chalk";
 
 export interface Options {
   menu?: boolean | string;

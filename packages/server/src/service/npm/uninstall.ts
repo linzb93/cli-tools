@@ -1,5 +1,5 @@
+import { resolve } from "node:path";
 import del from "del";
-import path from "node:path";
 import globalNpm from "global-modules";
 import readPkg, { NormalizedPackageJson } from "read-pkg";
 import BaseCommand from "@/common/BaseCommand";
@@ -55,7 +55,7 @@ export default class extends BaseCommand {
     let pkg = {} as NormalizedPackageJson;
     try {
       pkg = await readPkg({
-        cwd: path.resolve(globalNpm, "node_modules", name),
+        cwd: resolve(globalNpm, "node_modules", name),
       });
     } catch (error) {
       const similarNpm = await this.getSimilar(name);
@@ -63,16 +63,15 @@ export default class extends BaseCommand {
         const { action } = await this.inquirer.prompt([
           {
             type: "confirm",
-            message: `${name}不存在，你想删除的是${
-              (similarNpm as SimilarOption).name
-            }吗？`,
+            message: `${name}不存在，你想删除的是${(similarNpm as SimilarOption).name
+              }吗？`,
             default: true,
             name: "action",
           },
         ]);
         if (action) {
           pkg = await readPkg({
-            cwd: path.resolve(
+            cwd: resolve(
               globalNpm,
               "node_modules",
               (similarNpm as SimilarOption).name
@@ -80,7 +79,7 @@ export default class extends BaseCommand {
           });
           const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
           await del((similarNpm as SimilarOption).name, {
-            cwd: path.resolve(globalNpm, "node_modules"),
+            cwd: resolve(globalNpm, "node_modules"),
           });
           for (const cmd of cmds) {
             await del([cmd, `${cmd}.cmd`, `${cmd}.ps1`], {
@@ -95,7 +94,7 @@ export default class extends BaseCommand {
     }
     const cmds = pkg.bin ? Object.keys(pkg.bin) : [];
     await del(name, {
-      cwd: path.resolve(globalNpm, "node_modules"),
+      cwd: resolve(globalNpm, "node_modules"),
     });
     for (const cmd of cmds) {
       await del([cmd, `${cmd}.cmd`, `${cmd}.ps1`], {
@@ -110,7 +109,7 @@ export default class extends BaseCommand {
     }
     try {
       await readPkg({
-        cwd: path.resolve(globalNpm, "node_modules", similarNpm),
+        cwd: resolve(globalNpm, "node_modules", similarNpm),
       });
       return {
         name: similarNpm,

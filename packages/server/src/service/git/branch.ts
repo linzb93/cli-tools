@@ -1,7 +1,7 @@
 import chalk from "chalk";
+import pMap from "p-map";
 import BaseCommand from "@/common/BaseCommand";
 import { getBranches, deleteBranch, ResultItem } from "./shared";
-import pMap from "p-map";
 
 export default class extends BaseCommand {
   async main() {

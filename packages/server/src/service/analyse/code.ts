@@ -1,9 +1,9 @@
-import BaseCommand from "@/common/BaseCommand";
 import Table from "cli-table3";
 import fs from "fs-extra";
 import pMap from "p-map";
 import { globby } from "globby";
 import chalk from "chalk";
+import BaseCommand from "@/common/BaseCommand";
 import { splitByLine } from "@/common/helper";
 interface IModule {
   access(): Promise<boolean>;

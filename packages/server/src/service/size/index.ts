@@ -1,10 +1,10 @@
+import {resolve} from "node:path";
 import fs, { Stats as FSStats } from "fs-extra";
 import bytes from "bytes";
 import axios, { AxiosResponse } from "axios";
 import sizeOf from "image-size";
 import through from "through2";
 import del from "del";
-import path from "node:path";
 import BaseCommand from "@/common/BaseCommand";
 import { isURL, emptyWritableStream } from "@/common/helper";
 import { root } from "@/common/constant";
@@ -33,7 +33,7 @@ export default class extends BaseCommand {
       }
       let size = 0;
       const extname = this.getExtname(filePath);
-      const targetName = path.resolve(root, `temp/getSizeImage${extname}`);
+      const targetName = resolve(root, `temp/getSizeImage${extname}`);
       const settingRect = options.rect;
       await new Promise((resolve) => {
         res.data

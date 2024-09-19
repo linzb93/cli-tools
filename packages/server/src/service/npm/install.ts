@@ -1,6 +1,6 @@
+import { relative } from "node:path";
 import semver, { SemVer } from "semver";
 import axios from "axios";
-import { relative } from "node:path";
 import BaseCommand from "@/common/BaseCommand";
 import { isPath } from "@/common/helper";
 import npm from "./shared";

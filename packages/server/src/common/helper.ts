@@ -1,10 +1,10 @@
-import clipboardy from "clipboardy";
-import notifier from "node-notifier";
 import { Writable } from "node:stream";
-import logger from "./logger";
+import clipboardy from "clipboardy";
 import chalk from "chalk";
-import { AnyObject } from "@/typings";
+import notifier from "node-notifier";
 import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
+import logger from "./logger";
+import { AnyObject } from "@/typings";
 
 export const copy = (text: string) => {
   clipboardy.writeSync(text);
