@@ -1,4 +1,3 @@
-import NpmInstall from "./install";
 import BaseCommand from "@/common/BaseCommand";
 import npm from "./shared";
 
@@ -32,15 +31,11 @@ export default class extends BaseCommand {
     });
   }
   private async handleNotFound(name: string, dev?: boolean) {
-    const { action } = await this.inquirer.prompt({
-      type: "confirm",
-      name: "action",
-      message: `${name} 不存在，是否安装？`,
-    });
-    if (action) {
-      const install = new NpmInstall().main;
-      await install([name], { dev });
-    }
-    this.spinner.stop();
+    // const { action } = await this.inquirer.prompt({
+    //   type: "confirm",
+    //   name: "action",
+    //   message: `${name} 不存在，是否安装？`,
+    // });
+    // this.spinner.stop();
   }
 }

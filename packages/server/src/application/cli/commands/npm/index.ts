@@ -1,6 +1,5 @@
 import { generateHelpDoc } from "@/common/helper";
 import has from "./has";
-import install from "./install";
 import search from "./search";
 import uninstall from "./uninstall";
 
@@ -19,7 +18,6 @@ export default function (subCommand: string, data: string[], options: IOption) {
   }
   const commandMap = {
     has: () => has(data, options),
-    install: () => install(data, options),
     search: () => search(data, options),
     uninstall: () => uninstall(data, options),
   };
