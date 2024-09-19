@@ -5,5 +5,5 @@ export default function (prefix: string) {
     new Cli().main();
     return;
   }
-  new Code().main([prefix]);
+  new Code().main();
 }

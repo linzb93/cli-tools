@@ -78,8 +78,8 @@ const javascriptModule: IModule = {
     return true;
   },
   maxLength: {
-    warning: 200,
-    danger: 300,
+    warning: 300,
+    danger: 500,
   },
   filePattern: (prefix) => `${prefix ? `${prefix}/` : ""}**/*.{js,ts}`,
   calc(splitLines) {
@@ -99,19 +99,12 @@ const javascriptModule: IModule = {
   ],
 };
 
-const table = new Table({
-  head: ["", chalk.green("文件地址"), chalk.green("行数")],
-  colAligns: ["left", "left", "center"],
-});
-
 export default class extends BaseCommand {
   private modules: IModule[] = [];
-  private data: string[];
   addModule(...modules: IModule[]) {
     this.modules = modules;
   }
-  async main(prefix: string[]) {
-    this.data = prefix;
+  async main() {
     this.addModule(vueModule, javascriptModule);
     this.run();
   }
@@ -140,8 +133,8 @@ export default class extends BaseCommand {
     }
     this.spinner.succeed("分析完成");
     const table = new Table({
-      head: [chalk.green("文件地址"), chalk.green("行数")],
-      colAligns: ["left", "center"],
+      head: ['', chalk.green("文件地址"), chalk.green("行数")],
+      colAligns: ["left", "left", "center"],
     });
     table.push(
       ...result
@@ -158,15 +151,19 @@ export default class extends BaseCommand {
     );
     console.log(table.toString());
   }
+  /**
+   * 寻找所有需要检测的文件，例如vue项目就只找.vue后缀的文件，其他前端项目就找.js和.ts后缀的文件。
+   */
   private async getMatchFiles(): Promise<{
     files: string[];
     max: IModule["maxLength"];
   }> {
-    const prefix = this.data[0];
     for (const m of this.modules) {
       if (await m.access()) {
         return {
-          files: await globby([m.filePattern(prefix), "!node_modules"]),
+          files: await globby([m.filePattern(''), "!**/node_modules", "!**/dist"], {
+            cwd: process.cwd()
+          }),
           max: m.maxLength,
         };
       }
