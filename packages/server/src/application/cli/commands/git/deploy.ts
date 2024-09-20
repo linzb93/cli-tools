@@ -21,11 +21,7 @@ ${chalk.cyan("git deploy")}
   });
 }
 
-export default (data: string[], options: Options) => {
-  if (options.help) {
-    generateHelp();
-    return;
-  }
+export default () => {
   subCommandCompiler(program => {
     program
       .command('deploy')
@@ -35,8 +31,12 @@ export default (data: string[], options: Options) => {
       .option("--help", "显示帮助文档")
       .option("--prod", "生产分支")
       .option("--only-push", "只推送")
-      .action(() => {
-        new Deploy().main(data, options);
+      .action((options:Options) => {
+        if (options.help) {
+          generateHelp();
+          return;
+        }
+        new Deploy().main(options);
       });
   })
 };

@@ -15,20 +15,20 @@ git clone <url>
   });
 }
 
-export default (source: string[], options: Options) => {
-  if (options.help) {
-    generateHelp();
-    return;
-  }
+export default () => {
   subCommandCompiler(program => {
     program
       .command('clone')
       .option("--dir <dir>", "选择安装的目录")
       .option("--from <src>", "来源")
       .option("--open", "在VSCode中打开项目")
-      .action(() => {
-        new Clone().main(source, options)
+      .action((options: Options) => {
+        if (options.help) {
+          generateHelp();
+          return;
+        }
+        new Clone().main([], options)
       });
   })
-  ;
+    ;
 };

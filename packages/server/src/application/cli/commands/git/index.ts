@@ -14,14 +14,14 @@ export default function (subCommand: string, data: string[], options: any) {
     return;
   }
   const commandMap = {
-    clone: () => clone(data, options),
-    deploy: () => deploy(data, options),
-    pull: () => pull(),
-    push: () => push(),
-    scan: () => scan(),
-    branch: () => branch(),
-    rename: () => rename(),
-    tag: () => tag(data, options),
+    clone,
+    deploy,
+    pull,
+    push,
+    scan,
+    branch,
+    rename,
+    tag,
   };
   if (commandMap[subCommand]) {
     commandMap[subCommand]();

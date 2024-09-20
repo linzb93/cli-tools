@@ -16,18 +16,19 @@ function generateHelp() {
   });
 }
 
-export default function (datas: string[], options: Options) {
-  if (options.help) {
-    generateHelp();
-    return;
-  }
+export default function () {
   subCommandCompiler(program => {
     program
-      .command('tag')
+      .command('tag [tagName]')
+      .option('--delete', '删除tag')
       .option("--last <len>", "最近几次")
       .option("--head <len>", "前面几个")
       .option("-g, --get", "获取")
-      .action(() => {
+      .action((datas, options:Options) => {
+        if (options.help) {
+          generateHelp();
+          return;
+        }
         new Tag().main(datas, options);
       });
   })

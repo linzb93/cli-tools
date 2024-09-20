@@ -46,13 +46,13 @@ interface FlowOption {
 export default class extends BaseCommand {
   private maps: FlowOption[] = [];
   private options: Options;
-  async main(data: string[], options: Options) {
+  async main(options: Options) {
     this.options = options;
     const remoteUrl = await remote();
     const curBranch = await getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);
     const targetBranch =
-      (curBranch === "master" && data[0] === "test") || options.prod
+      (curBranch === "master") || options.prod
         ? "release"
         : "master";
     // 只提交到当前分支
