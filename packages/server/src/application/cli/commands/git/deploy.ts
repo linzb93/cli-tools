@@ -1,9 +1,6 @@
 import chalk from "chalk";
 import Deploy, { Options } from "@/service/git/deploy";
-import { generateHelpDoc, generateProcessArgv } from "@/common/helper";
-import { Command } from "commander";
-
-const program = new Command();
+import { generateHelpDoc, subCommandCompiler } from "@/common/helper";
 
 function generateHelp() {
   generateHelpDoc({
@@ -29,16 +26,17 @@ export default (data: string[], options: Options) => {
     generateHelp();
     return;
   }
-  program
-  .command('deploy')
-  .option("--commit <msg>", "提交信息")
-  .option("--tag <name>", "tag名称")
-  .option("-c, --current", "当前的")
-  .option("--help", "显示帮助文档")
-  .option("--prod", "生产分支")
-  .option("--only-push", "只推送")
-  .action(() => {
-    new Deploy().main(data, options);
-  });
-  program.parse(generateProcessArgv(options));
+  subCommandCompiler(program => {
+    program
+      .command('deploy')
+      .option("--commit <msg>", "提交信息")
+      .option("--tag <name>", "tag名称")
+      .option("-c, --current", "当前的")
+      .option("--help", "显示帮助文档")
+      .option("--prod", "生产分支")
+      .option("--only-push", "只推送")
+      .action(() => {
+        new Deploy().main(data, options);
+      });
+  })
 };

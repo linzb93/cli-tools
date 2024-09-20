@@ -5,6 +5,7 @@ import notifier from "node-notifier";
 import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
 import logger from "./logger";
 import { AnyObject } from "@/typings";
+import { Command } from "commander";
 
 export const copy = (text: string) => {
   clipboardy.writeSync(text);
@@ -116,7 +117,7 @@ export function isValidKey(
  * 将对象转换成命令行参数格式
  * @param {object} options 输入的对象
  */
-export const generateProcessArgv = (options:AnyObject) => {
+const generateProcessArgv = (options: AnyObject) => {
   const ret = Object.keys(options).map((opt) => {
     if (isValidKey(opt, options)) {
       if (options[opt] === true) {
@@ -126,5 +127,18 @@ export const generateProcessArgv = (options:AnyObject) => {
     }
     return "";
   });
-  return process.argv.slice(0, 2).concat(ret);
+  return process.argv.slice(0, 2).concat(process.argv.slice(3, 5)).concat(ret).filter((cmd) => cmd !== "--debug");
+}
+
+/**
+ * 注册子命令
+ * @param fn 
+ * @param options 
+ */
+export const subCommandCompiler = (fn: (cmd: Command) => void) => {
+  const program = new Command();
+  fn(program);
+  program.parse(
+    process.argv.filter((item, index) => index !== 2 && item !== '--debug')
+  );
 }

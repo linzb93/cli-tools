@@ -4,7 +4,6 @@
 if (process.argv.includes("--debug")) {
   process.env.DEBUG = "*";
 }
-
 import { Command } from "commander";
 import ip from "./commands/ip";
 import open from "./commands/open";
@@ -94,21 +93,6 @@ program
 
 program
   .command("git [sub-command] [rest...]")
-  .option("--dir <dir>", "选择安装的目录")
-  .option("--open", "在VSCode中打开项目")
-  .option("--from <src>", "来源")
-  .option("-d, --delete", "删除")
-  .option("-g, --get", "获取")
-  .option("-c, --current", "当前的")
-  .option("--commit <msg>", "提交信息")
-  .option("--latest", "获取最新版的")
-  .option("--type <type>", "类型")
-  .option("--tag <name>", "tag名称")
-  .option("--last <len>", "最近几次")
-  .option("--head <len>", "前面几个")
-  .option("--prod", "生产分支")
-  .option("--help", "显示帮助文档")
-  .option("--only-push", "只推送")
   .allowUnknownOption()
   .action((subCommand, rest, cmd) => {
     git(subCommand, rest, cmd);

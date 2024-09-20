@@ -1,5 +1,5 @@
 import Clone, { Options } from "@/service/git/clone";
-import { generateHelpDoc } from "@/common/helper";
+import { generateHelpDoc, subCommandCompiler } from "@/common/helper";
 function generateHelp() {
   generateHelpDoc({
     title: "git clone",
@@ -20,5 +20,15 @@ export default (source: string[], options: Options) => {
     generateHelp();
     return;
   }
-  new Clone().main(source, options);
+  subCommandCompiler(program => {
+    program
+      .command('clone')
+      .option("--dir <dir>", "选择安装的目录")
+      .option("--from <src>", "来源")
+      .option("--open", "在VSCode中打开项目")
+      .action(() => {
+        new Clone().main(source, options)
+      });
+  })
+  ;
 };

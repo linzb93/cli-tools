@@ -1,6 +1,6 @@
 import { basename, extname, join } from "node:path";
 import fs from "fs-extra";
-import glob from "glob";
+import { globby } from "globby";
 import chalk from "chalk";
 import { execaCommand as execa } from "execa";
 import { camelCase, kebabCase, filter } from "lodash-es";
@@ -14,13 +14,14 @@ const whiteList = ["App.vue", ".otf", ".ttf", "1px.scss", "README.md"];
 export default class extends BaseCommand {
   async main() {
     // 只扫描src文件夹里的
+    const paths = globby(["src/**/*"]);
     const files = filter(
-      glob.sync("src/**/*"),
-      (file) => !whiteList.find((item) => file.endsWith(item))
+      paths,
+      (file:string) => !whiteList.find((item) => file.endsWith(item))
     );
     pMap(
       files,
-      async (file) => {
+      async (file:string) => {
         const stat = fs.statSync(file);
         let filename;
         if (stat.isDirectory()) {
