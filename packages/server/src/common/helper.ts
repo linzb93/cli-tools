@@ -71,7 +71,7 @@ export const validate = (obj: any, descriptor: ValidatorRules): void => {
     process.exit(1);
   });
 };
-export const isURL = (text: string): boolean => !!text.match(/^https?\:\:/);
+export const isURL = (text: string) => text.startsWith('http://') || text.startsWith('https://');
 /**
  * 按行分割文件。
  * @param {string} fileContent 文件内容

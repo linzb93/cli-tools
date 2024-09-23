@@ -53,8 +53,8 @@ export default class extends BaseCommand {
     const isDevBranch = !["release", "master"].includes(curBranch);
     const targetBranch =
       (curBranch === "master") || options.prod
-        ? "release"
-        : "master";
+        ? "master"
+        : "release";
     // 只提交到当前分支
     this.register({
       condition: options.current,
@@ -148,8 +148,10 @@ export default class extends BaseCommand {
     } catch (error) {
       if (flow.alertWhenError) {
         notify(`${basename(process.cwd())}项目更新失败！`);
-        return;
+      } else {
+        this.logger.error(error);
       }
+      return;
     }
     if (actions.includes("open")) {
       await openDeployPage();
