@@ -88,7 +88,7 @@ export default class extends BaseCommand {
     if (fetchData.code === 200) {
       this.logger.success("今日预测推送成功");
     } else {
-      this.logger.error(fetchData.message);
+      this.logger.error(fetchData.msg);
     }
   }
 }
