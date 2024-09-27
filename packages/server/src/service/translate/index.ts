@@ -21,6 +21,9 @@ export default class extends BaseCommand {
    * 是否是中文翻译成英文
    */
   private isC2E = false;
+  /**
+   * @property {string} 待翻译的文本
+   */
   private text = '';
   async main(text: string, options: Options): Promise<void> {
     this.isC2E = !/[a-z]+/.test(text);

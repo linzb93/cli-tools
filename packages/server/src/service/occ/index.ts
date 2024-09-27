@@ -174,7 +174,7 @@ export default class extends BaseCommand {
       }
       return;
     }
-    this.spinner.succeed('打开成功');
+    this.spinner.succeed(`店铺【${shopName}】打开成功!`);
     await open(url);
   }
   /**

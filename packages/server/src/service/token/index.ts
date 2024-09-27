@@ -22,7 +22,7 @@ export default class extends BaseCommand {
       complete: options.complete,
     }) as AnyObject; // 解析数据格式不定
     if (options.origin || decoded === null) {
-      console.log(decoded);
+      console.log(decoded || '无法解析token');
       return decoded;
     }
     const result = Object.keys(decoded).reduce((obj, key) => {
@@ -42,6 +42,6 @@ export default class extends BaseCommand {
         [key]: decoded[key],
       };
     }, {});
-    console.log(result);
+    console.log(result || '无法解析token');
   }
 }

@@ -16,5 +16,5 @@ export default (data: string[], options: Options) => {
     generateHelp();
     return;
   }
-  new Ip().main(data, options);
+  new Ip().main(data);
 };

@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import chalk from "chalk";
 import BaseCommand from "@/common/BaseCommand";
 import { cacheRoot } from "@/common/constant";
-import {splitByLine} from '@/common/helper';
+import { splitByLine } from '@/common/helper';
 
 export default class extends BaseCommand {
   async main() {
@@ -27,11 +27,12 @@ export default class extends BaseCommand {
       }
       return acc;
     }, []);
+    result.sort((prev, next) => prev.count > next.count ? -1 : 1);
     console.log(`近期cli使用情况如下：
 ${result.map(item => `${chalk.yellow(item.cmd)}命令，使用过${chalk.cyan(item.count)}次`).join('\n')}`)
   }
 
-  private parseLine(line:string) {
+  private parseLine(line: string) {
     const timeMatch = line.match(/\[(.+)\]/);
     const time = timeMatch ? timeMatch[0] : '';
     const cmdMatch = line.match(/\s([a-z]+)/);

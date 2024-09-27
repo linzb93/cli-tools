@@ -10,7 +10,7 @@ export interface Options {
 }
 
 export default class extends BaseCommand {
-  async main(data?: string[], options?: Options) {
+  async main(data?: string[]) {
     if (data[0] === "get") {
       this.getIpLocation(data[1]);
       return;

@@ -43,33 +43,6 @@ export const clone = async (options: CloneOptions): Promise<string> => {
   return dirName || url.split("/").slice(-1)[0].slice(0, -4);
 };
 
-// git pull
-export const pull = async ({ cwd = process.cwd() } = {}): Promise<void> => {
-  try {
-    await execa("git pull", {
-      cwd,
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-// git push
-export const push = async ({
-  cwd = process.cwd(),
-  branch = "",
-}: {
-  cwd?: string;
-  branch?: string;
-} = {}): Promise<void> => {
-  if (branch) {
-    await execa("git push", {
-      cwd,
-    });
-  } else {
-    await execa(`git push --set-upstream origin ${branch}`);
-  }
-};
-
 /**
  * 获取远端地址
  * @returns {string} 远端地址

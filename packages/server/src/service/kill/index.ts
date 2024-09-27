@@ -87,6 +87,7 @@ export default class extends BaseCommand {
    * @returns
    */
   private async killPort(port: string) {
+    const {options} = this;
     const action = () =>
       new Promise((resolve, reject) => {
         rawKillPort(port, "tcp")
@@ -101,11 +102,11 @@ export default class extends BaseCommand {
       });
     try {
       await action();
-      if (this.options.log) {
+      if (options.log) {
         this.logger.success(`端口号为${chalk.yellow(port)}的进程关闭成功`);
       }
     } catch (error) {
-      if (this.options.log) {
+      if (options.log) {
         this.logger.error(`端口号为${chalk.yellow(port)}的进程关闭失败`);
       }
     }

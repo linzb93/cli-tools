@@ -42,8 +42,8 @@ export default class extends BaseCommand {
     const map = {
       1: chalk.red("未提交"),
       2: chalk.yellow("未推送"),
-      4: chalk.gray("不在主分支上"),
       3: chalk.green("正常"),
+      4: chalk.gray("不在主分支上"),
     };
     return map[status];
   }

@@ -17,7 +17,8 @@ export interface Options {
 type RegisterFn = (param?: any) => Promise<string>;
 interface OpenItem {
   to: string | RegisterFn;
-  type: "editor" | "open";
+  type: "editor" // vscode编辑器打开
+   | "open"; // 浏览器或文件系统打开
 }
 
 type Map = {
@@ -27,7 +28,7 @@ type Map = {
 export default class extends BaseCommand {
   private maps: Map[] = [];
   async main(name: string, options: Options) {
-    // 本项目
+    // 本命令行项目
     this.register("cli", {
       type: "editor",
       to: await sql((db) => db.code.cli),
@@ -81,6 +82,11 @@ export default class extends BaseCommand {
       }
     }
   }
+  /**
+   * 打开本机存储的源码目录
+   * @param options 
+   * @returns 
+   */
   private openSource(options: Options) {
     return async () => {
       const sourceDir = await sql((db) => db.open.source);

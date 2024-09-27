@@ -17,17 +17,12 @@ interface User {
 
 export default class extends BaseCommand {
   async main(action: string, data: string, options: Options) {
-    if (action === "get") {
-      this.renderTodayResult();
-      return;
+    const actions = {
+      get: () => this.renderTodayResult(),
+      user: () => this.getForecast(options),
+      set: () => this.setForecast(data)
     }
-    if (action === "user") {
-      this.getForecast(options);
-      return;
-    }
-    if (action === "set") {
-      this.setForecast(data);
-    }
+    actions[action]();
   }
   private async renderTodayResult() {
     this.spinner.text = "正在获取今日业绩";

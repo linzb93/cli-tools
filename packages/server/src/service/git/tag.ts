@@ -3,8 +3,9 @@ import readPkg from "read-pkg";
 import { last } from "lodash-es";
 import pMap from "p-map";
 import BaseCommand from "@/common/BaseCommand";
-import * as git from "./shared";
+import {getTags, deleteTag} from "./shared";
 import { sequenceExec } from "@/common/promiseFn";
+import gitAtom from "./atom";
 
 export interface Options {
   /**
@@ -33,7 +34,7 @@ export default class extends BaseCommand {
       await this.batchDelete(options);
       return;
     }
-    const gitTags = await git.getTags();
+    const gitTags = await getTags();
     // 输出最近几个
     if (options.last) {
       this.logger.success(
@@ -75,7 +76,7 @@ ${ret}`);
    * 生成最新的tag
    */
   async generateNewestTag(): Promise<string> {
-    const gitTags = await git.getTags();
+    const gitTags = await getTags();
     if (gitTags.length === 0) {
       return "";
     }
@@ -109,8 +110,10 @@ ${ret}`);
    */
   private async batchDelete(options: Options) {
     this.spinner.text = "正在获取所有标签";
-    await git.pull();
-    const tags = await git.getTags();
+    await sequenceExec([
+      gitAtom.pull()
+    ]);
+    const tags = await getTags();
     if (!tags) {
       this.spinner.succeed("没有标签需要删除");
       return;
@@ -145,14 +148,14 @@ ${ret}`);
     await pMap(
       selected,
       async (item: string) => {
-        await git.deleteTag(item);
+        await deleteTag(item);
         try {
-          git.deleteTag(item, { remote: true });
+          deleteTag(item, { remote: true });
         } catch (error) {
           return;
         }
       },
-      { concurrency: 4 }
+      { concurrency: 3 }
     );
     this.spinner.succeed("删除成功");
   }
