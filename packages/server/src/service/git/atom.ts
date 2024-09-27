@@ -1,5 +1,7 @@
 import { sequenceExec } from "@/common/promiseFn";
+import {execaCommand as execa} from 'execa'
 import inquirer from "@/common/inquirer";
+import {getCurrentBranch} from './shared';
 
 function fmtCommitMsg(commit: string) {
   if (!commit) {
@@ -58,10 +60,15 @@ const gitAtom = {
       onError: () => {},
     };
   },
-  push() {
+  push(options?: {force: boolean}) {
     return {
       message: "git push",
-      onError: () => {},
+      onError: async (message:string) => {
+        if (options?.force && message.includes('set-upstream')) {
+          const branch = await getCurrentBranch();
+          await execa(`git push --set-upstream origin ${branch}`);
+        }
+      },
     };
   },
   merge(branch: string) {

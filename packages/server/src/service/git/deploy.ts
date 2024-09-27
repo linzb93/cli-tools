@@ -166,7 +166,7 @@ export default class extends BaseCommand {
       "git add .",
       gitAtom.commit(this.options.commit),
       gitAtom.pull(),
-      gitAtom.push(),
+      gitAtom.push({ force: true }),
     ];
     if (options.onlyPush) {
       commands = commands.filter((cmd: any) => cmd.message !== "git pull");
