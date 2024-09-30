@@ -22,7 +22,11 @@ export default class extends BaseCommand {
       user: () => this.getForecast(options),
       set: () => this.setForecast(data)
     }
-    actions[action]();
+    if (actions[action]) {
+      actions[action]();
+    } else {
+      this.logger.error('命令有误，请重新输入');
+    }
   }
   private async renderTodayResult() {
     this.spinner.text = "正在获取今日业绩";
