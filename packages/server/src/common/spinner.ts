@@ -52,9 +52,15 @@ export class Spinner {
       process.exit(1);
     }
   }
+  /**
+   * 暂停，但会清空文字
+   */
   stop() {
     this.spinner.stop();
   }
+  /**
+   * 暂停，保持显示的文字
+   */
   stopAndPersist() {
     this.spinner.stopAndPersist();
   }

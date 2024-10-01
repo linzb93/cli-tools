@@ -45,6 +45,9 @@ export interface Options {
 
 type AppCtor = new () => BaseApp;
 
+/**
+ * 常用命令
+ */
 export default class extends BaseCommand {
   private apps: AppCtor[] = [];
   private options: Options;
@@ -117,6 +120,10 @@ export default class extends BaseCommand {
       }
     }
   }
+  /**
+   * 获取店铺地址
+   * @returns {Promise<string>}
+   */
   private async search() {
     let url = "";
     this.spinner.text = `${chalk.yellow(

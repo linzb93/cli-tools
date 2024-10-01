@@ -3,6 +3,9 @@ import { Low, JSONFile } from "lowdb";
 import { cacheRoot } from "./constant";
 import { Database } from "../typings/api";
 
+/**
+ * 获取本地数据库文件内容
+ */
 export default async function sql<T>(
   callback: (data: Database) => T
 ): Promise<T> {

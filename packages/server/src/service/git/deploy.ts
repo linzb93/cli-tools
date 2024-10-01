@@ -42,7 +42,9 @@ interface FlowOption {
   targetBranch?: string;
   alertWhenError?: boolean;
 }
-
+/**
+ * 常用命令
+ */
 export default class extends BaseCommand {
   private maps: FlowOption[] = [];
   private options: Options;
@@ -52,9 +54,7 @@ export default class extends BaseCommand {
     const curBranch = await getCurrentBranch();
     const isDevBranch = !["release", "master"].includes(curBranch);
     const targetBranch =
-      (curBranch === "master") || options.prod
-        ? "master"
-        : "release";
+      curBranch === "master" || options.prod ? "master" : "release";
     // 只提交到当前分支
     this.register({
       condition: options.current,

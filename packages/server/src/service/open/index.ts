@@ -17,14 +17,17 @@ export interface Options {
 type RegisterFn = (param?: any) => Promise<string>;
 interface OpenItem {
   to: string | RegisterFn;
-  type: "editor" // vscode编辑器打开
-   | "open"; // 浏览器或文件系统打开
+  type:
+    | "editor" // vscode编辑器打开
+    | "open"; // 浏览器或文件系统打开
 }
 
 type Map = {
   command: string;
 } & OpenItem;
-
+/**
+ * 常用命令
+ */
 export default class extends BaseCommand {
   private maps: Map[] = [];
   async main(name: string, options: Options) {
@@ -84,8 +87,8 @@ export default class extends BaseCommand {
   }
   /**
    * 打开本机存储的源码目录
-   * @param options 
-   * @returns 
+   * @param options
+   * @returns
    */
   private openSource(options: Options) {
     return async () => {
