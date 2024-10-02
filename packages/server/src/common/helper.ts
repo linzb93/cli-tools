@@ -2,7 +2,6 @@ import { Writable } from "node:stream";
 import clipboardy from "clipboardy";
 import chalk from "chalk";
 import notifier from "node-notifier";
-import ValidatorSchema, { Rules as ValidatorRules } from "async-validator";
 import logger from "./logger";
 import { AnyObject } from "@/typings";
 import { Command } from "commander";
@@ -55,23 +54,8 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
   return `${mainTitle}\n${chalk.gray(formattedTips)}`;
 };
 
-/**
- * @deprecated 将用commander封装
- * 校验输出。
- */
-export const validate = (obj: any, descriptor: ValidatorRules): void => {
-  const Schema = (ValidatorSchema as any).default;
-  const validator = new Schema(descriptor);
-  validator.validate(obj, (errors: Error, fields: any) => {
-    if (!errors) {
-      return;
-    }
-    const target = fields[Object.keys(fields)[0]];
-    logger.error(`${chalk.red("[参数验证不通过]")} ${target[0].message}`);
-    process.exit(1);
-  });
-};
-export const isURL = (text: string) => text.startsWith('http://') || text.startsWith('https://');
+export const isURL = (text: string) =>
+  text.startsWith("http://") || text.startsWith("https://");
 /**
  * 按行分割文件。
  * @param {string} fileContent 文件内容
@@ -127,18 +111,22 @@ const generateProcessArgv = (options: AnyObject) => {
     }
     return "";
   });
-  return process.argv.slice(0, 2).concat(process.argv.slice(3, 5)).concat(ret).filter((cmd) => cmd !== "--debug");
-}
+  return process.argv
+    .slice(0, 2)
+    .concat(process.argv.slice(3, 5))
+    .concat(ret)
+    .filter((cmd) => cmd !== "--debug");
+};
 
 /**
  * 注册子命令
- * @param fn 
- * @param options 
+ * @param fn
+ * @param options
  */
 export const subCommandCompiler = (fn: (cmd: Command) => void) => {
   const program = new Command();
   fn(program);
   program.parse(
-    process.argv.filter((item, index) => index !== 2 && item !== '--debug')
+    process.argv.filter((item, index) => index !== 2 && item !== "--debug")
   );
-}
+};

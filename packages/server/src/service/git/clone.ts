@@ -1,11 +1,11 @@
-import {basename, join, resolve} from "node:path";
+import { basename, join, resolve } from "node:path";
 import axios, { AxiosResponse } from "axios";
 import * as cheerio from "cheerio";
 import npm, { Npm } from "@/service/npm/shared";
 import BaseCommand from "@/common/BaseCommand";
 import { pRetry } from "@/common/promiseFn";
 import sql from "@/common/sql";
-import { validate, isURL } from "@/common/helper";
+import { isURL } from "@/common/helper";
 import vscode from "@/common/vscode";
 import * as git from "./shared";
 export interface Options {
@@ -15,10 +15,10 @@ export interface Options {
   help: boolean;
 }
 /**
- * git clone功能，支持从下面这些地方clone:
- * 1. git地址
- * 2. github，输入关键词，clone第一个仓库
- * 3. npm模块对应的github官网
+ * git clone功能，支持从下面这些来源clone:
+ * 1. git远程
+ * 2. github，输入关键词搜查，clone第一个搜索结果仓库
+ * 3. npm包对应的github官网
  */
 export default class extends BaseCommand {
   private source: string;
@@ -26,21 +26,7 @@ export default class extends BaseCommand {
   async main(data: string[], opt: Options) {
     this.source = data[0];
     this.options = opt;
-    const { source, options } = this;
-    validate(
-      {
-        source,
-      },
-      {
-        source: [
-          {
-            required: true,
-            message:
-              "请输入项目来源，可以是npm包、GitHub搜索关键词，或Git项目地址",
-          },
-        ],
-      }
-    );
+    const { options } = this;
     this.spinner.text = "正在下载";
     let dirName: string = "";
     const openMap = await sql((db) => db.open);
