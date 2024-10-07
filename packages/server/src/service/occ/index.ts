@@ -34,6 +34,14 @@ export interface Options {
    */
   user: boolean;
   /**
+   * 使用日期检索
+   */
+  date: boolean;
+  /**
+   * 检索版本
+   */
+  version: string;
+  /**
    * 是否在测试站操作
    */
   test: boolean;
@@ -124,7 +132,7 @@ export default class extends BaseCommand {
    * 获取店铺地址
    * @returns {Promise<string>}
    */
-  private async search() {
+  private async search(): Promise<string> {
     let url = "";
     this.spinner.text = `${chalk.yellow(
       `【${this.currentApp.serviceName}】`
