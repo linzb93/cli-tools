@@ -38,13 +38,13 @@ export default class extends MeituanBase {
    * 思路：获取高级版前10个店铺，找到支付金额大于199的。调用home接口确认。如果没有，重复获取10个店铺。
    */
   async getLuxuryShop() {
-    await getMeituanOrderList({});
+    const list = await getMeituanOrderList({});
   }
   /**
    * 获取体验版店铺
    * 思路：去那个埋点里面找触发的店铺，每个店铺调用home接口确认。如果没有，就重复。
    */
   async getSurplusShop() {
-    await getTrackUserList({});
+    const list = await getTrackUserList({});
   }
 }
