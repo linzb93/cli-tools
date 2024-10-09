@@ -29,7 +29,7 @@ export interface Options {
 }
 
 export default class extends BaseCommand {
-  async main(data: string[], options: Options) {
+  async main(data: string, options: Options) {
     if (options.delete) {
       await this.batchDelete(options);
       return;
@@ -55,7 +55,7 @@ export default class extends BaseCommand {
       return;
     }
     let output = "";
-    const input = data[0];
+    const input = data;
     if (!input) {
       output = await this.generateNewestTag();
     } else {

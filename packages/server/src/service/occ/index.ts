@@ -133,7 +133,22 @@ export default class extends BaseCommand {
    * @returns {Promise<string>}
    */
   private async search(): Promise<string> {
+    const {options} = this;
     let url = "";
+    if (options.date) {
+      this.inquirer.prompt([
+        {
+          message: '请输入起始日期（格式：YYYY-MM-DD）',
+          name: 'startTime',
+          type: 'input'
+        },
+        {
+          message: '请输入结束日期（格式：YYYY-MM-DD）',
+          name: 'endTime',
+          type: 'input'
+        }
+      ])
+    }
     this.spinner.text = `${chalk.yellow(
       `【${this.currentApp.serviceName}】`
     )}正在获取店铺${chalk.cyan(this.searchKeyword)}地址`;
