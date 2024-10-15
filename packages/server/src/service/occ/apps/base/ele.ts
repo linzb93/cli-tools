@@ -19,6 +19,7 @@ export default abstract class Ele extends Base {
       {
         appId: this.appKey,
         platform: this.platform,
+        param: keyword,
       },
       isTest
     ).then((res) => {
