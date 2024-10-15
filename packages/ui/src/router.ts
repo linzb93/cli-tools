@@ -21,10 +21,10 @@ const routes = [
     path: '/vue',
     component: () => import('./views/vue/index.vue')
   },
-  {
-    path: '/agent',
-    component: () => import('./views/agent/index.vue')
-  },
+  // {
+  //   path: '/agent',
+  //   component: () => import('./views/agent/index.vue')
+  // },
   {
     path: '/setting',
     component: () => import('./views/setting/index.vue')
