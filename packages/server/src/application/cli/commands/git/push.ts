@@ -1,19 +1,12 @@
-import { sequenceExec } from "@/common/promiseFn";
-import logger from "@/common/logger";
-import gitAtom from "@/service/git/atom";
-import { CommandItem } from "@/common/promiseFn";
-
+import Push, { type Options } from '@/service/git/push';
+import { subCommandCompiler } from '@/common/helper';
 export default async () => {
-  const actionObj = gitAtom.push() as CommandItem;
-  try {
-    await sequenceExec([
-      {
-        ...actionObj,
-        retryTimes: 100,
-      },
-    ]);
-    logger.success("代码推送成功");
-  } catch (error) {
-    logger.error("代码拉取失败");
-  }
+    subCommandCompiler((program) => {
+        program
+            .command('push')
+            .option('--force', '远端没有分支的时候首次强行推送')
+            .action((options: Options) => {
+                new Push().main(options);
+            });
+    });
 };
