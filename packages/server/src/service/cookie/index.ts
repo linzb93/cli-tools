@@ -1,5 +1,7 @@
 import clipboardy from 'clipboardy';
+import { format } from 'prettier';
 import BaseCommand from '@/common/BaseCommand';
+
 export interface Options {
     help?: boolean;
     type: 'key' | 'json';
@@ -9,30 +11,26 @@ export interface Options {
 export default class extends BaseCommand {
     async main(data: string, options: Options) {
         const list = data.split(';');
-        const keys = [];
-        const objs = [];
-        list.forEach((item) => {
+        const objs = list.reduce((acc, item) => {
             const seg = item.split('=');
-            const key = seg[0].replace(/^ /, '');
-            objs.push({
-                key,
-                value: seg[1],
-            });
-        });
-        let result = '';
-        if (options.type === 'key') {
-            result = Array.from(new Set(objs.map((item) => item.key))).join(',');
-        } else if (options.type === 'json') {
-            // result = JSON.stringify(Array.from(new Set(keys)).reduce((acc, key) => {
-            //     return {
-            //         ...acc,
-            //         [key]:
-            //     };
-            // }, {}));
-        }
+            return {
+                ...acc,
+                [seg[0].replace(/^\s/, '')]: seg[1],
+            };
+        }, {});
+        let result = options.type === 'key' ? Object.keys(objs) : objs;
+        console.log(result);
         if (options.copy) {
-            clipboardy.writeSync(result);
+            clipboardy.writeSync(this.getValue(result));
+            this.logger.success('解析并复制成功');
         }
-        this.logger.success('解析并复制成功');
+    }
+    private getValue(data: any): string {
+        if (Array.isArray(data)) {
+            return data.join(',');
+        }
+        return format(JSON.stringify(data), {
+            parser: 'json',
+        });
     }
 }
