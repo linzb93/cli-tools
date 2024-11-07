@@ -2,6 +2,7 @@ import { basename } from 'node:path';
 import clipboard from 'clipboardy';
 import BaseCommand from '@/common/BaseCommand';
 import { notify } from '@/common/helper';
+import chalk from 'chalk';
 import { openDeployPage, getProjectName } from '@/common/jenkins';
 import { CommandItemAll, sequenceExec } from '@/common/promiseFn';
 import Tag from './tag';
@@ -177,8 +178,7 @@ export default class extends BaseCommand {
         }
         const { onlineId } = await getProjectName();
         const copyText = `${onlineId}，${tag}`;
-        this.logger.success(`部署成功，复制填入更新文档：
-${copyText}`);
+        this.logger.success(`部署成功，复制填入更新文档：${chalk.cyan(copyText)}`);
         clipboard.writeSync(copyText);
     }
 }
