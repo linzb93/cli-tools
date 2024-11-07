@@ -76,9 +76,13 @@ program
     .action((data, options) => {
         color(data, options);
     });
-program.command('cookie <text>').action((data, options) => {
-    cookie(data, options);
-});
+program
+    .command('cookie <text>')
+    .option('--type <type>', '转换的类型')
+    .option('--copy', '复制结果')
+    .action((data, options) => {
+        cookie(data, options);
+    });
 program
     .command('eng <text>')
     .option('-e,--example', '显示范例')
