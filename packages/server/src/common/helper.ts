@@ -54,7 +54,7 @@ export const showWeakenTips = (mainTitle: string, tips: string): string => {
     return `${mainTitle}\n${chalk.gray(formattedTips)}`;
 };
 
-export const isURL = (text: string) => text.match(/^https?\:\/\//);
+export const isURL = (text: string) => !!text.match(/^https?\:\/\//);
 /**
  * 按行分割文件。
  * @param {string} fileContent 文件内容

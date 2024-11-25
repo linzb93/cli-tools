@@ -35,7 +35,12 @@ const program = new Command();
 program.version(globalPkg.version);
 
 program.hook('preAction', (thisCommand) => {
-    init(thisCommand);
+    return new Promise<void>((resolve) => {
+        setTimeout(() => {
+            init(thisCommand);
+            resolve();
+        }, 500);
+    });
 });
 
 program
