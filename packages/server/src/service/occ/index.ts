@@ -175,6 +175,7 @@ export default class extends BaseCommand {
         }
         if (options.pc) {
             if (this.currentApp.hasPC) {
+                this.spinner.succeed(`店铺【${shopName}】打开成功!`);
                 await open(url.replace('app', ''));
             } else {
                 this.spinner.fail(`${this.currentApp.serviceName}没有PC端`);
