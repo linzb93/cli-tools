@@ -15,6 +15,7 @@ import cg from './commands/cg';
 import clear from './commands/clear';
 import color from './commands/color';
 import fork from './commands/fork';
+import json from './commands/json';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
 // import mock from "./commands/mock";
@@ -115,6 +116,16 @@ program
     .option('--help', '显示帮助文档')
     .action((data, options) => {
         ip(data, options);
+    });
+program
+    .command('json [rest...]')
+    .option('--help', '显示帮助文档')
+    .option('--same', '复制相同的key')
+    .option('--diff', '复制不同的key，空行间隔')
+    .option('--diff1', '第一个json不同的key')
+    .option('--diff2', '第二个json不同的key')
+    .action((data, options) => {
+        json(data, options);
     });
 
 program
