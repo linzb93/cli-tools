@@ -52,15 +52,14 @@ const gitAtom = {
             onError: () => {},
         };
     },
-    push(options?: { force: boolean }) {
+    push(isLocalBranch: boolean, currenetBranchName: string) {
+        if (isLocalBranch) {
+            return {
+                message: `git push --set-upstream origin ${currenetBranchName}`,
+            };
+        }
         return {
             message: 'git push',
-            onError: async (message: string) => {
-                if (options?.force && message.includes('set-upstream')) {
-                    const branch = await getCurrentBranch();
-                    await execa(`git push --set-upstream origin ${branch}`);
-                }
-            },
         };
     },
     merge(branch: string) {

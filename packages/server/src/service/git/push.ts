@@ -1,23 +1,20 @@
 import BaseCommand from '@/common/BaseCommand';
 import gitAtom from './atom';
-import { getCurrentBranch } from './shared';
+import { getCurrentBranch, isCurrenetBranchPushed } from './shared';
 import { sequenceExec, type CommandItem } from '@/common/promiseFn';
 
-export interface Options {
-    force: boolean;
-}
-
 export default class extends BaseCommand {
-    async main(options: Options) {
+    async main() {
         let actionObj: CommandItem;
-        if (options.force) {
+        if (await isCurrenetBranchPushed()) {
+            actionObj = gitAtom.push();
+        } else {
             const branch = await getCurrentBranch();
             actionObj = {
                 message: `git push --set-upstream origin ${branch}`,
             };
-        } else {
-            actionObj = gitAtom.push();
         }
+
         try {
             await sequenceExec([
                 {

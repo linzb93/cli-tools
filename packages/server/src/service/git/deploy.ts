@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { openDeployPage, getProjectName } from '@/common/jenkins';
 import { CommandItemAll, sequenceExec } from '@/common/promiseFn';
 import Tag from './tag';
-import { getCurrentBranch, remote } from './shared';
+import { isCurrenetBranchPushed, getCurrentBranch, remote } from './shared';
 import gitAtom from './atom';
 
 export interface Options {
@@ -49,12 +49,13 @@ interface FlowOption {
 export default class extends BaseCommand {
     private maps: FlowOption[] = [];
     private options: Options;
+    private currenetBranch: string;
     async main(options: Options) {
         this.options = options;
         const remoteUrl = await remote();
-        const curBranch = await getCurrentBranch();
-        const isDevBranch = !['release', 'master'].includes(curBranch);
-        const targetBranch = curBranch === 'master' || options.prod ? 'master' : 'release';
+        this.currenetBranch = await getCurrentBranch();
+        const isDevBranch = !['release', 'master'].includes(this.currenetBranch);
+        const targetBranch = this.currenetBranch === 'master' || options.prod ? 'master' : 'release';
         // 只提交到当前分支
         this.register({
             condition: options.current,
@@ -71,7 +72,7 @@ export default class extends BaseCommand {
             targetBranch,
         });
         this.register({
-            condition: curBranch === 'release' && targetBranch === 'master', // release -> master
+            condition: this.currenetBranch === 'release' && targetBranch === 'master', // release -> master
             actionFn: () => {
                 this.logger.error('不允许直接从release分支合并到master分支，请从开发分支合并', true);
             },
@@ -85,7 +86,7 @@ export default class extends BaseCommand {
         });
         this.register({
             // master -> master
-            condition: targetBranch === curBranch && curBranch === 'master',
+            condition: targetBranch === this.currenetBranch && this.currenetBranch === 'master',
             actions: ['tag', 'copy'],
             targetBranch,
         });
@@ -108,10 +109,10 @@ export default class extends BaseCommand {
     }
     private async doAction(flow: FlowOption) {
         const { actions = [], inquire, targetBranch } = flow;
-        const flows: CommandItemAll[] = [...this.getBaseAction()];
+        const isLocalBranch = await isCurrenetBranchPushed();
+        const flows: CommandItemAll[] = [...this.getBaseAction(isLocalBranch)];
         const tailFlows = [];
         let tag = '';
-        const curBranch = await getCurrentBranch();
         if (inquire) {
             const { answer } = await this.inquirer.prompt({
                 message: `确认更新到${targetBranch}分支？`,
@@ -123,7 +124,7 @@ export default class extends BaseCommand {
             }
         }
         if (actions.includes('merge')) {
-            flows.push(`git checkout ${targetBranch}`, gitAtom.pull(), gitAtom.merge(curBranch), 'git push');
+            flows.push(`git checkout ${targetBranch}`, gitAtom.pull(), gitAtom.merge(this.currenetBranch), 'git push');
         }
         if (actions.includes('tag')) {
             tag = this.options.tag || (await new Tag().generateNewestTag());
@@ -133,7 +134,7 @@ export default class extends BaseCommand {
             }
         }
         if (actions.includes('return')) {
-            tailFlows.push(`git checkout ${curBranch}`);
+            tailFlows.push(`git checkout ${this.currenetBranch}`);
         }
         try {
             await sequenceExec([...flows, ...tailFlows]);
@@ -152,7 +153,7 @@ export default class extends BaseCommand {
             await this.deploySuccess(tag);
         }
     }
-    private getBaseAction() {
+    private getBaseAction(isLocalBranch: boolean) {
         const { options } = this;
         let commands: CommandItemAll[] = [
             'git add .',
@@ -162,7 +163,7 @@ export default class extends BaseCommand {
                 retryTimes: 100,
             },
             {
-                ...gitAtom.push({ force: true }),
+                ...gitAtom.push(isLocalBranch, this.currenetBranch),
                 retryTimes: 100,
             },
         ];

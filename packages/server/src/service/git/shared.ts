@@ -207,3 +207,12 @@ export const deleteBranch = async (branch: string, options?: RemoteOptions): Pro
         await execa(`git branch -d ${branch}`, { cwd: process.cwd() });
     }
 };
+
+/**
+ * 判断当前分支是否在远端有对应的分支
+ */
+export const isCurrenetBranchPushed = async () => {
+    const current = await getCurrentBranch();
+    const { stdout } = await execa(`git ls-remote --heads origin ${current}`);
+    return !!stdout;
+};

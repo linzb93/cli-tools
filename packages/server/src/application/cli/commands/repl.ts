@@ -1,6 +1,6 @@
 import repl from 'node:repl';
 import dayjs from 'dayjs';
-import lodash from 'lodash-es';
+import * as lodash from 'lodash-es';
 import chalk from 'chalk';
 
 export default () => {
@@ -13,4 +13,4 @@ export default () => {
     instance.on('close', () => {
         console.log(chalk.yellow('say goodbye from repl'));
     });
-}
+};
