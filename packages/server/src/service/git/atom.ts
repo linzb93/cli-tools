@@ -52,7 +52,7 @@ const gitAtom = {
             onError: () => {},
         };
     },
-    push(isLocalBranch: boolean, currenetBranchName: string) {
+    push(isLocalBranch?: boolean, currenetBranchName?: string) {
         if (isLocalBranch) {
             return {
                 message: `git push --set-upstream origin ${currenetBranchName}`,

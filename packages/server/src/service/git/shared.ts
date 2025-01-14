@@ -112,7 +112,7 @@ interface RemoteOptions {
 /**
  * 只用于git tag 和 branch
  */
-export interface ResultItem {
+export interface BranchResultItem {
     name: string;
     hasLocal: boolean;
     hasRemote: boolean;
@@ -144,8 +144,7 @@ export const deleteTag = async (tag: string, options?: RemoteOptions): Promise<v
 /**
  * 获取分支列表
  */
-
-export const getBranches = async (options?: RemoteOptions): Promise<ResultItem[]> => {
+export const getBranches = async (options?: RemoteOptions): Promise<BranchResultItem[]> => {
     const remoteFlag = (() => {
         if (!options) {
             return '--all';
@@ -160,7 +159,7 @@ export const getBranches = async (options?: RemoteOptions): Promise<ResultItem[]
     if (!options) {
         return splited
             .filter((line) => line !== 'origin/HEAD')
-            .reduce((acc: ResultItem[], line) => {
+            .reduce<BranchResultItem[]>((acc, line) => {
                 if (!line.startsWith('origin/')) {
                     return acc.concat({
                         name: line,
@@ -215,4 +214,12 @@ export const isCurrenetBranchPushed = async () => {
     const current = await getCurrentBranch();
     const { stdout } = await execa(`git ls-remote --heads origin ${current}`);
     return !!stdout;
+};
+
+/**
+ * 同步tag
+ */
+export const syncTags = async () => {
+    await execa('git tag -d  $(git tag -l)');
+    await execa('git pull');
 };

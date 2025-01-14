@@ -7,7 +7,14 @@ class Shortcut extends BaseCommand {
         super();
     }
     main() {
-        const map = [
+        const map: {
+            type: string;
+            children: {
+                title: string;
+                windows: string;
+                mac: string;
+            }[];
+        }[] = [
             {
                 type: 'common',
                 children: [
@@ -20,6 +27,21 @@ class Shortcut extends BaseCommand {
                         title: '切换至上一个页面',
                         windows: 'ctrl + page up',
                         mac: 'shift + cmd + [',
+                    },
+                    {
+                        title: '窗口最大化',
+                        windows: 'windows + up',
+                        mac: '无',
+                    },
+                    {
+                        title: '关闭窗口',
+                        windows: 'shift + ctrl + w',
+                        mac: 'shift + cmd + w',
+                    },
+                    {
+                        title: '主副屏切换',
+                        windows: 'shift + alt + right',
+                        mac: '无',
                     },
                     {
                         title: '截图',
@@ -35,16 +57,6 @@ class Shortcut extends BaseCommand {
                         title: '新窗口打开项目',
                         windows: 'ctrl + r',
                         mac: 'ctrl + r',
-                    },
-                    {
-                        title: '关闭窗口',
-                        windows: 'shift + ctrl + w',
-                        mac: 'shift + cmd + w',
-                    },
-                    {
-                        title: '主副屏切换',
-                        windows: 'shift + alt + right',
-                        mac: '无',
                     },
                     {
                         title: '聚焦编辑器',

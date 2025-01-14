@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { openDeployPage, getProjectName } from '@/common/jenkins';
 import { CommandItemAll, sequenceExec } from '@/common/promiseFn';
 import Tag from './tag';
-import { isCurrenetBranchPushed, getCurrentBranch, remote } from './shared';
+import { isCurrenetBranchPushed, getPushStatus, getCurrentBranch, remote } from './shared';
 import gitAtom from './atom';
 
 export interface Options {
@@ -109,8 +109,8 @@ export default class extends BaseCommand {
     }
     private async doAction(flow: FlowOption) {
         const { actions = [], inquire, targetBranch } = flow;
-        const isLocalBranch = await isCurrenetBranchPushed();
-        const flows: CommandItemAll[] = [...this.getBaseAction(isLocalBranch)];
+
+        const flows: CommandItemAll[] = await this.getBaseAction();
         const tailFlows = [];
         let tag = '';
         if (inquire) {
@@ -153,8 +153,10 @@ export default class extends BaseCommand {
             await this.deploySuccess(tag);
         }
     }
-    private getBaseAction(isLocalBranch: boolean) {
+    private async getBaseAction() {
         const { options } = this;
+        const isLocalBranch = !(await isCurrenetBranchPushed());
+        const status = await getPushStatus();
         let commands: CommandItemAll[] = [
             'git add .',
             gitAtom.commit(this.options.commit),
@@ -169,6 +171,9 @@ export default class extends BaseCommand {
         ];
         if (options.onlyPush) {
             commands = commands.filter((cmd: any) => cmd.message !== 'git pull');
+        }
+        if (status !== 1) {
+            commands = commands.filter((_, index) => index > 1); // 已提交的情况下，移除add和commit代码
         }
         return commands;
     }

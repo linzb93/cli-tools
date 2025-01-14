@@ -11,6 +11,7 @@
         "dev:cli": "cross-env MODE=cli pnpm --filter \"cli\" dev",
         "dev:web": "cross-env MODE=web pnpm --filter \"cli\" dev",
         "mon:web": "nodemon packages/server/dist/web.js --watch packages/server/dist",
+        "build": "npm run build:cli",
         "build:cli": "cross-env MODE=cli pnpm --filter \"cli\" build",
         "build:web": "cross-env MODE=web pnpm --filter \"cli\" build",
         "build:ui": "pnpm --filter \"ui\" build-only",
