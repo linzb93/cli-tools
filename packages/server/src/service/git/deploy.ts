@@ -155,7 +155,13 @@ export default class extends BaseCommand {
     }
     private async getBaseAction() {
         const { options } = this;
-        const isLocalBranch = !(await isCurrenetBranchPushed());
+        const isLocalBranch = await (async () => {
+            const remoteUrl = await remote();
+            if (remoteUrl.includes('github')) {
+                return false;
+            }
+            return !(await isCurrenetBranchPushed());
+        })();
         const status = await getPushStatus();
         let commands: CommandItemAll[] = [
             'git add .',
