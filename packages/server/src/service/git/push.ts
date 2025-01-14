@@ -1,12 +1,15 @@
 import BaseCommand from '@/common/BaseCommand';
 import gitAtom from './atom';
-import { getCurrentBranch, isCurrenetBranchPushed } from './shared';
+import { getCurrentBranch, isCurrenetBranchPushed, remote } from './shared';
 import { sequenceExec, type CommandItem } from '@/common/promiseFn';
 
 export default class extends BaseCommand {
     async main() {
         let actionObj: CommandItem;
-        if (await isCurrenetBranchPushed()) {
+        const remoteUrl = await remote();
+        if (remoteUrl.includes('github')) {
+            actionObj = gitAtom.push();
+        } else if (await isCurrenetBranchPushed()) {
             actionObj = gitAtom.push();
         } else {
             const branch = await getCurrentBranch();
