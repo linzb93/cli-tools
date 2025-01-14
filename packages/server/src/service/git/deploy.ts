@@ -27,17 +27,15 @@ export interface Options {
     onlyPush: boolean;
 }
 
-type GitActions = (
-    | 'merge' // 合并代码
-    | 'open' // 打开部署网站
-    | 'copy' // 复制地址和tag
-    | 'tag' // 打tag
-    | 'return'
-)[]; // 返回之前的分支
-
 interface FlowOption {
     condition: Boolean;
-    actions?: GitActions;
+    actions?: (
+        | 'merge' // 合并代码
+        | 'open' // 打开部署网站
+        | 'copy' // 复制地址和tag
+        | 'tag' // 打tag
+        | 'return'
+    )[]; // 返回之前的分支
     actionFn?: () => void;
     inquire?: boolean;
     targetBranch?: string;
