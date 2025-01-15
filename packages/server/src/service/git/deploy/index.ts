@@ -5,9 +5,9 @@ import { notify } from '@/common/helper';
 import chalk from 'chalk';
 import { openDeployPage, getProjectName } from '@/common/jenkins';
 import { CommandItemAll, sequenceExec } from '@/common/promiseFn';
-import Tag from './tag';
-import { isCurrenetBranchPushed, getPushStatus, getCurrentBranch, remote } from './shared';
-import gitAtom from './atom';
+import Tag from '../tag';
+import { isCurrenetBranchPushed, getPushStatus, getCurrentBranch, remote } from '../shared';
+import gitAtom from '../atom';
 
 export interface Options {
     commit: string;

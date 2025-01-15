@@ -16,6 +16,7 @@ import clear from './commands/clear';
 import color from './commands/color';
 import fork from './commands/fork';
 import json from './commands/json';
+import ai from './commands/ai';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
 // import mock from "./commands/mock";
@@ -53,7 +54,9 @@ program
     .action((subCommand, options) => {
         agent(subCommand, options);
     });
-
+program.command('ai [name]').action((action) => {
+    ai(action);
+});
 program
     .command('cg [action] [...rest]')
     .option('--realtime', '实时更新')

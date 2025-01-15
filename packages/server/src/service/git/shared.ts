@@ -208,12 +208,13 @@ export const deleteBranch = async (branch: string, options?: RemoteOptions): Pro
 };
 
 /**
- * 判断当前分支是否在远端有对应的分支
+ * 判断当前分支是否在远端有对应的分支。
+ * 不需要通过远端获取，在本地获取已拉取的远端分支即可。
  */
 export const isCurrenetBranchPushed = async () => {
     const current = await getCurrentBranch();
-    const { stdout } = await execa(`git ls-remote --heads origin ${current}`);
-    return !!stdout;
+    const { stdout } = await execa(`git branch --all`);
+    return stdout.split('\n').includes(`remotes/origin/${current}`);
 };
 
 /**

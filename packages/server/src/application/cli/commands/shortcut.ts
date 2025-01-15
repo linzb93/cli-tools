@@ -84,6 +84,11 @@ class Shortcut extends BaseCommand {
                         mac: 'ctrl + option + cmd + n(自定义)',
                     },
                     {
+                        title: '将编辑器移动到下一个编辑器组',
+                        windows: 'ctrl + alt + right',
+                        mac: '',
+                    },
+                    {
                         title: '拆分编辑器',
                         windows: 'ctrl + \\',
                         mac: 'cmd + \\',
