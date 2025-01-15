@@ -15,23 +15,33 @@ export default class Ai extends BaseCommand {
             apiKey,
         });
         const messages = [];
+        messages.push({ role: 'system', content: '用户将提供一系列问题，你的回答应当简明扼要' });
         while (true) {
             // 使用inquirer库提示用户输入问题
             const answer = await this.inquirer.prompt({
-                message: `请输入内容`,
+                message: `请输入内容(输入":quit"结束)`,
                 name: 'question',
                 type: 'input',
             });
+            if (answer.question === ':quit') {
+                break;
+            }
             messages.push({ role: 'user', content: answer.question });
-            this.spinner.text = '正在获取内容';
-            const completion = await openai.chat.completions.create({
-                messages,
+
+            const stream = await openai.chat.completions.create({
                 model: 'deepseek-chat',
+                messages,
+                stream: true,
             });
-            const { content } = completion.choices[0].message;
+            let contents = '';
             // 打印回答内容
-            this.spinner.succeed(content);
-            messages.push({ role: 'assistant', content });
+            for await (const chunk of stream) {
+                const content = chunk.choices[0]?.delta?.content || '';
+                process.stdout.write(content); // 将内容输出到控制台
+                contents += content;
+            }
+            process.stdout.write('\n');
+            messages.push({ role: 'assistant', content: contents });
         }
     }
 }
