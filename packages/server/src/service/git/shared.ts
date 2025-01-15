@@ -224,3 +224,10 @@ export const syncTags = async () => {
     await execa('git tag -d  $(git tag -l)');
     await execa('git pull');
 };
+/**
+ * 获取主分支名称
+ */
+export const getMasterBranchName = async () => {
+    const { stdout } = await execa(`git branch`);
+    return stdout.split('\n').find((line) => line.includes('master')) ? 'master' : 'main';
+};

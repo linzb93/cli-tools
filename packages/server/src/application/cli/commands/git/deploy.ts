@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import Deploy, { Options } from '@/service/git/deploy/index';
+import Deploy, { Options } from '@/service/git/deploy';
 import { generateHelpDoc, subCommandCompiler } from '@/common/helper';
 
 function generateHelp() {
@@ -30,6 +30,7 @@ export default () => {
             .option('-c, --current', '当前的')
             .option('--help', '显示帮助文档')
             .option('--prod', '生产分支')
+            .option('--open', '打开页面')
             .option('--only-push', '只推送')
             .action((options: Options) => {
                 if (options.help) {

@@ -1,7 +1,5 @@
 import { sequenceExec } from '@/common/promiseFn';
-import { execaCommand as execa } from 'execa';
 import inquirer from '@/common/inquirer';
-import { getCurrentBranch } from './shared';
 
 function fmtCommitMsg(commit: string) {
     if (!commit) {

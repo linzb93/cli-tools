@@ -5,9 +5,9 @@ import { notify } from '@/common/helper';
 import chalk from 'chalk';
 import { openDeployPage, getProjectName } from '@/common/jenkins';
 import { CommandItemAll, sequenceExec } from '@/common/promiseFn';
-import Tag from '../tag';
-import { isCurrenetBranchPushed, getPushStatus, getCurrentBranch, remote } from '../shared';
-import gitAtom from '../atom';
+import Tag from './tag';
+import { isCurrenetBranchPushed, getMasterBranchName, getPushStatus, getCurrentBranch, remote } from './shared';
+import gitAtom from './atom';
 
 export interface Options {
     commit: string;
@@ -18,13 +18,13 @@ export interface Options {
     current: boolean;
     help: boolean;
     /**
-     * 发布到生产分支(master)
+     * 打开Jenkins项目主页
+     */
+    open: boolean;
+    /**
+     * 发布到生产分支
      */
     prod: boolean;
-    /**
-     * 只推送，不拉取代码。（一般用于Github项目）
-     */
-    onlyPush: boolean;
 }
 
 interface FlowOption {
@@ -36,7 +36,7 @@ interface FlowOption {
         | 'tag' // 打tag
         | 'return'
     )[]; // 返回之前的分支
-    actionFn?: () => void;
+    handler?: () => void;
     inquire?: boolean;
     targetBranch?: string;
     alertWhenError?: boolean;
@@ -45,22 +45,32 @@ interface FlowOption {
  * 常用命令
  */
 export default class extends BaseCommand {
-    private maps: FlowOption[] = [];
+    private flowMaps: FlowOption[] = [];
     private options: Options;
+    /**
+     * 当前分支的名称
+     */
     private currenetBranch: string;
+    /**
+     * 是否是国外项目（目前仅有github）。国外项目大概率提交会断，
+     * 所以省去了拉取代码的流程，除非报错。
+     */
+    private isForeignProject = false;
     async main(options: Options) {
         this.options = options;
         const remoteUrl = await remote();
+        this.isForeignProject = remoteUrl.startsWith('https://www.github.com');
         this.currenetBranch = await getCurrentBranch();
-        const isDevBranch = !['release', 'master'].includes(this.currenetBranch);
-        const targetBranch = this.currenetBranch === 'master' || options.prod ? 'master' : 'release';
+        const isDevBranch = this.currenetBranch !== 'release' && !this.isMasterBranch();
+        const masterBranchName = await getMasterBranchName();
+        const targetBranch = this.isMasterBranch() || options.prod ? masterBranchName : 'release';
         // 只提交到当前分支
         this.register({
             condition: options.current,
         });
         // github项目
         this.register({
-            condition: remoteUrl.includes('github.com'),
+            condition: this.isForeignProject,
             alertWhenError: true,
         });
         // 测试阶段，从开发分支提交到release分支
@@ -70,34 +80,34 @@ export default class extends BaseCommand {
             targetBranch,
         });
         this.register({
-            condition: this.currenetBranch === 'release' && targetBranch === 'master', // release -> master
-            actionFn: () => {
-                this.logger.error('不允许直接从release分支合并到master分支，请从开发分支合并', true);
+            condition: this.currenetBranch === 'release' && targetBranch === masterBranchName, // release -> master
+            handler: () => {
+                this.logger.error('不允许直接从release分支合并到主分支，请从开发分支合并', true);
             },
         });
         this.register({
             // dev -> master
-            condition: isDevBranch && targetBranch === 'master',
+            condition: isDevBranch && targetBranch === masterBranchName,
             inquire: true,
             actions: ['merge', 'tag', 'copy'],
             targetBranch,
         });
         this.register({
             // master -> master
-            condition: targetBranch === this.currenetBranch && this.currenetBranch === 'master',
+            condition: targetBranch === this.currenetBranch && this.currenetBranch === masterBranchName,
             actions: ['tag', 'copy'],
             targetBranch,
         });
         await this.run();
     }
     private register(options: FlowOption) {
-        this.maps.push(options);
+        this.flowMaps.push(options);
     }
     private async run() {
-        for (const flow of this.maps) {
+        for (const flow of this.flowMaps) {
             if (flow.condition) {
-                if (typeof flow.actionFn === 'function') {
-                    flow.actionFn.call(this);
+                if (typeof flow.handler === 'function') {
+                    flow.handler.call(this);
                     return;
                 }
                 this.doAction(flow);
@@ -107,7 +117,6 @@ export default class extends BaseCommand {
     }
     private async doAction(flow: FlowOption) {
         const { actions = [], inquire, targetBranch } = flow;
-
         const flows: CommandItemAll[] = await this.getBaseAction();
         const tailFlows = [];
         let tag = '';
@@ -144,7 +153,7 @@ export default class extends BaseCommand {
             }
             return;
         }
-        if (actions.includes('open')) {
+        if (actions.includes('open') || this.options.open) {
             await openDeployPage();
         }
         if (actions.includes('copy')) {
@@ -152,34 +161,26 @@ export default class extends BaseCommand {
         }
     }
     private async getBaseAction() {
-        const { options } = this;
-        const isLocalBranch = await (async () => {
-            const remoteUrl = await remote();
-            if (remoteUrl.includes('github')) {
-                return false;
-            }
-            return !(await isCurrenetBranchPushed());
-        })();
+        const isLocalBranch = !(await isCurrenetBranchPushed());
         const status = await getPushStatus();
-        let commands: CommandItemAll[] = [
-            'git add .',
-            gitAtom.commit(this.options.commit),
-            {
+        const commands: CommandItemAll[] = [];
+        if (status === 1) {
+            commands.push('git add .', gitAtom.commit(this.options.commit));
+        }
+        if (!this.isForeignProject) {
+            commands.push({
                 ...gitAtom.pull(),
                 retryTimes: 100,
-            },
-            {
-                ...gitAtom.push(isLocalBranch, this.currenetBranch),
-                retryTimes: 100,
-            },
-        ];
-        if (options.onlyPush) {
-            commands = commands.filter((cmd: any) => cmd.message !== 'git pull');
+            });
         }
-        if (status !== 1) {
-            commands = commands.filter((_, index) => index > 1); // 已提交的情况下，移除add和commit代码
-        }
+        commands.push({
+            ...gitAtom.push(isLocalBranch, this.currenetBranch),
+            retryTimes: 100,
+        });
         return commands;
+    }
+    private isMasterBranch() {
+        return ['master', 'main'].includes(this.currenetBranch);
     }
     private async deploySuccess(tag: string) {
         if (!tag) {
