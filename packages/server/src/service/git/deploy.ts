@@ -59,7 +59,7 @@ export default class extends BaseCommand {
     async main(options: Options) {
         this.options = options;
         const remoteUrl = await remote();
-        this.isForeignProject = remoteUrl.startsWith('https://www.github.com');
+        this.isForeignProject = remoteUrl.includes('https://www.github.com');
         this.currenetBranch = await getCurrentBranch();
         const isDevBranch = this.currenetBranch !== 'release' && !this.isMasterBranch();
         const masterBranchName = await getMasterBranchName();
@@ -167,7 +167,6 @@ export default class extends BaseCommand {
         if (status === 1) {
             commands.push('git add .', gitAtom.commit(this.options.commit));
         }
-        console.log(this.isForeignProject);
         if (!this.isForeignProject) {
             commands.push({
                 ...gitAtom.pull(),
