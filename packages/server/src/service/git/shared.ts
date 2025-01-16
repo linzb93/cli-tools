@@ -214,7 +214,7 @@ export const deleteBranch = async (branch: string, options?: RemoteOptions): Pro
 export const isCurrenetBranchPushed = async () => {
     const current = await getCurrentBranch();
     const { stdout } = await execa(`git branch --all`);
-    return stdout.split('\n').includes(`remotes/origin/${current}`);
+    return stdout.split('\n').find((item) => item.includes(`remotes/origin/${current}`));
 };
 
 /**

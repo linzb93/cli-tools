@@ -59,7 +59,7 @@ export default class extends BaseCommand {
     async main(options: Options) {
         this.options = options;
         const remoteUrl = await remote();
-        this.isForeignProject = remoteUrl.includes('https://www.github.com');
+        this.isForeignProject = remoteUrl.includes('https://github.com');
         this.currenetBranch = await getCurrentBranch();
         const isDevBranch = this.currenetBranch !== 'release' && !this.isMasterBranch();
         const masterBranchName = await getMasterBranchName();
