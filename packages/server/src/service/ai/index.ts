@@ -1,12 +1,17 @@
 import BaseCommand from '@/common/BaseCommand';
-import OpenAI from 'openai';
 import sql from '@/common/sql';
+import * as semver from 'semver';
 export default class Ai extends BaseCommand {
     /**
      * 主函数，用于处理用户输入并调用OpenAI API获取回答
      * @param moduleName - 模块名称
      */
     async main(moduleName: string) {
+        if (semver.lt(process.version, '18.0.0')) {
+            this.logger.error('请在NodeJS v18+环境使用');
+            return;
+        }
+        const OpenAI = (await import('openai')).default;
         // 从本地数据库获取OpenAI API密钥
         const apiKey = await sql((db) => db.ai.apiKey);
         // 创建OpenAI实例，设置API密钥和基础URL
