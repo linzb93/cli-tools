@@ -167,7 +167,7 @@ export default class extends BaseCommand {
         if (status === 1) {
             commands.push('git add .', gitAtom.commit(this.options.commit));
         }
-        if (!this.isForeignProject) {
+        if (!this.isForeignProject && !isLocalBranch) {
             commands.push({
                 ...gitAtom.pull(),
                 retryTimes: 100,
