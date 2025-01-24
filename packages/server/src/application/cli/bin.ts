@@ -57,6 +57,7 @@ program
 program
     .command('ai [name]')
     .option('-s, --short', '简单回答')
+    .option('-c, --clear', '清理对话')
     .action((action, options) => {
         ai(action, options);
     });
