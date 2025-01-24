@@ -54,9 +54,12 @@ program
     .action((subCommand, options) => {
         agent(subCommand, options);
     });
-program.command('ai [name]').action((action) => {
-    ai(action);
-});
+program
+    .command('ai [name]')
+    .option('-s, --short', '简单回答')
+    .action((action, options) => {
+        ai(action, options);
+    });
 program
     .command('cg [action] [...rest]')
     .option('--realtime', '实时更新')
