@@ -18,7 +18,7 @@ export default class Ai extends BaseCommand {
      * @param moduleName - 模块名称
      */
     async main(moduleName: string, options: Options) {
-        this.contextFilePath = join(root, `cache/ai/${name}.json`);
+        this.contextFilePath = join(root, `cache/ai/${moduleName}.json`);
         if (options.clear) {
             this.clearContext(moduleName);
             return;
@@ -66,6 +66,27 @@ export default class Ai extends BaseCommand {
             }
             process.stdout.write('\n');
             messages.push({ role: 'assistant', content: contents });
+        }
+    }
+    /**
+     * 初始化，检查缓存里面的目录是否正确
+     */
+    private async checkDirectories() {
+        try {
+            await fs.access(join(root, `cache/ai`));
+        } catch (error) {
+            await fs.mkdir(join(root, 'cache/ai'));
+            await Promise.all([
+                fs.writeJSON(join(root, 'cache/ai/index.json'), {
+                    items: [],
+                }),
+                fs.mkdir(join(root, 'cache/ai/contexts')),
+            ]);
+            /**
+             * 每个上下文文件：[uid].json
+             * index.json存放的列表项：{title, id}
+             * 上下文文件格式：{title, system:系统对话, messages: {}[]}
+             */
         }
     }
     private async checkDialogueExists(name: string): Promise<
