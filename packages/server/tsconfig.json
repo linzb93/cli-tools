@@ -13,5 +13,6 @@
       "@/*": ["*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["packages/server/src/application/web"]
 }
