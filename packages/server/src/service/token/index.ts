@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import chalk from 'chalk';
 import Time from '@/service/time';
 import BaseCommand from '@/common/BaseCommand';
 import { AnyObject } from '@/typings';
@@ -23,7 +24,6 @@ const strategyList = [
             const decoded = jwt.decode(tokenStr, {
                 complete: options.complete,
             }) as AnyObject; // 解析数据格式不定
-            console.log(decoded);
             if (!decoded) {
                 throw new Error('无法解析');
             }
@@ -42,9 +42,12 @@ const strategyList = [
 export default class extends BaseCommand {
     async main(tk: string, options: Options) {
         let decoded = '';
+        let matchTitle = '';
         for (const item of strategyList) {
             try {
                 decoded = item.action(tk, options);
+                matchTitle = item.name;
+                break;
             } catch (error) {
                 continue;
             }
@@ -53,6 +56,7 @@ export default class extends BaseCommand {
             console.log('无法解析token');
             return;
         }
+        console.log(`使用${chalk.magenta(matchTitle)}解析结果：`);
         if (typeof decoded === 'string') {
             try {
                 console.log(JSON.parse(decoded));
