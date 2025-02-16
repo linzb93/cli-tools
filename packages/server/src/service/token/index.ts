@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import chalk from 'chalk';
-import Time from '@/service/time';
+import Time from '../time';
 import BaseCommand from '@/common/BaseCommand';
 import { AnyObject } from '@/typings';
 

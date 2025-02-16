@@ -10,7 +10,7 @@ function fmtCommitMsg(commit: string) {
     if (match) {
         return commit;
     }
-    if (commit.includes('修复') || commit.includes('bug')) {
+    if (['修复', 'bug'].some((text) => commit.includes(text))) {
         return `fix:${commit}`;
     }
     if (commit.includes('重构')) {
