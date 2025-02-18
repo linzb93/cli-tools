@@ -13,6 +13,6 @@
       "@/*": ["*"]
     }
   },
-  "include": ["src"],
+  "include": ["src/**/*", "env.d.ts"],
   "exclude": ["packages/server/src/application/web"]
 }

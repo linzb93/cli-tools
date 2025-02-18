@@ -120,7 +120,7 @@ export default class extends BaseCommand {
         const flows: CommandItemAll[] = await this.getBaseAction();
         const tailFlows = [];
         let tag = '';
-        if (inquire) {
+        if (inquire && !process.env.DEBUG) {
             const { answer } = await this.inquirer.prompt({
                 message: `确认更新到${targetBranch}分支？`,
                 name: 'answer',
@@ -151,6 +151,9 @@ export default class extends BaseCommand {
             } else {
                 this.logger.error(error);
             }
+            return;
+        }
+        if (process.env.DEBUG) {
             return;
         }
         if (actions.includes('open') || this.options.open) {
