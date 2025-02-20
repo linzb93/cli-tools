@@ -9,5 +9,4 @@ export default async (options: Options) => {
                 new Branch().main(options);
             });
     });
-    new Branch().main(options);
 };
