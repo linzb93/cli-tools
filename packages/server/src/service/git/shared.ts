@@ -1,4 +1,9 @@
 import { execaCommand as execa } from 'execa';
+/**
+ * TODO: 打算用到代码中的git命令：
+ * - 判断某个分支（假设名称为dev）是否有commit未推送：git log origin/dev..dev
+ * - 推送名称为dev的分支下的所有commit，但不需要先切换到dev分支：git push origin dev
+ */
 
 /**
  * 判断是否是Git项目

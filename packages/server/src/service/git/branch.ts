@@ -112,6 +112,9 @@ export default class extends BaseCommand {
         } else {
             this.logger.warn(`以下分支没有删除，请确认代码是否已提交或合并：
 ${errorBranches.map((item) => item.name).join(',')}`);
+            /**
+             * TODO: 删除失败的分支，查看是不是有未推送的，如果是的话，询问是否一键推送，然后再删除
+             */
         }
     }
 }
