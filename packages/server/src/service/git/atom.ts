@@ -40,7 +40,7 @@ async function handleConflict() {
 const gitAtom = {
     commit(message: string) {
         return {
-            message: `git commit -m ${fmtCommitMsg(message)}`,
+            message: `git commit -a -m ${fmtCommitMsg(message)}`,
             onError: handleConflict,
         };
     },

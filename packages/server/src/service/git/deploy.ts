@@ -168,7 +168,7 @@ export default class extends BaseCommand {
         const status = await getPushStatus();
         const commands: CommandItemAll[] = [];
         if (status === 1) {
-            commands.push('git add .', gitAtom.commit(this.options.commit));
+            commands.push(gitAtom.commit(this.options.commit));
         }
         if (!this.isForeignProject && !isLocalBranch) {
             commands.push({
