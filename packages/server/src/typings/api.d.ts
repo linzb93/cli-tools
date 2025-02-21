@@ -24,7 +24,10 @@ export interface Database {
         to: string;
     }[];
     ai: {
-        apiKey: string;
+        apiKey: {
+            deepseek: string;
+            siliconflow: string;
+        };
     };
     ipc: string;
     gitDirs: {
