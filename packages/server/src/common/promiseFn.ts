@@ -51,7 +51,7 @@ export interface CommandItem {
     message: string;
     suffix?: string;
     retryTimes?: number;
-    onError?: Function;
+    onError?: (message: string) => void;
 }
 export type CommandItemAll = CommandItem | string;
 export const sequenceExec = async (commandList: (string | CommandItem)[]) => {

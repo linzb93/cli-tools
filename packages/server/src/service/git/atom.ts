@@ -1,4 +1,4 @@
-import { sequenceExec } from '@/common/promiseFn';
+import { sequenceExec, CommandItem } from '@/common/promiseFn';
 import inquirer from '@/common/inquirer';
 
 function fmtCommitMsg(commit: string) {
@@ -34,13 +34,15 @@ async function handleConflict() {
     if (!resolved) {
         throw new Error('exit');
     }
-    await sequenceExec(['git add .', 'git commit -m conflict-fixed']);
+    await sequenceExec(['git commit -am conflict-fixed']);
 }
 
-const gitAtom = {
+const gitAtom: {
+    [key: string]: (...data: any[]) => CommandItem;
+} = {
     commit(message: string) {
         return {
-            message: `git commit -a -m ${fmtCommitMsg(message)}`,
+            message: `git commit -am ${fmtCommitMsg(message)}`,
             onError: handleConflict,
         };
     },
@@ -58,6 +60,11 @@ const gitAtom = {
         }
         return {
             message: 'git push',
+            onError: async (message) => {
+                if (['pull', 'merge'].some((text) => message.includes(text))) {
+                    await sequenceExec([this.pull(), this.push()]);
+                }
+            },
         };
     },
     merge(branch: string) {
