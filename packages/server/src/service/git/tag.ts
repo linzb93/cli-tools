@@ -11,23 +11,30 @@ import { getProjectName } from '@/common/jenkins';
 export interface Options {
     /**
      * @default false
-     * 是否进入批量删除标签模式
+     * 是否进入批量删除标签模式。一般用不上，公司会定期清理。
      */
     delete?: boolean;
     /**
      * 获取最后几个标签
      */
-    last?: boolean;
+    last?: number;
     /**
-     * 输出标签，默认行为是打标签
+     * 输出最后一个标签。
      */
     get?: boolean;
     help?: boolean;
-    sync: boolean;
+    /**
+     * 同步当前标签
+     */
+    sync?: boolean;
     /**
      * 获取前面几个标签，在批量删除标签模式使用
      */
-    head: number;
+    head?: number;
+    /**
+     * 一个项目可以打多种tag，默认是v开头的
+     */
+    type?: string;
 }
 
 export default class extends BaseCommand {
@@ -46,11 +53,11 @@ export default class extends BaseCommand {
             this.logger.success(`找到最近${options.last}个：\n${gitTags.slice(-Number(options.last)).join('\n')}`);
             return;
         }
-        const last = gitTags.slice(-1)?.[0];
         if (options.get) {
             if (!gitTags.length) {
                 this.logger.success('该项目没有tag');
             } else {
+                const last = gitTags.slice(-1)?.[0];
                 this.logger.success(last);
                 clipboard.writeSync(last);
             }
@@ -59,7 +66,7 @@ export default class extends BaseCommand {
         let tag = '';
         const input = data;
         if (!input) {
-            tag = await this.generateNewestTag();
+            tag = await this.generateNewestTag(options);
         } else {
             tag = input.startsWith('v') ? input : `v${input}`;
         }
@@ -72,33 +79,39 @@ export default class extends BaseCommand {
     /**
      * 生成最新的tag
      */
-    async generateNewestTag(): Promise<string> {
+    async generateNewestTag(options: Options): Promise<string> {
         const gitTags = await getTags();
         if (gitTags.length === 0) {
             return '';
         }
-        const lastTag = this.gitCurrentLatestTag(gitTags);
-        const [firstNum, secondNum, thirdNum, lastNum] = lastTag.replace(/^v/, '').split('.');
+        const prefix = options.type || 'v';
+        const lastTag = this.gitCurrentLatestTag(gitTags, prefix);
+        const [firstNum, secondNum, thirdNum, lastNum] = lastTag.split('.');
         if (lastTag.split('.').length === 3) {
             return `${lastTag}.1`;
         }
-        return `v${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
+        return `${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
     }
     /**
      * 获取最近的一次tag
      * @param tags
      * @returns
      */
-    private gitCurrentLatestTag(tags: string[]): string {
-        for (let i = tags.length - 1; i >= 0; i--) {
-            if (tags[i].match(/^v\d\./)) {
-                const lastNum = Number(last(tags[i].split('.')));
-                if (!tags.includes(tags[i].replace(/\d+$/, (lastNum + 1).toString()))) {
-                    return tags[i];
+    private gitCurrentLatestTag(tags: string[], prefix: string): string {
+        const filterTags = tags.filter((tag) => tag.startsWith(prefix)).map((tag) => tag.replace(prefix, ''));
+        const sortedTags = filterTags.sort((a, b) => {
+            const aArr = a.split('.').map((item) => Number(item));
+            const bArr = b.split('.').map((item) => Number(item));
+            for (let i = 0; i < aArr.length; i++) {
+                if (aArr[i] === bArr[i]) {
+                    continue;
                 }
+                return aArr[i] - bArr[i];
             }
-        }
-        return '';
+            return 0;
+        });
+        console.log(sortedTags);
+        return sortedTags.at(-1);
     }
     /**
      * 批量删除分支
