@@ -34,7 +34,7 @@ async function handleConflict() {
     if (!resolved) {
         throw new Error('exit');
     }
-    await sequenceExec(['git commit -am conflict-fixed']);
+    await sequenceExec(['git add .', 'git commit -m conflict-fixed']);
 }
 
 const gitAtom: {
@@ -42,7 +42,7 @@ const gitAtom: {
 } = {
     commit(message: string) {
         return {
-            message: `git commit -am ${fmtCommitMsg(message)}`,
+            message: `git commit -m ${fmtCommitMsg(message)}`,
             onError: handleConflict,
         };
     },

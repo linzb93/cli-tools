@@ -125,3 +125,13 @@ export const getChainShopInfo = async (params: any, isTest: boolean) => {
     const res = await service.post(`${prefix}/chain/occ/dkdAccount/oa/getAccountToken`, params);
     return res.data.result;
 };
+
+export const getMoveShopList = async (params: any) => {
+    const prefix = await sql((db) => db.oa.apiPrefix);
+    const res = await service.post(`${prefix}/moving/manage/orderPage`, {
+        ...params,
+        pageSize: 1,
+        pageIndex: 1,
+    });
+    return res.data.result;
+};

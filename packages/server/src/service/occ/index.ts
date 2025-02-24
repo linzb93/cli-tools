@@ -2,7 +2,7 @@ import clipboard from 'clipboardy';
 import open from 'open';
 import chalk from 'chalk';
 import BaseCommand from '@/common/BaseCommand';
-import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Outer } from './apps';
+import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Outer, Spbj } from './apps';
 import BaseApp from './apps/base';
 
 export interface Options {
@@ -77,6 +77,7 @@ export default class extends BaseCommand {
         this.registerApp(Elejysq);
         this.registerApp(Chain);
         this.registerApp(Outer);
+        this.registerApp(Spbj);
         await this.run();
     }
     registerApp(app: AppCtor) {
@@ -164,7 +165,7 @@ export default class extends BaseCommand {
         }
         if (options.fix) {
             const token = this.currentApp.getToken(url);
-            const formattedUrl = `${options.fix}#/login?code=${token}`;
+            const formattedUrl = `${options.fix}login?code=${token}`;
             clipboard.writeSync(formattedUrl);
             this.spinner.succeed(`【${this.currentApp.serviceName}】已生成新地址成功`);
             return;
