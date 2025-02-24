@@ -170,13 +170,14 @@ program
 
 program
     .command('occ [data...]')
-    .option('--token', '获取token或根据token跳转')
+    .option('--token', '获取token')
     .option('--pc', '打开PC端')
     .option('--copy', '复制地址')
     .option('--test', '测试环境')
     .option('--user', '根据token获取用户信息')
     .option('--full', '先获取登录账号的店铺信息')
     .option('--help', '显示帮助文档')
+    .option('--fix <url>', '补齐完整的登录地址')
     .action((data, options) => {
         occ(data, options);
     });

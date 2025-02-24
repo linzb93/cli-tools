@@ -1,11 +1,11 @@
-import OCC, { Options } from "@/service/occ";
-import chalk from "chalk";
-import { generateHelpDoc } from "@/common/helper";
+import OCC, { Options } from '@/service/occ';
+import chalk from 'chalk';
+import { generateHelpDoc } from '@/common/helper';
 
 function generateHelp() {
-  generateHelpDoc({
-    title: "occ",
-    content: `OCC各平台数据获取。
+    generateHelpDoc({
+        title: 'occ',
+        content: `OCC各平台数据获取。
 使用方法：
 ${chalk.cyan(`occ [appName] [shopId]`)}。
 默认是打开美团经营神器测试账号的店铺。
@@ -28,13 +28,14 @@ appName 选项：
 - pc: 访问PC端应用
 - copy: 复制店铺地址
 - user: 查看该门店信息
+- fix: 补齐登录地址
     `,
-  });
+    });
 }
 
 export default (input: string[], options: Options) => {
-  if (options.help) {
-    generateHelp();
-  }
-  new OCC().main(input, options);
+    if (options.help) {
+        generateHelp();
+    }
+    new OCC().main(input, options);
 };

@@ -38,6 +38,10 @@ export interface Options {
      * 查看帮助文档
      */
     help: boolean;
+    /**
+     * 补齐登录的地址
+     */
+    fix: string;
 }
 
 type AppCtor = new () => BaseApp;
@@ -156,6 +160,13 @@ export default class extends BaseCommand {
             const token = this.currentApp.getToken(url);
             clipboard.writeSync(token);
             this.spinner.succeed(`【${this.currentApp.serviceName}】已复制店铺【${shopName}】 的token\n${token}`);
+            return;
+        }
+        if (options.fix) {
+            const token = this.currentApp.getToken(url);
+            const formattedUrl = `${options.fix}#/login?code=${token}`;
+            clipboard.writeSync(formattedUrl);
+            this.spinner.succeed(`【${this.currentApp.serviceName}】已生成新地址成功`);
             return;
         }
         if (options.copy) {
