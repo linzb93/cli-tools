@@ -10,14 +10,14 @@ import axios from 'axios';
 import pMap from 'p-map';
 import responseFmt from '../shared/response';
 import sql from '@/common/sql';
-// import multer from "multer";
+import multer from 'multer';
 import intoStream from 'into-stream';
 import { copy } from '@/common/helper';
 import { HTTP_STATUS, tempPath } from '@/common/constant';
 import { showOpenDialog, showSaveDialog } from '@/common/dialog';
 import globalConfig from '../../../../../../config.json';
 
-// const upload = multer();
+const upload = multer();
 
 export default async (router: Router) => {
     // 复制文本
@@ -108,23 +108,23 @@ export default async (router: Router) => {
         });
     });
 
-    // router.post("/upload", upload.single("file"), (req, res) => {
-    //   const uid = Date.now();
-    //   const filename = join(tempPath, `${uid}.jpg`);
-    //   intoStream(req.file.buffer)
-    //     .pipe(fs.createWriteStream(filename))
-    //     .on("finish", () => {
-    //       internalIp.v4().then((ip) => {
-    //         res.send(
-    //           responseFmt({
-    //             url: `http://${ip}:${globalConfig.port.production}${
-    //               globalConfig.prefix.temp
-    //             }/${basename(filename)}`,
-    //           })
-    //         );
-    //       });
-    //     });
-    // });
+    router.post('/upload', upload.single('file'), (req, res) => {
+        const uid = Date.now();
+        const filename = join(tempPath, `${uid}.jpg`);
+        intoStream(req.file.buffer)
+            .pipe(fs.createWriteStream(filename))
+            .on('finish', () => {
+                internalIp.v4().then((ip) => {
+                    res.send(
+                        responseFmt({
+                            url: `http://${ip}:${globalConfig.port.production}${globalConfig.prefix.temp}/${basename(
+                                filename
+                            )}`,
+                        })
+                    );
+                });
+            });
+    });
 
     // 同步菜单
     router.post('/syncMenus', (req, res) => {

@@ -23,7 +23,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import globalConfig from '../../../../../config.json';
 import monitorRouter from './controller/monitor';
-// import iPhoneRouter from './controller/iPhone';
+import iPhoneRouter from './controller/iPhone';
 import settingRouter from './controller/setting';
 import scheduleRouter from './controller/schedule';
 import vueRouter from './controller/vue';
@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 
 commonAPIs(apiRouter);
 apiRouter.use('/monitor', monitorRouter);
-// apiRouter.use('/iPhone', iPhoneRouter);
+apiRouter.use('/iPhone', iPhoneRouter);
 apiRouter.use('/setting', settingRouter);
 apiRouter.use('/schedule', scheduleRouter);
 apiRouter.use('/vue', vueRouter);

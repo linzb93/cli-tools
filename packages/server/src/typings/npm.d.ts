@@ -15,10 +15,3 @@ declare module 'global-modules' {
 declare module 'uuid' {
     export function v4(): string;
 }
-
-declare module 'multer' {
-    interface Upload {
-        single(type: string): void;
-    }
-    export default function (): Upload;
-}

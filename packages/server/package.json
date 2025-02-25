@@ -46,6 +46,7 @@
         "log-symbols": "^5.1.0",
         "lowdb": "^3.0.0",
         "mockjs": "^1.1.0",
+        "multer": "1.4.5-lts.1",
         "node-notifier": "^10.0.0",
         "open": "^8.4.0",
         "openai": "^4.78.1",

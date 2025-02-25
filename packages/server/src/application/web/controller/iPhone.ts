@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { join, basename } from 'node:path';
 import { Router } from 'express';
-// import multer from "multer";
+import multer from 'multer';
 import intoStream from 'into-stream';
 import { notify, copy, readCopy } from '@/common/helper';
 import { changeTempUrlToPath } from '../shared';
@@ -11,7 +11,7 @@ import responseFmt from '../shared/response';
 import { showOpenDialog } from '@/common/dialog';
 
 const router = Router({});
-// const upload = multer();
+const upload = multer();
 const cacheImgName = 'iPhoneImg';
 export default router;
 
@@ -65,35 +65,35 @@ router.get('/getImg', (req, res) => {
             }
         });
 });
-// router.post("/batchSendImg", upload.single("file"), (req, res) => {
-//   const uid = Date.now();
-//   const filename = join(tempPath, `${uid}.jpg`);
-//   req.pipe(fs.createWriteStream(filename)).on("finish", () => {
-//     const imgs = memCache.get(cacheImgName);
-//     if (!imgs) {
-//       memCache.set(cacheImgName, [filename]);
-//     } else {
-//       memCache.set(cacheImgName, imgs.concat(filename));
-//     }
-//     res.send("ok");
-//   });
-// });
+router.post('/batchSendImg', upload.single('file'), (req, res) => {
+    const uid = Date.now();
+    const filename = join(tempPath, `${uid}.jpg`);
+    req.pipe(fs.createWriteStream(filename)).on('finish', () => {
+        const imgs = memCache.get(cacheImgName);
+        if (!imgs) {
+            memCache.set(cacheImgName, [filename]);
+        } else {
+            memCache.set(cacheImgName, imgs.concat(filename));
+        }
+        res.send('ok');
+    });
+});
 
-// router.post("/sendImg", upload.single("file"), (req, res) => {
-//   const uid = Date.now();
-//   const filename = join(tempPath, `${uid}.jpg`);
-//   intoStream(req.file.buffer)
-//     .pipe(fs.createWriteStream(filename))
-//     .on("finish", () => {
-//       const imgs = memCache.get(cacheImgName);
-//       if (!imgs) {
-//         memCache.set(cacheImgName, [filename]);
-//       } else {
-//         memCache.set(cacheImgName, imgs.concat(filename));
-//       }
-//       res.send("ok");
-//     });
-// });
+router.post('/sendImg', upload.single('file'), (req, res) => {
+    const uid = Date.now();
+    const filename = join(tempPath, `${uid}.jpg`);
+    intoStream(req.file.buffer)
+        .pipe(fs.createWriteStream(filename))
+        .on('finish', () => {
+            const imgs = memCache.get(cacheImgName);
+            if (!imgs) {
+                memCache.set(cacheImgName, [filename]);
+            } else {
+                memCache.set(cacheImgName, imgs.concat(filename));
+            }
+            res.send('ok');
+        });
+});
 
 router.post('/save', (_, res) => {
     showOpenDialog('directory').then((dir) => {
