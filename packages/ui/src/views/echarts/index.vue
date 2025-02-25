@@ -2,23 +2,39 @@
   <el-upload :before-upload="handleChange">
     <el-button type="primary">上传图片</el-button>
   </el-upload>
+  <div class="charts" id="charts"></div>
 </template>
 
 <script setup lang="ts">
+import { ElLoading } from 'element-plus'
 import axios from 'axios'
-import { ref, shallowRef, onMounted } from 'vue'
-import request, { baseURL } from '../../helpers/request'
-
+import * as echarts from 'echarts'
+import { baseURL } from '../../helpers/request'
+let loadingInstance: any
 const handleChange = async (file) => {
   const formData = new FormData()
+  loadingInstance = ElLoading.service({ fullscreen: true, text: '正在生成' })
   formData.append('file', file)
-  console.log(file)
-  const res = await axios.post(baseURL + '/ai/upload', formData, {
+  const res = (await axios.post(baseURL + '/ai/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
-  })
+  })) as any
+  if (res.success) {
+    renderChart(res.options)
+  }
   return false
 }
+
+const renderChart = async (data: any) => {
+  const myChart = echarts.init(document.getElementById('charts'))
+  myChart.setOption(data)
+  loadingInstance.close()
+}
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.charts {
+  width: 1000px;
+  height: 300px;
+}
+</style>

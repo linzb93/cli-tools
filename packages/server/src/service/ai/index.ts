@@ -1,16 +1,31 @@
 import * as semver from 'semver';
 import BaseCommand from '@/common/BaseCommand';
 import getModels from './models';
+// import {type ChatCompletionContentPartText} from 'openai';
 
 export interface Options {
     short: boolean;
     clear: boolean;
 }
 
-export interface MessageOptions {
-    role: 'user' | 'assistant' | 'system';
-    content: string;
-}
+export type MessageOptions =
+    | {
+          role: 'system' | 'assistant';
+          content: string;
+          name?: string;
+      }
+    | {
+          role: 'user';
+          content:
+              | string
+              | {
+                    type: 'image_url';
+                    image_url: {
+                        url: string;
+                        detail?: 'auto' | 'low' | 'high';
+                    };
+                }[];
+      };
 
 export default class Ai extends BaseCommand {
     private contextFilePath = '';
@@ -30,9 +45,10 @@ export default class Ai extends BaseCommand {
             type: 'text',
         }
     ) {
-        const models = await getModels();
+        const models = await getModels(options.type);
         const OpenAI = (await import('openai')).default;
-        for (const modelItem of models) {
+        for (let i = 0; i < models.length; i++) {
+            const modelItem = models[i];
             const openai = new OpenAI({
                 baseURL: modelItem.baseURL,
                 apiKey: modelItem.apiKey,
