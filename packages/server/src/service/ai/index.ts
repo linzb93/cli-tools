@@ -24,7 +24,7 @@ export default class Ai extends BaseCommand {
      */
     async use(
         messages: MessageOptions[],
-        options?: {
+        options: {
             type: string;
         } = {
             type: 'text',

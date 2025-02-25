@@ -110,7 +110,6 @@ export default class extends BaseCommand {
             }
             return 0;
         });
-        console.log(sortedTags);
         return sortedTags.at(-1);
     }
     /**
