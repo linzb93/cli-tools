@@ -1,4 +1,4 @@
-declare module "kill-port" {
+declare module 'kill-port' {
     export default function killPort(
         port: string,
         type: string
@@ -7,27 +7,18 @@ declare module "kill-port" {
     }>;
 }
 
-declare module "global-modules" {
+declare module 'global-modules' {
     const m: string;
     export default m;
 }
 
-declare module "uuid" {
+declare module 'uuid' {
     export function v4(): string;
 }
 
-declare module "macos-open-file-dialog" {
-    export function openFile(title: string, types?: string[]): Promise<string>;
-    export function openMultipleFiles(
-        title: string,
-        types?: string[]
-    ): Promise<string>;
-    export function openFolder(title: string): Promise<string>;
-}
-
-declare module "node-file-dialog" {
-    interface Options {
-        type: 'directory' | 'save-file' | 'open-file' | 'open-files'
+declare module 'multer' {
+    interface Upload {
+        single(type: string): void;
     }
-    export default function (options: Options): Promise<string>
+    export default function (): Upload;
 }
