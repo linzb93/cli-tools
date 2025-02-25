@@ -88,9 +88,9 @@ export default class extends BaseCommand {
         const lastTag = this.gitCurrentLatestTag(gitTags, prefix);
         const [firstNum, secondNum, thirdNum, lastNum] = lastTag.split('.');
         if (lastTag.split('.').length === 3) {
-            return `${lastTag}.1`;
+            return `${prefix}${lastTag}.1`;
         }
-        return `${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
+        return `${prefix}${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
     }
     /**
      * 获取最近的一次tag
