@@ -18,9 +18,13 @@ const routes = [
     component: () => import('./views/git/index.vue')
   },
   {
-    path: '/vue',
-    component: () => import('./views/vue/index.vue')
+    path: '/echarts',
+    component: () => import('./views/echarts/index.vue')
   },
+  // {
+  //   path: '/vue',
+  //   component: () => import('./views/vue/index.vue')
+  // },
   // {
   //   path: '/agent',
   //   component: () => import('./views/agent/index.vue')

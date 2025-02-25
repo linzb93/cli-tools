@@ -22,7 +22,14 @@ export default class Ai extends BaseCommand {
     /**
      * 使用ai
      */
-    async use(messages: MessageOptions[]) {
+    async use(
+        messages: MessageOptions[],
+        options?: {
+            type: string;
+        } = {
+            type: 'text',
+        }
+    ) {
         const models = await getModels();
         const OpenAI = (await import('openai')).default;
         for (const modelItem of models) {
@@ -49,12 +56,6 @@ export default class Ai extends BaseCommand {
                     切换至下一个服务`);
                 continue;
             }
-        }
-    }
-    check() {
-        if (semver.lt(process.version, '18.0.0')) {
-            this.logger.error('请在NodeJS v18+环境使用');
-            return;
         }
     }
 }

@@ -24,6 +24,7 @@ import bodyParser from 'body-parser';
 import globalConfig from '../../../../../config.json';
 import monitorRouter from './controller/monitor';
 import iPhoneRouter from './controller/iPhone';
+import AiRouter from './controller/ai';
 import settingRouter from './controller/setting';
 import scheduleRouter from './controller/schedule';
 import vueRouter from './controller/vue';
@@ -44,14 +45,10 @@ app.use(
 );
 app.use(globalConfig.prefix.temp, express.static(tempPath));
 
-app.use((req, res, next) => {
-    console.log(req.path);
-    next();
-});
-
 commonAPIs(apiRouter);
 apiRouter.use('/monitor', monitorRouter);
 apiRouter.use('/iPhone', iPhoneRouter);
+apiRouter.use('/ai', AiRouter);
 apiRouter.use('/setting', settingRouter);
 apiRouter.use('/schedule', scheduleRouter);
 apiRouter.use('/vue', vueRouter);

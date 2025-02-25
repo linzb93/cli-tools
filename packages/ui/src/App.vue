@@ -6,7 +6,7 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import Menus from './components/Menus.vue'
 import { useGlobalStore } from '@/store'
 

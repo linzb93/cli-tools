@@ -75,7 +75,7 @@
   <code-beautify v-model:visible="visible.code" :path="targetPath" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, shallowRef, shallowReactive, ref, onMounted, computed } from 'vue'
 import dayjs from 'dayjs'
 import { pick } from 'lodash-es'

@@ -40,7 +40,7 @@
   </template>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { shallowRef, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import SelectDirs from './components/SelectDirs.vue'

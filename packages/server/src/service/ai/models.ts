@@ -23,5 +23,14 @@ export default async () => {
                 return errorMessage;
             },
         },
+        {
+            title: 'siliconflow图像识别',
+            apiKey: apiKey.siliconflow,
+            baseURL: 'https://api.siliconflow.cn',
+            model: 'Qwen/Qwen2-VL-72B-Instruct',
+            errorHandler(errorMessage: string) {
+                return errorMessage;
+            },
+        },
     ];
 };

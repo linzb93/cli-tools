@@ -39,7 +39,15 @@ import { shallowReactive, ref, shallowRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import { omit } from 'lodash-es'
 import { useRoute, useRouter } from 'vue-router'
-import { Refresh, Iphone, HomeFilled, Setting, View, Clock } from '@element-plus/icons-vue'
+import {
+  Refresh,
+  Iphone,
+  HomeFilled,
+  Setting,
+  View,
+  Clock,
+  PictureFilled
+} from '@element-plus/icons-vue'
 import request from '@/helpers/request'
 import { VueIcon } from '@/components/icons'
 
@@ -71,6 +79,11 @@ const list = [
     title: 'Git扫描',
     to: '/git',
     icon: Clock
+  },
+  {
+    title: 'Ai解析Echarts',
+    to: '/echarts',
+    icon: PictureFilled
   }
 ]
 const menuList = list.filter((item) => !item.hide)
