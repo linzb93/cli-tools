@@ -20,8 +20,8 @@ const handleChange = async (file) => {
       'Content-Type': 'multipart/form-data'
     }
   })) as any
-  if (res.success) {
-    renderChart(res.options)
+  if (res.data.success) {
+    renderChart(res.data.options)
   }
   return false
 }

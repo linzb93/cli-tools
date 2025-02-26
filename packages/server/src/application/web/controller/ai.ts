@@ -1,17 +1,30 @@
 import { Router } from 'express';
 import Ai from '@/service/ai';
 import multer from 'multer';
+import { type Readable } from 'node:stream';
+import intoStream from 'into-stream';
 import responseFmt from '../shared/response';
+import { tempUpload } from '@/common/upload';
 
 const router = Router();
 const upload = multer();
 router.post('/upload', upload.single('file'), async (req, res) => {
-    getAiResult(req.file.buffer.toString('base64')).then((result) => {
-        res.send(responseFmt(result));
+    const stream = intoStream(req.file.buffer);
+    const result = await tempUpload({
+        type: 'stream',
+        data: stream,
+    });
+    getAiResult(result.path).then((output) => {
+        result.removeHandler();
+        res.send(
+            responseFmt({
+                data: output,
+            })
+        );
     });
 });
 
-async function getAiResult(base64Url: string) {
+async function getAiResult(remoteUrl: string) {
     const result = await new Ai().use(
         [
             {
@@ -26,7 +39,7 @@ async function getAiResult(base64Url: string) {
                     {
                         type: 'image_url',
                         image_url: {
-                            url: `data:image/jpeg;base64,${base64Url}`,
+                            url: remoteUrl,
                             detail: 'high',
                         },
                     },

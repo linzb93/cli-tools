@@ -165,9 +165,12 @@ export default class extends BaseCommand {
         }
         if (options.fix) {
             const token = this.currentApp.getToken(url);
-            const formattedUrl = `${options.fix}login?code=${token}`;
+            const formattedUrl = options.fix.endsWith('#/')
+                ? `${options.fix}login?code=${token}`
+                : `${options.fix}#/login?code=${token}`;
             clipboard.writeSync(formattedUrl);
-            this.spinner.succeed(`【${this.currentApp.serviceName}】已生成新地址成功`);
+            this.spinner.succeed(`【${this.currentApp.serviceName}】已生成新地址成功
+${formattedUrl}`);
             return;
         }
         if (options.copy) {
