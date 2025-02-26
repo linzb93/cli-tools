@@ -24,6 +24,7 @@ import shortcut from './commands/shortcut';
 import getSize from './commands/size';
 import token from './commands/token';
 import tree from './commands/tree';
+import test from './commands/test';
 import git from './commands/git';
 import npm from './commands/npm';
 import analyse from './commands/analyse';
@@ -240,5 +241,8 @@ program
     .action((dir, option) => {
         tree(dir, option);
     });
+program.command('test').action(() => {
+    test();
+});
 
 program.parse(process.argv.filter((cmd) => cmd !== '--debug'));

@@ -20,16 +20,17 @@ export const tempUpload = async (data: Params) => {
     const ossData = await sql((db) => db.oss);
     const { uploadPath, ...config } = ossData;
     const client = new OSS(config);
-    const path = slash(join(uploadPath, `local-${Date.now()}`));
+    const ossPath = slash(join(uploadPath, `local-${Date.now()}.png`));
+    const url = `${ossData.domain}/${ossPath}`;
     if (data.type === 'url') {
-        client.put(path, data.data);
+        client.put(ossPath, data.data);
     } else {
-        client.putStream(path, data.data);
+        client.putStream(ossPath, data.data);
     }
     return {
-        path,
+        url,
         async removeHandler() {
-            await client.delete(path);
+            await client.delete(ossPath);
         },
     };
 };
