@@ -110,7 +110,7 @@ export default class extends BaseCommand {
             }
             return 0;
         });
-        return sortedTags.at(-1);
+        return sortedTags.slice(-1)[0];
     }
     /**
      * 批量删除分支
