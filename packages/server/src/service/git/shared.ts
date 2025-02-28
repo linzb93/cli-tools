@@ -226,7 +226,7 @@ export const isCurrenetBranchPushed = async () => {
  * 同步tag
  */
 export const syncTags = async () => {
-    await execa('git tag -d  $(git tag -l)');
+    await execa('git tag -d  $(git tag -l)', { shell: true });
     await execa('git pull');
 };
 /**
