@@ -5,10 +5,18 @@ import { getBranches, deleteBranch, BranchResultItem } from './shared';
 
 export interface Options {
     type: 'all' | 'remote' | 'local';
+    delete: boolean;
 }
 
 export default class extends BaseCommand {
     async main(options: Options) {
+        if (options.delete) {
+            await this.delete(options);
+            return;
+        }
+        console.log('list');
+    }
+    async delete(options: Options) {
         const branches = (await getBranches()).reduce<
             {
                 name: string;

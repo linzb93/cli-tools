@@ -14,7 +14,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         type: 'stream',
         data: stream,
     });
-    getAiResult(result.path).then((output) => {
+    getAiResult(result.url).then((output) => {
         result.removeHandler();
         res.send(
             responseFmt({
