@@ -73,7 +73,7 @@ export default class extends BaseCommand {
 翻译工具：${chalk.green(match.tool)}
 
 翻译结果：
-${match.result.map((item) => `${chalk.gray(item.type)} ${item.content}`).join('\n\n')}`,
+${match.result.length ? match.result.map((item) => `${chalk.gray(item.type)} ${item.content}`).join('\n\n') : '无'}`,
         });
     }
     private async getYoudaoMeanings(originText: string) {
@@ -93,7 +93,7 @@ ${match.result.map((item) => `${chalk.gray(item.type)} ${item.content}`).join('\
                         };
                     }
                     return {
-                        type: null,
+                        type: '',
                         content: typeRet,
                     };
                 })
