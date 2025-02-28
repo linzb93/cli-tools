@@ -25,6 +25,10 @@ export interface Options {
      * 发布到生产分支
      */
     prod: boolean;
+    /**
+     * 部署应用类型
+     */
+    type: string;
 }
 
 interface FlowOption {
@@ -134,7 +138,11 @@ export default class extends BaseCommand {
             flows.push(`git checkout ${targetBranch}`, gitAtom.pull(), gitAtom.merge(this.currenetBranch), 'git push');
         }
         if (actions.includes('tag')) {
-            tag = this.options.tag || (await new Tag().generateNewestTag({}));
+            tag =
+                this.options.tag ||
+                (await new Tag().generateNewestTag({
+                    type: this.options.type,
+                }));
             if (tag) {
                 flows.push(`git tag ${tag}`);
                 flows.push(`git push origin ${tag}`);
@@ -157,7 +165,7 @@ export default class extends BaseCommand {
             return;
         }
         if (actions.includes('open') || this.options.open) {
-            await openDeployPage();
+            await openDeployPage(this.options.type);
         }
         if (actions.includes('copy')) {
             await this.deploySuccess(tag);

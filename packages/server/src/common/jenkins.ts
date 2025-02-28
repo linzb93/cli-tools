@@ -11,8 +11,8 @@ interface JenkinsProject {
 /**
  * 打开公司内部Jenkins部署页面
  */
-export const openDeployPage = async () => {
-    const { id, name } = await getProjectName();
+export const openDeployPage = async (type?: string) => {
+    const { id, name } = await getProjectName(type);
     if (id) {
         const isWork = await isInWorkEnv();
         const origin = await sql((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
@@ -22,9 +22,10 @@ export const openDeployPage = async () => {
 
 /**
  * 根据项目package.json中的jenkins属性值获取对应jenkins信息
- * @returns
  */
-export const getProjectName = async (): Promise<{
+export const getProjectName = async (
+    type?: string
+): Promise<{
     name: string;
     id: string;
     onlineId?: string;
@@ -32,6 +33,20 @@ export const getProjectName = async (): Promise<{
     const projectConf = await readPkg({
         cwd: process.cwd(),
     });
+    const finded = projectConf.jenkins;
+    if (Array.isArray(finded) && type) {
+        const jenkins = finded.find((item) => item.type === type) as JenkinsProject;
+        if (!jenkins) {
+            return {
+                name: '',
+                id: '',
+            };
+        }
+        return {
+            ...jenkins,
+            onlineId: jenkins.id.replace(/[\-|_]test$/, ''),
+        };
+    }
     const jenkins = projectConf.jenkins as JenkinsProject;
     if (!jenkins) {
         return {
