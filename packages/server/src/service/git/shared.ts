@@ -121,6 +121,10 @@ export interface BranchResultItem {
     name: string;
     hasLocal: boolean;
     hasRemote: boolean;
+    /**
+     * 创建时间。格式：YYYY-MM-DD HH:mm:ss
+     */
+    createTime: string;
 }
 
 /**
@@ -145,60 +149,58 @@ export const deleteTag = async (tag: string, options?: RemoteOptions): Promise<v
         await execa(`git tag -d ${tag}`, { cwd: process.cwd() });
     }
 };
-
+interface BranchOptions {
+    /**
+     * 分支名称关键字,支持模糊匹配
+     */
+    keyword?: string;
+    /**
+     * 是否显示创建时间
+     */
+    showCreateTime?: boolean;
+}
 /**
- * 获取分支列表
+ * 获取分支列表,包括本地分支和远端分支。
+ * 如果要获取所有远端的分支，需要先拉取所有分支到本地。
  */
-export const getBranches = async (options?: RemoteOptions): Promise<BranchResultItem[]> => {
-    const remoteFlag = (() => {
-        if (!options) {
-            return '--all';
+export const getBranches = async (options?: BranchOptions): Promise<BranchResultItem[]> => {
+    let command = `git branch -a --format='%(refname:short)'`;
+    if (options) {
+        if (options.showCreateTime) {
+            command = `git branch -a --format='%(refname:short) %(creatordate:format:%Y-%m-%d %H:%M:%S)'`;
         }
-        if (options.remote) {
-            return '-r';
+        if (options.keyword) {
+            command += ` | grep ${options.keyword}`;
         }
-        return '';
-    })();
-    const { stdout } = await execa(`git branch --format=%(refname:short) ${remoteFlag}`);
+    }
+    const { stdout } = await execa(command, { cwd: process.cwd(), shell: true });
     const splited = stdout.split('\n');
-    if (!options) {
-        return splited
-            .filter((line) => line !== 'origin/HEAD')
-            .reduce<BranchResultItem[]>((acc, line) => {
-                if (!line.startsWith('origin/')) {
-                    return acc.concat({
-                        name: line,
-                        hasLocal: true,
-                        hasRemote: false,
-                    });
-                }
-                const localName = line.replace(/^origin\//, '');
-                const match = acc.find((item) => item.name === localName);
-                if (match) {
-                    match.hasRemote = true;
-                    return acc;
-                }
-                return acc.concat({
-                    name: localName,
-                    hasLocal: false,
-                    hasRemote: true,
-                });
-            }, []);
-    }
-    if (options.remote) {
-        return splited
-            .filter((line) => line !== 'origin/HEAD')
-            .map((line) => ({
-                name: line,
-                hasRemote: true,
-                hasLocal: false,
-            }));
-    }
-    return splited.map((line) => ({
-        name: line,
-        hasRemote: true,
-        hasLocal: false,
-    }));
+    return splited.reduce((acc, line) => {
+        if (line === '' || line.startsWith('origin/HEAD')) {
+            return acc;
+        }
+        const [name, ...createTime] = line.split(' ');
+        if (!name.startsWith('origin/')) {
+            return acc.concat({
+                name,
+                hasLocal: true,
+                hasRemote: false,
+                createTime: createTime.join(' '),
+            });
+        }
+        const localName = name.replace(/^origin\//, '');
+        const match = acc.find((item) => item.name === localName);
+        if (match) {
+            match.hasRemote = true;
+            return acc;
+        }
+        return acc.concat({
+            name: localName,
+            hasLocal: false,
+            hasRemote: true,
+            createTime: createTime.join(' '),
+        });
+    }, []);
 };
 
 /**
@@ -226,7 +228,7 @@ export const isCurrenetBranchPushed = async () => {
  * 同步tag
  */
 export const syncTags = async () => {
-    await execa('git tag -d  $(git tag -l)', { shell: true });
+    await execa('git tag -d $(git tag -l)', { shell: true });
     await execa('git pull');
 };
 /**
