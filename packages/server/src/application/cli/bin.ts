@@ -9,6 +9,7 @@ import ip from './commands/ip';
 import open from './commands/open';
 import translate from './commands/translate';
 import occ from './commands/occ';
+import ocr from './commands/ocr';
 import cookie from './commands/cookie';
 import agent from './commands/agent';
 import cg from './commands/cg';
@@ -182,6 +183,10 @@ program
     .action((data, options) => {
         occ(data, options);
     });
+
+program.command('ocr').action(() => {
+    ocr();
+});
 
 program
     .command('open <name>')
