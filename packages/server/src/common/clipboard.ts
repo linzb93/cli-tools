@@ -7,13 +7,14 @@ const pythonExecutePath = join(
     fileURLToPath(import.meta.url),
     `../../src/lib/image-clipboard-${isWin ? 'win' : 'mac'}.py`
 );
-
+const pythonCmdName = isWin ? 'python' : 'python3';
 const imageClipboard = {
     async write() {
-        await execa(`python ${pythonExecutePath} --type=write`);
+        await execa(`${pythonCmdName} ${pythonExecutePath} --type=write`);
     },
     async read() {
-        return await execa(`python ${pythonExecutePath} --type=read`);
+        const { stdout } = await execa(`${pythonCmdName} ${pythonExecutePath} --type=read`);
+        return stdout;
     },
 };
 

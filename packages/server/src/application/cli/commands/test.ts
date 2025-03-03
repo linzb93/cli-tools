@@ -1,1 +1,15 @@
-export default async () => {};
+import imageClipboard from '@/common/clipboard';
+import fs from 'node:fs';
+export default async () => {
+    const base64Data = await imageClipboard.read();
+    const base64Image = base64Data.split(';base64,').pop();
+
+    // 将 Base64 数据解码并保存为文件
+    fs.writeFile('output.png', base64Image, 'base64', (err) => {
+        if (err) {
+            console.error('保存文件失败:', err);
+        } else {
+            console.log('图片已保存为 output.png');
+        }
+    });
+};
