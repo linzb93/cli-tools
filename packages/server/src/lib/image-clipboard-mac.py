@@ -40,4 +40,12 @@ if image:
     base64_data = image_to_base64(image, format="PNG")
     
     # 输出Base64数据
-    print(base64_data)
+    print({
+        "success":'true',
+        "data":base64_data
+    })
+else:
+    print({
+        "success":'false',
+        "message":"no image found"
+    })

@@ -1,4 +1,5 @@
 import { execaCommand as execa } from 'execa';
+import { isWin } from '@/common/constant';
 /**
  * TODO: 打算用到代码中的git命令：
  * - 判断某个分支（假设名称为dev）是否有commit未推送：git log origin/dev..dev
@@ -164,10 +165,13 @@ interface BranchOptions {
  * 如果要获取所有远端的分支，需要先拉取所有分支到本地。
  */
 export const getBranches = async (options?: BranchOptions): Promise<BranchResultItem[]> => {
+    const branchSplitName = 'branch_info_split'; // Windows系统专用的分隔符，随便命名，为空的话git命令执行结果会为空。
     let command = `git branch -a --format='%(refname:short)'`;
     if (options) {
         if (options.showCreateTime) {
-            command = `git branch -a --format='%(refname:short) %(creatordate:format:%Y-%m-%d %H:%M:%S)'`;
+            command = !isWin
+                ? `git branch -a --format='%(refname:short) %(creatordate:format:%Y-%m-%d %H:%M:%S)'`
+                : `git branch -a --list --format=%(refname:short)${branchSplitName}%(creatordate:iso)`;
         }
         if (options.keyword) {
             command += ` | grep ${options.keyword}`;
@@ -176,19 +180,29 @@ export const getBranches = async (options?: BranchOptions): Promise<BranchResult
     const { stdout } = await execa(command, { cwd: process.cwd(), shell: true });
     const splited = stdout.split('\n');
     return splited.reduce((acc, line) => {
-        if (line === '' || line.startsWith('origin/HEAD')) {
+        let branchName = '';
+        let createTime = '';
+        if (!isWin) {
+            const seg = line.split(' ');
+            branchName = seg[0];
+            createTime = seg[1];
+        } else {
+            branchName = line.split(branchSplitName)[0];
+            const createTimeMatch = line.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/) as RegExpMatchArray;
+            createTime = createTimeMatch ? createTimeMatch[0] : '';
+        }
+        if (branchName === '' || branchName.startsWith('origin/HEAD')) {
             return acc;
         }
-        const [name, ...createTime] = line.split(' ');
-        if (!name.startsWith('origin/')) {
+        if (!branchName.startsWith('origin/')) {
             return acc.concat({
-                name,
+                name: branchName,
                 hasLocal: true,
                 hasRemote: false,
-                createTime: createTime.join(' '),
+                createTime,
             });
         }
-        const localName = name.replace(/^origin\//, '');
+        const localName = branchName.replace(/^origin\//, '');
         const match = acc.find((item) => item.name === localName);
         if (match) {
             match.hasRemote = true;
@@ -198,7 +212,7 @@ export const getBranches = async (options?: BranchOptions): Promise<BranchResult
             name: localName,
             hasLocal: false,
             hasRemote: true,
-            createTime: createTime.join(' '),
+            createTime,
         });
     }, []);
 };
