@@ -1,6 +1,7 @@
 import qs from 'node:querystring';
 import Base from './base';
-import { getMoveShopList } from '@/model/http/occ';
+import serviceGenerator from '@/common/http';
+import sql from '@/common/sql';
 
 export default class extends Base {
     name = 'spbj';
@@ -9,8 +10,11 @@ export default class extends Base {
     defaultId = '测试';
     testDefaultId = '13023942325';
     prefix = '';
+    service = serviceGenerator({
+        baseURL: '',
+    });
     async getShopUrl(keyword: string, isTest: boolean) {
-        return getMoveShopList({
+        return this.getMoveShopList({
             name: keyword,
         }).then((res) => {
             return this.getOpenUrl(res);
@@ -26,5 +30,14 @@ export default class extends Base {
             token: string;
         };
         return obj.token;
+    }
+    private async getMoveShopList(params: any) {
+        const prefix = await sql((db) => db.oa.apiPrefix);
+        const res = await this.service.post(`${prefix}/moving/manage/orderPage`, {
+            ...params,
+            pageSize: 1,
+            pageIndex: 1,
+        });
+        return res.data.result;
     }
 }

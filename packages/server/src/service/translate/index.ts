@@ -1,8 +1,6 @@
 import chalk from 'chalk';
-import { CheerioAPI } from 'cheerio';
-import open from 'open';
 import BaseCommand from '@/common/BaseCommand';
-import { getPageUrl, getHtml } from '@/model/spider/translate';
+import { getHtml } from '@/common/http/spider';
 import Ai from '../ai';
 
 export interface Options {
@@ -77,7 +75,7 @@ ${match.result.length ? match.result.map((item) => `${chalk.gray(item.type)} ${i
         });
     }
     private async getYoudaoMeanings(originText: string) {
-        const $ = await getHtml(originText);
+        const $ = await this.getYoudaoHTML(originText);
         const arr = Array.from(
             $('.trans-container')
                 .first()
@@ -123,5 +121,8 @@ ${match.result.length ? match.result.map((item) => `${chalk.gray(item.type)} ${i
         } catch (error) {
             return [];
         }
+    }
+    private getYoudaoHTML(text: string) {
+        return getHtml('https://youdao.com/w/eng', `/${encodeURIComponent(text)}`);
     }
 }

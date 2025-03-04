@@ -1,6 +1,7 @@
 import qs from 'node:querystring';
 import Base from './base';
-import { getChainList, getChainShopInfo } from '@/model/http/occ';
+import serviceGenerator from '@/common/http';
+import sql from '@/common/sql';
 
 export default class extends Base {
     name = 'chain';
@@ -9,17 +10,17 @@ export default class extends Base {
     defaultId = '13023942325';
     testDefaultId = '13023942325';
     prefix = '';
+    service = serviceGenerator({
+        baseURL: '',
+    });
     async getShopUrl(keyword: string, isTest: boolean) {
-        return getChainList({
+        return this.getChainList({
             searchParam: keyword,
         })
             .then((res) => {
-                return getChainShopInfo(
-                    {
-                        id: res.list[0].dkdAccountInfo.id,
-                    },
-                    isTest
-                );
+                return this.getChainShopInfo({
+                    id: res.list[0].dkdAccountInfo.id,
+                });
             })
             .then((res) => {
                 return this.getOpenUrl(res);
@@ -38,5 +39,19 @@ export default class extends Base {
             token: string;
         };
         return obj.token;
+    }
+    private async getChainList(params: any) {
+        const prefix = await sql((db) => db.oa.oldApiPrefix);
+        const res = await this.service.post(`${prefix}/chain/occ/oa/dkdAccountDetails/accountAnalysisList`, {
+            ...params,
+            pageSize: 1,
+            pageIndex: 1,
+        });
+        return res.data.result;
+    }
+    private async getChainShopInfo(params: any) {
+        const prefix = await sql((db) => db.oa.oldApiPrefix);
+        const res = await this.service.post(`${prefix}/chain/occ/dkdAccount/oa/getAccountToken`, params);
+        return res.data.result;
     }
 }
