@@ -11,13 +11,13 @@ import translate from './commands/translate';
 import occ from './commands/occ';
 import ocr from './commands/ocr';
 import cookie from './commands/cookie';
-import agent from './commands/agent';
+// import agent from './commands/agent';
 import cg from './commands/cg';
 import clear from './commands/clear';
 import color from './commands/color';
 import fork from './commands/fork';
 import json from './commands/json';
-import ai from './commands/ai';
+// import ai from './commands/ai';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
 // import mock from "./commands/mock";
@@ -47,22 +47,22 @@ program.hook('preAction', (thisCommand) => {
     });
 });
 
-program
-    .command('agent [sub-command]')
-    .option('--proxy <url>', '代理地址')
-    .option('--port <num>', '端口号')
-    .option('-c, --copy', '复制网络地址')
-    .option('--help', '显示帮助文档')
-    .action((subCommand, options) => {
-        agent(subCommand, options);
-    });
-program
-    .command('ai [name]')
-    .option('-s, --short', '简单回答')
-    .option('-c, --clear', '清理对话')
-    .action((action, options) => {
-        ai(action, options);
-    });
+// program
+//     .command('agent [sub-command]')
+//     .option('--proxy <url>', '代理地址')
+//     .option('--port <num>', '端口号')
+//     .option('-c, --copy', '复制网络地址')
+//     .option('--help', '显示帮助文档')
+//     .action((subCommand, options) => {
+//         agent(subCommand, options);
+//     });
+// program
+//     .command('ai [name]')
+//     .option('-s, --short', '简单回答')
+//     .option('-c, --clear', '清理对话')
+//     .action((action, options) => {
+//         ai(action, options);
+//     });
 program
     .command('cg [action] [...rest]')
     .option('--realtime', '实时更新')

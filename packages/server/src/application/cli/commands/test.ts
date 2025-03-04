@@ -1,7 +1,13 @@
 import imageClipboard from '@/common/clipboard';
 import fs from 'node:fs';
 export default async () => {
-    const base64Data = await imageClipboard.read();
+    let base64Data = '';
+    try {
+        base64Data = await imageClipboard.read();
+    } catch (error) {
+        console.log(error.message);
+        return;
+    }
     const base64Image = base64Data.split(';base64,').pop();
 
     // 将 Base64 数据解码并保存为文件

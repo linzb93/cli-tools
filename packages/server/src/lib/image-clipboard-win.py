@@ -1,68 +1,47 @@
-import sys
 import win32clipboard
-from io import BytesIO
 from PIL import Image
+from io import BytesIO
+import base64
 
-
-def read_clipboard_image():
+def get_image_from_clipboard():
+    # 打开剪贴板
+    win32clipboard.OpenClipboard()
     try:
-        # 打开剪贴板
-        win32clipboard.OpenClipboard()
-        # 获取剪贴板中的数据，格式为设备无关位图（CF_DIB）
+        # 获取剪贴板中的数据
         data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
         # 关闭剪贴板
         win32clipboard.CloseClipboard()
-        return data
-    except Exception as e:
-        print(f"读取剪贴板图片时出现错误: {e}")
+    except:
         return None
+    # 使用PIL库将数据转换为图像
+    image = Image.open(BytesIO(data))
+    return image
 
+def image_to_base64(image, format="PNG"):
+    """
+    将Pillow图像对象转换为Base64字符串
+    :param image: Pillow图像对象
+    :param format: 图片格式，默认为PNG
+    :return: Base64编码的字符串
+    """
+    buffer = BytesIO()
+    image.save(buffer, format=format)
+    buffer.seek(0)  # 将指针移动到缓冲区开头
+    return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-def write_clipboard_image(image_buffer):
-    try:
-        # 打开剪贴板
-        win32clipboard.OpenClipboard()
-        # 清空剪贴板
-        win32clipboard.EmptyClipboard()
-        # 将图片数据写入剪贴板，格式为设备无关位图（CF_DIB）
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, image_buffer)
-        # 关闭剪贴板
-        win32clipboard.CloseClipboard()
-        print("图片数据已成功写入剪贴板。")
-    except Exception as e:
-        print(f"写入剪贴板图片时出现错误: {e}")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("请提供命令行参数 type，值可以为 'read' 或 'write'。")
-    else:
-        action = sys.argv[1]
-        if action == "read":
-            image_data = read_clipboard_image()
-            if image_data:
-                print("成功读取剪贴板图片数据。")
-                # 这里可以根据需要进一步处理 image_data，例如保存到文件
-                # img = Image.open(BytesIO(image_data))
-                # img.save("output.png")
-        elif action == "write":
-            if len(sys.argv) < 3:
-                print("请提供要写入剪贴板的图片文件路径。")
-            else:
-                file_path = sys.argv[2]
-                try:
-                    # 打开图片文件
-                    with open(file_path, 'rb') as file:
-                        image_bytes = file.read()
-                    # 将图片数据转换为 PIL 图像对象
-                    img = Image.open(BytesIO(image_bytes))
-                    # 将图像对象转换为设备无关位图格式的字节流
-                    output = BytesIO()
-                    img.convert("RGB").save(output, "BMP")
-                    dib = output.getvalue()[14:]  # 去除 BMP 文件头
-                    # 写入剪贴板
-                    write_clipboard_image(dib)
-                except Exception as e:
-                    print(f"处理图片文件时出现错误: {e}")
-        else:
-            print("无效的 type 参数，值可以为 'read' 或 'write'。")
+# 指定保存路径
+image = get_image_from_clipboard()
+if image:
+    # 将图片转换为Base64字符串
+    base64_data = image_to_base64(image, format="PNG")
+    
+    # 输出Base64数据
+    print({
+        "success":'true',
+        "data":base64_data
+    })
+else:
+    print({
+        "success":'false',
+        "message":"no image found"
+    })

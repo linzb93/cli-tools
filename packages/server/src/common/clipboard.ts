@@ -1,20 +1,19 @@
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { execaCommand as execa } from 'execa';
 import { isWin } from './constant';
+import { cmdName, parseJSON, getExecutePath } from './_internal/pythonUtils';
 
-const pythonExecutePath = join(
-    fileURLToPath(import.meta.url),
-    `../../src/lib/image-clipboard-${isWin ? 'win' : 'mac'}.py`
-);
-const pythonCmdName = isWin ? 'python' : 'python3';
+const pythonExecutePath = getExecutePath(isWin ? 'win' : 'mac');
 const imageClipboard = {
     async write() {
-        await execa(`${pythonCmdName} ${pythonExecutePath} --type=write`);
+        await execa(`${cmdName} ${pythonExecutePath} --type=write`);
     },
     async read() {
-        const { stdout } = await execa(`${pythonCmdName} ${pythonExecutePath} --type=read`);
-        return stdout;
+        const { stdout } = await execa(`${cmdName} ${pythonExecutePath} --type=read`);
+        const data = parseJSON(stdout);
+        if (data.success === 'true') {
+            return data.data;
+        }
+        throw new Error(data.message);
     },
 };
 
