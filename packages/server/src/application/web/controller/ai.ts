@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import Ai from '@/service/ai';
 import multer from 'multer';
-import { type Readable } from 'node:stream';
+import { tempUpload } from '@/common/image';
 import intoStream from 'into-stream';
 import responseFmt from '../shared/response';
-import { tempUpload } from '@/common/upload';
 
 const router = Router();
 const upload = multer();

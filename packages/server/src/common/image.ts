@@ -1,6 +1,4 @@
-/**
- * 临时文件上传，用完之后清除。
- */
+import intoStream from 'into-stream';
 import OSS from 'ali-oss';
 import sql from './sql';
 import { join } from 'node:path';
@@ -15,7 +13,9 @@ type Params =
           type: 'stream';
           data: Readable;
       };
-
+/**
+ * 临时文件上传，用完之后清除。
+ */
 export const tempUpload = async (data: Params) => {
     const ossData = await sql((db) => db.oss);
     const { uploadPath, ...config } = ossData;
@@ -33,4 +33,12 @@ export const tempUpload = async (data: Params) => {
             await client.delete(ossPath);
         },
     };
+};
+
+export const imageBase64ToStream = (base64: string) => {
+    return intoStream(imageBase64ToBuffer(base64));
+};
+
+export const imageBase64ToBuffer = (base64: string) => {
+    return Buffer.from(base64, 'base64');
 };
