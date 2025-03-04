@@ -45,6 +45,9 @@ export default class Ai extends BaseCommand {
             type: 'text',
         }
     ) {
+        if (semver.lt(process.version, '18.0.0')) {
+            throw new Error('请将node版本切换至18.0.0以上');
+        }
         const models = await getModels(options.type);
         const OpenAI = (await import('openai')).default;
         for (let i = 0; i < models.length; i++) {

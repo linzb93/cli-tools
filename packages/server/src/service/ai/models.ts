@@ -26,11 +26,10 @@ export default async (type: string) => {
             },
         },
         {
-            // 输出不稳定，要求只输出单行json格式的，还是会带markdown格式以及换行。
-            title: 'siliconflow图像识别',
-            apiKey: apiKey.siliconflow,
-            baseURL: 'https://api.siliconflow.cn',
-            model: 'Qwen/Qwen2-VL-72B-Instruct',
+            title: '火山方舟大模型图像识别',
+            apiKey: apiKey.volcano,
+            baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
+            model: 'doubao-1-5-vision-pro-32k-250115',
             type: 'image',
             errorHandler(errorMessage: string) {
                 return errorMessage;

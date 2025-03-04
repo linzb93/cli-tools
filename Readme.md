@@ -6,13 +6,13 @@
 
 ## 运行环境
 
-- Node.js v14 - 主要运行环境
-- Python v3.12.3 - 处理 Node.js 解决不了的功能
+-   Node.js v14 - 主要运行环境
+-   Python v3.12.3 - 处理 Node.js 解决不了的功能
 
 ## 技术栈
 
-- Commander
-- Express
-- Vite
-- Vue 3
-- monorepo
+-   Commander
+-   Express
+-   Vite
+-   Vue 3
+-   monorepo

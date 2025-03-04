@@ -27,6 +27,7 @@ export interface Database {
         apiKey: {
             deepseek: string;
             siliconflow: string;
+            volcano: string;
         };
     };
     ipc: string;
