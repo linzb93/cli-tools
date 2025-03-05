@@ -3,7 +3,6 @@ import clipboardy from 'clipboardy';
 import chalk from 'chalk';
 import notifier from 'node-notifier';
 import logger from './logger';
-import { AnyObject } from '@/typings';
 import { Command } from 'commander';
 
 export const copy = (text: string) => {

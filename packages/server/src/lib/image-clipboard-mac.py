@@ -21,12 +21,6 @@ def get_image_from_clipboard():
     return image
 
 def image_to_base64(image, format="PNG"):
-    """
-    将Pillow图像对象转换为Base64字符串
-    :param image: Pillow图像对象
-    :param format: 图片格式，默认为PNG
-    :return: Base64编码的字符串
-    """
     buffer = io.BytesIO()
     image.save(buffer, format=format)
     buffer.seek(0)  # 将指针移动到缓冲区开头
