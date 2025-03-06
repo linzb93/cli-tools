@@ -34,8 +34,10 @@ export const getProjectName = async (
         cwd: process.cwd(),
     });
     const finded = projectConf.jenkins;
-    if (Array.isArray(finded) && type) {
-        const jenkins = finded.find((item) => item.type === type) as JenkinsProject;
+    if (Array.isArray(finded)) {
+        const jenkins = type
+            ? (finded.find((item) => item.type === type) as JenkinsProject)
+            : (finded[0] as JenkinsProject);
         if (!jenkins) {
             return {
                 name: '',
@@ -47,7 +49,7 @@ export const getProjectName = async (
             onlineId: jenkins.id.replace(/[\-|_]test$/, ''),
         };
     }
-    const jenkins = projectConf.jenkins as JenkinsProject;
+    const jenkins = finded as JenkinsProject;
     if (!jenkins) {
         return {
             name: '',

@@ -1,5 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import { isWin } from '@/common/constant';
+import dayjs from 'dayjs';
 /**
  * TODO: 打算用到代码中的git命令：
  * - 判断某个分支（假设名称为dev）是否有commit未推送：git log origin/dev..dev
@@ -126,6 +127,7 @@ export interface BranchResultItem {
      * 创建时间。格式：YYYY-MM-DD HH:mm:ss
      */
     createTime: string;
+    value: string;
 }
 
 /**
@@ -166,11 +168,11 @@ interface BranchOptions {
  */
 export const getBranches = async (options?: BranchOptions): Promise<BranchResultItem[]> => {
     const branchSplitName = 'branch_info_split'; // Windows系统专用的分隔符，随便命名，为空的话git命令执行结果会为空。
-    let command = `git branch -a --format='%(refname:short)'`;
+    let command = `git branch -a --format=%(refname:short)`;
     if (options) {
         if (options.showCreateTime) {
             command = !isWin
-                ? `git branch -a --format='%(refname:short) %(creatordate:format:%Y-%m-%d %H:%M:%S)'`
+                ? `git branch -a --format=%(refname:short) %(creatordate:format:%Y-%m-%d %H:%M:%S)`
                 : `git branch -a --list --format=%(refname:short)${branchSplitName}%(creatordate:iso)`;
         }
         if (options.keyword) {
@@ -179,7 +181,7 @@ export const getBranches = async (options?: BranchOptions): Promise<BranchResult
     }
     const { stdout } = await execa(command, { cwd: process.cwd(), shell: true });
     const splited = stdout.split('\n');
-    return splited.reduce((acc, line) => {
+    const list = splited.reduce((acc, line) => {
         let branchName = '';
         let createTime = '';
         if (!isWin) {
@@ -215,6 +217,13 @@ export const getBranches = async (options?: BranchOptions): Promise<BranchResult
             createTime,
         });
     }, []);
+    if (options.showCreateTime) {
+        // 按创建时间正序
+        return list.sort((a, b) => {
+            return dayjs(a.createTime).valueOf() - dayjs(b.createTime).valueOf();
+        });
+    }
+    return list;
 };
 
 /**

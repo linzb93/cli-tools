@@ -104,9 +104,9 @@ export default class extends BaseCommand {
     }
     private async handleErrorBranches(errorBranches: BranchResultItem[]) {
         const matches = await pMap(errorBranches, async (branchItem) => {
-            const { stdout } = await execa(`git log origin/${branchItem.name}..${branchItem.name}`);
+            const { stdout } = await execa(`git log origin/${branchItem.value}..${branchItem.value}`, { shell: true });
             return {
-                name: branchItem.name,
+                name: branchItem.value,
                 has: !!stdout,
             };
         });
@@ -115,37 +115,41 @@ export default class extends BaseCommand {
                 .filter((item) => item.has === has)
                 .map((item) => item.name)
                 .join(',');
-        this.logger.warn(`以下分支存在未推送的代码：
-            ${renderWithLocalCommit(true)}
-            以下分支无法删除，需要强制删除：
-            ${renderWithLocalCommit(false)}`);
+        const unpushedText = renderWithLocalCommit(true)
+            ? `以下分支存在未推送的代码：
+${renderWithLocalCommit(true)}`
+            : '';
+        const forceDeleteText = renderWithLocalCommit(false)
+            ? `以下分支无法删除，需要强制删除：
+${renderWithLocalCommit(false)}`
+            : '';
+        this.logger.warn(`${unpushedText}
+${forceDeleteText}`);
         const { push } = await this.inquirer.prompt({
             message: `是否执行？`,
             type: 'confirm',
             name: 'push',
         });
         if (!push) {
+            this.spinner.succeed('删除成功');
             return;
         }
         await Promise.all([
             pMap(
                 matches.filter((item) => item.has),
                 async (branchItem) => {
-                    await execa(`git push origin ${branchItem.name}`);
+                    await execa(`git push origin ${branchItem.name}`, { shell: true });
                     await Promise.all([
                         deleteBranch(branchItem.name, { remote: false }),
                         deleteBranch(branchItem.name, { remote: true }),
                     ]);
                 }
             ),
-            pMap(
-                matches.filter((item) => !item.has),
-                async (branchItem) => {
-                    await execa(`git branch -D ${branchItem.name}`);
-                }
-            ),
+            pMap(matches, async (branchItem) => {
+                await execa(`git branch -D ${branchItem.name}`);
+            }),
         ]);
-        this.logger.success('删除成功');
+        this.spinner.succeed('删除成功');
     }
     private async renderBranchList(params: { keyword: string; showCreateTime: boolean }) {
         const list = await getBranches(params);

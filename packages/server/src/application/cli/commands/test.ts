@@ -1,10 +1,6 @@
-import { findContent } from '@/common/markdown';
+import { execaCommand as execa } from 'execa';
 
 export default async () => {
-    const content = await findContent({
-        filePath: 'commands/git/README.md',
-        title: 'git deploy',
-        level: 2,
-    });
-    console.log(content);
+    const { stdout } = await execa(`git log origin/dev-chain-2.5.6..dev-chain-2.5.6`, { shell: true });
+    console.log(`output:${stdout}`);
 };

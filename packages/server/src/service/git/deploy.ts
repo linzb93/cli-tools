@@ -161,10 +161,10 @@ export default class extends BaseCommand {
             }
             return;
         }
-        if (process.env.DEBUG) {
-            return;
-        }
         if (actions.includes('open') || this.options.open) {
+            if (process.env.DEBUG) {
+                return;
+            }
             await openDeployPage(this.options.type);
         }
         if (actions.includes('copy')) {
@@ -198,7 +198,7 @@ export default class extends BaseCommand {
             this.logger.success('部署成功');
             return;
         }
-        const { onlineId } = await getProjectName();
+        const { onlineId } = await getProjectName(this.options.type);
         const copyText = `${onlineId}，${tag}`;
         this.logger.success(`部署成功，复制填入更新文档：${chalk.cyan(copyText)}`);
         clipboard.writeSync(copyText);
