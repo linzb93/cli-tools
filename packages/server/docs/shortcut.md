@@ -5,10 +5,14 @@
 ## 使用方法
 
 ```bash
-$ mycli shortcut --type=vscode
+$ mycli shortcut [options]
 ```
 
-查找已记录的 vscode 快捷键。
+查找已记录的快捷键。例如这个是查找已记录的 vscode 快捷键。
+
+```bash
+$ mycli shortcut --type=vscode
+```
 
 ## 选项
 

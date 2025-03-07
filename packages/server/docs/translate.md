@@ -5,5 +5,5 @@
 ## 使用方法
 
 ```bash
-$ mycli eng <text>
+$ mycli eng [text]
 ```

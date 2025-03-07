@@ -5,7 +5,7 @@
 ## 使用方法
 
 ```bash
-$ mycli cookie <cookieValue> <options>
+$ mycli cookie [cookieValue] [options]
 ```
 
 将 cookie 字符串解析成对应格式的数据。例如：将 cookie 字符串解析成 json 格式的数据。
