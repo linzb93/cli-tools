@@ -17,7 +17,6 @@ import clear from './commands/clear';
 import color from './commands/color';
 import fork from './commands/fork';
 import json from './commands/json';
-// import ai from './commands/ai';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
 // import mock from "./commands/mock";

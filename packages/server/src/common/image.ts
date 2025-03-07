@@ -14,7 +14,7 @@ type Params =
           data: Readable;
       };
 /**
- * 临时文件上传，用完之后清除。
+ * 临时文件上传至OSS，用完之后清除。
  */
 export const tempUpload = async (data: Params) => {
     const ossData = await sql((db) => db.oss);

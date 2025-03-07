@@ -77,7 +77,7 @@ interface Database {
 }
 
 /**
- * 获取本地数据库文件内容
+ * 获取本地(私密)数据库文件内容
  */
 export default async function sql<T>(callback: (data: Database) => T): Promise<T> {
     const dbPath = join(cacheRoot, 'app.json');

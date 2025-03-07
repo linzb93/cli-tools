@@ -1,6 +1,7 @@
 import { execaCommand as execa } from 'execa';
 import chalk from 'chalk';
 import { showWeakenTips } from './helper';
+import dayjs from 'dayjs';
 
 // 按顺序执行异步函数，返回第一个成功的结果
 export const pLocate = async (list: any[], callback: Function): Promise<any> => {
@@ -55,6 +56,8 @@ export interface CommandItem {
 }
 export type CommandItemAll = CommandItem | string;
 export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
+    console.log(`${chalk.magenta(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}开始执行命令`);
+    const startTime = Date.now();
     for (const cmd of commandList) {
         const command = typeof cmd === 'string' ? cmd : cmd.message;
         if (!command) {
@@ -102,6 +105,8 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
             }
         }
     }
+    const isLongTime = Date.now() - startTime > 1000;
+    console.log(`任务执行完成${isLongTime ? `用时${parseInt(((Date.now() - startTime) / 1000).toString())}秒` : '。'}`);
 };
 
 export const isPromise = (fn: any) => typeof fn.then === 'function' && fn.catch === 'function';
