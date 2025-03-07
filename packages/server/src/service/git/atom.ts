@@ -5,21 +5,51 @@ function fmtCommitMsg(commit: string) {
     if (!commit) {
         return 'feat:update';
     }
-    const prefixes = ['feat:', 'fix:', 'docs:', 'style:', 'refactor:', 'test:', 'chore:'];
-    const match = prefixes.find((item) => commit.startsWith(item));
+    const prefixes: {
+        value: string;
+        key?: string | string[];
+    }[] = [
+        {
+            value: 'feat',
+        },
+        {
+            value: 'fix',
+            key: ['修复', 'bug'],
+        },
+        {
+            value: 'docs',
+            key: '文档',
+        },
+        {
+            value: 'style',
+            key: '样式',
+        },
+        {
+            value: 'refactor',
+            key: '重构',
+        },
+        {
+            value: 'test',
+            key: '用例',
+        },
+    ];
+    const match = prefixes.find((item) => commit.startsWith(`${item.value}:`));
     if (match) {
         return commit;
     }
-    if (['修复', 'bug'].some((text) => commit.includes(text))) {
-        return `fix:${commit}`;
+    const match2 = prefixes.find((item) => {
+        if (!item.key) {
+            return false;
+        }
+        if (Array.isArray(item.key)) {
+            return item.key.some((text) => commit.includes(text));
+        }
+        return commit.includes(item.key);
+    });
+    if (!match2) {
+        return `feat:${commit}`;
     }
-    if (commit.includes('重构')) {
-        return `refactor:${commit}`;
-    }
-    if (commit.includes('用例')) {
-        return `test:${commit}`;
-    }
-    return `feat:${commit}`;
+    return `${match2.value}:${commit}`;
 }
 
 async function handleConflict() {

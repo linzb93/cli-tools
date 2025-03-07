@@ -2,7 +2,7 @@ import BaseCommand from '@/common/BaseCommand';
 import imageClipboard from '@/common/clipboard';
 import { imageBase64ToStream, tempUpload } from '@/common/image';
 import clipboardy from 'clipboardy';
-import Ai from '../ai';
+import ai from '@/common/ai';
 export default class extends BaseCommand {
     async main() {
         let removeHandler: any;
@@ -19,7 +19,6 @@ export default class extends BaseCommand {
             if (!url) {
                 throw new Error('图片上传失败');
             }
-            const ai = new Ai();
             const result = await ai.use(
                 [
                     {

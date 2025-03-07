@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import BaseCommand from '@/common/BaseCommand';
 import { getHtml } from '@/common/http/spider';
-import Ai from '../ai';
+import ai from '@/common/ai';
 
 export interface Options {
     help: boolean;
@@ -102,7 +102,6 @@ ${match.result.length ? match.result.map((item) => `${chalk.gray(item.type)} ${i
         throw new Error('没有找到翻译结果');
     }
     private async getAiMeanings(originText: string) {
-        const ai = new Ai();
         const translateResult = await ai.use([
             {
                 role: 'assistant',

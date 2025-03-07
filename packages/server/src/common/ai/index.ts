@@ -26,17 +26,7 @@ export type MessageOptions =
                     };
                 }[];
       };
-
-export default class Ai extends BaseCommand {
-    private contextFilePath = '';
-    /**
-     * 主函数，用于处理用户输入并调用OpenAI API获取回答
-     * @param moduleName - 模块名称
-     */
-    async main(moduleName: string, options: Options) {}
-    /**
-     * 使用ai
-     */
+const ai = {
     async use(
         messages: MessageOptions[],
         options: {
@@ -70,11 +60,12 @@ export default class Ai extends BaseCommand {
                 }
                 return contents;
             } catch (error) {
-                this.logger.error(`${modelItem.title}服务使用失败：
+                console.log(`${modelItem.title}服务使用失败：
                     ${modelItem.errorHandler(error.message)}
                     切换至下一个服务`);
                 continue;
             }
         }
-    }
-}
+    },
+};
+export default ai;
