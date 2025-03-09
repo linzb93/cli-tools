@@ -3,21 +3,21 @@ import fs from 'fs-extra';
 import { join } from 'node:path';
 
 interface Options {
-    filePath: string;
+    fileName: string;
     title: string;
     level: number;
 }
 /**
  * 在markdown文件中，查找指定标题的内容，匹配到下一个级别和当前级别相同甚至更高的为止。
  * @param {object} options
- * @param {string} option.filePath - markdown文件路径
+ * @param {string} option.fileName - markdown文件名
  * @param {string} option.title - 标题
  * @param {number} option.level - 标题级别
  * @returns {Promise<string>} 内容
  */
 export const findContent = async (options: Options): Promise<string> => {
-    const { filePath, title, level } = options;
-    const filePathStr = join(fileURLToPath(import.meta.url), '../../src/application/cli', filePath);
+    const { fileName, title, level } = options;
+    const filePathStr = join(fileURLToPath(import.meta.url), '../../docs', `${fileName}.md`);
     const content = await fs.readFile(filePathStr, 'utf-8');
     const lines = content.split('\n');
     const regex = new RegExp(`^#{${level}} ${title}`);
