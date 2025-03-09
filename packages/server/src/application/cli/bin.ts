@@ -49,10 +49,9 @@ if (process.argv.includes('--debug')) {
 const program = new Command();
 program.version(globalPkg.version);
 
-program.hook('preAction', (thisCommand, ...rest) => {
+program.hook('preAction', (thisCommand) => {
     return new Promise<void>((resolve) => {
         setTimeout(() => {
-            console.log(thisCommand);
             init(thisCommand);
             resolve();
         }, 500);
