@@ -106,7 +106,7 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
         }
     }
     const isLongTime = Date.now() - startTime > 1000;
-    console.log(`任务执行完成${isLongTime ? `用时${parseInt(((Date.now() - startTime) / 1000).toString())}秒` : '。'}`);
+    console.log(`任务执行完成${isLongTime ? `，用时${parseInt(((Date.now() - startTime) / 1000).toString())}秒` : '。'}`);
 };
 
 export const isPromise = (fn: any) => typeof fn.then === 'function' && fn.catch === 'function';
