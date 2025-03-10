@@ -2,10 +2,10 @@
 
 import { Command } from 'commander';
 import ip from './commands/ip';
+import ai from './commands/ai';
 import open from './commands/open';
 import translate from './commands/translate';
 import occ from './commands/occ';
-import ocr from './commands/ocr';
 import cookie from './commands/cookie';
 // import agent from './commands/agent';
 import cg from './commands/cg';
@@ -67,13 +67,9 @@ program.hook('preAction', (thisCommand) => {
 //     .action((subCommand, options) => {
 //         agent(subCommand, options);
 //     });
-// program
-//     .command('ai [name]')
-//     .option('-s, --short', '简单回答')
-//     .option('-c, --clear', '清理对话')
-//     .action((action, options) => {
-//         ai(action, options);
-//     });
+program.command('ai [name] [rest...]').action((action, rest) => {
+    ai(action, rest);
+});
 program
     .command('cg [action] [...rest]')
     .option('--realtime', '实时更新')
@@ -194,10 +190,6 @@ program
     .action((data, options) => {
         occ(data, options);
     });
-
-program.command('ocr').action(() => {
-    ocr();
-});
 
 program
     .command('open [name]')

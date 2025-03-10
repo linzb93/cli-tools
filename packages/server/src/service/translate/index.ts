@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import BaseCommand from '@/common/BaseCommand';
 import { getHtml } from '@/common/http/spider';
-import ai from '@/common/ai';
+import Ai from '@/service/ai';
 
 export interface Options {
     help: boolean;
@@ -102,7 +102,7 @@ ${match.result.length ? match.result.map((item) => `${chalk.gray(item.type)} ${i
         throw new Error('没有找到翻译结果');
     }
     private async getAiMeanings(originText: string) {
-        const translateResult = await ai.use([
+        const translateResult = await new Ai().use([
             {
                 role: 'assistant',
                 content: `你是一个中英文的翻译家，你需要判断用户提供的是中文还是英文。如果是中文，将其翻译成英文；如果是英文，将其翻译成中文。每个词汇类型，你提供最多3个翻译结果。用json格式输出结果，json不要换行。格式如下：

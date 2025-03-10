@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import ai from '@/common/ai';
+import Ai from '@/service/ai';
 import multer from 'multer';
 import { tempUpload } from '@/common/image';
 import intoStream from 'into-stream';
@@ -24,7 +24,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 async function getAiResult(remoteUrl: string) {
-    const result = await ai.use(
+    const result = await new Ai().use(
         [
             {
                 role: 'system',
