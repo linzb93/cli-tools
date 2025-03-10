@@ -11,6 +11,6 @@ export interface PromptOptions {
     prompt: string;
     type?: string;
     stream?: boolean;
-    action: (obj: { input?: string; getResult(data: string): Promise<string> }) => Promise<void>;
+    action: (obj: { input?: string; getResult(data: string): Promise<string | any> }) => Promise<void>;
     catchHandler(error: Error): void;
 }

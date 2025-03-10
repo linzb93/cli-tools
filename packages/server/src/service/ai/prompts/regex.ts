@@ -1,5 +1,5 @@
 import spinner from '@/common/spinner';
-import { PromptOptions } from '../share';
+import { PromptOptions, printObject } from '../share';
 
 const obj: PromptOptions = {
     title: '正则表达式解析',
@@ -11,10 +11,10 @@ const obj: PromptOptions = {
         const input = obj.input.toString().replace(/\\/g, '\\\\');
         // 正则表达式中的单引号需要转义
         const result = await obj.getResult(input);
-        spinner.succeed(result);
+        printObject(result);
     },
     catchHandler(error) {
-        spinner.fail(error.message);
+        console.log(error.message);
     },
 };
 export default obj;

@@ -32,31 +32,32 @@ export default class Ai extends BaseCommand {
         try {
             const getResult = (data: string) => {
                 if (match.type === 'image') {
-                    return this.use(
-                        [
-                            {
-                                role: 'assistant',
-                                content: match.prompt,
-                            },
-                            {
-                                role: 'user',
-                                content: [
-                                    {
-                                        type: 'image_url',
-                                        image_url: {
-                                            url: data,
-                                            detail: 'high',
-                                        },
-                                    },
-                                ],
-                            },
-                        ],
+                    const params: MessageOptions[] = [
                         {
-                            type: 'image',
-                        }
-                    );
+                            role: 'assistant',
+                            content: match.prompt,
+                        },
+                        {
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'image_url',
+                                    image_url: {
+                                        url: data,
+                                        detail: 'high',
+                                    },
+                                },
+                            ],
+                        },
+                    ];
+                    if (match.stream) {
+                        return this.useStream(params, { type: 'image' });
+                    }
+                    return this.use(params, {
+                        type: 'image',
+                    });
                 }
-                return this.use([
+                const params: MessageOptions[] = [
                     {
                         role: 'assistant',
                         content: match.prompt,
@@ -65,7 +66,11 @@ export default class Ai extends BaseCommand {
                         role: 'user',
                         content: data,
                     },
-                ]);
+                ];
+                if (match.stream) {
+                    return this.useStream(params);
+                }
+                return this.use(params);
             };
             await match.action({
                 getResult,
