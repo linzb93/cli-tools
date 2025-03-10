@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 
-// 先处理debug模式
-if (process.argv.includes('--debug')) {
-    process.env.DEBUG = '*';
-}
 import { Command } from 'commander';
 import ip from './commands/ip';
 import open from './commands/open';
@@ -33,6 +29,22 @@ import repl from './commands/repl';
 import server from './commands/server';
 import globalPkg from '../../../../../package.json';
 import init from '@/service/init';
+import { generateHelpDoc } from '@/common/helper';
+
+// 先处理debug模式
+if (process.argv.includes('--debug')) {
+    process.env.DEBUG = '*';
+} else if (process.argv.includes('--help')) {
+    (async () => {
+        const mainCommand = process.argv[2];
+        if (['git', 'npm'].includes(mainCommand)) {
+            await generateHelpDoc([mainCommand, process.argv[3]]);
+        } else {
+            await generateHelpDoc([mainCommand]);
+        }
+        process.exit(0);
+    })();
+}
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -72,7 +84,7 @@ program
     });
 
 program
-    .command('clear <filename>')
+    .command('clear [filename]')
     .option('-r, --root', '清理根目录下的')
     .option('--help', '显示帮助文档')
     .action((filename, options) => {
@@ -84,21 +96,21 @@ program.command('analyse [sub-command]').action((subCommand) => {
 });
 
 program
-    .command('color <text>')
+    .command('color [text]')
     .option('--help', '显示帮助文档')
     .option('--get')
     .action((data, options) => {
         color(data, options);
     });
 program
-    .command('cookie <text>')
+    .command('cookie [text]')
     .option('--type <type>', '转换的类型')
     .option('--copy', '复制结果')
     .action((data, options) => {
         cookie(data, options);
     });
 program
-    .command('eng <text>')
+    .command('eng [text]')
     .option('-e,--example', '显示范例')
     .option('--help', '显示帮助文档')
     .action((text, options) => {
@@ -106,10 +118,10 @@ program
     });
 
 program
-    .command('fork <filename>')
+    .command('fork [filename]')
     .option('--help', '显示帮助文档')
-    .action((file, options) => {
-        fork(file, options);
+    .action((file) => {
+        fork(file);
     });
 
 program
@@ -137,7 +149,7 @@ program
     });
 
 program
-    .command('kill <data...>')
+    .command('kill [data...]')
     .option('--help', '显示帮助文档')
     .action((data, options) => {
         kill(data, options);
@@ -188,7 +200,7 @@ program.command('ocr').action(() => {
 });
 
 program
-    .command('open <name>')
+    .command('open [name]')
     .option('--name <name>', '打开的文件夹')
     .option('-r, --reuse', '强制在已开启的编辑器里打开')
     .option('--help', '显示帮助文档')
@@ -216,19 +228,19 @@ program
     });
 
 program
-    .command('size <url>')
+    .command('size [url]')
     .option('--rect', '获取宽高')
     .option('--help', '显示帮助文档')
     .action((filename, options) => {
         getSize(filename, options);
     });
 
-program.command('time <time>').action((data) => {
+program.command('time [time]').action((data) => {
     time(data);
 });
 
 program
-    .command('token <data>')
+    .command('token [data]')
     .option('-o --origin', '原始数据')
     .option('-c --complete', '完整数据')
     .option('--help', '显示帮助文档')
@@ -249,4 +261,4 @@ program.command('test').action(() => {
     test();
 });
 
-program.parse(process.argv.filter((cmd) => cmd !== '--debug'));
+program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

@@ -4,6 +4,10 @@ import chalk from 'chalk';
 import notifier from 'node-notifier';
 import logger from './logger';
 import { Command } from 'commander';
+import fs from 'fs-extra';
+import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { findContent } from './markdown';
 
 export const copy = (text: string) => {
     clipboardy.writeSync(text);
@@ -21,21 +25,34 @@ export const notify = (content: string) => {
     });
 };
 
-interface HelpDocOptions {
-    title: string;
-    content: string;
-}
-
 /**
  * 生成命令帮助文档
  */
-export const generateHelpDoc = (options: HelpDocOptions) => {
-    logger.box({
-        title: `${options.title}命令帮助文档`,
-        borderColor: 'green',
-        padding: 1,
-        content: options.content,
-    });
+export const generateHelpDoc = async (commands: string[]) => {
+    try {
+        const result = await findContent({
+            fileName: commands[0],
+            title: commands.join(' '),
+            level: commands.length,
+        });
+        const content = result
+            .split('\n')
+            .map((line) => {
+                if (line.match(/^#{2} \S+$/)) {
+                    return chalk.dim(line);
+                }
+                return line;
+            })
+            .join('\n');
+        logger.box({
+            title: `${commands.join(' ')}帮助文档`,
+            content,
+            borderColor: 'cyan',
+            padding: 1,
+        });
+    } catch (error) {
+        logger.error(`没有找到${commands.join(' ')}的帮助文档`);
+    }
 };
 /**
  * 显示提示，在发生外部错误的时候使用
