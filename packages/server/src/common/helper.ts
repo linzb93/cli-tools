@@ -1,13 +1,12 @@
 import { Writable } from 'node:stream';
+import { Command } from 'commander';
 import clipboardy from 'clipboardy';
 import chalk from 'chalk';
 import notifier from 'node-notifier';
 import logger from './logger';
-import { Command } from 'commander';
-import fs from 'fs-extra';
-import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
 import { findContent } from './markdown';
+import { fromStream } from './rxjs';
+import { map, first, from, concatMap, interval } from 'rxjs';
 
 export const copy = (text: string) => {
     clipboardy.writeSync(text);
@@ -31,23 +30,33 @@ export const notify = (content: string) => {
 export const generateHelpDoc = (commands: string[]) => {
     return new Promise<void>(async (resolve) => {
         try {
-            const result = await findContent({
+            const stream = findContent({
                 fileName: commands[0],
                 title: commands.join(' '),
                 level: commands.length,
             });
-            const charQueue = result.split('');
-            let index = 0;
-            let intervalId: any;
-            intervalId = setInterval(() => {
-                if (index < charQueue.length) {
-                    process.stdout.write(charQueue[index]);
-                    index++;
-                } else {
-                    resolve();
-                    clearInterval(intervalId);
-                }
-            }, 100);
+            fromStream(stream)
+                .pipe(
+                    map((data) => `${data.toString()}\n`),
+                    concatMap((line) =>
+                        from(line.split('')).pipe(
+                            concatMap((char) =>
+                                interval(100).pipe(
+                                    first(),
+                                    map(() => char)
+                                )
+                            )
+                        )
+                    )
+                )
+                .subscribe({
+                    next(data) {
+                        process.stdout.write(data);
+                    },
+                    complete: () => {
+                        resolve();
+                    },
+                });
         } catch (error) {
             logger.error(`没有找到${commands.join(' ')}的帮助文档`);
             resolve();

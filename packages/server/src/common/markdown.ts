@@ -1,6 +1,9 @@
-import { fileURLToPath } from 'node:url';
-import fs from 'fs-extra';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { type Transform } from 'node:stream';
+import fs from 'fs-extra';
+import binarySplit from 'binary-split';
+import through from 'through2';
 
 interface Options {
     fileName: string;
@@ -13,41 +16,41 @@ interface Options {
  * @param {string} option.fileName - markdown文件名
  * @param {string} option.title - 标题
  * @param {number} option.level - 标题级别
- * @returns {Promise<string>} 内容
  */
-export const findContent = async (options: Options): Promise<string> => {
+/**
+ * 在markdown文件中查找指定标题的内容
+ * @param {Options} options - 包含文件名、标题和标题级别的选项对象
+ * @returns {NodeJS.Transform} 返回一个可读流，包含匹配标题的内容
+ */
+export const findContent = (options: Options): Transform => {
     const { fileName, title, level } = options;
     const filePathStr = join(fileURLToPath(import.meta.url), '../../docs', `${fileName}.md`);
-    const content = await fs.readFile(filePathStr, 'utf-8');
-    const lines = content.split('\n');
     const regex = new RegExp(`^#{${level}} ${title}`);
-    // 初始化起始行索引为 -1，表示尚未找到指定标题
-    let start = -1;
-    // 初始化结束行索引为 -1，表示尚未找到内容的结束位置
-    let end = -1;
-
-    for (let i = 0; i < lines.length; i++) {
-        if (regex.test(lines[i])) {
-            start = i + 1;
-            break;
-        }
-    }
-    if (start === -1) {
-        return '';
-    }
-    for (let i = start; i < lines.length; i++) {
-        if (matchs(lines[i], level) !== null) {
-            end = i;
-            break;
-        }
-    }
-    if (end === -1) {
-        end = lines.length;
-    }
-    return lines.slice(start, end).join('\n');
+    let isInRange = false;
+    const stream = fs.createReadStream(filePathStr);
+    return stream.pipe(binarySplit('\n')).pipe(
+        through(function (chunk: Buffer, enc, next) {
+            const line = chunk.toString();
+            if (regex.test(line)) {
+                isInRange = true;
+                this.push(line);
+            } else if (isInRange && matches(line, level) !== null) {
+                isInRange = false;
+            } else if (isInRange) {
+                this.push(line);
+            }
+            next();
+        })
+    );
 };
 
-const matchs = (line: string, currentLevel: number) => {
+/**
+ * 检查一行文本是否匹配指定级别的标题
+ * @param {string} line - 要检查的文本行
+ * @param {number} currentLevel - 当前标题级别
+ * @returns {number | null} 如果匹配则返回匹配的标题级别，否则返回 null
+ */
+const matches = (line: string, currentLevel: number) => {
     for (let levelIndex = 0; levelIndex <= currentLevel; levelIndex++) {
         if (line.match(new RegExp(`^#{${levelIndex}} `))) {
             return levelIndex;
