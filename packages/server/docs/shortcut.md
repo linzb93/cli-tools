@@ -5,28 +5,25 @@
 ## 使用方法
 
 ```bash
-$ mycli shortcut [options]
+$ mycli shortcut [key]
 ```
 
 查找已记录的快捷键。例如这个是查找已记录的 vscode 快捷键。
 
 ```bash
-$ mycli shortcut --type=vscode
+$ mycli shortcut vscode
 ```
 
-## 选项
+## 参数
 
 ### 默认
 
 显示所有已记录的快捷键。
 
-### type
+### key
 
 指定要查找的快捷键类型。
-类型：`string`。
-默认：`all`。
-支持的类型如下：
 
--   all: 所有快捷键
 -   vscode: VSCode 快捷键
 -   chrome: Chrome 浏览器快捷键
+-   [key]: 关键字

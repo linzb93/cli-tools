@@ -31,29 +31,30 @@ import globalPkg from '../../../../../package.json';
 import init from '@/service/init';
 import { generateHelpDoc } from '@/common/helper';
 
-// 先处理debug模式
-if (process.argv.includes('--debug')) {
-    process.env.DEBUG = '*';
-} else if (process.argv.includes('--help')) {
-    (async () => {
-        const mainCommand = process.argv[2];
-        if (['git', 'npm'].includes(mainCommand)) {
-            await generateHelpDoc([mainCommand, process.argv[3]]);
-        } else {
-            await generateHelpDoc([mainCommand]);
-        }
-        process.exit(0);
-    })();
-}
-
 const program = new Command();
 program.version(globalPkg.version);
 
 program.hook('preAction', (thisCommand) => {
     return new Promise<void>((resolve) => {
-        setTimeout(() => {
-            init(thisCommand);
-            resolve();
+        setTimeout(async () => {
+            // 先处理debug模式
+            if (process.argv.includes('--debug')) {
+                process.env.DEBUG = '*';
+                resolve();
+            } else if (process.argv.includes('--help')) {
+                (async () => {
+                    const mainCommand = process.argv[2];
+                    if (['git', 'npm', 'ai'].includes(mainCommand)) {
+                        await generateHelpDoc([mainCommand, process.argv[3]]);
+                    } else {
+                        await generateHelpDoc([mainCommand]);
+                    }
+                    process.exit(0);
+                })();
+            } else {
+                init(thisCommand);
+                resolve();
+            }
         }, 500);
     });
 });

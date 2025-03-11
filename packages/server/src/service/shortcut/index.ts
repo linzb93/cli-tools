@@ -11,10 +11,9 @@ interface IShortcutItem {
 }
 
 export default class Shortcut extends BaseCommand {
-    constructor(private name: string) {
-        super();
-    }
-    main() {
+    private name: string;
+    main(name: string) {
+        this.name = name;
         const shortcutMap: IShortcutItem[] = [
             {
                 title: '切换至下一个页面',

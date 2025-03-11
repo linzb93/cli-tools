@@ -28,31 +28,31 @@ export const notify = (content: string) => {
 /**
  * 生成命令帮助文档
  */
-export const generateHelpDoc = async (commands: string[]) => {
-    try {
-        const result = await findContent({
-            fileName: commands[0],
-            title: commands.join(' '),
-            level: commands.length,
-        });
-        const content = result
-            .split('\n')
-            .map((line) => {
-                if (line.match(/^#{2} \S+$/)) {
-                    return chalk.dim(line);
+export const generateHelpDoc = (commands: string[]) => {
+    return new Promise<void>(async (resolve) => {
+        try {
+            const result = await findContent({
+                fileName: commands[0],
+                title: commands.join(' '),
+                level: commands.length,
+            });
+            const charQueue = result.split('');
+            let index = 0;
+            let intervalId: any;
+            intervalId = setInterval(() => {
+                if (index < charQueue.length) {
+                    process.stdout.write(charQueue[index]);
+                    index++;
+                } else {
+                    resolve();
+                    clearInterval(intervalId);
                 }
-                return line;
-            })
-            .join('\n');
-        logger.box({
-            title: `${commands.join(' ')}帮助文档`,
-            content,
-            borderColor: 'cyan',
-            padding: 1,
-        });
-    } catch (error) {
-        logger.error(`没有找到${commands.join(' ')}的帮助文档`);
-    }
+            }, 100);
+        } catch (error) {
+            logger.error(`没有找到${commands.join(' ')}的帮助文档`);
+            resolve();
+        }
+    });
 };
 /**
  * 显示提示，在发生外部错误的时候使用
