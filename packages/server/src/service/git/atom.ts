@@ -73,13 +73,16 @@ const gitAtom: {
     commit(message: string) {
         return {
             message: `git commit -m ${fmtCommitMsg(message)}`,
-            onError: handleConflict,
         };
     },
     pull() {
         return {
             message: 'git pull',
-            onError: () => {},
+            onError: async (errMsg) => {
+                if (errMsg.includes('You have unstaged changes')) {
+                    await sequenceExec(['git add .', 'git commit -m feat:update', this.pull()]);
+                }
+            },
         };
     },
     push(isLocalBranch?: boolean, currenetBranchName?: string) {

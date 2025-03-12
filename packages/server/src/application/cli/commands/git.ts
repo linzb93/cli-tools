@@ -2,14 +2,13 @@ import Clone, { type Options as CloneOptions } from '@/service/git/clone';
 import Deploy, { type Options as DeployOptions } from '@/service/git/deploy';
 import Tag, { type Options as TagOptions } from '@/service/git/tag';
 import Branch, { type Options as BranchOptions } from '@/service/git/branch';
-import { sequenceExec } from '@/common/promiseFn';
+
 import Push from '@/service/git/push';
-import logger from '@/common/logger';
-import gitAtom from '@/service/git/atom';
-import { CommandItem } from '@/common/promiseFn';
+
 import { subCommandCompiler } from '@/common/helper';
 import Rename from '@/service/git/rename';
 import Scan from '@/service/git/scan';
+import Pull from '@/service/git/pull';
 
 const clone = () => {
     subCommandCompiler((program) => {
@@ -23,19 +22,8 @@ const clone = () => {
             });
     });
 };
-const pull = async () => {
-    const actionObj = gitAtom.pull() as CommandItem;
-    try {
-        await sequenceExec([
-            {
-                ...actionObj,
-                retryTimes: 100,
-            },
-        ]);
-        logger.success('代码拉取成功');
-    } catch (error) {
-        logger.error('代码拉取失败');
-    }
+const pull = () => {
+    new Pull().main();
 };
 const push = () => {
     new Push().main();
