@@ -44,6 +44,7 @@
         "into-stream": "^8.0.1",
         "jsonwebtoken": "^9.0.2",
         "kill-port": "^1.6.1",
+        "listr": "^0.14.3",
         "lodash-es": "^4.17.21",
         "log-symbols": "^5.1.0",
         "lowdb": "^3.0.0",

@@ -40,7 +40,12 @@ export default defineConfig({
                 dir: 'dist',
                 entryFileNames: '[name].js',
             },
-            external: [...Object.keys(allDependencies), /^node:.*/],
+            external: [
+                ...Object.keys(allDependencies),
+                /^node:.*/,
+                'assert',
+                'events', // 这两个是因为listr模块添加的
+            ],
         },
         lib: {
             entry: './src/bin/index.ts',

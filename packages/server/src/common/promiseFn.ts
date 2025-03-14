@@ -55,19 +55,31 @@ export interface CommandItem {
     onError?: (message: string) => void;
 }
 export type CommandItemAll = CommandItem | string;
-export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
-    console.log(`${chalk.magenta(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}开始执行命令`);
+export const sequenceExec = async (
+    commandList: (string | CommandItem)[],
+    options?: {
+        /**
+         * 是否隐藏输出
+         */
+        silent: boolean;
+    }
+) => {
+    if (!options?.silent) {
+        console.log(`${chalk.magenta(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}开始执行命令`);
+    }
     const startTime = Date.now();
     for (const cmd of commandList) {
         const command = typeof cmd === 'string' ? cmd : cmd.message;
         if (!command) {
             return;
         }
-        console.log(
-            `${chalk.cyan('>')} ${chalk.yellow(command)}${
-                (cmd as CommandItem).suffix ? ` ${chalk.gray(`-> ${(cmd as CommandItem).suffix}`)}` : ''
-            }`
-        );
+        if (!options?.silent) {
+            console.log(
+                `${chalk.cyan('>')} ${chalk.yellow(command)}${
+                    (cmd as CommandItem).suffix ? ` ${chalk.gray(`-> ${(cmd as CommandItem).suffix}`)}` : ''
+                }`
+            );
+        }
         if (process.env.DEBUG) {
             continue;
         }
@@ -76,20 +88,22 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
                 const { stdout } = await pRetry(() => execa(command), {
                     retryTimes: (cmd as CommandItem).retryTimes as number,
                     retryTimesCallback: (times, errorMessage) => {
-                        console.log(
-                            showWeakenTips(
-                                `${chalk.yellow(command)} 第${chalk.magenta(times)}次重复。`,
-                                errorMessage as string
-                            )
-                        );
+                        if (!options?.silent) {
+                            console.log(
+                                showWeakenTips(
+                                    `${chalk.yellow(command)} 第${chalk.magenta(times)}次重复。`,
+                                    errorMessage as string
+                                )
+                            );
+                        }
                     },
                 });
-                if (stdout) {
+                if (stdout && !options?.silent) {
                     console.log(stdout);
                 }
             } else {
                 const { stdout } = await execa(command);
-                if (stdout) {
+                if (stdout && !options?.silent) {
                     console.log(stdout);
                 }
             }
@@ -105,9 +119,11 @@ export const sequenceExec = async (commandList: (string | CommandItem)[]) => {
             }
         }
     }
-    const isLongTime = Date.now() - startTime > 1000;
-    const duration = parseInt(((Date.now() - startTime) / 1000).toString());
-    console.log(`任务执行完成${isLongTime ? `，用时${chalk.cyan(duration)}秒` : '。'}`);
+    if (!options?.silent) {
+        const isLongTime = Date.now() - startTime > 1000;
+        const duration = parseInt(((Date.now() - startTime) / 1000).toString());
+        console.log(`任务执行完成${isLongTime ? `，用时${chalk.cyan(duration)}秒` : '。'}`);
+    }
 };
 
 export const isPromise = (fn: any) => typeof fn.then === 'function' && fn.catch === 'function';
