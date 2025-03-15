@@ -179,6 +179,7 @@ program
     .option('--user', '根据token获取用户信息')
     .option('--full', '先获取登录账号的店铺信息')
     .option('--fix <url>', '补齐完整的登录地址')
+    .option('--pt <platformName>', '指定平台名称')
     .action((data, options) => {
         occ(data, options);
     });

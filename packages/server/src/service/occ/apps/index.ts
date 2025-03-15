@@ -7,7 +7,8 @@ import Mtdjds from './mtdjds';
 import Mtaibdsq from './mtaibdsq';
 import Elejysq from './elejysq';
 import Chain from './chain';
-import Outer from './outer';
 import Spbj from './spbj';
+import Wmb from './wmb';
+import Kdb from './kdb';
 
-export { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtdjds, Mtaibdsq, Elejysq, Chain, Outer, Spbj };
+export { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtdjds, Mtaibdsq, Elejysq, Chain, Spbj, Wmb, Kdb };

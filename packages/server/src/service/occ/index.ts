@@ -2,7 +2,7 @@ import clipboard from 'clipboardy';
 import open from 'open';
 import chalk from 'chalk';
 import BaseCommand from '@/common/BaseCommand';
-import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Outer, Spbj } from './apps';
+import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Spbj, Wmb, Kdb } from './apps';
 import BaseApp from './apps/base';
 
 export interface Options {
@@ -38,6 +38,10 @@ export interface Options {
      * 补齐登录的地址
      */
     fix: string;
+    /**
+     * 平台名称
+     * */
+    pt: string;
 }
 
 type AppCtor = new () => BaseApp;
@@ -72,15 +76,23 @@ export default class extends BaseCommand {
         this.registerApp(Mtaibdsq);
         this.registerApp(Elejysq);
         this.registerApp(Chain);
-        this.registerApp(Outer);
         this.registerApp(Spbj);
+        this.registerApp(Wmb);
+        this.registerApp(Kdb);
         await this.run();
     }
-    registerApp(app: AppCtor) {
+    /**
+     * 注册应用
+     * @param app
+     */
+    private registerApp(app: AppCtor) {
         this.apps.push(app);
     }
+    /**
+     * 添加app后运行
+     */
     private async run() {
-        this.setMachApp();
+        this.setMatchApp();
         const url = await this.search();
         await this.afterSearch(url, this.searchKeyword);
     }
@@ -104,16 +116,14 @@ export default class extends BaseCommand {
             }
         }
     }
-    private setMachApp() {
-        for (const App of this.apps) {
-            const app = new App();
-            if (app.name === this.appName) {
-                this.currentApp = app;
-                if (this.searchKeyword === '') {
-                    this.searchKeyword = this.options.test ? app.testDefaultId : app.defaultId;
-                }
-                break;
-            }
+    /**
+     * 设置匹配的应用
+     */
+    private setMatchApp() {
+        const matchApp = this.apps.find((App) => new App().name === this.appName);
+        this.currentApp = !matchApp ? new this.apps[0]() : new matchApp();
+        if (this.searchKeyword === '') {
+            this.searchKeyword = this.options.test ? this.currentApp.testDefaultId : this.currentApp.defaultId;
         }
     }
     /**
@@ -123,26 +133,30 @@ export default class extends BaseCommand {
     private async search(): Promise<string> {
         const { options } = this;
         let url = '';
-        if (options.date) {
-            this.inquirer.prompt([
-                {
-                    message: '请输入起始日期（格式：YYYY-MM-DD）',
-                    name: 'startTime',
-                    type: 'input',
-                },
-                {
-                    message: '请输入结束日期（格式：YYYY-MM-DD）',
-                    name: 'endTime',
-                    type: 'input',
-                },
-            ]);
-        }
+        // if (options.date) {
+        //     this.inquirer.prompt([
+        //         {
+        //             message: '请输入起始日期（格式：YYYY-MM-DD）',
+        //             name: 'startTime',
+        //             type: 'input',
+        //         },
+        //         {
+        //             message: '请输入结束日期（格式：YYYY-MM-DD）',
+        //             name: 'endTime',
+        //             type: 'input',
+        //         },
+        //     ]);
+        // }
         this.spinner.text = `${chalk.yellow(`【${this.currentApp.serviceName}】`)}正在获取店铺${chalk.cyan(
             this.searchKeyword
         )}地址`;
         try {
-            const res = (await this.currentApp.getShopUrl(this.searchKeyword, this.options.test)) as any;
-            url = res;
+            const resultUrl = (await this.currentApp.getShopUrl(
+                this.searchKeyword,
+                this.options.test,
+                this.options.pt
+            )) as any;
+            url = resultUrl;
         } catch (error) {
             this.spinner.fail('请求失败');
             console.log(error);

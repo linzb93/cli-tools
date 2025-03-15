@@ -27,7 +27,7 @@ export default abstract class {
      * 根据搜索关键词获取店铺地址
      * @param {string} keyword - 搜索关键词
      */
-    abstract getShopUrl(keyword: string, isTest: boolean): Promise<string>;
+    abstract getShopUrl(keyword: string, isTest: boolean, platform?: string): Promise<string>;
     /**
      * 获取用户信息
      * @param {string} token - 用户token

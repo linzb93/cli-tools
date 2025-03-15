@@ -46,6 +46,11 @@ interface Database {
         oldApiPrefix?: string;
         username?: string;
         password?: string;
+        zhanwai: {
+            baseUrl: string;
+            username: string;
+            password: string;
+        };
     };
     monitor: {
         siteId: string;
