@@ -12,7 +12,6 @@ export interface Options {
     dir: string;
     open?: boolean;
     from?: string;
-    help: boolean;
 }
 /**
  * git clone功能，支持从下面这些来源clone:

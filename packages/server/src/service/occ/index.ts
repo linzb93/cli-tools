@@ -35,10 +35,6 @@ export interface Options {
      */
     test: boolean;
     /**
-     * 查看帮助文档
-     */
-    help: boolean;
-    /**
      * 补齐登录的地址
      */
     fix: string;

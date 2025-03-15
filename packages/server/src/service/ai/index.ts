@@ -123,8 +123,7 @@ export default class Ai extends BaseCommand {
                 stream: true,
             });
         } catch (error) {
-            throw new Error(`${modelItem.title}服务使用失败：
-                        ${modelItem.errorHandler(error.message)}`);
+            throw new Error(`${modelItem.title}服务使用失败：${modelItem.errorHandler(error.message)}`);
         }
     }
 }

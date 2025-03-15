@@ -4,7 +4,11 @@ import { getHtml } from '@/common/http/spider';
 import Ai from '@/service/ai';
 
 export interface Options {
-    help: boolean;
+    /**
+     * 是否使用AI翻译
+     * @default false
+     */
+    ai: boolean;
 }
 
 /**

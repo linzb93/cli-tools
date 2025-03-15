@@ -13,7 +13,6 @@ export interface Options {
      * 完整数据，包括算法等
      */
     complete?: boolean;
-    help?: boolean;
 }
 
 const strategyList = [

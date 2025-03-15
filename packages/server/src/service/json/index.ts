@@ -12,7 +12,6 @@ import clipboardy from 'clipboardy';
 import { join } from 'node:path';
 import { difference, intersection } from 'lodash-es';
 export interface Options {
-    help: boolean;
     same: boolean;
     diff: boolean;
     diff1: boolean;
