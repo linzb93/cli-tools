@@ -16,10 +16,6 @@ export interface Options {
      * */
     commit: string;
     /**
-     * 打tag
-     * */
-    tag: string;
-    /**
      * 发布到当前分支，只执行基础操作
      * @default false
      */
@@ -38,6 +34,10 @@ export interface Options {
      * 部署应用类型
      */
     type: string;
+    /**
+     * 版本号
+     */
+    version: string;
 }
 
 interface FlowOption {
@@ -148,9 +148,10 @@ export default class extends BaseCommand {
         }
         if (actions.includes('tag')) {
             tag =
-                this.options.tag ||
+                `${this.options.type || 'v'}${this.options.version}` ||
                 (await new Tag().generateNewestTag({
                     type: this.options.type,
+                    version: this.options.version,
                 }));
             if (tag) {
                 flows.push(`git tag ${tag}`);

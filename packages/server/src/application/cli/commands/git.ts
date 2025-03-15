@@ -34,14 +34,16 @@ const rename = () => {
 const tag = () => {
     subCommandCompiler((program) => {
         program
-            .command('tag [tagName]')
+            .command('tag')
             .option('--delete', '删除tag')
             .option('--sync', '同步tag')
             .option('--last <len>', '最近几次')
             .option('--head <len>', '前面几个')
             .option('-g, --get', '获取')
-            .action((datas, options: TagOptions) => {
-                new Tag().main(datas, options);
+            .option('--version <version>', '版本号')
+            .option('--type <type>', '类型')
+            .action((options: TagOptions) => {
+                new Tag().main(options);
             });
     });
 };
@@ -50,7 +52,7 @@ const deploy = () => {
         program
             .command('deploy')
             .option('--commit <msg>', '提交信息')
-            .option('--tag <name>', 'tag名称')
+            .option('--version <version>', '版本号')
             .option('-c, --current', '当前的')
             .option('--help', '显示帮助文档')
             .option('--prod', '生产分支')

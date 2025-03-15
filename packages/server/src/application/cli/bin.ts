@@ -236,8 +236,8 @@ program
 //     .action((dir, option) => {
 //         tree(dir, option);
 //     });
-program.command('test').action(() => {
-    test();
+program.command('test').action((options) => {
+    test(options);
 });
 program
     .command('vue')

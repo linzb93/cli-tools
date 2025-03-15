@@ -34,10 +34,17 @@ export interface Options {
      * 一个项目可以打多种tag，默认是v开头的
      */
     type?: string;
+    /**
+     * 版本号
+     */
+    version: string;
 }
 
 export default class extends BaseCommand {
-    async main(data: string, options: Options) {
+    private options: Options;
+
+    async main(options: Options) {
+        this.options = options;
         if (options.delete) {
             await this.batchDelete(options);
             return;
@@ -63,11 +70,11 @@ export default class extends BaseCommand {
             return;
         }
         let tag = '';
-        const input = data;
+        const input = options.version;
         if (!input) {
             tag = await this.generateNewestTag(options);
         } else {
-            tag = input.startsWith('v') ? input : `v${input}`;
+            tag = `${options.type || 'v'}${input}`;
         }
         await sequenceExec([`git tag ${tag}`, `git push origin ${tag}`]);
         const { onlineId } = await getProjectName();
@@ -78,25 +85,28 @@ export default class extends BaseCommand {
     /**
      * 生成最新的tag
      */
-    async generateNewestTag(options: Options): Promise<string> {
+    async generateNewestTag(options?: Options): Promise<string> {
+        if (options) {
+            this.options = options;
+        }
         const gitTags = await getTags();
         if (gitTags.length === 0) {
             return '';
         }
-        const prefix = options.type || 'v';
-        const lastTag = this.gitCurrentLatestTag(gitTags, prefix);
+        const lastTag = this.gitCurrentLatestTag(gitTags);
         const [firstNum, secondNum, thirdNum, lastNum] = lastTag.split('.');
         if (lastTag.split('.').length === 3) {
-            return `${prefix}${lastTag}.1`;
+            return `${options.type || 'v'}${lastTag}.1`;
         }
-        return `${prefix}${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
+        return `${options.type || 'v'}${firstNum}.${secondNum}.${thirdNum}.${Number(lastNum) + 1}`;
     }
     /**
      * 获取最近的一次tag
      * @param tags
      * @returns
      */
-    private gitCurrentLatestTag(tags: string[], prefix: string): string {
+    private gitCurrentLatestTag(tags: string[]): string {
+        const prefix = this.options.type || 'v';
         const filterTags = tags.filter((tag) => tag.startsWith(prefix)).map((tag) => tag.replace(prefix, ''));
         const sortedTags = filterTags.sort((a, b) => {
             const aArr = a.split('.').map((item) => Number(item));

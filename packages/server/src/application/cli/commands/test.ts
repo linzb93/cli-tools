@@ -1,3 +1,3 @@
-export default async () => {
-    console.log(1);
+export default async (opt: any) => {
+    console.log(opt);
 };
