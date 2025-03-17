@@ -11,11 +11,11 @@ const allDependencies = {
 };
 
 const input: {
-    cli?: string;
-    web?: string;
+    [key: string]: string;
 } = {
     cli: 'src/application/cli/bin.ts',
     web: 'src/application/web/router.ts',
+    vueServer: 'src/service/vue/server.ts',
 };
 if (process.env.MODE === 'cli') {
     delete input.web;

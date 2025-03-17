@@ -18,6 +18,7 @@ interface Database {
         name: string;
         path: string;
         id: number;
+        command: string;
     }[];
     menus: {
         title: string;

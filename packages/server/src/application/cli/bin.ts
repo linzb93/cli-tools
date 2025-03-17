@@ -242,6 +242,7 @@ program.command('test').action((options) => {
 program
     .command('vue')
     .option('--command, <command>', '命令')
+    .option('-l, --list', '显示列表')
     .action((option) => {
         vue(option);
     });

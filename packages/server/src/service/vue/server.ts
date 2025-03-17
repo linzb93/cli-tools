@@ -1,16 +1,21 @@
 import express from 'express';
 import { Command } from 'commander';
 import { join } from 'node:path';
+import detectPort from 'detect-port';
 
 const program = new Command();
+program.option('--cwd <cwd>', '当前工作目录');
+program.option('--publicPath <publicPath>', 'publicPath');
 program.parse(process.argv);
-program.option('--command, <command>, 执行的命令');
 const app = express();
-app.use(express.static(join(program.opts().command, 'dist')));
-app.listen(7001, () => {
-    console.log('Server is running on port 7001');
-    process.send?.({
-        port: 7001,
-        command: program.opts().command,
+
+const options = program.opts();
+(async () => {
+    const port = await detectPort(7001);
+    app.use(options.publicPath, express.static(join(options.cwd, 'dist')));
+    app.listen(port, () => {
+        process.send?.({
+            port,
+        });
     });
-});
+})();

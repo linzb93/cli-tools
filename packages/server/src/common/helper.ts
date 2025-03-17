@@ -124,3 +124,8 @@ export const subCommandCompiler = (fn: (cmd: Command) => void) => {
     fn(program);
     program.parse(process.argv.filter((item, index) => index !== 2 && item !== '--debug'));
 };
+
+/**
+ * 旧版本NodeJS，这里指的是NodeJS 14.
+ */
+export const isOldNode = process.version.startsWith('v14.');
