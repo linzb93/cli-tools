@@ -15,6 +15,7 @@ import fork from './commands/fork';
 import json from './commands/json';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
+import base64 from './commands/base64';
 // import mock from "./commands/mock";
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
@@ -71,6 +72,12 @@ program.hook('preAction', (thisCommand) => {
 program.command('ai [name] [rest...]').action((action, rest) => {
     ai(action, rest);
 });
+program
+    .command('base64')
+    .option('--size <size>, 输出图片的大小')
+    .action((options) => {
+        base64(options);
+    });
 // program
 //     .command('cg [action] [...rest]')
 //     .option('--realtime', '实时更新')
