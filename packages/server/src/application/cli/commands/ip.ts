@@ -1,4 +1,4 @@
-import Ip, { Options } from '@/service/ip';
+import Ip from '@/service/ip';
 
 // function generateHelp() {
 //   generateHelpDoc({
@@ -10,6 +10,6 @@ import Ip, { Options } from '@/service/ip';
 //   });
 // }
 
-export default (data: string[], options: Options) => {
+export default (data: string[]) => {
     new Ip().main(data);
 };

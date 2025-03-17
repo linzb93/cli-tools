@@ -5,7 +5,9 @@ import pReduce from 'p-reduce';
 import { Observable, last, skip, skipLast, first } from 'rxjs';
 import sql from '@/common/sql';
 import * as gitUtil from './shared';
-
+/**
+ * 扫描所有git仓库，返回所有需要push的仓库
+ * */
 export default async function useScan() {
     const gitDirs = await sql(async (db) => db.gitDirs);
     const allDirs = await pReduce(

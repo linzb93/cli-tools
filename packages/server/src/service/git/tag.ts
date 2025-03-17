@@ -22,7 +22,6 @@ export interface Options {
      * 输出最后一个标签。
      */
     get?: boolean;
-    help?: boolean;
     /**
      * 同步当前标签
      */

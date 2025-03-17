@@ -10,19 +10,28 @@ import { isCurrenetBranchPushed, getMasterBranchName, getPushStatus, getCurrentB
 import gitAtom from './atom';
 
 export interface Options {
+    /**
+     * 提交信息
+     * @default 'feat: update'
+     * */
     commit: string;
+    /**
+     * 打tag
+     * */
     tag: string;
     /**
      * 发布到当前分支，只执行基础操作
+     * @default false
      */
     current: boolean;
-    help: boolean;
     /**
      * 打开Jenkins项目主页
+     * @default false
      */
     open: boolean;
     /**
      * 发布到生产分支
+     * @default false
      */
     prod: boolean;
     /**

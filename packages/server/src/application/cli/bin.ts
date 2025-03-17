@@ -66,7 +66,6 @@ program.hook('preAction', (thisCommand) => {
 //     .option('--proxy <url>', '代理地址')
 //     .option('--port <num>', '端口号')
 //     .option('-c, --copy', '复制网络地址')
-//     .option('--help', '显示帮助文档')
 //     .action((subCommand, options) => {
 //         agent(subCommand, options);
 //     });
@@ -91,7 +90,6 @@ program
 program
     .command('clear [filename]')
     .option('-r, --root', '清理根目录下的')
-    .option('--help', '显示帮助文档')
     .action((filename, options) => {
         clear(filename, options);
     });
@@ -102,7 +100,6 @@ program.command('analyse [sub-command]').action((subCommand) => {
 
 program
     .command('color [text]')
-    .option('--help', '显示帮助文档')
     .option('--get')
     .action((data, options) => {
         color(data, options);
@@ -117,17 +114,13 @@ program
 program
     .command('eng [text]')
     .option('-e,--example', '显示范例')
-    .option('--help', '显示帮助文档')
     .action((text, options) => {
         translate(text, options);
     });
 
-program
-    .command('fork [filename]')
-    .option('--help', '显示帮助文档')
-    .action((file) => {
-        fork(file);
-    });
+program.command('fork [filename]').action((file) => {
+    fork(file);
+});
 
 program
     .command('git [sub-command] [rest...]')
@@ -136,15 +129,11 @@ program
         git(subCommand, rest, cmd);
     });
 
-program
-    .command('ip [rest...]')
-    .option('--help', '显示帮助文档')
-    .action((data, options) => {
-        ip(data, options);
-    });
+program.command('ip [rest...]').action((data) => {
+    ip(data);
+});
 program
     .command('json [rest...]')
-    .option('--help', '显示帮助文档')
     .option('--same', '复制相同的key')
     .option('--diff', '复制不同的key，空行间隔')
     .option('--diff1', '第一个json不同的key')
@@ -153,12 +142,9 @@ program
         json(data, options);
     });
 
-program
-    .command('kill [data...]')
-    .option('--help', '显示帮助文档')
-    .action((data, options) => {
-        kill(data, options);
-    });
+program.command('kill [data...]').action((data, options) => {
+    kill(data, options);
+});
 
 program.command('lixi').action(() => {
     lixi();
@@ -169,7 +155,6 @@ program.command('lixi').action(() => {
 //   .option("--force", "强制更新所有接口并启动服务器")
 //   .option("--single [path]", "更新单一接口")
 //   .option("--update", "只更新接口")
-//   .option("--help", "显示帮助文档")
 //   .action((action, options) => {
 //     mock(action, options);
 //   });
@@ -181,7 +166,6 @@ program
     .option('-f, --full', '完整版')
     .option('--open', '打开页面')
     .option('--cjs', '安装commonjs类型的')
-    .option('--help', '显示帮助文档')
     .action((subCommand: string, rest, cmd) => {
         npm(subCommand, rest, cmd);
     });
@@ -194,7 +178,6 @@ program
     .option('--test', '测试环境')
     .option('--user', '根据token获取用户信息')
     .option('--full', '先获取登录账号的店铺信息')
-    .option('--help', '显示帮助文档')
     .option('--fix <url>', '补齐完整的登录地址')
     .action((data, options) => {
         occ(data, options);
@@ -204,7 +187,6 @@ program
     .command('open [name]')
     .option('--name <name>', '打开的文件夹')
     .option('-r, --reuse', '强制在已开启的编辑器里打开')
-    .option('--help', '显示帮助文档')
     .action((url, cmd) => {
         open(url, cmd);
     });
@@ -221,17 +203,13 @@ program
         server(command, option);
     });
 
-program
-    .command('shortcut [name]')
-    .option('--help', '显示帮助文档')
-    .action((name) => {
-        shortcut(name);
-    });
+program.command('shortcut [name]').action((name) => {
+    shortcut(name);
+});
 
 program
     .command('size [url]')
     .option('--rect', '获取宽高')
-    .option('--help', '显示帮助文档')
     .action((filename, options) => {
         getSize(filename, options);
     });
@@ -244,7 +222,6 @@ program
     .command('token [data]')
     .option('-o --origin', '原始数据')
     .option('-c --complete', '完整数据')
-    .option('--help', '显示帮助文档')
     .action((data, options) => {
         token(data, options);
     });
