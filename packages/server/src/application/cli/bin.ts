@@ -8,7 +8,7 @@ import translate from './commands/translate';
 import occ from './commands/occ';
 import cookie from './commands/cookie';
 // import agent from './commands/agent';
-import cg from './commands/cg';
+// import cg from './commands/cg';
 import clear from './commands/clear';
 import color from './commands/color';
 import fork from './commands/fork';
@@ -19,7 +19,7 @@ import lixi from './commands/lixi';
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
 import token from './commands/token';
-import tree from './commands/tree';
+// import tree from './commands/tree';
 import test from './commands/test';
 import git from './commands/git';
 import npm from './commands/npm';
@@ -71,14 +71,14 @@ program.hook('preAction', (thisCommand) => {
 program.command('ai [name] [rest...]').action((action, rest) => {
     ai(action, rest);
 });
-program
-    .command('cg [action] [...rest]')
-    .option('--realtime', '实时更新')
-    .option('-f, --full', '全部')
-    .option('--help', '显示帮助文档')
-    .action((action, rest, options) => {
-        cg(action, rest, options);
-    });
+// program
+//     .command('cg [action] [...rest]')
+//     .option('--realtime', '实时更新')
+//     .option('-f, --full', '全部')
+//     .option('--help', '显示帮助文档')
+//     .action((action, rest, options) => {
+//         cg(action, rest, options);
+//     });
 
 program
     .command('clear [filename]')
@@ -241,15 +241,15 @@ program
         token(data, options);
     });
 
-program
-    .command('tree [dir]')
-    .option('--level <level>', '层级')
-    .option('--ignore <dirs>', '添加忽略的文件夹')
-    .option('-c, --copy', '复制')
-    .option('--help', '显示帮助文档')
-    .action((dir, option) => {
-        tree(dir, option);
-    });
+// program
+//     .command('tree [dir]')
+//     .option('--level <level>', '层级')
+//     .option('--ignore <dirs>', '添加忽略的文件夹')
+//     .option('-c, --copy', '复制')
+//     .option('--help', '显示帮助文档')
+//     .action((dir, option) => {
+//         tree(dir, option);
+//     });
 program.command('test').action(() => {
     test();
 });
