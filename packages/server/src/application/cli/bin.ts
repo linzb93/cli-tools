@@ -27,6 +27,7 @@ import npm from './commands/npm';
 import analyse from './commands/analyse';
 import time from './commands/time';
 import repl from './commands/repl';
+import vue from './commands/vue';
 import server from './commands/server';
 import globalPkg from '../../../../../package.json';
 import init from '@/service/init';
@@ -260,5 +261,11 @@ program
 program.command('test').action(() => {
     test();
 });
+program
+    .command('vue')
+    .option('--command, <command>', '命令')
+    .action((option) => {
+        vue(option);
+    });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
