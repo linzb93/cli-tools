@@ -94,14 +94,13 @@ tag 的版本号。
 $ mycli git tag [options]
 ```
 
-### 参数
-
-#### tag
-
-tag 的名称。
-类型：`string`。
-
 ### 选项
+
+#### version
+
+tag 的版本号。
+
+类型：`string`。
 
 #### delete
 
