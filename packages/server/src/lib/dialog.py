@@ -2,8 +2,14 @@ import argparse
 import tkinter as tk
 from tkinter import filedialog
 import io
-import sys;
+import sys
+import re
+
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
+parser = argparse.ArgumentParser()
+parser.add_argument("--type")
+parser.add_argument("--root")
+args = parser.parse_args()
 def open_file_dialog(type):
     root = tk.Tk()
     root.withdraw() 
@@ -17,10 +23,11 @@ def open_file_dialog(type):
     elif type == "save":
         file_path = filedialog.asksaveasfilename()
     elif type == "directory":
-        file_path = filedialog.askdirectory()
+        file_path = filedialog.askdirectory(
+            initialdir = f"{re.escape(args.root)}",
+            title = "Select a directory"
+        )
     print(file_path)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--type")
-args = parser.parse_args()
+
 open_file_dialog(args.type)

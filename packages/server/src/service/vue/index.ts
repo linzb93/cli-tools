@@ -40,6 +40,7 @@ export default class Vue extends BaseCommand {
         } else {
             cwd = await showOpenDialog('directory');
             if (!cwd) {
+                this.logger.error('请选择项目路径');
                 return;
             }
             command = options.command || 'build';
