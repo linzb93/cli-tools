@@ -12,6 +12,7 @@ import sql from '@/common/sql';
 export interface Options {
     command: string;
     list: boolean;
+    server: boolean;
 }
 
 export default class Vue extends BaseCommand {
@@ -54,8 +55,12 @@ export default class Vue extends BaseCommand {
             });
         }
         this.logger.backwardConsole();
-        this.spinner.text = `正在项目${chalk.yellow(cwd)}执行命令：${chalk.green(`npm run ${command}`)}，请稍后...`;
-        await execa(`npm run ${command}`, { cwd });
+        if (options.server) {
+            this.spinner.text = '正在启动服务器';
+        } else {
+            this.spinner.text = `正在项目${chalk.yellow(cwd)}执行命令：${chalk.green(`npm run ${command}`)}，请稍后...`;
+            await execa(`npm run ${command}`, { cwd });
+        }
         const confFileContent = await fs.readFile(join(cwd, 'vue.config.js'), 'utf-8');
         const contentSeg = confFileContent.split('\n');
         const matchLine = contentSeg.find((line) => line.includes('publicPath:'));

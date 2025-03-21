@@ -91,9 +91,14 @@ export default class extends BaseCommand {
         const action = () =>
             new Promise((resolve, reject) => {
                 rawKillPort(port, 'tcp')
-                    .then((data) => {
+                    .then(async (data) => {
                         if (data.stderr) {
-                            reject(iconv.decode(Buffer.from(data.stderr), 'utf8'));
+                            const newPort = await detectPort(Number(port));
+                            if (Number(port) !== newPort) {
+                                reject('端口已被占用');
+                            } else {
+                                resolve(null);
+                            }
                         } else {
                             resolve(null);
                         }
