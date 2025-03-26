@@ -147,12 +147,14 @@ export default class extends BaseCommand {
             flows.push(`git checkout ${targetBranch}`, gitAtom.pull(), gitAtom.merge(this.currenetBranch), 'git push');
         }
         if (actions.includes('tag')) {
-            tag =
-                `${this.options.type || 'v'}${this.options.version}` ||
-                (await new Tag().generateNewestTag({
+            if (this.options.version) {
+                tag = `${this.options.type || 'v'}${this.options.version}`;
+            } else {
+                tag = await new Tag().generateNewestTag({
                     type: this.options.type,
                     version: this.options.version,
-                }));
+                });
+            }
             if (tag) {
                 flows.push(`git tag ${tag}`);
                 flows.push(`git push origin ${tag}`);
