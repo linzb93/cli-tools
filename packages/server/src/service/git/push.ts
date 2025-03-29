@@ -3,19 +3,26 @@ import gitAtom from './atom';
 import { getCurrentBranch, isCurrenetBranchPushed, remote } from './shared';
 import { sequenceExec, type CommandItem } from '@/common/promiseFn';
 
+export interface Options {
+    force: boolean;
+}
+
 export default class extends BaseCommand {
-    async main() {
+    async main(options: Options) {
         let actionObj: CommandItem;
-        const remoteUrl = await remote();
-        if (remoteUrl.includes('github')) {
-            actionObj = gitAtom.push();
-        } else if (await isCurrenetBranchPushed()) {
-            actionObj = gitAtom.push();
-        } else {
-            const branch = await getCurrentBranch();
+        const branch = await getCurrentBranch();
+        if (options.force) {
             actionObj = {
                 message: `git push --set-upstream origin ${branch}`,
             };
+        } else {
+            if (await isCurrenetBranchPushed()) {
+                actionObj = gitAtom.push();
+            } else {
+                actionObj = {
+                    message: `git push --set-upstream origin ${branch}`,
+                };
+            }
         }
 
         try {

@@ -3,7 +3,7 @@ import Deploy, { type Options as DeployOptions } from '@/service/git/deploy';
 import Tag, { type Options as TagOptions } from '@/service/git/tag';
 import Branch, { type Options as BranchOptions } from '@/service/git/branch';
 
-import Push from '@/service/git/push';
+import Push, { Options as PushOptions } from '@/service/git/push';
 
 import { subCommandCompiler } from '@/common/helper';
 import Rename from '@/service/git/rename';
@@ -26,7 +26,14 @@ const pull = () => {
     new Pull().main();
 };
 const push = () => {
-    new Push().main();
+    subCommandCompiler((program) => {
+        program
+            .command('push')
+            .option('--force', '强制推送')
+            .action((options: PushOptions) => {
+                new Push().main(options);
+            });
+    });
 };
 const rename = () => {
     new Rename().main();
