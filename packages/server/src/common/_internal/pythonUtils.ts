@@ -11,5 +11,5 @@ export const parseJSON = (input: string) => JSON.parse(input.replace(/'/g, '"'))
  * @param path 文件名称，不含后缀名
  * @returns {string} 执行文件的地址
  */
-export const getExecutePath = (path: string): string =>
-    join(fileURLToPath(import.meta.url), `../../src/lib/${path}.py`);
+export const getExecutePath = (path: string, withExtName = true): string =>
+    join(fileURLToPath(import.meta.url), `../../src/lib/${path}${withExtName ? '.py' : ''}`);

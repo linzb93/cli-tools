@@ -80,7 +80,7 @@ export default class Vue extends BaseCommand {
         child.on('message', async (message: any) => {
             const ip = await internalIp.v4();
             const url = `http:${ip}:${message.port}${publicPath}`;
-            this.spinner.succeed(`服务已启动：${chalk.magenta(url)}`);
+            this.spinner.succeed(`服务已启动\n${chalk.magenta(url)}`);
             clipboardy.writeSync(url);
             child.unref();
             child.disconnect();

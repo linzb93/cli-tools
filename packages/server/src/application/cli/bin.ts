@@ -27,6 +27,7 @@ import npm from './commands/npm';
 import analyse from './commands/analyse';
 import time from './commands/time';
 import repl from './commands/repl';
+import resize from './commands/resize';
 import vue from './commands/vue';
 import server from './commands/server';
 import globalPkg from '../../../../../package.json';
@@ -195,6 +196,12 @@ program
 program.command('repl').action(() => {
     repl();
 });
+program
+    .command('resize')
+    .option('--size <size>', '输出图片的大小')
+    .action((options) => {
+        resize(options);
+    });
 
 program
     .command('server [command]')
