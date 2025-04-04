@@ -1,9 +1,10 @@
 import imageClipboard from '@/common/clipboard';
 import { imageBase64ToStream, tempUpload } from '@/common/image';
+import inquirer from '@/common/inquirer';
 import clipboardy from 'clipboardy';
 import spinner from '@/common/spinner';
-import { PromptOptions } from '../share';
-
+import { type PromptOptions } from '../share';
+import AiImpl from '../Impl';
 let removeHandler: any;
 
 const obj: PromptOptions = {
@@ -23,6 +24,21 @@ const obj: PromptOptions = {
         removeHandler = ret.removeHandler;
         const result = await obj.getResult(url);
         clipboardy.writeSync(result);
+        spinner.succeed(`识别成功：\n${result}`);
+        if (obj.options.ask) {
+            const { askResult } = await inquirer.prompt({
+                type: 'input',
+                name: 'askResult',
+                message: '请针对识别结果提问',
+            });
+            await new AiImpl().use([
+                {
+                    role: 'user',
+                    content: `${askResult}。如果是纯英文的话，请先翻译成中文，再给出解决方案。\n${result}`,
+                },
+            ]);
+            return;
+        }
         spinner.succeed(`识别成功，耗时${(Date.now() - startTime) / 1000}s，结果已复制到剪贴板`);
         removeHandler();
     },

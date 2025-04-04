@@ -70,9 +70,13 @@ program.hook('preAction', (thisCommand) => {
 //     .action((subCommand, options) => {
 //         agent(subCommand, options);
 //     });
-program.command('ai [name] [rest...]').action((action, rest) => {
-    ai(action, rest);
-});
+program
+    .command('ai [name] [rest...]')
+    .option('--ask', '是否继续提问')
+    .option('--eng', '使用翻译')
+    .action((action, rest, options) => {
+        ai(action, rest, options);
+    });
 program
     .command('base64')
     .option('--size <size>, 输出图片的大小')

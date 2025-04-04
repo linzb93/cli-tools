@@ -29,6 +29,7 @@ interface Database {
             deepseek: string;
             siliconflow: string;
             volcano: string;
+            volcanoDeepseekV3: string;
         };
     };
     ipc: string;

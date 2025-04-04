@@ -1,4 +1,3 @@
-import spinner from '@/common/spinner';
 import { PromptOptions, printObject } from '../share';
 
 const obj: PromptOptions = {
@@ -9,7 +8,6 @@ const obj: PromptOptions = {
     async action(obj) {
         // 正则表达式中的反斜杠需要转义
         const input = obj.input.toString().replace(/\\/g, '\\\\');
-        // 正则表达式中的单引号需要转义
         const result = await obj.getResult(input);
         printObject(result);
     },

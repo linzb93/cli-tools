@@ -3,6 +3,16 @@ export default async (type: string) => {
     const apiKey = await sql((db) => db.ai.apiKey);
     const models = [
         {
+            title: '火山方舟大模型Deepseek-v3',
+            apiKey: apiKey.volcanoDeepseekV3,
+            baseURL: '',
+            model: 'deepseek-v3-250324',
+            type: 'text',
+            errorHandler(errorMessage: string) {
+                return errorMessage;
+            },
+        },
+        {
             title: 'siliconflow',
             apiKey: apiKey.siliconflow,
             baseURL: 'https://api.siliconflow.cn',
