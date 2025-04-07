@@ -5,7 +5,7 @@ export default async (type: string) => {
         {
             title: '火山方舟大模型Deepseek-v3',
             apiKey: apiKey.volcanoDeepseekV3,
-            baseURL: '',
+            baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
             model: 'deepseek-v3-250324',
             type: 'text',
             errorHandler(errorMessage: string) {
