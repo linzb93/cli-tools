@@ -15,7 +15,6 @@ import fork from './commands/fork';
 import json from './commands/json';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
-import base64 from './commands/base64';
 // import mock from "./commands/mock";
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
@@ -27,7 +26,6 @@ import npm from './commands/npm';
 import analyse from './commands/analyse';
 import time from './commands/time';
 import repl from './commands/repl';
-import resize from './commands/resize';
 import vue from './commands/vue';
 import server from './commands/server';
 import globalPkg from '../../../../../package.json';
@@ -76,12 +74,6 @@ program
     .option('--eng', '使用翻译')
     .action((action, rest, options) => {
         ai(action, rest, options);
-    });
-program
-    .command('base64')
-    .option('--size <size>, 输出图片的大小')
-    .action((options) => {
-        base64(options);
     });
 // program
 //     .command('cg [action] [...rest]')
@@ -200,12 +192,6 @@ program
 program.command('repl').action(() => {
     repl();
 });
-program
-    .command('resize')
-    .option('--size <size>', '输出图片的大小')
-    .action((options) => {
-        resize(options);
-    });
 
 program
     .command('server [command]')
