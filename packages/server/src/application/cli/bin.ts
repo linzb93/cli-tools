@@ -56,7 +56,7 @@ program.hook('preAction', (thisCommand) => {
                 init(thisCommand);
                 resolve();
             }
-        }, 500);
+        }, 100);
     });
 });
 
