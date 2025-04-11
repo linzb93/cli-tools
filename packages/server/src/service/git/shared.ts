@@ -93,8 +93,10 @@ export const getPushStatus = async (cwd = process.cwd()): Promise<0 | 1 | 2 | 3 
  * 获取当前分支名称
  * @returns {string} 分支名称
  */
-export const getCurrentBranch = async (): Promise<string> => {
-    const { stdout } = await execa('git branch --show-current');
+export const getCurrentBranch = async (cwd?: string): Promise<string> => {
+    const { stdout } = await execa('git branch --show-current', {
+        cwd: cwd || process.cwd(),
+    });
     return stdout;
 };
 /**
@@ -161,6 +163,7 @@ interface BranchOptions {
      * 是否显示创建时间
      */
     showCreateTime?: boolean;
+    cwd?: string;
 }
 /**
  * 获取分支列表,包括本地分支和远端分支。
@@ -179,7 +182,7 @@ export const getBranches = async (options?: BranchOptions): Promise<BranchResult
             command += ` | grep ${options.keyword}`;
         }
     }
-    const { stdout } = await execa(command, { cwd: process.cwd(), shell: true });
+    const { stdout } = await execa(command, { cwd: options.cwd || process.cwd(), shell: true });
     const splited = stdout.split('\n');
     const list = splited.reduce((acc, line) => {
         let branchName = '';

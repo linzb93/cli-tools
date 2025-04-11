@@ -88,25 +88,8 @@ export default class extends BaseCommand {
      */
     private async killPort(port: string) {
         const { options } = this;
-        const action = () =>
-            new Promise((resolve, reject) => {
-                rawKillPort(port, 'tcp')
-                    .then(async (data) => {
-                        if (data.stderr) {
-                            const newPort = await detectPort(Number(port));
-                            if (Number(port) !== newPort) {
-                                reject('端口已被占用');
-                            } else {
-                                resolve(null);
-                            }
-                        } else {
-                            resolve(null);
-                        }
-                    })
-                    .catch(reject);
-            });
         try {
-            await action();
+            await this.killPortAction(port);
             if (options.log) {
                 this.logger.success(`端口号为${chalk.yellow(port)}的进程关闭成功`);
             }
@@ -115,5 +98,23 @@ export default class extends BaseCommand {
                 this.logger.error(`端口号为${chalk.yellow(port)}的进程关闭失败`);
             }
         }
+    }
+    private async killPortAction(port: string) {
+        return new Promise((resolve, reject) => {
+            rawKillPort(port, 'tcp')
+                .then(async (data) => {
+                    if (data.stderr) {
+                        const newPort = await detectPort(Number(port));
+                        if (Number(port) !== newPort) {
+                            reject('端口已被占用');
+                        } else {
+                            resolve(null);
+                        }
+                    } else {
+                        resolve(null);
+                    }
+                })
+                .catch(reject);
+        });
     }
 }

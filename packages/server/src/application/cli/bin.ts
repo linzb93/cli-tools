@@ -241,6 +241,7 @@ program
     .option('--command, <command>', '命令')
     .option('-l, --list', '显示列表')
     .option('-s,--server', '直接启动服务器，不打包')
+    .option('-c, --checkoutAndBuild', '切换分支并打包')
     .action((option) => {
         vue(option);
     });
