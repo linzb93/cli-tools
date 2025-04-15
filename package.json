@@ -30,6 +30,7 @@
         "chalk": "^5.3.0",
         "cron": "^3.1.7",
         "dayjs": "^1.9.6",
+        "diff": "^7.0.0",
         "execa": "^6.0.0",
         "fs-extra": "^8.1.0",
         "lodash-es": "^4.17.21",
@@ -38,6 +39,7 @@
         "socket.io": "^4.7.5"
     },
     "devDependencies": {
+        "@types/diff": "^7.0.2",
         "@types/fs-extra": "^9.0.13",
         "@types/lodash-es": "^4.17.12",
         "@types/node": "^20.14.15",
