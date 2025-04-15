@@ -160,4 +160,25 @@ export default async (router: Router) => {
                 );
             });
     });
+    // 读取文件
+    router.post('/readFile', (req, res) => {
+        const params = req.body;
+        fs.readFile(params.path, 'utf8', (err, data) => {
+            if (err) {
+                res.send(
+                    responseFmt({
+                        code: HTTP_STATUS.BAD_REQUEST,
+                        message: err.message,
+                        result: null,
+                    })
+                );
+                return;
+            }
+            res.send(
+                responseFmt({
+                    result: data,
+                })
+            );
+        });
+    });
 };

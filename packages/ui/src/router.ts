@@ -21,6 +21,10 @@ const routes = [
     path: '/echarts',
     component: () => import('./views/echarts/index.vue')
   },
+  {
+    path: '/diff',
+    component: () => import('./views/diff/index.vue')
+  },
   // {
   //   path: '/vue',
   //   component: () => import('./views/vue/index.vue')

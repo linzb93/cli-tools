@@ -81,10 +81,15 @@ const list = [
     icon: Clock
   },
   {
-    title: 'Ai解析Echarts',
-    to: '/echarts',
+    title: '文件对比',
+    to: '/diff',
     icon: PictureFilled
   }
+  // {
+  //   title: 'Ai解析Echarts',
+  //   to: '/echarts',
+  //   icon: PictureFilled
+  // }
 ]
 const menuList = list.filter((item) => !item.hide)
 const isActive = (menu) => {

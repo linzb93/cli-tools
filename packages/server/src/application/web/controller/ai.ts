@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Ai from '@/service/ai';
+import Ai from '@/service/ai/Impl';
 import multer from 'multer';
 import { tempUpload } from '@/common/image';
 import intoStream from 'into-stream';
