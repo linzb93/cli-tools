@@ -79,11 +79,6 @@ const list = [
     title: 'Git扫描',
     to: '/git',
     icon: Clock
-  },
-  {
-    title: '文件对比',
-    to: '/diff',
-    icon: PictureFilled
   }
   // {
   //   title: 'Ai解析Echarts',
