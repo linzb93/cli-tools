@@ -30,6 +30,17 @@ export default class extends BaseCommand {
                 {
                     ...actionObj,
                     retryTimes: 100,
+                    async onError(message) {
+                        if (message.includes('The current branch dev has no upstream branch.')) {
+                            await sequenceExec([
+                                {
+                                    message: `git push --set-upstream origin ${branch}`,
+                                    retryTimes: 100,
+                                },
+                            ]);
+                        }
+                        this.logger.error('代码推送失败', true);
+                    },
                 },
             ]);
             this.logger.success('代码推送成功');
