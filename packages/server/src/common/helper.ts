@@ -7,6 +7,7 @@ import logger from './logger';
 import { findContent } from './markdown';
 import { fromStream } from './rxjs';
 import { map, first, from, concatMap, interval } from 'rxjs';
+import { obj } from 'through2';
 
 export const copy = (text: string) => {
     clipboardy.writeSync(text);
@@ -129,3 +130,28 @@ export const subCommandCompiler = (fn: (cmd: Command) => void) => {
  * 旧版本NodeJS，这里指的是NodeJS 14.
  */
 export const isOldNode = process.version.startsWith('v14.');
+
+/**
+ * 将对象转换为命令行选项字符串数组
+ * @param obj 一个键值对对象，键为选项名称，值为选项的值
+ * @returns 返回一个字符串数组，每个元素代表一个命令行选项
+ *
+ * 此函数遍历对象的键，将键和值转换为命令行参数的形式
+ * 如果值为布尔类型且为true，则只返回键名；否则返回键名加等号加值的形式
+ * 这是为了适应某些命令行工具对参数的特定格式要求
+ */
+export const objectToCmdOptions = (obj: Record<string, any>) => {
+    return Object.keys(obj)
+        .map((key) => {
+            // 当值为true时，生成只带选项名称的命令行参数
+            if (obj[key] === true) {
+                return `--${key}`;
+            }
+            if (obj[key] === false || obj[key] === undefined || obj[key] === null) {
+                return '';
+            }
+            // 当值不为true时，生成带选项名称和值的命令行参数
+            return `--${key}=${obj[key]}`;
+        })
+        .filter(Boolean);
+};

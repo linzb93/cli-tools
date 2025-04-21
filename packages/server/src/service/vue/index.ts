@@ -10,6 +10,7 @@ import { fork } from 'node:child_process';
 import fs from 'fs-extra';
 import sql from '@/common/sql';
 import * as git from '@/service/git/shared';
+import { objectToCmdOptions } from '@/common/helper';
 export interface Options {
     command: string;
     /**
@@ -27,6 +28,16 @@ export interface Options {
      * @default false
      */
     checkoutAndBuild: boolean;
+    /**
+     * 是否是本地项目
+     * @default false
+     */
+    current: boolean;
+    /**
+     * 端口号
+     * @default 7001
+     */
+    port: number;
 }
 
 export default class Vue extends BaseCommand {
@@ -56,6 +67,17 @@ export default class Vue extends BaseCommand {
             }
             cwd = match.path;
             command = match.command;
+        } else if (options.current) {
+            command = options.command || 'build';
+            cwd = process.cwd();
+            await sql((db) => {
+                db.vue.push({
+                    id: db.vue.length + 1,
+                    path: cwd,
+                    command,
+                    name: basename(cwd),
+                });
+            });
         } else {
             cwd = await showOpenDialog('directory');
             if (!cwd) {
@@ -92,7 +114,11 @@ export default class Vue extends BaseCommand {
         const publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
         const child = fork(
             resolve(fileURLToPath(import.meta.url), '../vueServer.js'),
-            [`--cwd=${cwd}`, `--publicPath=${publicPath}`],
+            objectToCmdOptions({
+                cwd,
+                publicPath,
+                port: options.port,
+            }),
             {
                 detached: true,
                 stdio: [null, null, null, 'ipc'],
