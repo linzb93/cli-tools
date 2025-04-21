@@ -244,6 +244,7 @@ program
     .option('-c, --checkoutAndBuild', '切换分支并打包')
     .option('--current', '在本项目启动服务器')
     .option('--port <port>', '启动的端口号')
+    .option('--publicPath <path>', '设置publicPath')
     .action((option) => {
         vue(option);
     });

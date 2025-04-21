@@ -38,6 +38,7 @@ export interface Options {
      * @default 7001
      */
     port: number;
+    publicPath: string;
 }
 
 export default class Vue extends BaseCommand {
@@ -48,6 +49,8 @@ export default class Vue extends BaseCommand {
         }
         let cwd = '';
         let command = '';
+        let port = options.port;
+        let publicPath = options.publicPath;
         if (options.list) {
             const list = await sql((db) => db.vue);
             const { selectedId } = await this.inquirer.prompt([
@@ -67,17 +70,11 @@ export default class Vue extends BaseCommand {
             }
             cwd = match.path;
             command = match.command;
+            port = match.defaultPort;
+            publicPath = match.publicPath;
         } else if (options.current) {
             command = options.command || 'build';
             cwd = process.cwd();
-            await sql((db) => {
-                db.vue.push({
-                    id: db.vue.length + 1,
-                    path: cwd,
-                    command,
-                    name: basename(cwd),
-                });
-            });
         } else {
             cwd = await showOpenDialog('directory');
             if (!cwd) {
@@ -85,14 +82,6 @@ export default class Vue extends BaseCommand {
                 return;
             }
             command = options.command || 'build';
-            await sql((db) => {
-                db.vue.push({
-                    id: db.vue.length + 1,
-                    path: cwd,
-                    command,
-                    name: basename(cwd),
-                });
-            });
         }
         this.logger.backwardConsole();
         if (options.server) {
@@ -105,19 +94,34 @@ export default class Vue extends BaseCommand {
             await execa(`npm run ${command}`, { cwd });
         }
         const confFileContent = await fs.readFile(join(cwd, 'vue.config.js'), 'utf-8');
-        const contentSeg = confFileContent.split('\n');
-        const matchLine = contentSeg.find((line) => line.includes('publicPath:'));
-        if (!matchLine) {
-            this.logger.error('vue.config.js not found');
-            return;
+
+        if (!publicPath) {
+            const contentSeg = confFileContent.split('\n');
+            const matchLine = contentSeg.find((line) => line.includes('publicPath:'));
+            if (!matchLine) {
+                this.logger.error('vue.config.js not found');
+                return;
+            }
+            publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
         }
-        const publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
+        if (!options.list) {
+            await sql((db) => {
+                db.vue.push({
+                    id: db.vue.length + 1,
+                    path: cwd,
+                    command,
+                    name: basename(cwd),
+                    publicPath,
+                    defaultPort: options.port,
+                });
+            });
+        }
         const child = fork(
             resolve(fileURLToPath(import.meta.url), '../vueServer.js'),
             objectToCmdOptions({
                 cwd,
                 publicPath,
-                port: options.port,
+                port,
             }),
             {
                 detached: true,

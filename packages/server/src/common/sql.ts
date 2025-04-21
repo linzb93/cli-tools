@@ -19,6 +19,8 @@ interface Database {
         path: string;
         id: number;
         command: string;
+        publicPath: string;
+        defaultPort?: number;
     }[];
     menus: {
         title: string;
