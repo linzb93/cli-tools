@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# server 子项目规则
+
+本子项目为后端服务相关代码，主要用于实现 API、服务逻辑等。
+
+## 目录结构
+- [src/](mdc:packages/server/src)：主源码目录，包含服务、控制器、模型等
+- [docs/](mdc:packages/server/docs)：文档相关内容
+- [dist/](mdc:packages/server/dist)：编译输出目录
+- [vite.config.ts](mdc:packages/server/vite.config.ts)：Vite 配置
+- [tsconfig.json](mdc:packages/server/tsconfig.json)：TypeScript 配置
+- 其他配置文件如 `env.d.ts`、`README.md` 等
+
+## 命名规范
+- 目录、文件名：小写字母+中划线（kebab-case）
+- 变量/函数：小驼峰（camelCase）
+- 类/类型/接口：大驼峰（PascalCase）
+- 常量：全大写+下划线（SNAKE_CASE）
+
+## 代码风格
+- 推荐使用 TypeScript
+- 所有函数、类、接口、类型、重要变量需使用 JSDoc 注释，说明用途、参数和返回值
+- 文件内导出内容与文件名保持语义一致

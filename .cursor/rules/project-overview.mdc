@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 项目总览
+
+本项目为 JavaScript/TypeScript monorepo 架构的命令行工具集合，采用 pnpm 进行包管理。
+
+## 技术栈
+- 语言：TypeScript、JavaScript
+- 包管理：pnpm
+- 构建工具：Vite
+- 依赖管理：monorepo（多包统一管理）
+
+## 项目结构
+- [packages/](mdc:packages)：所有子项目（包）统一存放于此目录。
+  - [ui/](mdc:packages/ui)：前端 UI 相关子项目
+  - [server/](mdc:packages/server)：后端服务相关子项目
+  - [vite-plugins/](mdc:packages/vite-plugins)：Vite 插件相关子项目
+- [scripts/](mdc:scripts)：自动化脚本
+- [config.json](mdc:config.json)：全局配置
+- [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml)：pnpm 工作区配置
+
+## 子项目说明
+- 每个子项目均有独立的 rule 文件，详见对应 rule 文档：
+  - [ui 子项目规则](mdc:ui-rule.mdc)
+  - [server 子项目规则](mdc:server-rule.mdc)
+  - [vite-plugins 子项目规则](mdc:vite-plugins-rule.mdc)

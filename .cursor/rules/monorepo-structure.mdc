@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Monorepo 项目结构说明
+
+本项目采用 JavaScript/TypeScript monorepo 架构，所有包统一管理，便于代码复用和依赖管理。
+
+## 主要目录
+
+- [packages/](mdc:packages)：存放所有子包（package），每个子包为一个独立的 npm 包。
+  - [ui/](mdc:packages/ui)：前端相关代码，包含 UI 组件、页面等。
+  - [server/](mdc:packages/server)：后端服务相关代码。
+  - [vite-plugins/](mdc:packages/vite-plugins)：自定义 Vite 插件集合。
+- [scripts/](mdc:scripts)：存放项目脚本，如自动化、构建、发布等辅助脚本。
+- [config.json](mdc:config.json)：全局配置文件。
+- [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml)：pnpm 工作区配置，声明哪些目录属于 monorepo。
+- [package.json](mdc:package.json)：根目录的包管理配置，定义全局依赖和脚本。
+
+## 依赖管理
+
+- 使用 pnpm 作为包管理工具，所有依赖统一安装在根目录下的 [node_modules/](mdc:node_modules)。
+- 各子包有独立的 `package.json`，可声明自身依赖。
+
+## 参考
+- 入口文件、配置文件、各子包的具体结构请分别参考对应目录下的 README 或配置文件。
+
+## 目录与文件命名规范
+
+- 目录名、文件名一律使用小写字母，单词间用中划线（kebab-case）分隔，例如：`my-component`、`api-service`。
+- TypeScript/JavaScript 文件扩展名统一为 `.ts` 或 `.js`，类型声明文件为 `.d.ts`。
+- 配置文件统一使用小写字母和中划线，例如：`vite.config.ts`、`tsconfig.json`。
+- 组件文件建议与组件名保持一致，例如：`button.tsx` 对应 `Button` 组件。
+
+## 代码风格与命名规范
+
+- 变量名、函数名使用小驼峰（camelCase），如：`userName`、`getData`。
+- 类名、类型名、接口名使用大驼峰（PascalCase），如：`UserService`、`ApiResponse`。
+- 常量名使用全大写字母和下划线（SNAKE_CASE），如：`MAX_RETRY_COUNT`。
+- 文件内导出内容与文件名保持语义一致。
+- 所有函数、类、接口、类型、重要变量需使用 JSDoc 进行注释，说明其用途、参数和返回值。

@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# vite-plugins 子项目规则
+
+本子项目用于存放自定义 Vite 插件。
+
+## 目录结构
+- 插件源码文件直接存放于本目录下，如 [move.ts](mdc:packages/vite-plugins/move.ts)
+- 如插件较多，可按功能拆分子目录
+
+## 命名规范
+- 文件名、目录名：小写字母+中划线（kebab-case）
+- 变量/函数：小驼峰（camelCase）
+- 类/类型/接口：大驼峰（PascalCase）
+- 常量：全大写+下划线（SNAKE_CASE）
+
+## 代码风格
+- 推荐使用 TypeScript
+- 所有函数、类、接口、类型、重要变量需使用 JSDoc 注释，说明用途、参数和返回值
+- 文件内导出内容与文件名保持语义一致
