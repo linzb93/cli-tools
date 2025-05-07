@@ -17,7 +17,7 @@ alwaysApply: false
 
 ## 命名规范
 - 目录、文件名：小写字母+中划线（kebab-case）
-- 组件文件建议与组件名保持一致
+- 组件文件建议与组件名保持一致，用大驼峰（PascalCase）
 - 变量/函数：小驼峰（camelCase）
 - 类/类型/接口：大驼峰（PascalCase）
 - 常量：全大写+下划线（SNAKE_CASE）
