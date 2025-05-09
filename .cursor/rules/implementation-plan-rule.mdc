@@ -1,0 +1,57 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 实现计划规则
+
+本规则定义了在项目中应用实现计划文档的标准。
+
+## 实现计划文档
+
+在每个业务目录中，应该创建一个名为`ImplementationPlan.md`的文件，用于描述该业务模块的实现计划、架构设计和开发注意事项。
+
+### 文档结构
+`ImplementationPlan.md`文件应包含以下内容：
+
+```markdown
+# 模块名称
+
+## 功能概述
+[描述此模块的主要功能和目的]
+
+## 技术架构
+[描述此模块的技术架构、组件关系]
+
+## 依赖关系
+[列出此模块依赖的其他模块或第三方库]
+
+## 实现计划
+[列出实现步骤和里程碑]
+
+## 注意事项
+[列出开发过程中需要注意的问题]
+
+## API设计
+[描述模块对外提供的API接口]
+```
+
+### 应用范围
+此规则适用于项目中的以下目录：
+- `packages/server/src/core/` 下的各业务模块（如models、services、types等）
+- `packages/server/src/cli/commands/` 下的各命令模块
+- `packages/ui/src/components/` 下的各功能组件
+- `packages/ui/src/views/` 下的各页面视图
+- 如果创建新的业务目录，也应遵循此规则
+
+### 示例
+例如：
+- 对于 `packages/server/src/core/models` 目录，应创建 `packages/server/src/core/models/ImplementationPlan.md` 文件
+- 对于 `packages/server/src/core/services` 目录，应创建 `packages/server/src/core/services/ImplementationPlan.md` 文件
+- 对于 `packages/ui/src/components` 目录，应创建 `packages/ui/src/components/ImplementationPlan.md` 文件
+
+## 目的
+- 提供清晰的模块设计和实现规划
+- 帮助AI理解业务模块的目标和实现方式
+- 确保开发过程中的一致性和可维护性
+- 方便团队成员理解代码结构和功能设计

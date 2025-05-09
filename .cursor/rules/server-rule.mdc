@@ -1,6 +1,6 @@
 ---
 description: 
-globs: packages/server/src/**/*.ts
+globs: 
 alwaysApply: false
 ---
 # server 子项目规则
@@ -9,6 +9,24 @@ alwaysApply: false
 
 ## 目录结构
 - [src/](mdc:packages/server/src)：主源码目录，包含命令行服务、控制器、模型等
+
+```text
+src/
+├── cli/           # 命令行相关代码
+│   └── commands/  # 命令实现
+├── server/        # Web后端相关代码
+│   ├── routes/    # 路由定义
+│   └── controllers/ # 控制器
+├── core/          # 业务相关的共享代码
+│   ├── types/     # 类型定义
+│   ├── services/  # 业务服务
+│   └── models/    # 业务模型
+├── utils/         # 通用工具函数
+│   ├── string/    # 字符串处理
+│   ├── date/      # 日期处理
+│   └── file/      # 文件处理
+└──                # 主入口文件
+```
 - [docs/](mdc:packages/server/docs)：文档相关内容，通过`--help`选项查看。
 - [dist/](mdc:packages/server/dist)：编译输出目录
 - [vite.config.ts](mdc:packages/server/vite.config.ts)：Vite 配置
@@ -22,7 +40,17 @@ alwaysApply: false
 - execa: 调用命令行
 - axios: 发送HTTP请求
 - express: 创建HTTP服务器
+- dayjs: 处理日期时间相关的库
+- chalk: 输出彩色的字体
 其他没有提到的模块，请在开发功能的时候，阅读本子项目根目录的`package.json`文件，从中获取合适的模块。
+
+## 命令修改说明
+
+当需要修改某个命令时，应找到该命令对应的文件进行修改。
+例如：
+
+1. 修改 `eng` 命令，找到 `packages/server/src/core/eng/index.ts` 文件修改。
+2. 修改 `git deploy` 命令，找到 `packages/server/src/core/git/deploy/index.ts` 文件修改。
 
 ## 命名规范
 - 目录、文件名：小写字母+中划线（kebab-case）
