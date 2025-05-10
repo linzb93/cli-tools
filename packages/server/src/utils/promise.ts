@@ -35,9 +35,9 @@ export interface CommandConfig {
     /**
      * 错误回调函数
      * @param {string} error - 错误信息
-     * @returns {void | { shouldStop?: boolean }} 返回对象中的shouldStop为true时停止执行
+     * @returns { { shouldStop?: boolean }} 返回对象中的shouldStop为true时停止执行
      */
-    onError?: (error: string) => void | {
+    onError?: (error: string) => {
         /**
          * 是否停止执行后续命令
          * @default false

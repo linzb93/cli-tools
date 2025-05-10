@@ -27,17 +27,21 @@ src/
 - [tsconfig.json](mdc:packages/server/tsconfig.json)：TypeScript 配置
 - 其他配置文件如 `env.d.ts`、`README.md` 等
 
-## 常用npm模块
+## 使用npm模块
 如果在开发过程中，有用到以下功能，请使用对应的模块。这些模块都已安装。
-- commander: 管理命令行参数
-- lodash-es: 常用工具函数
-- fs-extra: 文件读写模块
-- execa: 调用命令行
-- axios: 发送HTTP请求
-- express: 创建HTTP服务器
-- dayjs: 处理日期时间相关的库
-- chalk: 输出彩色的字体
-其他没有提到的模块，请在开发功能的时候，阅读本子项目根目录的`package.json`文件，从中获取合适的模块。
+- 解析命令行参数与选项：command
+- 工具函数：lodash-es
+- 文件读写模块：fs-extra
+- 运行命令行：execa。比如说所有git操作都要通过`execa`来实现。
+```ts
+import { execaCommand as execa } from 'execa';
+```
+- 发送HTTP请求：axios
+- 创建HTTP服务器：express，以及对应的中间件body-parser、cors、multer
+- 处理日期时间相关：dayjs
+- 输出彩色的字体：chalk
+- 查找可以用的端口号：detect-port
+- HTML页面解析：cheerio
 
 ## 命令创建说明
 一、当需要创建某个单一命令时，按照以下顺序进行创建：
