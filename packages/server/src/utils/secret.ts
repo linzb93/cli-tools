@@ -1,0 +1,43 @@
+import { join } from 'node:path';
+import { Low, JSONFile } from 'lowdb';
+import { cacheRoot } from './constant';
+
+interface Database {
+    aiApiKey: {
+        deepseek: string;
+        siliconflow: string;
+        volcano: string;
+        volcanoDeepseekV3: string;
+    };
+    oa: {
+        apiPrefix?: string;
+        testPrefix?: string;
+        userApiPrefix?: string;
+        oldApiPrefix?: string;
+        username?: string;
+        password?: string;
+        zhanwai: {
+            baseUrl: string;
+            username: string;
+            password: string;
+        };
+    };
+}
+
+/**
+ * 从 secret.json 文件读取数据。secret.json数据不能通过代码添加，只能通过手动添加。
+ * @example
+ * const data = await readSecret((db) => db.aiApiKey.deepseek);
+ * @param callback 回调函数
+ * @returns 回调函数返回值
+ */
+export async function readSecret<T>(callback: (data: Database) => T): Promise<T> {
+    const dbPath = join(cacheRoot, 'secret.json');
+    const db = new Low(new JSONFile(dbPath));
+    const data = db.data as unknown as Database;
+    let result: any;
+    if (typeof callback === 'function') {
+        result = await callback(data);
+    }
+    return result;
+}

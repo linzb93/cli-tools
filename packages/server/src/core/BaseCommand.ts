@@ -1,0 +1,21 @@
+import logger from '../utils/logger';
+import spinner, { Spinner } from '../utils/spinner';
+import inquirer from '../utils/inquirer';
+import sql, { type Database } from '../utils/sql';
+import { readSecret } from '../utils/secret';
+
+export default abstract class {
+    protected logger: typeof logger;
+    protected spinner: Spinner;
+    protected inquirer: typeof inquirer;
+    protected sql: (callback: (data: Database) => void) => Promise<void>;
+    protected readSecret: (callback: (data: any) => void) => Promise<void>;
+    constructor() {
+        this.logger = logger;
+        this.spinner = spinner;
+        this.inquirer = inquirer;
+        this.sql = sql;
+        this.readSecret = readSecret;
+    }
+    abstract main(...args: any[]): void;
+}
