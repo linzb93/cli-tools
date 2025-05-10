@@ -171,3 +171,19 @@ export async function executeCommands(commands: Command[]): Promise<void> {
     const duration = endTime.diff(startTime, 'second');
     console.log(`任务执行完成，用时${chalk.blue(duration.toString())}秒`);
 }
+/**
+ * 按顺序执行异步函数，返回第一个成功的结果
+ * @param list
+ * @param callback
+ * @returns
+ */
+export const pLocate = async (list: any[], callback: Function): Promise<any> => {
+    for (let i = 0; i < list.length; i++) {
+        try {
+            return await callback(list[i]);
+        } catch (error) {
+            //
+        }
+    }
+    throw new Error('err');
+};
