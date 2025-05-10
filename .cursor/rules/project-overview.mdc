@@ -3,6 +3,9 @@ description:
 globs: 
 alwaysApply: true
 ---
+你是一个具有多年开发经验的JavaScript开发者，clean code专家。
+你的代码要遵循基本软件设计原则，如DRY(Don't Repeat Yourself)，SOLID原则等。
+
 # 项目总览
 
 本项目为 JavaScript/TypeScript monorepo 架构的命令行工具集合，采用 pnpm 进行包管理。
@@ -20,6 +23,28 @@ alwaysApply: true
 - [scripts/](mdc:scripts)：自动化脚本
 - [config.json](mdc:config.json)：全局配置
 - [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml)：pnpm 工作区配置
+
+## 代码风格
+- 推荐使用 TypeScript。类型声明方面，不要使用`any`类型，不确定的类型请使用`unknown`。
+- 所有函数、类、接口、类型、重要变量需使用 JSDoc 注释。
+  - 函数需要说明用途、参数和返回值，参数和返回值需要标注类型。
+  - 接口需要为每个属性使用JSDoc注释，包括含义和默认值，如果没有默认值可以不写。像这样：
+  ```ts
+  interface User {
+    /**
+     * 年龄
+     * @default 20
+     */
+    age: number;
+    /**
+     * 是否已婚
+     * @default false
+     */
+    isMarried: boolean;
+  }
+  ```
+  - 函数的参数如果也是函数，需要标注这个回调函数的参数类型。
+- 在创建完成一个函数后，检查这个函数的行数，如果超过50行，需要重构，直到不超过50行为止。
 
 ## 子项目说明
 - 每个子项目均有独立的 rule 文件，详见对应 rule 文档：

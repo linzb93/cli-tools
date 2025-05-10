@@ -21,20 +21,28 @@ interface BoxOptions {
  */
 class Logger {
     /**
-     * 内部函数，用于处理 spinner 状态
-     * @param callback - 需要执行的回调函数
+     * 在日志输出前处理 spinner 状态
+     * @returns 是否需要在输出后重新启动 spinner
      */
-    private hook(callback: () => void): void {
+    private beforeLog(): boolean {
+        if (process.env.VITEST) {
+            return false;
+        }
+
         let isStop = false;
         if (spinner.isSpinning) {
             spinner.stop();
             isStop = true;
         }
-        if (process.env.VITEST) {
-            return;
-        }
-        callback();
-        if (isStop) {
+        return isStop;
+    }
+
+    /**
+     * 在日志输出后恢复 spinner 状态
+     * @param needRestart - 是否需要重新启动 spinner
+     */
+    private afterLog(needRestart: boolean): void {
+        if (needRestart) {
             spinner.start();
         }
     }
@@ -44,9 +52,9 @@ class Logger {
      * @param text - 要输出的文本或数字
      */
     success(text: string | number): void {
-        this.hook(() => {
-            console.log(`${logSymbols.success} ${text}`);
-        });
+        const needRestart = this.beforeLog();
+        console.log(`${logSymbols.success} ${text}`);
+        this.afterLog(needRestart);
     }
 
     /**
@@ -54,9 +62,9 @@ class Logger {
      * @param text - 要输出的文本或数字
      */
     info(text: string | number): void {
-        this.hook(() => {
-            console.log(`${logSymbols.info} ${text}`);
-        });
+        const needRestart = this.beforeLog();
+        console.log(`${logSymbols.info} ${text}`);
+        this.afterLog(needRestart);
     }
 
     /**
@@ -64,9 +72,9 @@ class Logger {
      * @param text - 要输出的文本或数字
      */
     warn(text: string | number): void {
-        this.hook(() => {
-            console.log(`${logSymbols.warning} ${text}`);
-        });
+        const needRestart = this.beforeLog();
+        console.log(`${logSymbols.warning} ${text}`);
+        this.afterLog(needRestart);
     }
 
     /**
@@ -75,9 +83,10 @@ class Logger {
      * @param needExit - 是否需要退出进程
      */
     error(text: string | number, needExit?: boolean): void {
-        this.hook(() => {
-            console.log(`${logSymbols.error} ${text}`);
-        });
+        const needRestart = this.beforeLog();
+        console.log(`${logSymbols.error} ${text}`);
+        this.afterLog(needRestart);
+
         if (needExit) {
             process.exit(1);
         }

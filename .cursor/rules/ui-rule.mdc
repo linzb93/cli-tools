@@ -1,6 +1,6 @@
 ---
 description: 
-globs: 
+globs: packages/ui/src/**/*.vue,packages/ui/src/**/*.ts
 alwaysApply: false
 ---
 # ui 子项目规则
