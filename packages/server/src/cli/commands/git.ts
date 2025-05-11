@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import Push, { type Options as PushOptions } from '../../core/git/push';
 import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
+import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -50,6 +51,26 @@ const tag = () => {
 };
 
 /**
+ * git deploy 子命令的实现
+ */
+const deploy = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('deploy')
+            .description('一次性完成git代码提交、拉取、推送等功能')
+            .option('--prod', '是否发布到master或main分支')
+            .option('--type <type>', '项目类型，用于标记tag')
+            .option('--version <version>', '项目版本号，用于标记tag')
+            .option('--open', '是否打开对应的jenkins主页')
+            .option('-c, --current', '仅完成基础命令后结束任务')
+            .requiredOption('--commit <message>', 'git commit提交信息')
+            .action((options: DeployOptions) => {
+                new Deploy().main(options);
+            });
+    });
+};
+
+/**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  * @param {string[]} data - 子命令参数
@@ -61,6 +82,7 @@ export default function (subCommand: string, data: string[], options: any): void
         push,
         pull,
         tag,
+        deploy,
     };
 
     // 执行对应的子命令

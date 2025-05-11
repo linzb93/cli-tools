@@ -64,7 +64,7 @@ async function handleConflict() {
     if (!resolved) {
         throw new Error('exit');
     }
-    await executeCommands(['git add .', 'git commit -m conflict-fixed']);
+    await executeCommands(['git add .', 'git commit -m fix:conflict']);
 }
 
 const gitAtom: {
