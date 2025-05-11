@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import Push, { type Options as PushOptions } from '../../core/git/push';
 import Pull, { type Options as PullOptions } from '../../core/git/pull';
+import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -33,6 +34,22 @@ const pull = () => {
 };
 
 /**
+ * git tag 子命令的实现
+ */
+const tag = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('tag')
+            .description('管理Git标签')
+            .option('--version <version>', '设置版本号')
+            .option('--type <type>', '设置标签类型前缀，默认为v')
+            .action((options: TagOptions) => {
+                new Tag().main(options);
+            });
+    });
+};
+
+/**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  * @param {string[]} data - 子命令参数
@@ -43,6 +60,7 @@ export default function (subCommand: string, data: string[], options: any): void
     const commandMap: Record<string, () => void> = {
         push,
         pull,
+        tag,
     };
 
     // 执行对应的子命令

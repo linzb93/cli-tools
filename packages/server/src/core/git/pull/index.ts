@@ -1,6 +1,6 @@
 import BaseCommand from '../../BaseCommand';
 import { isGitProject, getCurrentBranchName } from '../utils';
-import gitAtom from '../push/atom';
+import gitAtom from '../atom';
 import { executeCommands } from '@/utils/promise';
 import chalk from 'chalk';
 

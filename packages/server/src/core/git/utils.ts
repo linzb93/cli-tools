@@ -110,77 +110,122 @@ export async function deleteTags(tags: string[], projectPath: string = process.c
 }
 
 /**
- * 获取指定项目的所有分支及其创建相关信息
- * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
- * @returns {Promise<Array<{
- *   name: string,
- *   firstCommitTime: string,
- *   latestCommitHash: string,
- *   remoteTracking?: string
- * }>>} 分支信息列表
+ * 包含本地和远端状态的分支信息
  */
-export async function getAllBranchesDetailed(projectPath: string = process.cwd()): Promise<
-    Array<{
-        name: string;
-        firstCommitTime: string;
-        latestCommitHash: string;
-        remoteTracking?: string;
-    }>
-> {
-    try {
-        const { stdout } = await execa('git', ['branch', '-vv'], { cwd: projectPath });
+export interface BranchInfo {
+    /**
+     * 分支名称
+     */
+    name: string;
+    /**
+     * 是否有本地分支
+     * @default false
+     */
+    hasLocal: boolean;
+    /**
+     * 是否有远端分支
+     * @default false
+     */
+    hasRemote: boolean;
+    /**
+     * 创建时间（第一次提交时间），仅本地分支有效
+     * @default ""
+     */
+    createTime: string;
+}
 
-        const branchPromises = stdout
+/**
+ * 获取指定项目的所有分支（本地和远端）
+ * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
+ * @returns {Promise<BranchInfo[]>} 包含本地和远端状态的分支信息列表
+ */
+export async function getAllBranches(projectPath: string = process.cwd()): Promise<BranchInfo[]> {
+    try {
+        // 获取本地分支
+        const { stdout: localOutput } = await execa('git', ['branch'], { cwd: projectPath });
+        const localBranches = localOutput
             .trim()
             .split('\n')
-            .map(async (line) => {
-                // 使用正则提取分支信息
-                const match = line.match(/^\*?\s+(\S+)\s+(\S+)\s*(\[.*\])?\s*(.*)$/);
+            .filter(Boolean)
+            .map((line) => line.trim().replace(/^\*\s*/, ''));
 
-                if (!match) return null;
-
-                const branchName = match[1];
-                const latestCommitHash = match[2];
-                const remoteTracking = match[3] || '';
-
-                // 获取分支第一个提交时间
-                const firstCommitTime = await getBranchFirstCommitTime(branchName, projectPath);
-
-                return {
-                    name: branchName,
-                    firstCommitTime,
-                    latestCommitHash,
-                    remoteTracking: remoteTracking.replace(/[\[\]]/g, ''),
-                };
+        // 获取远端分支
+        const { stdout: remoteOutput } = await execa('git', ['branch', '-r'], { cwd: projectPath });
+        const remoteBranches = remoteOutput
+            .trim()
+            .split('\n')
+            .filter(Boolean)
+            .map((line) => line.trim())
+            .filter((branch) => !branch.includes('HEAD'))
+            .map((branch) => {
+                // 通常远端分支格式为 "origin/branch-name"，需要提取分支名
+                const parts = branch.split('/');
+                return parts.length > 1 ? parts.slice(1).join('/') : branch;
             });
 
-        const branches = await Promise.all(branchPromises);
-        return branches.filter(Boolean) as Array<{
-            name: string;
-            firstCommitTime: string;
-            latestCommitHash: string;
-            remoteTracking?: string;
-        }>;
-    } catch {
+        // 合并本地和远端分支
+        const allBranchNames = [...new Set([...localBranches, ...remoteBranches])];
+
+        // 构建结果对象
+        const branchPromises = allBranchNames.map(async (name) => {
+            const isLocal = localBranches.includes(name);
+            const isRemote = remoteBranches.includes(name);
+
+            // 只为本地分支获取创建时间
+            let createTime = '';
+            if (isLocal) {
+                createTime = await getBranchFirstCommitTime(name, projectPath);
+            }
+
+            return {
+                name,
+                hasLocal: isLocal,
+                hasRemote: isRemote,
+                createTime,
+            };
+        });
+
+        return await Promise.all(branchPromises);
+    } catch (error) {
+        console.warn(`获取分支列表失败：${error}`);
         return [];
     }
 }
 
 /**
+ * 删除分支的配置选项
+ */
+interface DeleteBranchOptions {
+    /**
+     * 要删除的分支名称
+     */
+    branchName: string;
+
+    /**
+     * 项目路径，默认为当前工作目录
+     * @default process.cwd()
+     */
+    projectPath?: string;
+
+    /**
+     * 是否删除远端分支
+     * @default false
+     */
+    remote?: boolean;
+}
+
+/**
  * 删除指定项目的指定分支
- * @param {string} branchName - 要删除的分支名称
- * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
- * @param {boolean} [force=false] - 是否强制删除
+ * @param {DeleteBranchOptions} options - 删除分支的配置选项
  * @returns {Promise<void>}
  */
-export async function deleteBranch(
-    branchName: string,
-    projectPath: string = process.cwd(),
-    force: boolean = false
-): Promise<void> {
+export async function deleteBranch(options: DeleteBranchOptions): Promise<void> {
+    const { branchName, projectPath = process.cwd(), remote = false } = options;
+
     try {
-        const args = force ? ['-D', branchName] : ['-d', branchName];
-        await execa('git', ['branch', ...args], { cwd: projectPath });
+        const args = remote ? ['push', 'origin', '--delete', branchName] : ['branch', '-d', branchName];
+
+        await execa('git', args, { cwd: projectPath });
     } catch (error) {
         console.warn(`删除分支 ${branchName} 失败：${error}`);
     }
@@ -193,7 +238,7 @@ export async function deleteBranch(
  */
 export async function getMainBranchName(projectPath: string = process.cwd()): Promise<string> {
     try {
-        const branches = await getAllBranchesDetailed(projectPath);
+        const branches = await getAllBranches(projectPath);
         const masterBranch = branches.find((b) => b.name === 'master');
         const mainBranch = branches.find((b) => b.name === 'main');
 
