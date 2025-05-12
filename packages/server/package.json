@@ -7,12 +7,13 @@
         "cli"
     ],
     "scripts": {
-        "dev": "tsc && vite build --watch",
+        "dev": "cross-env NODE_ENV=development tsc && vite build --watch",
         "build": "tsc && vite build",
         "test": "vitest"
     },
     "bin": {
-        "mycli": "dist/cli.js"
+        "mycli": "dist/cli.js",
+        "myclit": "dist/cli-test.js"
     },
     "author": "linzb93",
     "license": "ISC",

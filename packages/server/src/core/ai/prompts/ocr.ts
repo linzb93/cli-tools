@@ -1,8 +1,8 @@
-import imageClipboard from '@/common/clipboard';
-import { imageBase64ToStream, tempUpload } from '@/common/image';
-import inquirer from '@/common/inquirer';
+import imageClipboard from '@/utils/clipboard';
+import { imageBase64ToStream, tempUpload } from '@/utils/image';
+import inquirer from '@/utils/inquirer';
 import clipboardy from 'clipboardy';
-import spinner from '@/common/spinner';
+import spinner from '@/utils/spinner';
 import { type PromptOptions } from '../share';
 import AiImpl from '../Impl';
 let removeHandler: any;

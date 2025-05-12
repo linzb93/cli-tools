@@ -13,12 +13,16 @@ const allDependencies = {
 const input: {
     [key: string]: string;
 } = {
-    cli: 'src/application/cli/bin.ts',
-    web: 'src/application/web/router.ts',
-    vueServer: 'src/service/vue/server.ts',
+    'cli': 'src/cli/bin.ts',
+    'cli-test': 'src/cli/bin-test.ts',
+    // web: 'src/application/web/router.ts',
+    'vueServer': 'src/core/vue/server.ts',
 };
 if (process.env.MODE === 'cli') {
-    delete input.web;
+    // delete input.web;
+    // if (process.env.NODE_ENV != 'development') {
+    //     delete input.cliTest;
+    // }
 } else if (process.env.MODE === 'web') {
     delete input.cli;
 }

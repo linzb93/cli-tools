@@ -1,5 +1,5 @@
-import Mock, { Options } from '@/core/mock';
+// import Mock, { Options } from '@/core/mock';
 
-export default (action: string, options: Options) => {
-    new Mock().main(action, options);
-};
+// export default (action: string, options: Options) => {
+//     new Mock().main(action, options);
+// };

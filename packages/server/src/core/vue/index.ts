@@ -155,7 +155,7 @@ export default class Vue extends BaseCommand {
                 })),
             },
         ]);
-        const branchs = await git.getAllBranchesDetailed(selectedPath);
+        const branchs = await git.getAllBranches(selectedPath);
         const { selectedBranch } = await this.inquirer.prompt([
             {
                 type: 'list',

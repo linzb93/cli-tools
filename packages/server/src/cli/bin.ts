@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import git from './cli/commands/git';
+import git from '@/cli/commands/git';
 
 // 创建命令行程序
 const program = new Command();
