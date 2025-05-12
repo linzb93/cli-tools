@@ -4,7 +4,7 @@ import pMap from 'p-map';
 import pReduce from 'p-reduce';
 import { Observable, last, skip, skipLast, first } from 'rxjs';
 import sql from '@/utils/sql';
-import * as gitUtil from './utils';
+import * as gitUtil from '../utils';
 /**
  * 扫描所有git仓库，返回所有需要push的仓库
  * */

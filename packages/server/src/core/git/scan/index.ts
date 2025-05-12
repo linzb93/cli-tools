@@ -2,7 +2,7 @@ import { basename } from 'node:path';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import BaseCommand from '@/core/BaseCommand';
-import useScan from '../useScan';
+import useScan from './useScan';
 import progress from '@/utils/progress';
 import Listr from 'listr';
 import gitAtom from '../atom';
