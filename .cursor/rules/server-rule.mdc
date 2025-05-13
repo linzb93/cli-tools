@@ -78,7 +78,7 @@ export default function (dir: string, options: Options) {
   new Clear().main(dir, options);
 }
 ```
-3、在`packages/server/src/core`目录中新建命令同名目录，在目录中创建两个文件：`index.ts`和`ImplementationPlan.md`（内容为空），例如这次我们应该创建的目录名称是`clear`，然后再创建以上2个文件。
+3、在`packages/server/src/core`目录中新建命令同名目录，在目录中创建两个文件：`index.ts`和`Readme.md`（内容为空），例如这次我们应该创建的目录名称是`clear`，然后再创建以上2个文件。
 `index.ts`代码如下：
 ```ts
 import BaseCommand from '../BaseCommand';
@@ -129,7 +129,7 @@ export default function (subCommand: string, data: string[], options: any) {
     }
 }
 ```
-3、在`packages/server/src/core`目录中，这个命令的同名目录中，新建子命令同名目录，在这个目录中创建两个文件：`index.ts`和`ImplementationPlan.md`（内容为空），例如这次我们应该找到`git`目录，在里面创建`tag`目录，然后创建以上两个文件。
+3、在`packages/server/src/core`目录中，这个命令的同名目录中，新建子命令同名目录，在这个目录中创建两个文件：`index.ts`和`Readme.md`（内容为空），例如这次我们应该找到`git`目录，在里面创建`tag`目录，然后创建以上两个文件。
 `index.ts`代码如下：
 ```ts
 import BaseCommand from '../BaseCommand.ts';
@@ -148,7 +148,7 @@ export default class extends BaseCommand {
 ## 命令修改说明
 
 当需要修改某个命令时，应找到该命令对应的文件进行修改，查找方式，请参考前文“命令创建说明”。
-如果有增减功能，需要同步更新`packages/server/src/core`目录下，这个命令目录（含子命令目录）下面的`ImplementationPlan.md`文件，更新需求。
+如果有增减功能，需要同步更新`packages/server/src/core`目录下，这个命令目录（含子命令目录）下面的`Readme.md`文件，更新需求。
 
 ## 命名规范
 - 目录、文件名：小写字母+中划线（kebab-case）
