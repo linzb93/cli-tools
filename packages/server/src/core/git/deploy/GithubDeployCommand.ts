@@ -31,7 +31,7 @@ export default class GithubDeployCommand extends BaseDeployCommand {
 
         // 如果指定了prod选项，合并到主分支
         if (this.options.prod) {
-            await this.mergeToBranch(this.mainBranch);
+            await this.mergeToBranch(this.mainBranch, false);
         }
     }
 

@@ -6,6 +6,7 @@ import inquirer from '@/utils/inquirer';
 import { executeCommands, CommandConfig } from '@/utils/promise';
 import semver from 'semver';
 import { getProjectName } from '@/utils/jenkins';
+import clipboardy from 'clipboardy';
 
 /**
  * git tag 命令的选项接口
@@ -21,11 +22,6 @@ export interface Options {
      * @default "v"
      */
     type?: string;
-    /**
-     * 子命令
-     * @default ""
-     */
-    _?: string[];
 }
 
 /**
@@ -141,7 +137,7 @@ export default class extends BaseCommand {
      * @param {Options} options - 命令选项
      * @returns {Promise<void>}
      */
-    private async addTag(options: Options): Promise<void> {
+    async addTag(options: Options): Promise<void> {
         const { version, type = 'v' } = options;
 
         try {
@@ -157,6 +153,7 @@ export default class extends BaseCommand {
             await executeCommands([this.createTag(newTag), this.pushTag(newTag)]);
             const { id } = await getProjectName();
             this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${id}, ${newTag}`)}`);
+            clipboardy.writeSync(`${id}, ${newTag}`);
         } catch (error) {
             this.logger.error(`创建标签失败: ${error.message || error}`);
         }
@@ -231,7 +228,7 @@ export default class extends BaseCommand {
      * @param {string | undefined} version - 指定的版本号
      * @returns {Promise<string>} 新标签
      */
-    async generateNewTag(tags: string[], type: string = 'v', version?: string): Promise<string> {
+    private async generateNewTag(tags: string[], type: string = 'v', version?: string): Promise<string> {
         // 过滤出带有指定前缀的标签
         const prefixedTags = tags.filter((tag) => tag.startsWith(type));
 

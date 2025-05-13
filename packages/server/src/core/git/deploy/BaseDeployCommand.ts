@@ -137,9 +137,10 @@ export default abstract class BaseDeployCommand extends BaseCommand {
     /**
      * 合并到指定分支
      * @param {string} targetBranch - 目标分支
+     * @param {boolean} [switchBackToBranch=false] - 是否切换回原分支
      * @returns {Promise<void>}
      */
-    protected async mergeToBranch(targetBranch: string): Promise<void> {
+    protected async mergeToBranch(targetBranch: string, switchBackToBranch: boolean = false): Promise<void> {
         this.logger.info(`合并代码到 ${targetBranch} 分支...`);
 
         try {
@@ -147,35 +148,25 @@ export default abstract class BaseDeployCommand extends BaseCommand {
             await execa(`git checkout ${targetBranch}`);
             await executeCommands([gitAtom.pull(), gitAtom.merge(this.currentBranch), gitAtom.push()]);
 
-            // 切回原分支
-            await execa(`git checkout ${this.currentBranch}`);
+            // 根据参数决定是否切回原分支
+            if (switchBackToBranch) {
+                await execa(`git checkout ${this.currentBranch}`);
+            }
 
             this.logger.success(`代码已成功合并到 ${targetBranch} 分支`);
         } catch (error) {
-            // 确保切回原始分支，即使发生错误
-            try {
-                await execa(`git checkout ${this.currentBranch}`);
-            } catch (checkoutError) {
-                this.logger.error('切回原始分支失败');
+            // 如果需要切换回原始分支，并且出现错误
+            if (switchBackToBranch) {
+                try {
+                    await execa(`git checkout ${this.currentBranch}`);
+                } catch (checkoutError) {
+                    this.logger.error('切回原始分支失败');
+                }
             }
 
             this.logger.error(`合并到 ${targetBranch} 分支失败`);
             throw error;
         }
-    }
-
-    /**
-     * 处理标签和输出信息
-     * @returns {Promise<void>}
-     */
-    protected async handleTagAndOutput(): Promise<void> {
-        const tagName = await this.createTag(this.options.type, this.options.version);
-        const { name } = await getProjectName(this.options.type);
-        const clipText = `${name},${tagName}`;
-
-        this.logger.info(`项目: ${name}, 标签: ${tagName}`);
-        clipboardy.writeSync(clipText);
-        this.logger.info('项目名称和标签已复制到剪贴板');
     }
 
     /**
