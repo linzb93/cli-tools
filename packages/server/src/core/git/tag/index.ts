@@ -234,92 +234,145 @@ export default class extends BaseCommand {
 
         // 如果没有匹配的标签，创建初始版本
         if (prefixedTags.length === 0) {
-            return version ? `${type}${version}` : `${type}1.0.0`;
+            return this.createInitialVersion(type, version);
         }
 
-        // 解析版本号的函数
-        const parseVersion = (tag: string): VersionInfo | null => {
-            // 移除前缀
-            const versionStr = tag.substring(type.length);
+        // 解析所有版本信息
+        const versions = prefixedTags
+            .map((tag) => this.parseVersion(tag, type))
+            .filter((v) => v !== null) as VersionInfo[];
 
-            // 尝试解析四段式版本号 (如 1.2.3.4)
-            const fourPartMatch = versionStr.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
-            if (fourPartMatch) {
-                return {
-                    prefix: type,
-                    major: parseInt(fourPartMatch[1]),
-                    minor: parseInt(fourPartMatch[2]),
-                    patch: parseInt(fourPartMatch[3]),
-                    build: parseInt(fourPartMatch[4]),
-                };
+        // 如果没有有效版本，使用默认版本
+        if (versions.length === 0) {
+            return this.createInitialVersion(type, version);
+        }
+
+        // 找到最大版本
+        const maxVersion = this.findMaxVersion(versions);
+
+        // 根据是否提供了版本号来决定创建方式
+        if (version) {
+            return this.createSpecifiedVersion(type, version, maxVersion);
+        } else {
+            return this.createIncrementedVersion(type, maxVersion);
+        }
+    }
+
+    /**
+     * 解析版本号字符串为版本信息对象
+     * @param {string} tag - 标签字符串
+     * @param {string} type - 标签类型前缀
+     * @returns {VersionInfo | null} 版本信息对象，若无法解析则返回null
+     */
+    private parseVersion(tag: string, type: string): VersionInfo | null {
+        // 移除前缀
+        const versionStr = tag.substring(type.length);
+
+        // 尝试解析四段式版本号 (如 1.2.3.4)
+        const fourPartMatch = versionStr.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+        if (fourPartMatch) {
+            return {
+                prefix: type,
+                major: parseInt(fourPartMatch[1]),
+                minor: parseInt(fourPartMatch[2]),
+                patch: parseInt(fourPartMatch[3]),
+                build: parseInt(fourPartMatch[4]),
+            };
+        }
+
+        // 尝试解析三段式版本号 (如 1.2.3)
+        const threePartMatch = versionStr.match(/^(\d+)\.(\d+)\.(\d+)$/);
+        if (threePartMatch) {
+            return {
+                prefix: type,
+                major: parseInt(threePartMatch[1]),
+                minor: parseInt(threePartMatch[2]),
+                patch: parseInt(threePartMatch[3]),
+            };
+        }
+
+        return null;
+    }
+
+    /**
+     * 在版本列表中找出最大版本
+     * @param {VersionInfo[]} versions - 版本信息对象数组
+     * @returns {VersionInfo} 最大版本信息对象
+     */
+    private findMaxVersion(versions: VersionInfo[]): VersionInfo {
+        return versions.reduce((max, current) => {
+            // 主版本号比较
+            if (current.major > max.major) {
+                return current;
             }
 
-            // 尝试解析三段式版本号 (如 1.2.3)
-            const threePartMatch = versionStr.match(/^(\d+)\.(\d+)\.(\d+)$/);
-            if (threePartMatch) {
-                return {
-                    prefix: type,
-                    major: parseInt(threePartMatch[1]),
-                    minor: parseInt(threePartMatch[2]),
-                    patch: parseInt(threePartMatch[3]),
-                };
-            }
+            // 主版本号相同时，比较次版本号
+            if (current.major === max.major) {
+                if (current.minor > max.minor) {
+                    return current;
+                }
 
-            return null;
-        };
+                // 次版本号相同时，比较补丁版本号
+                if (current.minor === max.minor) {
+                    if (current.patch > max.patch) {
+                        return current;
+                    }
 
-        // 获取最大版本标签
-        let maxVersion: VersionInfo | null = null;
+                    // 补丁版本号相同时，比较构建版本号
+                    if (current.patch === max.patch) {
+                        const currentBuild = current.build || 0;
+                        const maxBuild = max.build || 0;
 
-        for (const tag of prefixedTags) {
-            const version = parseVersion(tag);
-            if (!version) continue;
-
-            if (!maxVersion) {
-                maxVersion = version;
-                continue;
-            }
-
-            // 比较版本大小
-            if (version.major > maxVersion.major) {
-                maxVersion = version;
-            } else if (version.major === maxVersion.major) {
-                if (version.minor > maxVersion.minor) {
-                    maxVersion = version;
-                } else if (version.minor === maxVersion.minor) {
-                    if (version.patch > maxVersion.patch) {
-                        maxVersion = version;
-                    } else if (version.patch === maxVersion.patch) {
-                        if ((version.build || 0) > (maxVersion.build || 0)) {
-                            maxVersion = version;
+                        if (currentBuild > maxBuild) {
+                            return current;
                         }
                     }
                 }
             }
+
+            return max;
+        }, versions[0]);
+    }
+
+    /**
+     * 创建初始版本标签
+     * @param {string} type - 标签类型前缀
+     * @param {string | undefined} version - 指定的版本号
+     * @returns {string} 新标签
+     */
+    private createInitialVersion(type: string, version?: string): string {
+        return version ? `${type}${version}` : `${type}1.0.0`;
+    }
+
+    /**
+     * 使用指定版本号创建新标签
+     * @param {string} type - 标签类型前缀
+     * @param {string} version - 指定的版本号
+     * @param {VersionInfo} maxVersion - 当前最大版本信息
+     * @returns {string} 新标签
+     */
+    private createSpecifiedVersion(type: string, version: string, maxVersion: VersionInfo): string {
+        // 验证指定的版本号格式
+        if (!semver.valid(version)) {
+            throw new Error(`无效的版本号格式: ${version}，请使用三段式版本号如 1.0.0`);
         }
 
-        // 如果没有找到有效的版本，使用默认版本
-        if (!maxVersion) {
-            return version ? `${type}${version}` : `${type}1.0.0`;
+        // 将指定的版本号与当前最大版本比较
+        const currentMax = `${maxVersion.major}.${maxVersion.minor}.${maxVersion.patch}`;
+        if (semver.lt(version, currentMax)) {
+            throw new Error(`指定的版本号 ${version} 小于当前最新版本 ${currentMax}`);
         }
 
-        // 如果指定了版本号
-        if (version) {
-            // 验证指定的版本号格式
-            if (!semver.valid(version)) {
-                throw new Error(`无效的版本号格式: ${version}，请使用三段式版本号如 1.0.0`);
-            }
+        return `${type}${version}`;
+    }
 
-            // 将指定的版本号与当前最大版本比较
-            const currentMax = `${maxVersion.major}.${maxVersion.minor}.${maxVersion.patch}`;
-            if (semver.lt(version, currentMax)) {
-                throw new Error(`指定的版本号 ${version} 小于当前最新版本 ${currentMax}`);
-            }
-
-            return `${type}${version}`;
-        }
-
-        // 未指定版本号，自动增加最后一位
+    /**
+     * 根据当前最大版本自动生成递增的版本号
+     * @param {string} type - 标签类型前缀
+     * @param {VersionInfo} maxVersion - 当前最大版本信息
+     * @returns {string} 新标签
+     */
+    private createIncrementedVersion(type: string, maxVersion: VersionInfo): string {
         if (maxVersion.build !== undefined) {
             // 已经是四段式版本号，增加最后一位
             return `${type}${maxVersion.major}.${maxVersion.minor}.${maxVersion.patch}.${maxVersion.build + 1}`;

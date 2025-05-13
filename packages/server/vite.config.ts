@@ -4,13 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import pkg from './package.json';
 import rootPkg from '../../package.json';
-import del from 'del';
 
 const allDependencies = {
     ...pkg.dependencies,
     ...rootPkg.dependencies,
 };
-del.sync('dist');
 
 const input: {
     [key: string]: string;

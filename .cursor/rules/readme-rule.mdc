@@ -1,6 +1,6 @@
 ---
 description: 
-globs: packages/server/src/**/ImplementationPlan.md
+globs: packages/server/src/**/Readme.md
 alwaysApply: false
 ---
 # 实现计划规则
