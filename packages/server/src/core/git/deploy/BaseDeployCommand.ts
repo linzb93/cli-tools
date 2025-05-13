@@ -37,6 +37,11 @@ export interface DeployOptions {
      * @default false
      */
     current?: boolean;
+    /**
+     * 是否跳过pull命令
+     * @default false
+     */
+    skipPull?: boolean;
 }
 
 /**
@@ -119,13 +124,23 @@ export default abstract class BaseDeployCommand extends BaseCommand {
     /**
      * 完成基础git命令（add, commit, pull, push）
      * @param {string} commitMessage - 提交信息
+     * @param {boolean} [skipPull=false] - 是否跳过pull命令
      * @returns {Promise<void>}
      */
-    protected async executeBaseCommands(commitMessage: string): Promise<void> {
+    protected async executeBaseCommands(commitMessage: string, skipPull: boolean = false): Promise<void> {
         this.logger.info('执行基础Git命令...');
 
         try {
-            await executeCommands(['git add .', gitAtom.commit(commitMessage), gitAtom.pull(), gitAtom.push()]);
+            const commands = ['git add .', gitAtom.commit(commitMessage)];
+
+            // 根据 skipPull 参数决定是否添加 pull 命令
+            if (!skipPull) {
+                commands.push(gitAtom.pull());
+            }
+
+            commands.push(gitAtom.push());
+
+            await executeCommands(commands);
 
             this.logger.success('基础Git命令执行完成');
         } catch (error) {

@@ -41,7 +41,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
     private async handleMasterBranch(): Promise<void> {
         // 如果明确指定了prod或current选项
         if (this.options.prod !== undefined || this.options.current !== undefined) {
-            await this.executeBaseCommands(this.options.commit);
+            await this.executeBaseCommands(this.options.commit, false);
 
             // 如果需要发布项目
             if (this.options.prod) {
@@ -58,7 +58,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
                 },
             ]);
 
-            await this.executeBaseCommands(this.options.commit);
+            await this.executeBaseCommands(this.options.commit, false);
 
             if (shouldPublish) {
                 await this.handleTagAndOutput();
@@ -71,7 +71,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleReleaseBranch(): Promise<void> {
-        await this.executeBaseCommands(this.options.commit);
+        await this.executeBaseCommands(this.options.commit, false);
 
         // 打开Jenkins主页
         if (this.options.open !== false) {
@@ -84,7 +84,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleOtherBranch(): Promise<void> {
-        await this.executeBaseCommands(this.options.commit);
+        await this.executeBaseCommands(this.options.commit, false);
 
         if (this.options.prod) {
             // 询问用户是否确认发布
