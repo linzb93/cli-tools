@@ -1,5 +1,9 @@
 import { Command } from 'commander';
+import { map, first, from, concatMap, interval } from 'rxjs';
 import { Writable } from 'node:stream';
+import { logger } from '@/utils/logger';
+import { findContent } from './markdown';
+import { fromStream } from './rxjs';
 /**
  * 注册子命令
  * @param fn
@@ -56,3 +60,42 @@ export const objectToCmdOptions = (obj: Record<string, any>) => {
  * 旧版本NodeJS，这里指的是NodeJS 14.
  */
 export const isOldNode = process.version.startsWith('v14.');
+/**
+ * 生成命令帮助文档
+ */
+export const generateHelpDoc = (commands: string[]) => {
+    return new Promise<void>(async (resolve) => {
+        try {
+            const stream = findContent({
+                fileName: commands[0],
+                title: commands.join(' '),
+                level: commands.length,
+            });
+            fromStream(stream)
+                .pipe(
+                    map((data) => `${data.toString()}\n`),
+                    concatMap((line) =>
+                        from(line.split('')).pipe(
+                            concatMap((char) =>
+                                interval(100).pipe(
+                                    first(),
+                                    map(() => char)
+                                )
+                            )
+                        )
+                    )
+                )
+                .subscribe({
+                    next(data) {
+                        process.stdout.write(data);
+                    },
+                    complete: () => {
+                        resolve();
+                    },
+                });
+        } catch (error) {
+            logger.error(`没有找到${commands.join(' ')}的帮助文档`);
+            resolve();
+        }
+    });
+};
