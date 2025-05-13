@@ -1,6 +1,11 @@
 import { executeCommands, CommandConfig } from '@/utils/promise';
 import inquirer from '@/utils/inquirer';
 
+/**
+ * 格式化提交信息，确保提交信息符合规范
+ * @param {string} commit - 原始提交信息
+ * @returns {string} 格式化后的提交信息
+ */
 function fmtCommitMsg(commit: string) {
     if (!commit) {
         return 'feat:update';
@@ -52,6 +57,11 @@ function fmtCommitMsg(commit: string) {
     return `${match2.value}:${commit}`;
 }
 
+/**
+ * 处理代码合并冲突
+ * @async
+ * @throws {Error} 如果用户选择不解决冲突
+ */
 async function handleConflict() {
     const { resolved } = await inquirer.prompt([
         {
@@ -67,61 +77,78 @@ async function handleConflict() {
     await executeCommands(['git add .', 'git commit -m fix:conflict']);
 }
 
-const gitAtom: {
-    [key: string]: (...data: any[]) => CommandConfig;
-} = {
-    commit(message: string) {
-        return {
-            message: `git commit -m ${fmtCommitMsg(message)}`,
-        };
-    },
-    pull() {
-        return {
-            message: 'git pull',
-            onError: (errMsg) => {
-                if (errMsg.includes('You have unstaged changes')) {
-                    executeCommands(['git add .', 'git commit -m feat:update', this.pull()]);
-                    return {
-                        shouldStop: true,
-                    };
-                }
+/**
+ * 生成 Git 提交命令配置
+ * @param {string} message - 提交信息
+ * @returns {CommandConfig} Git 提交命令配置对象
+ */
+function commit(message: string): CommandConfig {
+    return {
+        message: `git commit -m ${fmtCommitMsg(message)}`,
+    };
+}
+
+/**
+ * 生成 Git 拉取代码命令配置
+ * @returns {CommandConfig} Git 拉取代码命令配置对象
+ */
+function pull(): CommandConfig {
+    return {
+        message: 'git pull',
+        retryTimes: 100,
+        onError: (errMsg) => {
+            if (errMsg.includes('You have unstaged changes')) {
+                executeCommands(['git add .', 'git commit -m feat:update', this.pull()]);
                 return {
-                    shouldStop: false,
+                    shouldStop: true,
                 };
-            },
-        };
-    },
-    push(isLocalBranch?: boolean, currenetBranchName?: string) {
-        if (isLocalBranch) {
+            }
             return {
-                message: `git push --set-upstream origin ${currenetBranchName}`,
+                shouldStop: false,
             };
-        }
+        },
+    };
+}
+
+/**
+ * 生成 Git 合并分支命令配置
+ * @param {string} branch - 要合并的分支名称
+ * @returns {CommandConfig} Git 合并分支命令配置对象
+ */
+function merge(branch: string): CommandConfig {
+    return {
+        message: `git merge ${branch}`,
+        onError: () => {
+            handleConflict();
+            return {
+                shouldStop: true,
+            };
+        },
+    };
+}
+
+/**
+ * 生成 Git 推送代码命令配置
+ * @param {boolean} [isLocalBranch] - 是否为本地新建分支
+ * @param {string} [currenetBranchName] - 当前分支名称
+ * @returns {CommandConfig} Git 推送代码命令配置对象
+ */
+function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConfig {
+    if (isLocalBranch) {
         return {
-            message: 'git push',
-            onError: (message) => {
-                if (['pull', 'merge'].some((text) => message.includes(text))) {
-                    executeCommands([this.pull(), this.push()]);
-                    return {
-                        shouldStop: true,
-                    };
-                }
-                return {
-                    shouldStop: true,
-                };
-            },
+            message: `git push --set-upstream origin ${currenetBranchName}`,
+            retryTimes: 100,
         };
-    },
-    merge(branch: string) {
-        return {
-            message: `git merge ${branch}`,
-            onError: () => {
-                handleConflict();
-                return {
-                    shouldStop: true,
-                };
-            },
-        };
-    },
+    }
+    return {
+        message: 'git push',
+        retryTimes: 100,
+    };
+}
+
+export default {
+    commit,
+    pull,
+    merge,
+    push,
 };
-export default gitAtom;
