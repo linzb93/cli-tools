@@ -41,12 +41,12 @@ const pull = () => {
 const tag = () => {
     subCommandCompiler((program) => {
         program
-            .command('tag')
+            .command('tag [subCommand]')
             .description('管理Git标签')
             .option('--version <version>', '设置版本号')
             .option('--type <type>', '设置标签类型前缀，默认为v')
-            .action((options: TagOptions) => {
-                new Tag().main(options);
+            .action((subCommand: string, options: TagOptions) => {
+                new Tag().main(subCommand, options);
             });
     });
 };

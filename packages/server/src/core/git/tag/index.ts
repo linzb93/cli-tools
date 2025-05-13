@@ -1,10 +1,11 @@
 import { execa } from 'execa';
 import chalk from 'chalk';
 import BaseCommand from '../../BaseCommand';
-import { isGitProject, getAllTags } from '../utils';
+import { isGitProject, getAllTags, deleteTags } from '../utils';
 import inquirer from '@/utils/inquirer';
 import { executeCommands, CommandConfig } from '@/utils/promise';
 import semver from 'semver';
+import { getProjectName } from '@/utils/jenkins';
 
 /**
  * git tag 命令的选项接口
@@ -62,15 +63,14 @@ export default class extends BaseCommand {
      * @param {Options} options - 命令选项
      * @returns {Promise<void>}
      */
-    async main(options: Options): Promise<void> {
+    async main(subCommand: string, options: Options): Promise<void> {
         // 检查当前目录是否是 Git 项目
         if (!(await isGitProject())) {
             this.logger.error('当前目录不是 Git 项目');
             return;
         }
 
-        // 处理子命令
-        const subCommand = options._?.[0] || '';
+        console.log(subCommand);
 
         // 子命令映射表
         const commandMap: Record<string, () => Promise<void>> = {
@@ -80,7 +80,9 @@ export default class extends BaseCommand {
         };
 
         // 执行对应的子命令
-        if (commandMap[subCommand]) {
+        if (!subCommand) {
+            await this.addTag(options);
+        } else if (commandMap[subCommand]) {
             await commandMap[subCommand]();
         } else {
             this.logger.error(`未知的 git tag 子命令: ${subCommand}`);
@@ -111,40 +113,6 @@ export default class extends BaseCommand {
                 if (message.includes('not found')) {
                     console.warn(`远程仓库不存在标签: ${tagName}`);
                 }
-                return {
-                    shouldStop: false,
-                };
-            },
-        };
-    }
-
-    /**
-     * 删除本地标签
-     * @param {string} tagName - 标签名称
-     * @returns {CommandConfig} 命令配置
-     */
-    private deleteTagCmd(tagName: string): CommandConfig {
-        return {
-            message: `git tag -d ${tagName}`,
-            onError: (message) => {
-                console.warn(`删除本地标签失败: ${message}`);
-                return {
-                    shouldStop: false,
-                };
-            },
-        };
-    }
-
-    /**
-     * 删除远程标签
-     * @param {string} tagName - 标签名称
-     * @returns {CommandConfig} 命令配置
-     */
-    private deleteRemoteTag(tagName: string): CommandConfig {
-        return {
-            message: `git push origin --delete ${tagName}`,
-            onError: (message) => {
-                console.warn(`删除远程标签失败: ${message}`);
                 return {
                     shouldStop: false,
                 };
@@ -187,8 +155,8 @@ export default class extends BaseCommand {
 
             // 创建本地标签并推送到远程
             await executeCommands([this.createTag(newTag), this.pushTag(newTag)]);
-
-            this.logger.success(`成功创建并推送标签 ${chalk.green(newTag)}`);
+            const { id } = await getProjectName();
+            this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${id}, ${newTag}`)}`);
         } catch (error) {
             this.logger.error(`创建标签失败: ${error.message || error}`);
         }
@@ -222,13 +190,7 @@ export default class extends BaseCommand {
             }
 
             this.logger.info(`正在删除选中的 ${selectedTags.length} 个标签...`);
-
-            // 删除本地标签和远程标签
-            for (const tag of selectedTags) {
-                await executeCommands([this.deleteTagCmd(tag), this.deleteRemoteTag(tag)]);
-                this.logger.info(`已删除标签 ${chalk.yellow(tag)}`);
-            }
-
+            await deleteTags({ tags: selectedTags, remote: true });
             this.logger.success('标签删除操作完成');
         } catch (error) {
             this.logger.error(`删除标签失败: ${error.message || error}`);
@@ -370,19 +332,3 @@ export default class extends BaseCommand {
         }
     }
 }
-
-/**
- * 根据现有标签生成新标签
- * @param {string[]} tags - 现有标签列表
- * @param {string} type - 标签类型前缀
- * @param {string | undefined} version - 指定的版本号
- * @returns {Promise<string>} 新标签
- */
-export const generateNewTag = async (tags: string[], type: string = 'v', version?: string): Promise<string> => {
-    const tagCommand = new (class extends BaseCommand {
-        async main() {} // 空实现
-    })();
-
-    // @ts-ignore - 访问私有方法
-    return tagCommand.generateNewTag(tags, type, version);
-};
