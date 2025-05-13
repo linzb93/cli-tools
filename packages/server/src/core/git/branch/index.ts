@@ -19,7 +19,7 @@ export interface Options {
 export default class extends BaseCommand {
     async main(options: Options) {
         if (options.delete) {
-            await this.delete(options);
+            await this.delete();
             return;
         }
         this.renderBranchList({
@@ -27,7 +27,7 @@ export default class extends BaseCommand {
             showCreateTime: true,
         });
     }
-    private async delete(options: Options) {
+    private async delete() {
         const branches = (await getAllBranches()).reduce<
             {
                 name: string;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import eng from './commands/eng';
+import git from './commands/git';
 
 // 创建命令行程序
 const program = new Command();
@@ -9,10 +9,11 @@ const program = new Command();
 program.version('1.0.0').description('CLI工具集合');
 
 program
-    .command('eng [text]')
-    .option('-e,--example', '显示范例')
-    .action((text, options) => {
-        eng(text, options);
+    .command('git [sub-command] [rest...]')
+    .description('Git 相关命令集合')
+    .allowUnknownOption()
+    .action((subCommand, rest, cmd) => {
+        git(subCommand, rest, cmd);
     });
 
 // 解析命令行参数

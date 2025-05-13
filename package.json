@@ -8,7 +8,7 @@
     "scripts": {
         "dev": "npm run dev:cli",
         "dev:ui": "pnpm --filter \"ui\" dev",
-        "dev:cli": "cross-env MODE=cli pnpm --filter \"cli\" dev",
+        "dev:cli": "cross-env MODE=cliTest pnpm --filter \"cli\" dev",
         "dev:web": "cross-env MODE=web pnpm --filter \"cli\" dev",
         "mon:web": "nodemon packages/server/dist/web.js --watch packages/server/dist",
         "build": "npm run build:cli",

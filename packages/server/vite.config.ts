@@ -4,27 +4,25 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import pkg from './package.json';
 import rootPkg from '../../package.json';
+import del from 'del';
 
 const allDependencies = {
     ...pkg.dependencies,
     ...rootPkg.dependencies,
 };
+del.sync('dist');
 
 const input: {
     [key: string]: string;
-} = {
-    'cli': 'src/cli/bin.ts',
-    'cli-test': 'src/cli/bin-test.ts',
-    // web: 'src/application/web/router.ts',
-    'vueServer': 'src/core/vue/server.ts',
-};
-if (process.env.MODE === 'cli') {
-    // delete input.web;
-    // if (process.env.NODE_ENV != 'development') {
-    //     delete input.cliTest;
-    // }
+} = {};
+if (process.env.MODE === 'cliTest') {
+    input.vueServer = 'src/core/vue/server.ts';
+    input['cli-test'] = 'src/cli/bin-test.ts';
+} else if (process.env.MODE === 'cli') {
+    input.vueServer = 'src/core/vue/server.ts';
+    input.cli = 'src/cli/bin.ts';
 } else if (process.env.MODE === 'web') {
-    delete input.cli;
+    input.web = 'src/server/index.ts';
 }
 
 export default defineConfig({

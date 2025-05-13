@@ -3,6 +3,7 @@ import Push, { type Options as PushOptions } from '../../core/git/push';
 import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
+import Branch, { type Options as BranchOptions } from '../../core/git/branch';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -71,6 +72,21 @@ const deploy = () => {
 };
 
 /**
+ * git branch 子命令的实现
+ */
+const branch = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('branch')
+            .description('管理Git分支')
+            .option('--delete', '删除分支')
+            .action((options: BranchOptions) => {
+                new Branch().main(options);
+            });
+    });
+};
+
+/**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  * @param {string[]} data - 子命令参数
@@ -83,6 +99,7 @@ export default function (subCommand: string, data: string[], options: any): void
         pull,
         tag,
         deploy,
+        branch,
     };
 
     // 执行对应的子命令

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { execa } from 'execa';
 
 /**
@@ -181,7 +182,7 @@ export async function getAllBranches(projectPath: string = process.cwd()): Promi
                 name,
                 hasLocal: isLocal,
                 hasRemote: isRemote,
-                createTime,
+                createTime: createTime ? dayjs(createTime).format('YYYY-MM-DD') : '无',
             };
         });
 
@@ -219,16 +220,12 @@ interface DeleteBranchOptions {
  * @param {DeleteBranchOptions} options - 删除分支的配置选项
  * @returns {Promise<void>}
  */
-export async function deleteBranch(options: DeleteBranchOptions): Promise<void> {
+export async function deleteBranch(options: DeleteBranchOptions): Promise<any> {
     const { branchName, projectPath = process.cwd(), remote = false } = options;
 
-    try {
-        const args = remote ? ['push', 'origin', '--delete', branchName] : ['branch', '-d', branchName];
+    const args = remote ? ['push', 'origin', '--delete', branchName] : ['branch', '-d', branchName];
 
-        await execa('git', args, { cwd: projectPath });
-    } catch (error) {
-        console.warn(`删除分支 ${branchName} 失败：${error}`);
-    }
+    return await execa('git', args, { cwd: projectPath });
 }
 
 /**
