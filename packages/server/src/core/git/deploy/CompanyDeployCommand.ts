@@ -30,7 +30,6 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
             version: this.options.version,
         };
 
-        // 直接调用tag命令的addTag方法，不需要subCommand参数
         await this.tagCommand.addTag(tagOptions);
     }
 

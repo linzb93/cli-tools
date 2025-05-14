@@ -88,7 +88,10 @@ async function executeCommand(config: CommandConfig): Promise<void> {
     await retryAsync(
         async () => {
             try {
-                await execa(config.message);
+                const { stdout } = await execa(config.message);
+                if (stdout) {
+                    console.log(stdout);
+                }
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
 
@@ -156,6 +159,12 @@ export async function executeCommands(commands: Command[]): Promise<void> {
         const config: CommandConfig = typeof cmd === 'string' ? { message: cmd } : cmd;
         console.log(`${chalk.cyan('>')} ${chalk.yellow(config.message)}`);
 
+        // 调试模式下仅输出命令，不实际执行
+        if (process.env.DEBUG) {
+            console.log(chalk.green('调试模式：跳过实际执行'));
+            continue;
+        }
+
         try {
             await executeCommand(config);
         } catch (error) {
@@ -171,6 +180,7 @@ export async function executeCommands(commands: Command[]): Promise<void> {
     const duration = endTime.diff(startTime, 'second');
     console.log(`任务执行完成，用时${chalk.blue(duration.toString())}秒`);
 }
+
 /**
  * 按顺序执行异步函数，返回第一个成功的结果
  * @param list

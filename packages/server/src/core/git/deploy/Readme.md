@@ -10,7 +10,7 @@
 
 1. `BaseDeployCommand`(抽象基类): 定义通用方法和抽象方法
 
-    - 共用方法：`executeBaseCommands`, `createTag`, `mergeToBranch`等
+    - 共用方法：`executeBaseCommands`, `mergeToBranch`等
     - 抽象方法：`handleProjectDeploy`
 
 2. `CompanyDeployCommand`(具体实现类): 处理公司项目相关逻辑
