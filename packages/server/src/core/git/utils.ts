@@ -280,3 +280,12 @@ export async function getBranchFirstCommitTime(
         return '';
     }
 }
+/**
+ * 判断当前分支是否在远端有对应的分支。
+ * 不需要通过远端获取，在本地获取已拉取的远端分支即可。
+ */
+export const isCurrenetBranchPushed = async () => {
+    const current = await getCurrentBranchName();
+    const { stdout } = await execa(`git`, [`branch`, `--all`]);
+    return !!stdout.split('\n').find((item) => item.includes(`remotes/origin/${current}`));
+};
