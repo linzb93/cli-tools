@@ -133,12 +133,26 @@ export default abstract class BaseDeployCommand extends BaseCommand {
         try {
             const commands = ['git add .', gitAtom.commit(commitMessage)];
 
-            // 根据 skipPull 参数决定是否添加 pull 命令
-            if (!skipPull) {
+            // 检查当前分支是否已推送到远端
+            let isBranchPushed = false;
+            try {
+                await execa(`git branch -r | grep -q "origin/${this.currentBranch}"`);
+                isBranchPushed = true;
+            } catch {
+                isBranchPushed = false;
+            }
+
+            // 根据 skipPull 参数和分支推送状态决定是否添加 pull 命令
+            if (!skipPull && isBranchPushed) {
                 commands.push(gitAtom.pull());
             }
 
-            commands.push(gitAtom.push());
+            // 根据分支是否已推送到远端决定push方式
+            if (isBranchPushed) {
+                commands.push(gitAtom.push());
+            } else {
+                commands.push(gitAtom.push(true, this.currentBranch));
+            }
 
             await executeCommands(commands);
 

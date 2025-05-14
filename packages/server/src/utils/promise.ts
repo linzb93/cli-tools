@@ -88,7 +88,7 @@ async function executeCommand(config: CommandConfig): Promise<void> {
     await retryAsync(
         async () => {
             try {
-                await execa(config.message, { shell: true });
+                await execa(config.message);
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
 
