@@ -22,6 +22,10 @@ interface Database {
             password: string;
         };
     };
+    yapi: {
+        username: string;
+        password: string;
+    };
 }
 
 /**

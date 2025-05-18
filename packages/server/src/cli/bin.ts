@@ -14,6 +14,7 @@ import color from './commands/color';
 import fork from './commands/fork';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
+import yapi from './commands/yapi';
 // import mock from "./commands/mock";
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
@@ -237,6 +238,12 @@ program
     .option('--publicPath <path>', '设置publicPath')
     .action((option) => {
         vue(option);
+    });
+program
+    .command('yapi <url>')
+    .description('获取yapi接口文档')
+    .action((url) => {
+        yapi(url);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

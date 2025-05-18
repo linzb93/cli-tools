@@ -9,7 +9,7 @@ export default abstract class {
     protected spinner: Spinner;
     protected inquirer: typeof inquirer;
     protected sql: (callback: (data: Database) => void) => Promise<void>;
-    protected readSecret: (callback: (data: any) => void) => Promise<void>;
+    protected readSecret: (callback: (data: any) => any) => Promise<any>;
     constructor() {
         this.logger = new Logger();
         this.spinner = spinner;
