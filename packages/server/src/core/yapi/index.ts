@@ -67,12 +67,12 @@ export default class extends BaseCommand {
             }
 
             // 获取接口总数
-            const total = await getYapiInterfaceTotal(
-                urlInfo.origin,
+            const total = await getYapiInterfaceTotal({
+                origin: urlInfo.origin,
                 cookie,
-                urlInfo.projectId,
-                urlInfo.type === 'category' ? urlInfo.catId : undefined
-            );
+                projectId: urlInfo.projectId,
+                catId: urlInfo.type === 'category' ? urlInfo.catId : undefined
+            });
 
             if (!total) {
                 this.logger.info('未找到接口文档');
@@ -80,13 +80,13 @@ export default class extends BaseCommand {
             }
 
             // 获取接口列表
-            const apiList = await getYapiInterfaceList(
-                urlInfo.origin,
+            const apiList = await getYapiInterfaceList({
+                origin: urlInfo.origin,
                 cookie,
-                urlInfo.projectId,
+                projectId: urlInfo.projectId,
                 total,
-                urlInfo.type === 'category' ? urlInfo.catId : undefined
-            );
+                catId: urlInfo.type === 'category' ? urlInfo.catId : undefined
+            });
 
             if (!apiList || apiList.length === 0) {
                 this.logger.info('未找到接口文档');

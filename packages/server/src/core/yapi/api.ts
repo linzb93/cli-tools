@@ -73,7 +73,7 @@ export const YAPI_ERROR_CODES = {
  * @param requestFn 原始请求方法
  * @returns 请求结果
  */
-async function handleTokenExpired<T>(origin: string, requestFn: (cookie: string) => Promise<T>): Promise<T | null> {
+async function handleTokenExpired<T>(requestFn: (cookie: string) => Promise<T>): Promise<T | null> {
     try {
         // 获取初始cookie
         let cookie = await yapiAuth.getYapiCookie();
@@ -108,12 +108,13 @@ async function handleTokenExpired<T>(origin: string, requestFn: (cookie: string)
  * @param catId 分类ID（可选）
  * @returns 接口总数
  */
-export async function getYapiInterfaceTotal(
-    origin: string,
-    cookie: string,
-    projectId: string,
-    catId?: string
-): Promise<number | null> {
+export async function getYapiInterfaceTotal(obj: {
+    origin: string;
+    cookie: string;
+    projectId: string;
+    catId?: string;
+}) {
+    const { origin, cookie, projectId, catId } = obj;
     const requestFn = async (currentCookie: string) => {
         try {
             const url = catId ? `${origin}/api/interface/list_cat` : `${origin}/api/interface/list`;
@@ -140,7 +141,7 @@ export async function getYapiInterfaceTotal(
         }
     };
 
-    return handleTokenExpired(origin, requestFn);
+    return handleTokenExpired(requestFn);
 }
 
 /**
@@ -152,13 +153,14 @@ export async function getYapiInterfaceTotal(
  * @param catId 分类ID（可选）
  * @returns 接口列表
  */
-export async function getYapiInterfaceList(
-    origin: string,
-    cookie: string,
-    projectId: string,
-    total: number,
-    catId?: string
-): Promise<YapiInterfaceListItem[] | null> {
+export async function getYapiInterfaceList(obj: {
+    origin: string;
+    cookie: string;
+    projectId: string;
+    total: number;
+    catId?: string;
+}) {
+    const { origin, cookie, projectId, total, catId } = obj;
     const requestFn = async (currentCookie: string) => {
         try {
             const url = catId ? `${origin}/api/interface/list_cat` : `${origin}/api/interface/list`;
@@ -187,7 +189,7 @@ export async function getYapiInterfaceList(
         }
     };
 
-    return handleTokenExpired(origin, requestFn);
+    return handleTokenExpired(requestFn);
 }
 
 /**
@@ -227,5 +229,5 @@ export async function getYapiInterfaceDetail(
         }
     };
 
-    return handleTokenExpired(origin, requestFn);
+    return handleTokenExpired(requestFn);
 }
