@@ -69,11 +69,10 @@ program.hook('preAction', (thisCommand) => {
 //         agent(subCommand, options);
 //     });
 program
-    .command('ai [name] [rest...]')
-    .option('--ask', '是否继续提问')
-    .option('--eng', '使用翻译')
-    .action((action, rest, options) => {
-        ai(action, rest, options);
+    .command('ai [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        ai(subCommand, rest, options);
     });
 // program
 //     .command('cg [action] [...rest]')

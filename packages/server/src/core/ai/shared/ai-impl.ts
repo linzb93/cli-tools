@@ -1,23 +1,17 @@
 import getModels from './models';
-export type MessageOptions =
-    | {
-          role: 'system' | 'assistant';
-          content: string;
-          name?: string;
-      }
-    | {
-          role: 'user';
-          content:
-              | string
-              | {
-                    type: 'image_url';
-                    image_url: {
-                        url: string;
-                        detail?: 'auto' | 'low' | 'high';
-                    };
-                }[];
-      };
-export default class {
+import { MessageOptions } from './types';
+
+/**
+ * AI实现类
+ * 处理AI请求和响应
+ */
+export default class AiImpl {
+    /**
+     * 使用AI接口，返回完整响应
+     * @param messages 消息数组
+     * @param options 选项
+     * @returns 完整的响应内容
+     */
     async use(
         messages: MessageOptions[],
         options: {
@@ -35,6 +29,13 @@ export default class {
         }
         return contents;
     }
+
+    /**
+     * 使用AI接口，返回流式响应
+     * @param messages 消息数组
+     * @param options 选项
+     * @returns 流式响应
+     */
     async useStream(
         messages: MessageOptions[],
         options: {
