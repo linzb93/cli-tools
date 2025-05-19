@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { execa } from 'execa';
+import { execaCommand as execa } from 'execa';
 
 /**
  * 判断指定路径是否是 Git 项目
@@ -8,7 +8,7 @@ import { execa } from 'execa';
  */
 export async function isGitProject(projectPath: string = process.cwd()): Promise<boolean> {
     try {
-        await execa('git', ['rev-parse', '--is-inside-work-tree'], { cwd: projectPath });
+        await execa(`git rev-parse --is-inside-work-tree`, { cwd: projectPath });
         return true;
     } catch {
         return false;
@@ -22,7 +22,7 @@ export async function isGitProject(projectPath: string = process.cwd()): Promise
  */
 export async function getCurrentBranchName(projectPath: string = process.cwd()): Promise<string> {
     try {
-        const { stdout } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: projectPath });
+        const { stdout } = await execa(`git rev-parse --abbrev-ref HEAD`, { cwd: projectPath });
         return stdout.trim();
     } catch {
         return '';
@@ -49,13 +49,13 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
         }
 
         // 检查是否有未提交的更改
-        const { stdout: statusOutput } = await execa('git', ['status', '--porcelain'], { cwd: projectPath });
+        const { stdout: statusOutput } = await execa(`git status --porcelain`, { cwd: projectPath });
         if (statusOutput.trim().length > 0) {
             return 1;
         }
 
         // 检查是否有未推送的提交
-        const { stdout: unpushedCommits } = await execa('git', ['cherry', '-v'], { cwd: projectPath });
+        const { stdout: unpushedCommits } = await execa(`git cherry -v`, { cwd: projectPath });
         if (unpushedCommits.trim().length > 0) {
             return 2;
         }
@@ -73,7 +73,7 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
  */
 export async function getRemoteUrl(projectPath: string = process.cwd()): Promise<string> {
     try {
-        const { stdout } = await execa('git', ['config', '--get', 'remote.origin.url'], { cwd: projectPath });
+        const { stdout } = await execa(`git config --get remote.origin.url`, { cwd: projectPath });
         return stdout.trim();
     } catch {
         return '';
@@ -87,7 +87,7 @@ export async function getRemoteUrl(projectPath: string = process.cwd()): Promise
  */
 export async function getAllTags(projectPath: string = process.cwd()): Promise<string[]> {
     try {
-        const { stdout } = await execa('git', ['tag'], { cwd: projectPath });
+        const { stdout } = await execa(`git tag`, { cwd: projectPath });
         return stdout.trim().split('\n').filter(Boolean);
     } catch {
         return [];
@@ -113,11 +113,11 @@ export async function deleteTags({
 }): Promise<void> {
     const deletePromises = tags.map(async (tag) => {
         // 删除本地 tag
-        await execa('git', ['tag', '-d', tag], { cwd: projectPath });
+        await execa(`git tag -d ${tag}`, { cwd: projectPath });
 
         // 如果需要删除远端 tag
         if (remote) {
-            await execa('git', ['push', 'origin', `:refs/tags/${tag}`], { cwd: projectPath });
+            await execa(`git push origin :refs/tags/${tag}`, { cwd: projectPath });
         }
     });
 
@@ -157,7 +157,7 @@ export interface BranchInfo {
 export async function getAllBranches(projectPath: string = process.cwd()): Promise<BranchInfo[]> {
     try {
         // 获取本地分支
-        const { stdout: localOutput } = await execa('git', ['branch'], { cwd: projectPath });
+        const { stdout: localOutput } = await execa(`git branch`, { cwd: projectPath });
         const localBranches = localOutput
             .trim()
             .split('\n')
@@ -165,7 +165,7 @@ export async function getAllBranches(projectPath: string = process.cwd()): Promi
             .map((line) => line.trim().replace(/^\*\s*/, ''));
 
         // 获取远端分支
-        const { stdout: remoteOutput } = await execa('git', ['branch', '-r'], { cwd: projectPath });
+        const { stdout: remoteOutput } = await execa(`git branch -r`, { cwd: projectPath });
         const remoteBranches = remoteOutput
             .trim()
             .split('\n')
@@ -237,9 +237,9 @@ interface DeleteBranchOptions {
 export async function deleteBranch(options: DeleteBranchOptions): Promise<any> {
     const { branchName, projectPath = process.cwd(), remote = false } = options;
 
-    const args = remote ? ['push', 'origin', '--delete', branchName] : ['branch', '-d', branchName];
+    const command = remote ? `git push origin --delete ${branchName}` : `git branch -d ${branchName}`;
 
-    return await execa('git', args, { cwd: projectPath });
+    return await execa(command, { cwd: projectPath });
 }
 
 /**
@@ -270,7 +270,7 @@ export async function getBranchFirstCommitTime(
     projectPath: string = process.cwd()
 ): Promise<string> {
     try {
-        const { stdout } = await execa('git', ['log', branchName, '--format=%ci', '--max-count=1', '--reverse'], {
+        const { stdout } = await execa(`git log ${branchName} --format=%ci --max-count=1 --reverse`, {
             cwd: projectPath,
         });
 
@@ -286,6 +286,6 @@ export async function getBranchFirstCommitTime(
  */
 export const isCurrenetBranchPushed = async () => {
     const current = await getCurrentBranchName();
-    const { stdout } = await execa(`git`, [`branch`, `--all`]);
+    const { stdout } = await execa(`git branch --all`);
     return !!stdout.split('\n').find((item) => item.includes(`remotes/origin/${current}`));
 };

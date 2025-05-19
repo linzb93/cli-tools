@@ -67,6 +67,10 @@ export interface Database {
             public: string;
         };
     };
+    yapi: {
+        token: string;
+        uid: string;
+    };
     oss: {
         domain: string;
         region: string;

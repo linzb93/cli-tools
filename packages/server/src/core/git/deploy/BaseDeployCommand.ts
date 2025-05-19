@@ -35,11 +35,6 @@ export interface DeployOptions {
      * @default false
      */
     current?: boolean;
-    /**
-     * 是否跳过pull命令
-     * @default false
-     */
-    skipPull?: boolean;
 }
 
 /**
@@ -84,38 +79,6 @@ export default abstract class BaseDeployCommand extends BaseCommand {
         } catch (error) {
             this.logger.error('检查未提交更改失败');
             return false;
-        }
-    }
-
-    /**
-     * 为项目打tag
-     * @param {string} type - 标签类型
-     * @param {string} version - 版本号
-     * @returns {Promise<string>} 创建的标签名称
-     */
-    protected async createTag(type?: string, version?: string): Promise<string> {
-        try {
-            // 获取当前日期作为版本号的一部分
-            const date = new Date();
-            const dateStr = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(
-                date.getDate()
-            ).padStart(2, '0')}`;
-
-            // 如果没有提供版本号，则使用日期
-            const versionStr = version || dateStr;
-
-            // 组合标签名
-            const tagPrefix = type ? `${type}-` : 'v';
-            const tagName = `${tagPrefix}${versionStr}`;
-
-            // 创建并推送标签
-            await execa(`git tag ${tagName}`);
-            await execa('git push --tags');
-
-            return tagName;
-        } catch (error) {
-            this.logger.error('创建标签失败');
-            throw error;
         }
     }
 
