@@ -8,7 +8,7 @@ import { resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fork } from 'node:child_process';
 import fs from 'fs-extra';
-import sql from '@/utils/sql';
+import sql, { Database } from '@/utils/sql';
 import * as git from '@/core/git/utils';
 import { objectToCmdOptions } from '@/utils/helper';
 export interface Options {
@@ -52,14 +52,19 @@ export default class Vue extends BaseCommand {
         let port = options.port;
         let publicPath = options.publicPath;
         if (options.list) {
-            const list = await sql((db) => db.vue);
+            const list = (await sql((db) => db.vue)) as (Database['vue'][number] & { branchName: string })[];
+            for (const item of list) {
+                item.branchName = await git.getCurrentBranchName(item.path);
+            }
             const { selectedId } = await this.inquirer.prompt([
                 {
                     type: 'list',
                     name: 'selectedId',
                     message: '请选择运行的项目及命令',
                     choices: list.map((item) => ({
-                        name: `${chalk.yellow(item.name)}(${chalk.blue(item.path)}) 命令: ${chalk.green(item.command)}`,
+                        name: `${chalk.yellow(item.name)}(${chalk.blue(item.path)}) 命令: ${chalk.green(
+                            item.command
+                        )} 分支: ${chalk.blue(item.branchName)}`,
                         value: item.id,
                     })),
                 },

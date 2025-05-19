@@ -32,38 +32,49 @@ export async function getCurrentBranchName(projectPath: string = process.cwd()):
 /**
  * 获取指定 Git 项目的状态
  * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
- * @returns {Promise<number>} 状态码
+ * @returns {Promise<{ status: number; branchName: string }>} 状态码
+ *
+ * - status: 状态码
  * - 0: 状态未知
  * - 1: 未提交
  * - 2: 未推送
  * - 3: 已推送
  * - 4: 不在 master/main 分支上
+ * - branchName: 分支名称
  */
-export async function getGitProjectStatus(projectPath: string = process.cwd()): Promise<number> {
+export async function getGitProjectStatus(projectPath: string = process.cwd()): Promise<{
+    status: number;
+    branchName: string;
+}> {
+    let status = 0;
+    const branchName = await getCurrentBranchName(projectPath);
     try {
-        const branchName = await getCurrentBranchName(projectPath);
-
         // 检查是否在 master/main 分支
         if (!['master', 'main'].includes(branchName)) {
-            return 4;
+            status = 4;
         }
 
         // 检查是否有未提交的更改
         const { stdout: statusOutput } = await execa(`git status --porcelain`, { cwd: projectPath });
         if (statusOutput.trim().length > 0) {
-            return 1;
+            status = 1;
         }
 
         // 检查是否有未推送的提交
         const { stdout: unpushedCommits } = await execa(`git cherry -v`, { cwd: projectPath });
         if (unpushedCommits.trim().length > 0) {
-            return 2;
+            status = 2;
         }
 
-        return 3;
+        status = 3;
     } catch {
-        return 0;
+        status = 0;
     }
+
+    return {
+        status,
+        branchName,
+    };
 }
 
 /**

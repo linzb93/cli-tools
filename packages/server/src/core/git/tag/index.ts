@@ -144,6 +144,11 @@ export default class extends BaseCommand {
             // 获取所有标签
             const tags = await getAllTags();
 
+            if (tags.length === 0) {
+                this.logger.info('当前项目没有标签');
+                return;
+            }
+
             // 生成新标签
             const newTag = await this.generateNewTag(tags, type, version);
 

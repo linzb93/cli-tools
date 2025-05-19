@@ -19,6 +19,7 @@ interface ResultItem {
      * 4. 不在主分支上
      * */
     status: number;
+    branchName: string;
 }
 
 export default class extends BaseCommand {
@@ -33,7 +34,13 @@ export default class extends BaseCommand {
         });
         list$.subscribe(async (list: ResultItem[]) => {
             this.logger.success(`扫描完成`);
-            table.push(...list.map((item) => [basename(item.path), item.path, this.getStatusMap(item.status)]));
+            table.push(
+                ...list.map((item) => [
+                    basename(item.path),
+                    item.path,
+                    `${this.getStatusMap(item.status)}${item.status === 4 ? ` (${item.branchName})` : ''}`,
+                ])
+            );
             console.log(table.toString());
         });
     }

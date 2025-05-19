@@ -35,7 +35,7 @@ export default async function useScan() {
             allDirs,
             async (dirInfo) => {
                 const full = join(dirInfo.prefix, dirInfo.dir);
-                const status = await gitUtil.getGitProjectStatus(full);
+                const { status, branchName } = await gitUtil.getGitProjectStatus(full);
                 counter += 1;
                 observer.next(counter);
                 return {
@@ -43,6 +43,7 @@ export default async function useScan() {
                     path: full,
                     folderName: dirInfo.folderName,
                     status,
+                    branchName,
                 };
             },
             { concurrency: 4 }

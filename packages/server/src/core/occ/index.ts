@@ -2,7 +2,7 @@ import clipboard from 'clipboardy';
 import open from 'open';
 import chalk from 'chalk';
 import BaseCommand from '../BaseCommand';
-import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtyxsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Spbj, Wmb, Kdb } from './apps';
+import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Spbj, Wmb, Kdb } from './apps';
 import BaseApp from './apps/base';
 
 export interface Options {
@@ -71,7 +71,6 @@ export default class extends BaseCommand {
         this.registerApp(Mtzxsq);
         this.registerApp(Mtpjsq);
         this.registerApp(Mtimsq);
-        this.registerApp(Mtyxsq);
         this.registerApp(Mtdjds);
         this.registerApp(Mtaibdsq);
         this.registerApp(Elejysq);
