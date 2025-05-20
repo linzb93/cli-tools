@@ -1,9 +1,9 @@
-import { Command } from 'commander';
 import Push, { type Options as PushOptions } from '../../core/git/push';
 import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
+import Scan from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -87,6 +87,13 @@ const branch = () => {
 };
 
 /**
+ * git scan 子命令的实现
+ */
+const scan = () => {
+    new Scan().main();
+};
+
+/**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  * @param {string[]} data - 子命令参数
@@ -100,6 +107,7 @@ export default function (subCommand: string, data: string[], options: any): void
         tag,
         deploy,
         branch,
+        scan,
     };
 
     // 执行对应的子命令
