@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { stringify } from 'node:querystring';
 import { yapiAuth } from './auth';
-
+import { AnyObject } from '@/typings';
 /**
- * Yapi接口返回的项目接口列表项
+ * Yapi接口详情
  */
-export interface YapiInterfaceListItem {
+export interface YapiInterfaceDetail {
     /**
      * 接口唯一标识
      */
@@ -35,26 +35,60 @@ export interface YapiInterfaceListItem {
      * 所属项目ID
      */
     project_id: string;
-}
 
-/**
- * Yapi接口详情
- */
-export interface YapiInterfaceDetail extends YapiInterfaceListItem {
+    /**
+     * 所属分类ID
+     */
+    catid: string;
+
     /**
      * 请求参数查询字段
      */
-    req_query: Array<{
-        name: string;
-        required: string;
-        example: string;
-        desc: string;
-    }>;
+    req_body_other: string;
 
     /**
      * 响应体
      */
     res_body: string;
+}
+/**
+ * 保存的索引接口数据
+ */
+export interface SavedData {
+    id: YapiInterfaceDetail['_id'];
+    /**
+     * 接口标题
+     */
+    title: YapiInterfaceDetail['title'];
+
+    /**
+     * 接口路径
+     */
+    path: YapiInterfaceDetail['path'];
+
+    /**
+     * 接口请求方法
+     */
+    method: YapiInterfaceDetail['method'];
+
+    /**
+     * 接口最后更新时间
+     */
+    updateTime: string;
+
+    /**
+     * 所属项目ID
+     */
+    projectId: YapiInterfaceDetail['project_id'];
+
+    /**
+     * 所属分类ID
+     */
+    catId: YapiInterfaceDetail['catid'];
+}
+export interface SavedFullData extends SavedData {
+    request: AnyObject;
+    response: AnyObject;
 }
 
 /**
@@ -159,7 +193,7 @@ export async function getYapiInterfaceList(obj: {
     projectId: string;
     total: number;
     catId?: string;
-}) {
+}): Promise<Pick<YapiInterfaceDetail, '_id'>[]> {
     const { origin, cookie, projectId, total, catId } = obj;
     const requestFn = async (currentCookie: string) => {
         try {
@@ -183,7 +217,9 @@ export async function getYapiInterfaceList(obj: {
                 return null;
             }
 
-            return response.data.data.list;
+            return response.data.data.list.map((item) => ({
+                _id: item._id,
+            }));
         } catch (error) {
             return null;
         }

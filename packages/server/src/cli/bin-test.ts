@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import git from './commands/git';
+import yapi from './commands/yapi';
 
 // 创建命令行程序
 const program = new Command();
@@ -9,11 +9,10 @@ const program = new Command();
 program.version('1.0.0').description('CLI工具集合');
 
 program
-    .command('git [sub-command] [rest...]')
-    .description('Git 相关命令集合')
-    .allowUnknownOption()
-    .action((subCommand, rest, cmd) => {
-        git(subCommand, rest, cmd);
+    .command('yapi <url>')
+    .description('获取yapi接口文档')
+    .action((url) => {
+        yapi(url);
     });
 
 // 解析命令行参数

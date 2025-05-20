@@ -1,7 +1,15 @@
 import { join } from 'node:path';
-import * as fs from 'node:fs';
+import fs from 'fs-extra';
 import BaseCommand from '../BaseCommand';
-import { getYapiInterfaceTotal, getYapiInterfaceList, getYapiInterfaceDetail, YapiInterfaceListItem } from './api';
+import dayjs from 'dayjs';
+import {
+    getYapiInterfaceTotal,
+    getYapiInterfaceList,
+    getYapiInterfaceDetail,
+    type YapiInterfaceDetail,
+    type SavedData,
+    type SavedFullData,
+} from './api';
 import { yapiAuth } from './auth';
 import pMap from 'p-map';
 
@@ -27,7 +35,7 @@ export default class extends BaseCommand {
     /**
      * 接口文档数据集合
      */
-    private apiDocs: YapiInterfaceListItem[] = [];
+    private apiDocs: SavedData[] = [];
 
     /**
      * Yapi命令入口
@@ -66,40 +74,58 @@ export default class extends BaseCommand {
                 }
             }
 
-            // 获取接口总数
-            const total = await getYapiInterfaceTotal({
-                origin: urlInfo.origin,
-                cookie,
-                projectId: urlInfo.projectId,
-                catId: urlInfo.type === 'category' ? urlInfo.catId : undefined
-            });
+            if (urlInfo.type !== 'single') {
+                // 获取接口总数
+                const total = await getYapiInterfaceTotal({
+                    origin: urlInfo.origin,
+                    cookie,
+                    projectId: urlInfo.projectId,
+                    catId: urlInfo.type === 'category' ? urlInfo.catId : undefined,
+                });
 
-            if (!total) {
-                this.logger.info('未找到接口文档');
-                return;
+                if (!total) {
+                    this.logger.info('未找到接口文档');
+                    return;
+                }
+
+                // 获取接口列表
+                const apiList = await getYapiInterfaceList({
+                    origin: urlInfo.origin,
+                    cookie,
+                    projectId: urlInfo.projectId,
+                    total,
+                    catId: urlInfo.type === 'category' ? urlInfo.catId : undefined,
+                });
+
+                if (!apiList || apiList.length === 0) {
+                    this.logger.info('未找到接口文档');
+                    return;
+                }
+
+                // 获取接口详情
+                await this.getApiDetails(urlInfo.origin, apiList, cookie);
+
+                // 更新索引文件
+                await this.updateIndexFile();
+
+                this.spinner.succeed(`成功获取 ${this.apiDocs.length} 个接口文档`);
+            } else {
+                // 获取单个接口详情
+                await this.getApiDetails(
+                    urlInfo.origin,
+                    [
+                        {
+                            _id: urlInfo.apiId,
+                        },
+                    ],
+                    cookie
+                );
+
+                // 更新索引文件
+                await this.updateIndexFile();
+
+                this.spinner.succeed(`成功获取 ${this.apiDocs.length} 个接口文档`);
             }
-
-            // 获取接口列表
-            const apiList = await getYapiInterfaceList({
-                origin: urlInfo.origin,
-                cookie,
-                projectId: urlInfo.projectId,
-                total,
-                catId: urlInfo.type === 'category' ? urlInfo.catId : undefined
-            });
-
-            if (!apiList || apiList.length === 0) {
-                this.logger.info('未找到接口文档');
-                return;
-            }
-
-            // 获取接口详情
-            await this.getApiDetails(urlInfo.origin, apiList, cookie);
-
-            // 更新索引文件
-            await this.updateIndexFile();
-
-            this.spinner.succeed(`成功获取 ${this.apiDocs.length} 个接口文档`);
         } catch (error) {
             this.spinner.fail('获取接口文档失败');
             this.logger.error(error.message || error);
@@ -111,7 +137,7 @@ export default class extends BaseCommand {
      */
     private ensureDirectoriesExist() {
         [this.docsPath, this.contentPath].forEach((dir) => {
-            if (!fs.existsSync(dir)) {
+            if (!fs.pathExistsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             }
         });
@@ -165,7 +191,7 @@ export default class extends BaseCommand {
      * @param apiList 接口列表
      * @param cookie Cookie字符串
      */
-    private async getApiDetails(origin: string, apiList: YapiInterfaceListItem[], cookie: string) {
+    private async getApiDetails(origin: string, apiList: Pick<YapiInterfaceDetail, '_id'>[], cookie: string) {
         await pMap(
             apiList,
             async (apiItem) => {
@@ -178,7 +204,16 @@ export default class extends BaseCommand {
                     }
 
                     // 保存接口基本信息到内存
-                    this.apiDocs.push(apiItem);
+                    const indexItem = {
+                        id: apiDetail._id,
+                        title: apiDetail.title,
+                        path: apiDetail.path,
+                        method: apiDetail.method,
+                        updateTime: dayjs(apiDetail.up_time * 1000).format('YYYY-MM-DD HH:mm:ss'),
+                        projectId: apiDetail.project_id,
+                        catId: apiDetail.catid,
+                    };
+                    this.apiDocs.push(indexItem);
 
                     // 创建并保存详细信息到文件
                     const contentDir = join(this.contentPath, `${apiDetail.project_id}-${apiDetail._id}`);
@@ -192,11 +227,12 @@ export default class extends BaseCommand {
                         originFile,
                         JSON.stringify(
                             {
-                                query: apiDetail.req_query,
-                                response: apiDetail.res_body,
+                                ...indexItem,
+                                request: JSON.parse(apiDetail.req_body_other),
+                                response: JSON.parse(apiDetail.res_body),
                             },
                             null,
-                            2
+                            4
                         )
                     );
 
@@ -218,15 +254,12 @@ export default class extends BaseCommand {
      */
     private async updateIndexFile() {
         try {
-            let existingDocs: YapiInterfaceListItem[] = [];
+            let existingDocs: SavedData[] = [];
 
             // 检查索引文件是否存在
-            if (fs.existsSync(this.indexPath)) {
+            if (fs.pathExistsSync(this.indexPath)) {
                 try {
-                    const content = fs.readFileSync(this.indexPath, 'utf-8');
-                    if (content.trim()) {
-                        existingDocs = JSON.parse(content);
-                    }
+                    existingDocs = await fs.readJSON(this.indexPath);
                 } catch (error) {
                     this.logger.error('读取索引文件失败，将创建新文件');
                 }
@@ -237,20 +270,20 @@ export default class extends BaseCommand {
 
             this.apiDocs.forEach((newDoc) => {
                 const existingIndex = mergedDocs.findIndex(
-                    (doc) => doc._id === newDoc._id && doc.project_id === newDoc.project_id
+                    (doc) => doc.id === newDoc.id && doc.projectId === newDoc.projectId
                 );
 
                 if (existingIndex === -1) {
                     // 添加新文档
                     mergedDocs.push(newDoc);
-                } else if (mergedDocs[existingIndex].up_time < newDoc.up_time) {
+                } else if (mergedDocs[existingIndex].updateTime < newDoc.updateTime) {
                     // 更新已存在但较旧的文档
                     mergedDocs[existingIndex] = newDoc;
                 }
             });
 
             // 写入更新后的索引文件
-            fs.writeFileSync(this.indexPath, JSON.stringify(mergedDocs, null, 2));
+            await fs.writeJSON(this.indexPath, mergedDocs, { spaces: 4 });
         } catch (error) {
             this.logger.error('更新索引文件失败:', error.message);
         }
