@@ -25,6 +25,12 @@ graph TD
     M --> N[列出所有分支]
     N --> O[切换分支]
     O --> P[执行打包]
+    B -->|切换分支并启动服务器| Q[选择项目]
+    Q --> R[列出所有分支]
+    R --> S[切换分支]
+    S --> T[执行打包]
+    T --> U[启动服务]
+    U --> K
 ```
 
 ## API 设计
@@ -36,6 +42,7 @@ graph TD
     -   `list`：是否显示已保存项目列表
     -   `server`：是否仅启动服务
     -   `checkoutAndBuild`：是否切换分支并打包
+    -   `checkout`：是否切换分支、打包并启动服务器
     -   `current`：是否使用当前项目
     -   `port`：服务启动端口（默认 7001）
     -   `publicPath`：项目公共路径
@@ -67,6 +74,9 @@ vue --server
 
 // 切换分支并打包
 vue --checkout-and-build
+
+// 切换分支、打包并启动服务器
+vue --checkout
 ```
 
 ## 注意事项

@@ -14,7 +14,7 @@ import color from './commands/color';
 import fork from './commands/fork';
 import kill from './commands/kill';
 import lixi from './commands/lixi';
-import yapi from './commands/yapi';
+// import yapi from './commands/yapi';
 // import mock from "./commands/mock";
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
@@ -232,17 +232,18 @@ program
     .option('-l, --list', '显示列表')
     .option('-s,--server', '直接启动服务器，不打包')
     .option('-c, --checkoutAndBuild', '切换分支并打包')
+    .option('--checkout', '切换分支，打包并启动服务器')
     .option('--current', '在本项目启动服务器')
     .option('--port <port>', '启动的端口号')
     .option('--publicPath <path>', '设置publicPath')
     .action((option) => {
         vue(option);
     });
-program
-    .command('yapi <url>')
-    .description('获取yapi接口文档')
-    .action((url) => {
-        yapi(url);
-    });
+// program
+//     .command('yapi <url>')
+//     .description('获取yapi接口文档')
+//     .action((url) => {
+//         yapi(url);
+//     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

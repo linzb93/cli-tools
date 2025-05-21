@@ -243,12 +243,20 @@ interface DeleteBranchOptions {
 /**
  * 删除指定项目的指定分支
  * @param {DeleteBranchOptions} options - 删除分支的配置选项
+ * @param {string} options.branchName - 要删除的分支名称
+ * @param {string} [options.projectPath=process.cwd()] - 项目路径，默认为当前工作目录
+ * @param {boolean} [options.remote=false] - 是否删除远端分支
+ * @param {boolean} [options.force=false] - 是否强制删除分支
  * @returns {Promise<void>}
  */
-export async function deleteBranch(options: DeleteBranchOptions): Promise<any> {
-    const { branchName, projectPath = process.cwd(), remote = false } = options;
+export async function deleteBranch(options: DeleteBranchOptions & { force?: boolean }): Promise<any> {
+    const { branchName, projectPath = process.cwd(), remote = false, force = false } = options;
 
-    const command = remote ? `git push origin --delete ${branchName}` : `git branch -d ${branchName}`;
+    const command = remote
+        ? `git push origin --delete ${branchName}`
+        : force
+        ? `git branch -D ${branchName}`
+        : `git branch -d ${branchName}`;
 
     return await execa(command, { cwd: projectPath });
 }
