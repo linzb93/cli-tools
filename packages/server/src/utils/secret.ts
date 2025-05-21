@@ -3,11 +3,13 @@ import { Low, JSONFile } from 'lowdb';
 import { cacheRoot } from './constant';
 
 interface Database {
-    aiApiKey: {
-        deepseek: string;
-        siliconflow: string;
-        volcano: string;
-        volcanoDeepseekV3: string;
+    ai: {
+        apiKey: {
+            deepseek: string;
+            siliconflow: string;
+            volcano: string;
+            volcanoDeepseekV3: string;
+        };
     };
     oa: {
         apiPrefix?: string;
@@ -38,10 +40,14 @@ interface Database {
 export async function readSecret<T>(callback: (data: Database) => T): Promise<T> {
     const dbPath = join(cacheRoot, 'secret.json');
     const db = new Low(new JSONFile(dbPath));
+    await db.read();
     const data = db.data as unknown as Database;
     let result: any;
     if (typeof callback === 'function') {
         result = await callback(data);
+    }
+    if (result === null) {
+        await db.write();
     }
     return result;
 }

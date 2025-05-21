@@ -5,17 +5,32 @@ import BaseModel from './base';
  */
 export default class VolcanoTextModel extends BaseModel {
     /**
+     * 模型标题
+     */
+    title = '火山方舟大模型Deepseek-v3';
+
+    /**
+     * API基础URL
+     */
+    baseURL = 'https://ark.cn-beijing.volces.com/api/v3';
+
+    /**
+     * 模型标识符
+     */
+    model = 'deepseek-v3-250324';
+
+    /**
+     * 模型类型
+     */
+    type = 'text';
+
+    /**
      * 构造函数
      * @param apiKey API密钥
      */
     constructor(apiKey: string) {
-        super({
-            title: '火山方舟大模型Deepseek-v3',
-            apiKey,
-            baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-            model: 'deepseek-v3-250324',
-            type: 'text',
-        });
+        super();
+        this.apiKey = apiKey;
     }
 
     /**

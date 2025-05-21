@@ -11,12 +11,12 @@ import VolcanoTextModel from './volcano-text';
  * @returns 模型列表
  */
 export default async function getModels(type: string): Promise<BaseModel[]> {
-    const apiKey = await readSecret((db) => db.aiApiKey);
+    const apiKey = await readSecret((db) => db.ai.apiKey);
 
     const models: BaseModel[] = [
-        new VolcanoTextModel(apiKey.volcanoDeepseekV3),
-        new SiliconflowModel(apiKey.siliconflow),
         new DeepseekModel(apiKey.deepseek),
+        new SiliconflowModel(apiKey.siliconflow),
+        new VolcanoTextModel(apiKey.volcanoDeepseekV3),
         new VolcanoImageModel(apiKey.volcano),
     ];
 

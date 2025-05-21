@@ -1,8 +1,7 @@
-import { type Options } from '@/core/ai/shared/types';
 import { isOldNode } from '@/utils/helper';
 import { logger } from '@/utils/logger';
 import { subCommandCompiler } from '@/utils/helper';
-import OCR from '@/core/ai/ocr/index';
+import OCR, { Options } from '@/core/ai/ocr/index';
 import Regex from '@/core/ai/regex';
 /**
  * OCR子命令
@@ -12,8 +11,7 @@ const ocr = () => {
         program
             .command('ocr')
             .description('图像识别工具')
-            .option('--ask', '是否继续提问')
-            .option('--eng', '是否翻译')
+            .option('--url <url>', '图片线上地址')
             .action((options: Options) => {
                 if (isOldNode) {
                     logger.error('请使用node18+版本');
@@ -32,12 +30,12 @@ const regex = () => {
         program
             .command('regex <pattern>')
             .description('正则表达式解析工具')
-            .action((pattern: string, options: Options) => {
+            .action((pattern: string) => {
                 if (isOldNode) {
                     logger.error('请使用node18+版本');
                     return;
                 }
-                new Regex().main(pattern, options);
+                new Regex().main(pattern);
             });
     });
 };

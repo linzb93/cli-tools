@@ -5,17 +5,32 @@ import BaseModel from './base';
  */
 export default class SiliconflowModel extends BaseModel {
     /**
+     * 模型标题
+     */
+    title = 'siliconflow';
+
+    /**
+     * API基础URL
+     */
+    baseURL = 'https://api.siliconflow.cn';
+
+    /**
+     * 模型标识符
+     */
+    model = 'deepseek-ai/DeepSeek-V3';
+
+    /**
+     * 模型类型
+     */
+    type = 'text';
+
+    /**
      * 构造函数
      * @param apiKey API密钥
      */
     constructor(apiKey: string) {
-        super({
-            title: 'siliconflow',
-            apiKey,
-            baseURL: 'https://api.siliconflow.cn',
-            model: 'deepseek-ai/DeepSeek-V3',
-            type: 'text',
-        });
+        super();
+        this.apiKey = apiKey;
     }
 
     /**

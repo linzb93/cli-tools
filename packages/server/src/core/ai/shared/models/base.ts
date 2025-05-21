@@ -32,39 +32,27 @@ export default abstract class BaseModel {
     /**
      * 模型标题
      */
-    public title: string;
+    abstract title: string;
 
     /**
      * API密钥
      */
-    public apiKey: string;
+    apiKey = '';
 
     /**
      * API基础URL
      */
-    public baseURL: string;
+    abstract baseURL: string;
 
     /**
      * 模型标识符
      */
-    public model: string;
+    abstract model: string;
 
     /**
      * 模型类型（text或image）
      */
-    public type: string;
-
-    /**
-     * 构造函数
-     * @param config 模型配置
-     */
-    constructor(config: ModelConfig) {
-        this.title = config.title;
-        this.apiKey = config.apiKey;
-        this.baseURL = config.baseURL;
-        this.model = config.model;
-        this.type = config.type;
-    }
+    abstract type: string;
 
     /**
      * 错误处理方法

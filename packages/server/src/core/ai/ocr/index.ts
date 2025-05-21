@@ -1,12 +1,19 @@
 import imageClipboard from '@/utils/clipboard';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
-import inquirer from '@/utils/inquirer';
 import clipboardy from 'clipboardy';
-import spinner from '@/utils/spinner';
 import BaseCommand from '../../BaseCommand';
 import AiImpl from '../shared/ai-impl';
-import { MessageOptions, Options } from '../shared/types';
-
+import { MessageOptions } from '../shared/types';
+/**
+ * 选项接口
+ */
+export interface Options {
+    /**
+     * 图片线上地址
+     * @default '''
+     */
+    url: string;
+}
 /**
  * OCR功能类
  * 处理图像识别相关功能
@@ -28,28 +35,34 @@ export default class OCR extends BaseCommand {
      * @param options 选项
      */
     async main(options: Options) {
-        spinner.text = '正在识别图片';
+        this.spinner.text = '正在识别图片';
         try {
             const startTime = Date.now();
-            const image = await imageClipboard.read();
-            const uploadInfo = await tempUpload({
-                type: 'stream',
-                data: imageBase64ToStream(image),
-            });
-            const { url } = uploadInfo;
-            this.removeHandler = uploadInfo.removeHandler;
+            let imageUrl: string;
 
-            const result = await this.processImage(url);
-            clipboardy.writeSync(result);
-            spinner.succeed(`识别成功：\n${result}`);
-
-            if (options.ask) {
-                await this.handleAdditionalQuestion(result);
-                return;
+            // 如果提供了URL，直接使用URL
+            if (options.url) {
+                imageUrl = options.url;
+            } else {
+                // 否则从剪贴板读取
+                const image = await imageClipboard.read();
+                const uploadInfo = await tempUpload({
+                    type: 'stream',
+                    data: imageBase64ToStream(image),
+                });
+                const { url, removeHandler } = uploadInfo;
+                this.removeHandler = removeHandler;
+                imageUrl = url;
             }
 
-            spinner.succeed(`识别成功，耗时${(Date.now() - startTime) / 1000}s，结果已复制到剪贴板`);
-            this.cleanUp();
+            const result = await this.processImage(imageUrl);
+            clipboardy.writeSync(result);
+            this.spinner.succeed(`识别成功，耗时${(Date.now() - startTime) / 1000}s，结果已复制到剪贴板`);
+
+            // 如果是剪贴板图片，则清理临时文件
+            if (!options.url) {
+                this.cleanUp();
+            }
         } catch (error) {
             this.handleError(error);
         }
@@ -85,25 +98,6 @@ export default class OCR extends BaseCommand {
     }
 
     /**
-     * 处理额外的问题
-     * @param result 识别结果
-     */
-    private async handleAdditionalQuestion(result: string): Promise<void> {
-        const { askResult } = await inquirer.prompt({
-            type: 'input',
-            name: 'askResult',
-            message: '请针对识别结果提问',
-        });
-
-        await new AiImpl().use([
-            {
-                role: 'user',
-                content: `${askResult}。如果是纯英文的话，请先翻译成中文，再给出解决方案。\n${result}`,
-            },
-        ]);
-    }
-
-    /**
      * 错误处理
      * @param error 错误对象
      */
@@ -111,10 +105,10 @@ export default class OCR extends BaseCommand {
         this.cleanUp();
         const { message } = error;
         if (message === 'no image found') {
-            spinner.fail('剪贴板里面没有图片');
+            this.spinner.fail('剪贴板里面没有图片');
             return;
         }
-        spinner.fail(message);
+        this.spinner.fail(message);
     }
 
     /**

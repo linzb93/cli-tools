@@ -1,6 +1,6 @@
 import BaseCommand from '../../BaseCommand';
 import AiImpl from '../shared/ai-impl';
-import { MessageOptions, Options } from '../shared/types';
+import { MessageOptions } from '../shared/types';
 import { printObject } from '../shared/utils';
 
 /**
@@ -18,7 +18,7 @@ export default class Regex extends BaseCommand {
      * @param input 输入内容
      * @param options 选项
      */
-    async main(input: string, options: Options) {
+    async main(input: string) {
         try {
             // 正则表达式中的反斜杠需要转义
             const processedInput = input.replace(/\\/g, '\\\\');

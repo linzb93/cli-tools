@@ -5,17 +5,27 @@ import BaseModel from './base';
  */
 export default class DeepseekModel extends BaseModel {
     /**
-     * 构造函数
-     * @param apiKey API密钥
+     * 模型标题
      */
+    title = 'DeepSeek';
+
+    /**
+     * API基础URL
+     */
+    baseURL = 'https://api.deepseek.com';
+
+    /**
+     * 模型标识符
+     */
+    model = 'deepseek-chat';
+
+    /**
+     * 模型类型
+     */
+    type = 'text';
     constructor(apiKey: string) {
-        super({
-            title: 'DeepSeek',
-            apiKey,
-            baseURL: 'https://api.deepseek.com',
-            model: 'deepseek-chat',
-            type: 'text',
-        });
+        super();
+        this.apiKey = apiKey;
     }
 
     /**
