@@ -103,11 +103,9 @@ export default class Vue extends BaseCommand {
         if (!publicPath) {
             const contentSeg = confFileContent.split('\n');
             const matchLine = contentSeg.find((line) => line.includes('publicPath:'));
-            if (!matchLine) {
-                this.logger.error('vue.config.js not found');
-                return;
+            if (matchLine) {
+                publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
             }
-            publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
         }
         if (!options.list) {
             await sql((db) => {
