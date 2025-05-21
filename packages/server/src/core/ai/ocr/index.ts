@@ -32,12 +32,12 @@ export default class OCR extends BaseCommand {
         try {
             const startTime = Date.now();
             const image = await imageClipboard.read();
-            const ret = await tempUpload({
+            const uploadInfo = await tempUpload({
                 type: 'stream',
                 data: imageBase64ToStream(image),
             });
-            const { url } = ret;
-            this.removeHandler = ret.removeHandler;
+            const { url } = uploadInfo;
+            this.removeHandler = uploadInfo.removeHandler;
 
             const result = await this.processImage(url);
             clipboardy.writeSync(result);
