@@ -101,7 +101,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
                 return;
             }
             // 合并到主分支
-            await this.mergeToBranch(this.mainBranch, true);
+            await this.mergeToBranch(this.mainBranch, false);
             // 发布项目流程
             await this.handleTagAndOutput();
         } else if (!this.options.current) {

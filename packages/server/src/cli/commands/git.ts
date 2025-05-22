@@ -79,7 +79,7 @@ const branch = () => {
         program
             .command('branch')
             .description('管理Git分支')
-            .option('--delete', '删除分支')
+            .option('-d, --delete', '删除分支')
             .action((options: BranchOptions) => {
                 new Branch().main(options);
             });

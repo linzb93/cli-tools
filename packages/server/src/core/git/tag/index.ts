@@ -156,9 +156,9 @@ export default class extends BaseCommand {
 
             // 创建本地标签并推送到远程
             await executeCommands([this.createTag(newTag), this.pushTag(newTag)]);
-            const { id } = await getProjectName();
-            this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${id}, ${newTag}`)}`);
-            clipboardy.writeSync(`${id}, ${newTag}`);
+            const { onlineId } = await getProjectName();
+            this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${onlineId}, ${newTag}`)}`);
+            clipboardy.writeSync(`${onlineId}, ${newTag}`);
         } catch (error) {
             this.logger.error(`创建标签失败: ${error.message || error}`);
         }
