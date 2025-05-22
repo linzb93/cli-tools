@@ -1,5 +1,5 @@
 import BaseModel from './base';
-
+import { readSecret } from '@/utils/secret';
 /**
  * DeepSeek模型
  */
@@ -23,9 +23,12 @@ export default class DeepseekModel extends BaseModel {
      * 模型类型
      */
     type = 'text';
-    constructor(apiKey: string) {
+    constructor() {
         super();
-        this.apiKey = apiKey;
+        this.init();
+    }
+    async init() {
+        this.apiKey = await readSecret((db) => db.ai.apiKey.deepseek);
     }
 
     /**

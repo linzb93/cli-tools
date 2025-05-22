@@ -1,3 +1,4 @@
+import { readSecret } from '@/utils/secret';
 import BaseModel from './base';
 
 /**
@@ -26,11 +27,14 @@ export default class SiliconflowModel extends BaseModel {
 
     /**
      * 构造函数
-     * @param apiKey API密钥
      */
-    constructor(apiKey: string) {
+    constructor() {
         super();
-        this.apiKey = apiKey;
+        this.init();
+    }
+
+    async init() {
+        this.apiKey = await readSecret((db) => db.ai.apiKey.siliconflow);
     }
 
     /**

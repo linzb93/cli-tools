@@ -53,6 +53,7 @@ export default abstract class BaseModel {
      * 模型类型（text或image）
      */
     abstract type: string;
+    abstract init(): void;
 
     /**
      * 错误处理方法

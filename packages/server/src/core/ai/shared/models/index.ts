@@ -1,4 +1,3 @@
-import { readSecret } from '@/utils/secret';
 import BaseModel from './base';
 import DeepseekModel from './deepseek';
 import SiliconflowModel from './siliconflow';
@@ -11,13 +10,11 @@ import VolcanoTextModel from './volcano-text';
  * @returns 模型列表
  */
 export default async function getModels(type: string): Promise<BaseModel[]> {
-    const apiKey = await readSecret((db) => db.ai.apiKey);
-
     const models: BaseModel[] = [
-        new DeepseekModel(apiKey.deepseek),
-        new SiliconflowModel(apiKey.siliconflow),
-        new VolcanoTextModel(apiKey.volcanoDeepseekV3),
-        new VolcanoImageModel(apiKey.volcano),
+        new DeepseekModel(),
+        new SiliconflowModel(),
+        new VolcanoTextModel(),
+        new VolcanoImageModel(),
     ];
 
     return models.filter((model) => model.type === type);
