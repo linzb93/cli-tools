@@ -14,7 +14,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import request from '@/helpers/request'

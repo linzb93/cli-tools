@@ -9,7 +9,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { shallowRef, watch, reactive } from 'vue'
 import request from '@/helpers/request'
 const props = defineProps({

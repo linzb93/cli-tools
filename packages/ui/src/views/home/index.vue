@@ -4,6 +4,7 @@
     <h1>工具箱</h1>
   </div>
 </template>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
 .home {

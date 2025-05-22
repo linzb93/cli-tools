@@ -34,7 +34,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { shallowReactive, ref, shallowRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import { omit } from 'lodash-es'

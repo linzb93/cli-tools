@@ -4,7 +4,7 @@
   </el-icon>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   VueIcon,
   Css,
@@ -24,11 +24,11 @@ import {
   Mp3,
   Excel,
   Font,
-  App,
-} from "./icons";
+  App
+} from './icons'
 const props = defineProps({
-  type: String,
-});
+  type: String
+})
 const map = {
   app: App,
   html: Html,
@@ -48,61 +48,50 @@ const map = {
   mp3: Mp3,
   file: File,
   zip: Zip,
-  excel: Excel,
-};
+  excel: Excel
+}
 
 // 获取文件图标
 const getExtIcon = (extName) => {
-  if (["jpg", "jpeg", "png", "webp", "gif"].includes(extName)) {
-    return "img";
+  if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(extName)) {
+    return 'img'
   }
-  if (["mp4", "wav", "avi", "mpeg", "mov", "flv", "m4a"].includes(extName)) {
-    return "video";
+  if (['mp4', 'wav', 'avi', 'mpeg', 'mov', 'flv', 'm4a'].includes(extName)) {
+    return 'video'
   }
   if (
-    [
-      "html",
-      "css",
-      "js",
-      "vue",
-      "md",
-      "jsx",
-      "vue",
-      "scss",
-      "svg",
-      "txt",
-      "ts",
-      "mp3",
-    ].includes(extName)
+    ['html', 'css', 'js', 'vue', 'md', 'jsx', 'vue', 'scss', 'svg', 'txt', 'ts', 'mp3'].includes(
+      extName
+    )
   ) {
-    return extName;
+    return extName
   }
-  if (["apk", "ipa"].includes(extName)) {
-    return "app";
+  if (['apk', 'ipa'].includes(extName)) {
+    return 'app'
   }
-  if (["json", "yml"].includes(extName)) {
-    return "json";
+  if (['json', 'yml'].includes(extName)) {
+    return 'json'
   }
-  if (["rar", "zip", "7z", "exe"].includes(extName)) {
-    return "zip";
+  if (['rar', 'zip', '7z', 'exe'].includes(extName)) {
+    return 'zip'
   }
-  if (extName.startsWith("json")) {
-    return "json";
+  if (extName.startsWith('json')) {
+    return 'json'
   }
-  if (["sass", "less"].includes(extName)) {
-    return "scss";
+  if (['sass', 'less'].includes(extName)) {
+    return 'scss'
   }
-  if (["xls", "xlsx", "csv"].includes(extName)) {
-    return "excel";
+  if (['xls', 'xlsx', 'csv'].includes(extName)) {
+    return 'excel'
   }
-  if (extName === "tsx") {
-    return "jsx";
+  if (extName === 'tsx') {
+    return 'jsx'
   }
-  if (["ttf", "woff"].includes(extName)) {
-    return "font";
+  if (['ttf', 'woff'].includes(extName)) {
+    return 'font'
   }
-  return "file";
-};
+  return 'file'
+}
 </script>
 <style lang="scss" scoped>
 .file-icon {
