@@ -1,8 +1,10 @@
-import jwt from 'jsonwebtoken';
 import chalk from 'chalk';
 import Time from '../time';
 import BaseCommand from '../BaseCommand';
 import { AnyObject } from '@/typings';
+import TokenParser from './TokenParser';
+import JwtTokenParser from './JwtTokenParser';
+import Base64TokenParser from './Base64TokenParser';
 
 export interface Options {
     /**
@@ -15,47 +17,37 @@ export interface Options {
     complete?: boolean;
 }
 
-const strategyList = [
-    {
-        name: 'jwt',
-        action(token: string, options: Options): string {
-            const tokenStr = token.replace(/^(.+_)?/, ''); // 把前面可能有的occ_senior_去掉
-            const decoded = jwt.decode(tokenStr, {
-                complete: options.complete,
-            }) as AnyObject; // 解析数据格式不定
-            if (!decoded) {
-                throw new Error('无法解析');
-            }
-            return decoded as unknown as string;
-        },
-    },
-    {
-        name: 'base64',
-        action(token: string) {
-            const str = Buffer.from(token, 'base64');
-            return str.toString('utf8');
-        },
-    },
-];
-
 export default class extends BaseCommand {
+    /**
+     * 解析token的主方法
+     * @param tk 待解析的token字符串
+     * @param options 解析选项
+     */
     async main(tk: string, options: Options) {
-        let decoded = '';
-        let matchTitle = '';
-        for (const item of strategyList) {
+        // 创建解析器列表
+        const parsers: TokenParser[] = [new JwtTokenParser(), new Base64TokenParser()];
+
+        let decoded: any = '';
+        let matchParser: TokenParser | null = null;
+
+        // 尝试每个解析器
+        for (const parser of parsers) {
             try {
-                decoded = item.action(tk, options);
-                matchTitle = item.name;
+                decoded = parser.parse(tk, options);
+                matchParser = parser;
                 break;
             } catch (error) {
                 continue;
             }
         }
-        if (!decoded) {
+
+        if (!decoded || !matchParser) {
             console.log('无法解析token');
             return;
         }
-        console.log(`使用${chalk.magenta(matchTitle)}解析结果：`);
+
+        console.log(`使用${chalk.magenta(matchParser.getName())}解析结果：`);
+
         if (typeof decoded === 'string') {
             try {
                 console.log(JSON.parse(decoded));
@@ -64,23 +56,33 @@ export default class extends BaseCommand {
             }
             return;
         }
-        const result = Object.keys(decoded).reduce((obj, key) => {
-            if (
-                Number.isInteger(decoded[key]) &&
-                //@ts-ignore
-                (decoded[key].toString().length === 10 || decoded[key].toString().length === 13)
-            ) {
+
+        // 处理时间戳
+        if (!options.origin) {
+            decoded = this.processTimestamps(decoded);
+        }
+
+        console.log(decoded || '无法解析token');
+    }
+
+    /**
+     * 处理对象中可能存在的时间戳
+     * @param data 包含可能时间戳的对象
+     * @returns 处理后的对象
+     */
+    private processTimestamps(data: AnyObject): AnyObject {
+        return Object.keys(data).reduce((obj, key) => {
+            if (Number.isInteger(data[key]) && (String(data[key]).length === 10 || String(data[key]).length === 13)) {
                 // 可能是时间戳
                 return {
                     ...obj,
-                    [key]: new Time().get(decoded[key]),
+                    [key]: new Time().get(data[key]),
                 };
             }
             return {
                 ...obj,
-                [key]: decoded[key],
+                [key]: data[key],
             };
-        }, {});
-        console.log(result || '无法解析token');
+        }, {} as AnyObject);
     }
 }
