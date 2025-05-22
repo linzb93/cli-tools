@@ -253,7 +253,7 @@ export async function deleteBranch(options: DeleteBranchOptions & { force?: bool
     const { branchName, projectPath = process.cwd(), remote = false, force = false } = options;
 
     const command = remote
-        ? `git push origin --delete ${branchName}`
+        ? `git push origin :refs/heads/${branchName}`
         : force
         ? `git branch -D ${branchName}`
         : `git branch -d ${branchName}`;

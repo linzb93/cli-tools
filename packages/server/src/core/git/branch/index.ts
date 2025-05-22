@@ -17,12 +17,8 @@ export interface Options {
     key: string;
 }
 
-interface BranchExtraItem {
-    name: string;
+interface BranchExtraItem extends BranchInfo {
     value: string;
-    hasLocal: boolean;
-    hasRemote: boolean;
-    createTime: string;
 }
 
 export default class extends BaseCommand {
@@ -132,8 +128,7 @@ export default class extends BaseCommand {
                     branchesWithoutUnpushedCommits.push(branch);
                 }
             } catch (error) {
-                // 如果出错，可能是分支不存在于远程，视为有未推送的 commit
-                branchesWithUnpushedCommits.push(branch);
+                branchesWithoutUnpushedCommits.push(branch);
             }
         }
 
@@ -200,6 +195,9 @@ export default class extends BaseCommand {
             } else {
                 this.logger.warn('已取消强制删除分支');
             }
+        }
+        if (this.spinner.isSpinning) {
+            this.spinner.succeed('删除成功');
         }
     }
     private async renderBranchList(params: { keyword: string; showCreateTime: boolean }) {

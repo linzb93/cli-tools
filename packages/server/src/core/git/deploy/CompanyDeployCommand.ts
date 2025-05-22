@@ -100,12 +100,10 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
                 this.logger.info('已取消发布操作');
                 return;
             }
-
-            // 发布项目流程
-            await this.handleTagAndOutput();
-
             // 合并到主分支
             await this.mergeToBranch(this.mainBranch, true);
+            // 发布项目流程
+            await this.handleTagAndOutput();
         } else if (!this.options.current) {
             // 合并到release分支
             await this.mergeToBranch('release', true);

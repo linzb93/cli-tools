@@ -1,23 +1,16 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import ai from './commands/ai';
-import eng from './commands/eng';
+import git from './commands/git';
 // 创建命令行程序
 const program = new Command();
 
 // 设置程序基本信息
 program.version('1.0.0').description('CLI工具集合');
 program
-    .command('ai [sub-command] [rest...]')
+    .command('git [sub-command] [rest...]')
     .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        ai(subCommand, rest, options);
-    });
-program
-    .command('eng [text]')
-    .option('-e,--example', '显示范例')
-    .action((text, options) => {
-        eng(text, options);
+    .action((subCommand, rest, cmd) => {
+        git(subCommand, rest, cmd);
     });
 // 解析命令行参数
 program.parse(process.argv);
