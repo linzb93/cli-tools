@@ -48,26 +48,30 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
 }> {
     let status = 0;
     const branchName = await getCurrentBranchName(projectPath);
+    // 检查是否在 master/main 分支
+    if (!['master', 'main'].includes(branchName)) {
+        status = 4;
+    }
     try {
-        // 检查是否在 master/main 分支
-        if (!['master', 'main'].includes(branchName)) {
-            status = 4;
-        }
-
-        // 检查是否有未提交的更改
-        const { stdout: statusOutput } = await execa(`git status --porcelain`, { cwd: projectPath });
-        if (statusOutput.trim().length > 0) {
+        let stdout = '';
+        const data = await execa('git status', {
+            cwd: projectPath,
+        });
+        stdout = data.stdout;
+        if (stdout.includes('Changes not staged for commit') || stdout.includes('Changes to be committed')) {
             status = 1;
         }
-
-        // 检查是否有未推送的提交
-        const { stdout: unpushedCommits } = await execa(`git cherry -v`, { cwd: projectPath });
-        if (unpushedCommits.trim().length > 0) {
+        if (stdout.includes('Your branch is ahead of ')) {
             status = 2;
         }
-
-        status = 3;
-    } catch {
+        const currentBranchName = stdout.match(/On branch (\S+)/) as RegExpMatchArray;
+        if (!['master', 'main'].includes(currentBranchName[1])) {
+            status = 4;
+        }
+        if (stdout.includes('nothing to commit')) {
+            status = 3;
+        }
+    } catch (error) {
         status = 0;
     }
 

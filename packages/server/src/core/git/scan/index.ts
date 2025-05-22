@@ -7,7 +7,7 @@ import progress from '@/utils/progress';
 
 const table = new Table({
     head: ['名称', '地址', '状态'],
-    colAligns: ['left', 'left', 'center'],
+    colAligns: ['left', 'left', 'left'],
 });
 
 interface ResultItem {
@@ -33,12 +33,14 @@ export default class extends BaseCommand {
             progress.tick();
         });
         list$.subscribe(async (list: ResultItem[]) => {
-            this.logger.success(`扫描完成`);
+            this.logger.backwardConsole(2);
             table.push(
                 ...list.map((item) => [
                     basename(item.path),
                     item.path,
-                    `${this.getStatusMap(item.status)}${item.status === 4 ? ` (${item.branchName})` : ''}`,
+                    `${this.getStatusMap(item.status)}${
+                        item.status === 4 && !!item.branchName ? ` (${item.branchName})` : ''
+                    }`,
                 ])
             );
             console.log(table.toString());

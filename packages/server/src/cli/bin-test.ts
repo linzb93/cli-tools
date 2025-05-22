@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import eng from './commands/eng';
+import git from './commands/git';
 // 创建命令行程序
 const program = new Command();
 
@@ -11,6 +12,12 @@ program
     .option('-e,--example', '显示范例')
     .action((text, options) => {
         eng(text, options);
+    });
+program
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, cmd) => {
+        git(subCommand, rest, cmd);
     });
 // 解析命令行参数
 program.parse(process.argv);

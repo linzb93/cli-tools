@@ -111,10 +111,12 @@ class Logger {
     /**
      * 控制台光标回退一行
      */
-    backwardConsole(): void {
+    backwardConsole(times = 1): void {
         if (process.stdout.isTTY) {
-            process.stdout.moveCursor(0, -1);
-            process.stdout.clearLine(0);
+            for (let i = 0; i < times; i++) {
+                process.stdout.moveCursor(0, -1);
+                process.stdout.clearLine(0);
+            }
         }
     }
 

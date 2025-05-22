@@ -1,6 +1,4 @@
-/* eslint-disable no-redeclare */
-import { execaCommand as execa } from 'execa';
-import { isPlainObject, get } from 'lodash-es';
+import { get } from 'lodash-es';
 import { load, CheerioAPI } from 'cheerio';
 import axios from 'axios';
 import fs from 'fs-extra';
