@@ -31,7 +31,8 @@ export default class AiTranslator extends BaseTranslator {
         ]);
 
         try {
-            return JSON.parse(translateResult).items as TranslateResultItem[];
+            const newText = translateResult.replace('```json', '').replace('```', '').trim();
+            return JSON.parse(newText).items as TranslateResultItem[];
         } catch (error) {
             return [];
         }

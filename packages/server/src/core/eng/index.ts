@@ -67,7 +67,7 @@ export default class extends BaseCommand {
             }
         }
 
-        this.spinner.succeed();
+        this.spinner.succeed('翻译完成');
         this.logTranslateResult(text, match.tool, match.result);
     }
 
@@ -78,7 +78,6 @@ export default class extends BaseCommand {
      * @param result - 翻译结果
      */
     logTranslateResult(originText: string, title: string, result: TranslateResultItem[]) {
-        this.spinner.succeed();
         this.logger.box({
             title: this.isC2E ? '中文 => 英文' : '英文 => 中文',
             borderColor: 'red',
