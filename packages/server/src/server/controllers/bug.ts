@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import sql from '@/utils/sql';
+import response from '../shared/response';
 const router = Router();
 
 router.post('/getApps', async (req, res) => {
     sql((db) => db.monitor)
         .then((result) => {
-            res.send({
+            response(res, {
                 list: result,
             });
         })
@@ -18,7 +19,7 @@ router.post('/saveApps', async (req, res) => {
     sql((db) => {
         db.monitor = list;
     }).then(() => {
-        res.send(null);
+        response(res, null);
     });
 });
 export default router;

@@ -11,6 +11,20 @@ interface Database {
             volcanoDeepseekV3: string;
         };
     };
+    jenkins: {
+        url: {
+            internal: string;
+            public: string;
+        };
+    };
+    oss: {
+        domain: string;
+        region: string;
+        accessKeyId: string;
+        accessKeySecret: string;
+        bucket: string;
+        uploadPath: string;
+    };
     oa: {
         apiPrefix?: string;
         testPrefix?: string;

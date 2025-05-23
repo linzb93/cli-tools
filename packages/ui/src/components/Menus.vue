@@ -4,9 +4,6 @@
       <router-link to="/setting"
         ><el-icon class="sub-btn curp" title="设置"><Setting /></el-icon
       ></router-link>
-      <el-icon @click="startSync" class="sub-btn curp" title="同步菜单">
-        <Refresh />
-      </el-icon>
     </div>
     <ul>
       <li v-for="menu in menuList" :key="menu.title" :class="{ active: isActive(menu) }">
@@ -19,19 +16,6 @@
       </li>
     </ul>
   </div>
-  <el-dialog v-model="visible" title="登录" width="400px">
-    <el-form label-suffix="：" label-width="70px" :model="account" :rules="rules" ref="accountRef">
-      <el-form-item label="账号">
-        <el-input v-model="account.user" placeholder="请输入账号" />
-      </el-form-item>
-      <el-form-item label="密码">
-        <el-input v-model="account.password" type="password" placeholder="请输入密码" />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <el-button type="primary" @click="save">保存</el-button>
-    </template>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -39,36 +23,23 @@ import { shallowReactive, ref, shallowRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import { omit } from 'lodash-es'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  Refresh,
-  Iphone,
-  HomeFilled,
-  Setting,
-  View,
-  Clock,
-  PictureFilled
-} from '@element-plus/icons-vue'
+import { Refresh, HomeFilled, Setting, View, Clock } from '@element-plus/icons-vue'
 import request from '@/helpers/request'
-import { VueIcon } from '@/components/icons'
 
 const route = useRoute()
 const router = useRouter()
 
-const list = [
+interface Menu {
+  title: string
+  to: string
+  icon: any
+}
+
+const list: Menu[] = [
   {
     title: '首页',
     to: '/',
     icon: HomeFilled
-  },
-  {
-    title: 'iPhone同步',
-    to: '/iPhone',
-    icon: Iphone
-  },
-  {
-    title: 'Vue项目管理',
-    to: '/vue',
-    icon: VueIcon
   },
   {
     title: '监控系统',
@@ -80,53 +51,17 @@ const list = [
     to: '/git',
     icon: Clock
   }
-  // {
-  //   title: 'Ai解析Echarts',
-  //   to: '/echarts',
-  //   icon: PictureFilled
-  // }
 ]
-const menuList = list.filter((item) => !item.hide)
-const isActive = (menu) => {
+const menuList = list
+const isActive = (menu: Menu) => {
   if (route.path === '/') {
     return menu.to === '/'
   }
   return route.path.startsWith(menu.to) && menu.to !== '/'
 }
 
-// 同步
-const visible = shallowRef(false)
-const account = shallowReactive({
-  user: '',
-  password: ''
-})
-const rules = {
-  user: { required: true, message: '请输入账号' },
-  password: { required: true, message: '请输入密码' }
-}
-const accountRef = ref(null)
-const startSync = async () => {
-  await request(
-    'syncMenus',
-    list.map((item) => omit(item, ['icon']))
-  )
-  ElMessage.success('同步成功')
-}
-const jump = (item) => {
-  if (item.unpublished) {
-    ElMessage.warning('正在开发中，敬请期待')
-    return
-  }
+const jump = (item: Menu) => {
   router.push(item.to)
-}
-const save = () => {
-  accountRef.value.validate(async (isValid) => {
-    if (!isValid) {
-      return
-    }
-    await request('login', ...account)
-    ElMessage.success('登录成功')
-  })
 }
 </script>
 <style lang="scss" scoped>

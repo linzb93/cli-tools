@@ -92,7 +92,7 @@ const visible = shallowReactive({
 })
 
 const getSelectedApps = async () => {
-  const data = await request('monitor/getApps')
+  const data = await request('bug/getApps')
   apps.value = data.list
 }
 onMounted(() => {

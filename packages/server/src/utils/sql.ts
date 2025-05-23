@@ -7,13 +7,6 @@ export interface Database {
     open: {
         [key: string]: string;
     };
-    code: {
-        [key: string]: string;
-    };
-    mock: {
-        token: string;
-        uid: string;
-    };
     vue: {
         name: string;
         path: string;
@@ -26,15 +19,10 @@ export interface Database {
         title: string;
         to: string;
     }[];
-    ipc: string;
     gitDirs: {
         path: string;
         name: string;
     }[];
-    sync: {
-        user: string;
-        password: string;
-    };
     oa: {
         apiPrefix?: string;
         testPrefix?: string;
@@ -57,27 +45,9 @@ export interface Database {
         nameId: number;
         oldPrefix: string;
     };
-    ip: {
-        internal: string;
-        public: string;
-    };
-    jenkins: {
-        url: {
-            internal: string;
-            public: string;
-        };
-    };
     yapi: {
         token: string;
         uid: string;
-    };
-    oss: {
-        domain: string;
-        region: string;
-        accessKeyId: string;
-        accessKeySecret: string;
-        bucket: string;
-        uploadPath: string;
     };
 }
 

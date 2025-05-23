@@ -1,6 +1,6 @@
 import intoStream from 'into-stream';
 import OSS from 'ali-oss';
-import sql from './sql';
+import { readSecret } from './secret';
 import { join } from 'node:path';
 import slash from 'slash';
 import { type Readable } from 'node:stream';
@@ -17,7 +17,7 @@ type Params =
  * 临时文件上传至OSS，用完之后清除。
  */
 export const tempUpload = async (data: Params) => {
-    const ossData = await sql((db) => db.oss);
+    const ossData = await readSecret((db) => db.oss);
     const { uploadPath, ...config } = ossData;
     const client = new OSS(config);
     const ossPath = slash(join(uploadPath, `local-${Date.now()}.png`));

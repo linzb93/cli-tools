@@ -6,8 +6,7 @@ import { findContent } from './markdown';
 import { fromStream } from './rxjs';
 /**
  * 注册子命令
- * @param fn
- * @param options
+ * @param {Function} fn 子命令函数
  */
 export const subCommandCompiler = (fn: (cmd: Command) => void) => {
     const program = new Command();

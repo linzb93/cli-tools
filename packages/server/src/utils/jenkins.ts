@@ -1,6 +1,7 @@
 import open from 'open';
 import readPkg from 'read-pkg';
 import sql from './sql';
+import { readSecret } from './secret';
 
 interface JenkinsProject {
     name: string;
@@ -14,7 +15,7 @@ export const openDeployPage = async (type?: string) => {
     const { id, name } = await getProjectName(type);
     if (id) {
         const isWork = true;
-        const origin = await sql((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
+        const origin = await readSecret((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
         await open(`http://${origin}/view/${name}/job/${id}/`);
     }
 };

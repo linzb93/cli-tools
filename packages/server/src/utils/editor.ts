@@ -18,7 +18,9 @@ const openCode = async (
     }
 ): Promise<void> => {
     try {
-        await execa(`code ${options?.isGoto ? '-g' : ''} ${project} ${options?.reuse ? '-r' : ''}`);
+        await execa(
+            `${isCursor ? 'cursor' : 'code'} ${options?.isGoto ? '-g' : ''} ${project} ${options?.reuse ? '-r' : ''}`
+        );
     } catch (cmdError) {
         try {
             await fs.access(project);
@@ -26,14 +28,16 @@ const openCode = async (
             logger.error('项目路径不存在');
             return;
         }
-        logger.error('打开失败，未检测到有安装VSCode');
+        logger.error('打开失败，未检测到有安装VSCode或Cursor');
     }
 };
+
+const isCursor = !!process.env.CURSOR_TRACE_ID;
 
 /**
  * 是否在VSCode编辑器环境中
  */
-const isIn = process.env.TERM_PROGRAM === 'vscode';
+const isIn = process.env.TERM_PROGRAM === 'vscode' || isCursor;
 
 export default {
     open: openCode,
