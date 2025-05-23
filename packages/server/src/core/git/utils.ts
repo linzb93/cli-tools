@@ -46,11 +46,19 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
     status: number;
     branchName: string;
 }> {
-    let status = 0;
+    const output = {
+        status: 0,
+        branchName: '',
+    };
+    if (!(await isGitProject(projectPath))) {
+        return output;
+    }
     const branchName = await getCurrentBranchName(projectPath);
+    output.branchName = branchName;
     // 检查是否在 master/main 分支
     if (!['master', 'main'].includes(branchName)) {
-        status = 4;
+        output.status = 4;
+        return output;
     }
     try {
         let stdout = '';
@@ -59,26 +67,22 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
         });
         stdout = data.stdout;
         if (stdout.includes('Changes not staged for commit') || stdout.includes('Changes to be committed')) {
-            status = 1;
+            output.status = 1;
+            return output;
         }
         if (stdout.includes('Your branch is ahead of ')) {
-            status = 2;
-        }
-        const currentBranchName = stdout.match(/On branch (\S+)/) as RegExpMatchArray;
-        if (!['master', 'main'].includes(currentBranchName[1])) {
-            status = 4;
+            output.status = 2;
+            return output;
         }
         if (stdout.includes('nothing to commit')) {
-            status = 3;
+            output.status = 3;
+            return output;
         }
+        return output;
     } catch (error) {
-        status = 0;
+        output.status = 0;
+        return output;
     }
-
-    return {
-        status,
-        branchName,
-    };
 }
 
 /**
