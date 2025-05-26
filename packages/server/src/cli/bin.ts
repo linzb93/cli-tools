@@ -7,7 +7,7 @@ import open from './commands/open';
 import eng from './commands/eng';
 import occ from './commands/occ';
 import cookie from './commands/cookie';
-// import agent from './commands/agent';
+import agent from './commands/agent';
 // import cg from './commands/cg';
 import clear from './commands/clear';
 import color from './commands/color';
@@ -60,14 +60,14 @@ program.hook('preAction', (thisCommand) => {
     });
 });
 
-// program
-//     .command('agent [sub-command]')
-//     .option('--proxy <url>', '代理地址')
-//     .option('--port <num>', '端口号')
-//     .option('-c, --copy', '复制网络地址')
-//     .action((subCommand, options) => {
-//         agent(subCommand, options);
-//     });
+program
+    .command('agent [command]')
+    .option('--add', '添加代理')
+    .option('--delete', '删除代理')
+    .action((options) => {
+        agent(options);
+    });
+
 program
     .command('ai [sub-command] [rest...]')
     .allowUnknownOption()

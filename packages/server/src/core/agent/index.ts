@@ -1,131 +1,353 @@
-import path from 'node:path';
-import { fork } from 'node:child_process';
-import chalk from 'chalk';
-import { pick } from 'lodash-es';
 import BaseCommand from '../BaseCommand';
-import { ChildProcessEmitData } from './types';
-import { root } from '@/utils/constant';
-export interface Options {
-    proxy: string;
-    port: string;
-    copy: boolean;
-    help?: boolean;
-}
-export interface CacheItem {
-    proxy: string;
-    name: string;
-    port?: string;
-}
-interface CacheSaveOption {
-    choosed: boolean;
-    projName: string;
-}
+import internalIp from 'internal-ip';
+import chalk from 'chalk';
+import { Database } from '@/utils/sql';
+import globalConfig from '../../../../../config.json';
 
-interface DbData {
-    items: CacheItem[];
+/**
+ * Agent规则接口
+ */
+interface AgentRule {
+    /**
+     * 来源路径
+     */
+    from: string;
+    /**
+     * 目标路径
+     */
+    to: string;
 }
 
 /**
- * 开启代理服务器。
- * Vue项目不需要用这个，请在vue.config.js中的devServer.proxy中设置。
+ * Agent数据结构接口
+ */
+interface Agent {
+    /**
+     * 唯一ID，自增
+     */
+    id: number;
+    /**
+     * 代理名称
+     */
+    name: string;
+    /**
+     * 匹配接口代理的前缀
+     */
+    prefix: string;
+    /**
+     * 代理规则列表
+     */
+    rules: AgentRule[];
+}
+
+/**
+ * Agent命令选项接口
+ */
+export interface Options {
+    /**
+     * 添加代理
+     * @default false
+     */
+    add?: boolean;
+    /**
+     * 删除代理
+     * @default false
+     */
+    delete?: boolean;
+}
+
+/**
+ * Agent命令实现类
  */
 export default class extends BaseCommand {
-    async main(subCommand: string, options: Options) {
-        //   if (subCommand !== undefined) {
-        //     this.logger.error("命令不存在，请重新输入");
-        //     return;
-        //   }
-        //   helper.validate(options, {
-        //     proxy: {
-        //       pattern: /^https?\:/,
-        //       message: "格式不合法，请输入网址类型的",
-        //     },
-        //     port: {
-        //       validator: (_, value) => Number(value) > 1000 || value === undefined,
-        //       message: "端口号请输入1000以上的整数",
-        //     },
-        //   });
-        //   // 将过往做过代理的项目存入本地，以后方便使用。
-        //   const db = helper.createDB("agent");
-        //   await db.read();
-        //   db.data = db.data || {};
-        //   const cacheData = (db.data as DbData).items;
-        //   const match = cacheData.find((item) => item.proxy === options.proxy);
-        //   if (!match) {
-        //     if (!options.proxy) {
-        //       // 未输入代理的地址，表示是从数据库文件中读取历史记录
-        //       const { server } = await this.inquirer.prompt([
-        //         {
-        //           message: "请选择要开启的代理服务器",
-        //           type: "list",
-        //           choices: cacheData.map((data) => ({
-        //             name: `${data.name} ${chalk.green(`(${data.proxy})`)}`,
-        //             value: data.proxy,
-        //           })),
-        //           name: "server",
-        //         },
-        //       ]);
-        //       options.proxy = server;
-        //     } else {
-        //       // 否则会询问是否将输入内容存入数据库。
-        //       const ans = (await this.inquirer.prompt([
-        //         {
-        //           type: "confirm",
-        //           message: "是否将项目数据存入缓存？",
-        //           name: "choosed",
-        //         },
-        //         {
-        //           type: "input",
-        //           message: "请输入项目名称",
-        //           name: "projName",
-        //           when: (answer) => answer.choosed,
-        //         },
-        //       ])) as CacheSaveOption;
-        //       if (ans.choosed) {
-        //         (db.data as DbData).items.push({
-        //           name: ans.projName,
-        //           proxy: options.proxy,
-        //         });
-        //         await db.write();
-        //       }
-        //     }
-        //   }
-        //   const child = fork(
-        //     path.resolve(root, "dist/commands/agent/server.js"),
-        //     [...helper.processArgvToFlags(pick(options, ["proxy", "port", "copy"]))],
-        //     {
-        //       cwd: root,
-        //       detached: true,
-        //       stdio: [null, null, null, "ipc"],
-        //     }
-        //   );
-        //   child.on(
-        //     "message",
-        //     async ({ port, ip, type, errorMessage }: ChildProcessEmitData) => {
-        //       if (type === "close") {
-        //         console.log(`
-        // 代理服务器已在 ${chalk.yellow(port)} 端口启动：
-        // - 本地：${chalk.magenta(`http://localhost:${port}/proxy`)}
-        // - 网络：${chalk.magenta(`http://${ip}:${port}/proxy`)}
-        // 路由映射至：${chalk.cyan(options.proxy)}`);
-        //
-        //         const match = items.find((item) => item.proxy === options.proxy);
-        //         (match as CacheItem).port = port;
-        //         (db.data as DbData).items = items;
-        //         await db.write();
-        //         onShutdown(async () => {
-        //           await db.read();
-        //           (db.data as DbData).items.forEach((item) => {
-        //             item.port = "";
-        //           });
-        //           await db.write();
-        //         });
-        //         child.unref();
-        //         child.disconnect();
-        //         process.exit(0);
-        //       }
-        //       this.logger.error(errorMessage);
-        //     }
-        //   );
+    /**
+     * 全局配置端口号
+     */
+    private port: number;
+
+    /**
+     * 构造函数
+     */
+    constructor() {
+        super();
+        // 从全局配置中读取端口号
+        this.port = globalConfig.port.production || 9527;
+    }
+
+    /**
+     * 主入口方法
+     * @param options 命令选项
+     */
+    async main(options: Options) {
+        if (options.add) {
+            await this.addAgent();
+            return;
+        }
+
+        if (options.delete) {
+            await this.deleteAgent();
+            return;
+        }
+
+        await this.listAgent();
+    }
+
+    /**
+     * 列出代理
+     */
+    private async listAgent() {
+        // 获取所有代理列表
+        const agentList = await this.getAgentList();
+
+        if (!agentList || agentList.length === 0) {
+            this.logger.warn('当前没有可以展示的代理，请先添加代理');
+            return;
+        }
+
+        // 让用户选择要展示的代理
+        const { selectedAgentId } = await this.inquirer.prompt([
+            {
+                type: 'list',
+                name: 'selectedAgentId',
+                message: '请选择要展示的代理',
+                choices: agentList.map((agent) => ({
+                    name: agent.name,
+                    value: agent.id,
+                })),
+            },
+        ]);
+
+        // 找到选中的代理
+        const selectedAgent = agentList.find((agent) => agent.id === selectedAgentId);
+
+        if (!selectedAgent) {
+            this.logger.error('未找到选中的代理');
+            return;
+        }
+
+        // 获取本机IP
+        const ip = await internalIp.v4();
+
+        // 显示代理信息
+        this.displayAgentInfo(selectedAgent, ip);
+    }
+
+    /**
+     * 添加代理
+     */
+    private async addAgent() {
+        // 获取当前最大ID
+        const agentList = (await this.getAgentList()) || [];
+        const maxId = agentList.length > 0 ? Math.max(...agentList.map((agent) => agent.id)) : 0;
+
+        // 输入代理名称
+        const { name } = await this.inquirer.prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: '请输入代理名称',
+                validate: (input: string) => {
+                    if (!input.trim()) {
+                        return '代理名称不能为空';
+                    }
+                    return true;
+                },
+            },
+        ]);
+
+        // 输入接口代理前缀
+        const { prefix } = await this.inquirer.prompt([
+            {
+                type: 'input',
+                name: 'prefix',
+                message: '请输入接口代理前缀',
+                validate: (input: string) => {
+                    if (!input.trim()) {
+                        return '接口代理前缀不能为空';
+                    }
+
+                    // 确保前缀以/开头
+                    if (!input.startsWith('/')) {
+                        return '前缀必须以/开头';
+                    }
+
+                    return true;
+                },
+            },
+        ]);
+
+        // 收集规则
+        const rules: AgentRule[] = [];
+        let continueAdding = true;
+
+        while (continueAdding) {
+            const { rule } = await this.inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'rule',
+                    message: '请输入规则 (格式: 来源,目标) 输入:q退出',
+                    validate: (input: string) => {
+                        if (input === ':q') return true;
+
+                        if (!input.trim()) {
+                            return '规则不能为空';
+                        }
+
+                        const parts = input.split(',').map((part) => part.trim());
+                        if (parts.length !== 2) {
+                            return '规则格式错误，请使用"来源,目标"格式';
+                        }
+
+                        if (!parts[0] || !parts[1]) {
+                            return '来源和目标都不能为空';
+                        }
+
+                        return true;
+                    },
+                },
+            ]);
+
+            const [from, to] = rule.split(',').map((part) => part.trim());
+            rules.push({ from, to });
+
+            const { addMore } = await this.inquirer.prompt([
+                {
+                    type: 'confirm',
+                    name: 'addMore',
+                    message: '是否继续添加规则?',
+                    default: true,
+                },
+            ]);
+
+            continueAdding = addMore;
+        }
+
+        // 确保至少有一条规则
+        if (rules.length === 0) {
+            this.logger.error('至少需要添加一条规则');
+            return;
+        }
+
+        // 创建新代理
+        const newAgent: Agent = {
+            id: maxId + 1,
+            name,
+            prefix,
+            rules,
+        };
+
+        // 保存到数据库
+        await this.saveAgent(newAgent);
+
+        this.logger.success(`代理 "${name}" 添加成功`);
+    }
+
+    /**
+     * 删除代理
+     */
+    private async deleteAgent() {
+        // 获取所有代理列表
+        const agentList = await this.getAgentList();
+
+        if (!agentList || agentList.length === 0) {
+            this.logger.warn('当前没有可以删除的代理');
+            return;
+        }
+
+        // 让用户选择要删除的代理
+        const { selectedAgentIds } = await this.inquirer.prompt([
+            {
+                type: 'checkbox',
+                name: 'selectedAgentIds',
+                message: '请选择要删除的代理',
+                choices: agentList.map((agent) => {
+                    return {
+                        name: agent.name,
+                        value: agent.id,
+                    };
+                }),
+            },
+        ]);
+
+        if (selectedAgentIds.length === 0) {
+            this.logger.info('未选择任何代理，操作已取消');
+            return;
+        }
+
+        // 删除选中的代理
+        await this.deleteAgentById(selectedAgentIds);
+
+        this.logger.success(`已删除 ${selectedAgentIds.length} 个代理`);
+    }
+
+    /**
+     * 获取所有代理列表
+     * @returns 代理列表
+     */
+    private async getAgentList(): Promise<Agent[]> {
+        return await this.sql((db) => {
+            // 如果agent字段不存在，初始化为空数组
+            if (!db.agent) {
+                db.agent = [];
+                return [];
+            }
+            return db.agent;
+        });
+    }
+
+    /**
+     * 保存代理到数据库
+     * @param newAgent 新代理
+     */
+    private async saveAgent(newAgent: Agent) {
+        await this.sql((db) => {
+            if (!db.agent) {
+                db.agent = [];
+            }
+            db.agent.push(newAgent);
+            return null; // 触发写入
+        });
+    }
+
+    /**
+     * 根据ID删除代理
+     * @param ids 要删除的代理ID列表
+     */
+    private async deleteAgentById(ids: number[]) {
+        await this.sql((db) => {
+            if (!db.agent) return;
+            db.agent = db.agent.filter((agent: Agent) => !ids.includes(agent.id));
+            return null; // 触发写入
+        });
+    }
+
+    /**
+     * 显示代理信息
+     * @param agent 代理对象
+     * @param ip 本机IP
+     */
+    private displayAgentInfo(agent: Agent, ip: string) {
+        const content = this.formatAgentRules(agent, ip);
+
+        this.logger.box({
+            title: agent.name,
+            borderColor: 'green',
+            content,
+            padding: 1,
+        });
+    }
+
+    /**
+     * 格式化代理规则显示
+     * @param agent 代理对象
+     * @param ip 本机IP
+     * @returns 格式化后的规则文本
+     */
+    private formatAgentRules(agent: Agent, ip: string): string {
+        return agent.rules
+            .map((rule) => {
+                return `http://${ip}:${this.port}${agent.prefix}${rule.from} -> ${rule.to}`;
+            })
+            .join('\n');
     }
 }

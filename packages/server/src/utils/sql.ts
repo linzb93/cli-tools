@@ -49,6 +49,15 @@ export interface Database {
         token: string;
         uid: string;
     };
+    agent: {
+        id: number;
+        name: string;
+        prefix: string;
+        rules: {
+            from: string;
+            to: string;
+        }[];
+    }[];
 }
 
 /**
