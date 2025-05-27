@@ -313,5 +313,5 @@ export async function getBranchFirstCommitTime(
 export const isCurrenetBranchPushed = async () => {
     const current = await getCurrentBranchName();
     const { stdout } = await execa(`git branch --all`);
-    return !!stdout.split('\n').find((item) => item.includes(`remotes/origin/${current}`));
+    return !!stdout.split('\n').find((item) => item.endsWith(`remotes/origin/${current}`));
 };
