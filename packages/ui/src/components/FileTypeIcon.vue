@@ -4,7 +4,7 @@
   </el-icon>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import {
   VueIcon,
   Css,

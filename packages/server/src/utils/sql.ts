@@ -76,7 +76,7 @@ export default async function sql<T>(callback: (data: Database) => T): Promise<T
     if (typeof callback === 'function') {
         result = await callback(data);
     }
-    if (result === null) {
+    if (result === null || result === undefined) {
         await db.write();
     }
     return result;

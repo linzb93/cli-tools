@@ -47,8 +47,8 @@ const list: Menu[] = [
     icon: View
   },
   {
-    title: 'Git扫描',
-    to: '/git',
+    title: '代理',
+    to: '/agent',
     icon: Clock
   }
 ]
