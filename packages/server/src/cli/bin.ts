@@ -7,7 +7,6 @@ import open from './commands/open';
 import eng from './commands/eng';
 import occ from './commands/occ';
 import cookie from './commands/cookie';
-import agent from './commands/agent';
 // import cg from './commands/cg';
 import clear from './commands/clear';
 import color from './commands/color';
@@ -59,14 +58,6 @@ program.hook('preAction', (thisCommand) => {
         }, 100);
     });
 });
-
-program
-    .command('agent [command]')
-    .option('--add', '添加代理')
-    .option('--delete', '删除代理')
-    .action((options) => {
-        agent(options);
-    });
 
 program
     .command('ai [sub-command] [rest...]')

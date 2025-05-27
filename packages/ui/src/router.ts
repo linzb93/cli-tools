@@ -9,13 +9,9 @@ const routes = [
     path: '/monitor',
     component: () => import('./views/monitor/index.vue')
   },
-  // {
-  //   path: '/agent',
-  //   component: () => import('./views/agent/index.vue')
-  // },
   {
-    path: '/setting',
-    component: () => import('./views/setting/index.vue')
+    path: '/agent',
+    component: () => import('./views/agent/index.vue')
   }
 ]
 

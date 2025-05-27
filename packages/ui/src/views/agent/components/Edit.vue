@@ -1,6 +1,7 @@
 <template>
   <el-dialog
     :model-value="visible"
+    :width="500"
     :title="isEdit ? '编辑' : '新增'"
     @close="handleClose"
     @closed="handleClosed"

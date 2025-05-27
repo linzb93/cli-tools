@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import sql from '@/utils/sql';
 import response from '../shared/response';
 const router = Router();
@@ -36,4 +36,8 @@ router.post('/delete', (req, res) => {
 
 export default router;
 
-export const agentCallback = () => {};
+export const agentCallback = (req: Request, res: Response) => {
+    sql((db) => {
+        db.agent.find((item) => item.prefix === req.path);
+    });
+};

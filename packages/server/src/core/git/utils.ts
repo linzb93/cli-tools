@@ -55,17 +55,11 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
     }
     const branchName = await getCurrentBranchName(projectPath);
     output.branchName = branchName;
-    // 检查是否在 master/main 分支
-    if (!['master', 'main'].includes(branchName)) {
-        output.status = 4;
-        return output;
-    }
+
     try {
-        let stdout = '';
-        const data = await execa('git status', {
+        const { stdout } = await execa('git status', {
             cwd: projectPath,
         });
-        stdout = data.stdout;
         if (stdout.includes('Changes not staged for commit') || stdout.includes('Changes to be committed')) {
             output.status = 1;
             return output;
@@ -76,6 +70,11 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
         }
         if (stdout.includes('nothing to commit')) {
             output.status = 3;
+            return output;
+        }
+        // 检查是否在 master/main 分支
+        if (!['master', 'main'].includes(branchName)) {
+            output.status = 4;
             return output;
         }
         return output;

@@ -1,4 +1,5 @@
 <template>
+  <el-button type="primary" @click="handleAdd">新增代理</el-button>
   <el-table :data="tableData" style="width: 100%">
     <el-table-column prop="name" label="名称" />
     <el-table-column prop="prefix" label="前缀" />
@@ -37,6 +38,15 @@ const handleEdit = (row: Agent) => {
   editVisible.value = true
 }
 
+const handleAdd = () => {
+  editRow.value = {
+    id: 0,
+    name: '',
+    prefix: '',
+    rules: []
+  }
+  editVisible.value = true
+}
 const handleDelete = (row: Agent) => {
   ElMessageBox.confirm('确定删除吗？', '提示', {
     confirmButtonText: '确定',
