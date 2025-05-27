@@ -6,7 +6,7 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "../vite-plugins/"
+    "./vite-plugins/"
   ],
   "exclude": ["**/*.vue"],
   "compilerOptions": {

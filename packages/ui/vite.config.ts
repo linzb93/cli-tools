@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 import cdn from 'vite-plugin-cdn-import'
 import vue from '@vitejs/plugin-vue'
 import globalConfig from '../../config.json'
-import move from '../vite-plugins/move'
+import move from './vite-plugins/move'
 
 // https://vitejs.dev/config/
 export default defineConfig({
