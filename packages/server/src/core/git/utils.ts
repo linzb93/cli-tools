@@ -68,15 +68,16 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
             output.status = 2;
             return output;
         }
-        if (stdout.includes('nothing to commit')) {
-            output.status = 3;
-            return output;
-        }
         // 检查是否在 master/main 分支
         if (!['master', 'main'].includes(branchName)) {
             output.status = 4;
             return output;
         }
+        if (stdout.includes('nothing to commit')) {
+            output.status = 3;
+            return output;
+        }
+
         return output;
     } catch (error) {
         output.status = 0;

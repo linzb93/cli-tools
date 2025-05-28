@@ -48,6 +48,7 @@ export default async function useScan() {
             },
             { concurrency: 4 }
         ).then((list) => {
+            // console.log(list);
             observer.next(list.filter((item) => [1, 2, 4].includes(item.status)));
             observer.complete();
         });

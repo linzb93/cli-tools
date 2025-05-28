@@ -7,13 +7,13 @@
     @closed="handleClosed"
   >
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="80px" label-suffix="：">
-      <el-form-item label="名称">
-        <el-input v-model="form.name" />
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="form.name" placeholder="请输入代理名称" />
       </el-form-item>
-      <el-form-item label="前缀">
-        <el-input v-model="form.prefix" />
+      <el-form-item label="前缀" prop="prefix">
+        <el-input v-model="form.prefix" placeholder="请输入代理前缀" />
       </el-form-item>
-      <el-form-item label="规则">
+      <el-form-item label="规则" prop="rules">
         <div>
           <div class="rule-list">
             <div
@@ -22,12 +22,12 @@
               :key="index"
             >
               <el-form-item label="来源" label-width="60px">
-                <el-input v-model="rule.from" class="rule-input" />
+                <el-input v-model="rule.from" style="width: 100px" />
               </el-form-item>
               <el-form-item label="目标" label-width="60px">
-                <el-input v-model="rule.to" class="rule-input" />
+                <el-input v-model="rule.to" style="width: 200px" />
               </el-form-item>
-              <el-icon class="ml10" @click="handleDeleteRule">
+              <el-icon class="ml10 curp" @click="handleDeleteRule(index)">
                 <Delete />
               </el-icon>
             </div>
@@ -37,6 +37,7 @@
       </el-form-item>
     </el-form>
     <template #footer>
+      <el-button @click="handleClose">取消</el-button>
       <el-button type="primary" @click="handleSave">保存</el-button>
     </template>
   </el-dialog>
@@ -45,6 +46,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import type { Agent } from '../types'
+import { cloneDeep } from 'lodash-es'
 import request from '@/helpers/request'
 import { ElForm, ElMessage } from 'element-plus'
 import { Delete } from '@element-plus/icons-vue'
@@ -56,7 +58,7 @@ const props = defineProps<{
 watch(props, ({ visible }) => {
   if (visible) {
     form.value = {
-      ...props.row
+      ...cloneDeep(props.row)
     }
   }
 })
@@ -120,8 +122,5 @@ const handleDeleteRule = (index: number) => {
 <style lang="scss" scoped>
 .rule-item {
   margin-bottom: 10px;
-}
-.rule-input {
-  width: 100px;
 }
 </style>

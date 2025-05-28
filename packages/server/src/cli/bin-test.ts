@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import git from './commands/git';
 // 创建命令行程序
 const program = new Command();
 
@@ -7,7 +8,12 @@ const program = new Command();
 program.version('1.0.0').description('CLI工具集合');
 
 //**** 请在这里替换需要调试的代码 ****
-
+program
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, cmd) => {
+        git(subCommand, rest, cmd);
+    });
 // 解析命令行参数
 program.parse(process.argv);
 
