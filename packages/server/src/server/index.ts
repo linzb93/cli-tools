@@ -17,7 +17,7 @@ router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
 app.use('/api', router);
-app.all('/agent', agentCallback);
+agentCallback(app);
 
 app.listen(config.port.production, () => {
     process.send?.('server-start');

@@ -1,5 +1,6 @@
 import { Router, type Application, Request, Response } from 'express';
 import axios from 'axios';
+import { omit } from 'lodash-es';
 import sql from '@/utils/sql';
 import response from '../shared/response';
 const router = Router();
@@ -57,7 +58,7 @@ export const agentCallback = (app: Application) => {
         // 3. 在数据库中查找匹配的agent
         sql((db) => db.agent)
             .then((agentList) => {
-                const matchedAgent = agentList.find((item) => item.prefix === prefix);
+                const matchedAgent = agentList.find((item) => item.prefix === `/${prefix}`);
 
                 if (!matchedAgent) {
                     return Promise.reject({ status: 404, message: '未找到匹配的代理配置' });
@@ -71,11 +72,10 @@ export const agentCallback = (app: Application) => {
                 }
 
                 // 5. 构建代理请求URL
-                const targetUrl = matchedRule.to + remainingPath;
+                const targetUrl = matchedRule.to + remainingPath.slice(matchedRule.from.length);
 
                 // 6. 使用axios发送代理请求
                 const method = req.method.toLowerCase();
-
                 // 根据请求方法发送对应的请求
                 if (method === 'get') {
                     return axios.get(targetUrl, {
@@ -86,7 +86,9 @@ export const agentCallback = (app: Application) => {
 
                 if (method === 'post') {
                     return axios.post(targetUrl, req.body, {
-                        headers: { ...req.headers },
+                        headers: {
+                            ...omit(req.headers, 'host', 'connection'),
+                        },
                     });
                 }
 
@@ -103,7 +105,7 @@ export const agentCallback = (app: Application) => {
                     res.status(error.status).json({ error: error.message });
                 } else {
                     // 处理未知错误
-                    console.error('代理请求失败:', error);
+                    console.error('代理请求失败:', error.message);
                     res.status(500).json({ error: '代理请求失败' });
                 }
             });
