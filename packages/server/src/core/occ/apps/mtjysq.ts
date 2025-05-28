@@ -6,6 +6,7 @@ export default class extends MeituanBase {
     defaultId = '15983528161';
     testDefaultId = '15983528161';
     hasPC = true;
+    isDefault = true;
     /**
      * 通过版本号获取店铺
      * @param {string} versionName 版本名称
