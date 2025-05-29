@@ -27,6 +27,7 @@ import time from './commands/time';
 import repl from './commands/repl';
 import vue from './commands/vue';
 import server from './commands/server';
+import sass from './sass';
 import globalPkg from '../../../../package.json';
 import init from '@/core/init';
 import { generateHelpDoc } from '@/utils/helper';
@@ -217,6 +218,11 @@ program
 program.command('test').action((options) => {
     test(options);
 });
+
+program.command('sass').action(() => {
+    sass();
+});
+
 program
     .command('vue')
     .option('--command, <command>', '命令')
