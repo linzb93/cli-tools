@@ -1,11 +1,7 @@
-import clipboard from 'clipboardy';
-import open from 'open';
-import chalk from 'chalk';
 import BaseCommand from '../BaseCommand';
 import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Spbj, Wmb, Kdb } from './apps';
 import BaseApp from './apps/base';
 import { Options } from './types';
-export type { Options };
 
 type AppCtor = new () => BaseApp;
 

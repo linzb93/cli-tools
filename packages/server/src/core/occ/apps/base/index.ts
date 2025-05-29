@@ -3,6 +3,7 @@ import spinner from '@/utils/spinner';
 import clipboard from 'clipboardy';
 import open from 'open';
 import chalk from 'chalk';
+import OccUtils from '../../shared/occUtils';
 
 export default abstract class {
     appKey: string;
@@ -23,15 +24,13 @@ export default abstract class {
      * （测试站）当没有传入查询ID时，使用的默认ID，一般是测试账号
      */
     abstract testDefaultId: string;
-    /**
-     * 应用是否有PC端
-     */
-    hasPC = false;
-    abstract searchKey: string;
+    protected abstract searchKey: string;
     /**
      * 是否是默认app
      */
     isDefault = false;
+
+    occUtils = new OccUtils();
     /**
      * 根据搜索关键词获取店铺地址
      * @param {string} keyword - 搜索关键词
@@ -43,6 +42,12 @@ export default abstract class {
      */
     async getUserInfo(token: string, isTest: boolean): Promise<string> {
         return token;
+    }
+    protected registerOptionHandlers(): {
+        option: string;
+        handler: (obj: { token: string; shopName: string; serviceName: string; url: string }) => void;
+    }[] {
+        return [];
     }
     /**
      * 根据应用登录页地址获取token
@@ -77,42 +82,30 @@ export default abstract class {
         const token = this.getToken(url);
         if (options.token) {
             // 读取token
-            clipboard.writeSync(token);
-            spinner.succeed(`【${this.serviceName}】已复制店铺【${shopName}】 的token\n${token}`);
+            this.occUtils.copyToken({ token, serviceName: this.serviceName, shopName });
             return;
         }
         if (options.fix) {
-            const formattedUrl = options.fix.endsWith('#/')
-                ? `${options.fix}login?code=${token}`
-                : `${options.fix}#/login?code=${token}`;
-            clipboard.writeSync(formattedUrl);
-            spinner.succeed(`【${this.serviceName}】已生成新地址成功
-${formattedUrl}`);
+            this.occUtils.fixURL({ url: options.fix, token, serviceName: this.serviceName });
             return;
         }
         if (options.copy) {
-            // 复制店铺入口地址
-            clipboard.writeSync(url);
-            spinner.succeed(`【${this.serviceName}】已复制店铺【${shopName}】的地址:\n${url}`);
+            this.occUtils.copyURL({ url, serviceName: this.serviceName, shopName });
             return;
         }
         if (options.user) {
-            // 获取店铺的用户信息
-            spinner.text = '正在获取用户信息';
-            const data = (await this.getUserInfo(token, options.test)) as any;
-            spinner.succeed(`获取店铺【${shopName}】信息成功!`);
-            console.log(data);
+            this.occUtils.printUserInfo(
+                { token, serviceName: this.serviceName, shopName, getUserInfo: this.getUserInfo },
+                options.test
+            );
             return;
         }
-        if (options.pc) {
-            if (this.hasPC) {
-                spinner.succeed(`店铺【${shopName}】打开成功!`);
-                await open(url.replace('app', ''));
-            } else {
-                spinner.fail(`${this.serviceName}没有PC端`);
+        const handlers = this.registerOptionHandlers();
+        handlers.forEach((handler) => {
+            if (options[handler.option]) {
+                handler.handler({ token, shopName, serviceName: this.serviceName, url });
             }
-            return;
-        }
+        });
         spinner.succeed(`店铺【${shopName}】打开成功!`);
         await open(url);
     }

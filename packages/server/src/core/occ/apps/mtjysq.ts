@@ -5,8 +5,13 @@ export default class extends MeituanBase {
     serviceName = '经营神器-美团';
     defaultId = '15983528161';
     testDefaultId = '15983528161';
-    hasPC = true;
     isDefault = true;
+    constructor() {
+        super();
+        this.registerOptionHandlers = () => {
+            return [{ option: 'pc', handler: this.occUtils.openPC }];
+        };
+    }
     /**
      * 通过版本号获取店铺
      * @param {string} versionName 版本名称
