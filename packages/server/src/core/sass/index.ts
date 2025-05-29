@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
-import path from 'path';
+import { resolve, join, basename, dirname } from 'node:path';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
-import { logger, sleep } from './util.js';
+import { sleep } from '@linzb93/utils';
 import BaseCommand from '../BaseCommand';
 
 /**
@@ -51,7 +51,7 @@ export default class SassCommand extends BaseCommand {
      */
     async main(): Promise<void> {
         // 检查是否存在scss目录
-        const scssDir = path.resolve(process.cwd(), 'scss');
+        const scssDir = resolve(process.cwd(), 'scss');
 
         if (!(await fs.pathExists(scssDir))) {
             this.logger.error('当前项目中不存在scss目录');
@@ -67,7 +67,7 @@ export default class SassCommand extends BaseCommand {
      * @param {string} scssDir - scss目录路径
      */
     private async startWatcher(scssDir: string): Promise<void> {
-        this.watcher = chokidar.watch(path.join(scssDir, '**/*.scss'));
+        this.watcher = chokidar.watch(join(scssDir, '**/*.scss'));
 
         this.watcher.once('ready', () => {
             this.logger.success(`sass编译服务已开启。`);
@@ -91,7 +91,7 @@ export default class SassCommand extends BaseCommand {
             await sleep(500);
             // 修改sass依赖图。清除该文件原有依赖，生成新的依赖关系。
             this.depRepo.forEach((item) => {
-                const idx = item.refed.findIndex((sub) => sub === path.resolve(file));
+                const idx = item.refed.findIndex((sub) => sub === resolve(file));
                 if (idx !== -1) {
                     item.refed.splice(idx, 1);
                 }
@@ -134,7 +134,7 @@ export default class SassCommand extends BaseCommand {
                     // 忽略错误
                 }
             } else {
-                const delMatch = this.depRepo.find((item) => item.name === path.resolve(file));
+                const delMatch = this.depRepo.find((item) => item.name === resolve(file));
                 if (delMatch) {
                     this.logger.warn(
                         `该删除的文件有被下列文件引用，\n请尽快修改，或还原被删除的文件：\n ${delMatch.refed.join(
@@ -145,10 +145,10 @@ export default class SassCommand extends BaseCommand {
             }
 
             this.depRepo.forEach((item, idx) => {
-                if (item.name === path.resolve(file)) {
+                if (item.name === resolve(file)) {
                     this.depRepo.splice(idx, 1);
                 }
-                const subIidx = item.refed.findIndex((sub) => sub === path.resolve(file));
+                const subIidx = item.refed.findIndex((sub) => sub === resolve(file));
                 if (subIidx !== -1) {
                     item.refed.splice(subIidx, 1);
                 }
@@ -190,7 +190,7 @@ export default class SassCommand extends BaseCommand {
      * @returns {boolean} 是否为引用文件
      */
     private isRefFile(file: string): boolean {
-        return path.basename(file).startsWith('_');
+        return basename(file).startsWith('_');
     }
 
     /**
@@ -200,15 +200,15 @@ export default class SassCommand extends BaseCommand {
      */
     private async insertToRepo(file: string, depRepo: Array<{ name: string; refed: string[] }>): Promise<void> {
         try {
-            const fullFile = path.resolve(process.cwd(), file);
+            const fullFile = resolve(process.cwd(), file);
             const content = await fs.readFile(file, 'utf8');
             let pattern: RegExpExecArray | null;
 
             this.reg.lastIndex = 0; // 重置正则表达式
 
             while ((pattern = this.reg.exec(content)) !== null) {
-                const dependencyName = path.resolve(
-                    path.dirname(fullFile),
+                const dependencyName = resolve(
+                    dirname(fullFile),
                     pattern[1].endsWith('.scss') ? pattern[1] : `${pattern[1]}.scss`
                 );
 
