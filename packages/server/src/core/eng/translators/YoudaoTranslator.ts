@@ -16,32 +16,45 @@ export default class YoudaoTranslator extends BaseTranslator {
      * @returns 翻译结果数组
      */
     async translate(text: string): Promise<TranslateResultItem[]> {
-        const $ = await this.getYoudaoHTML(text);
-        const arr = Array.from(
-            $('.trans-container')
-                .first()
-                .children('ul')
-                .children()
-                .map((_, item) => {
-                    const typeRet = $(item).text().replace(/\s/g, '');
-                    if (typeRet.includes('.')) {
-                        const types = typeRet.split('.');
-                        return {
-                            type: types[0],
-                            content: types[1],
-                        };
-                    }
-                    return {
-                        type: '',
-                        content: typeRet,
-                    };
-                })
-        );
-
-        if (arr.length) {
-            return arr;
+        if (this.spinner) {
+            this.spinner.start();
+            this.spinner.text = '使用有道词典翻译中...';
         }
-        throw new Error('没有找到翻译结果');
+
+        try {
+            const $ = await this.getYoudaoHTML(text);
+            const arr = Array.from(
+                $('.trans-container')
+                    .first()
+                    .children('ul')
+                    .children()
+                    .map((_, item) => {
+                        const typeRet = $(item).text().replace(/\s/g, '');
+                        if (typeRet.includes('.')) {
+                            const types = typeRet.split('.');
+                            return {
+                                type: types[0],
+                                content: types[1],
+                            };
+                        }
+                        return {
+                            type: '',
+                            content: typeRet,
+                        };
+                    })
+            );
+
+            if (arr.length) {
+                return arr;
+            }
+
+            throw new Error('没有找到翻译结果');
+        } catch (error) {
+            if (this.spinner) {
+                this.spinner.text = '有道词典无结果，尝试其他翻译器...';
+            }
+            throw error;
+        }
     }
 
     /**

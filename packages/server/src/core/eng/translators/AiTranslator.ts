@@ -16,6 +16,11 @@ export default class AiTranslator extends BaseTranslator {
      * @returns 翻译结果数组
      */
     async translate(text: string): Promise<TranslateResultItem[]> {
+        if (this.spinner) {
+            this.spinner.start();
+            this.spinner.text = '使用AI翻译中...';
+        }
+
         const translateResult = await new AiImpl().use([
             {
                 role: 'assistant',

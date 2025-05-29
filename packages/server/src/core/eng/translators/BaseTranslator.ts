@@ -13,13 +13,40 @@ export interface TranslateResultItem {
 }
 
 /**
+ * 翻译器接口
+ */
+export interface ITranslator {
+    /**
+     * 设置spinner
+     */
+    setSpinner(spinner: { start: () => void; text: string; succeed: (text: string) => void }): void;
+}
+
+/**
  * 基础翻译器类
  */
-export default abstract class BaseTranslator {
+export default abstract class BaseTranslator implements ITranslator {
     /**
      * 翻译器名称
      */
     abstract readonly name: string;
+
+    /**
+     * spinner对象
+     */
+    protected spinner?: {
+        start: () => void;
+        text: string;
+        succeed: (text: string) => void;
+    };
+
+    /**
+     * 设置spinner
+     * @param spinner - spinner对象
+     */
+    setSpinner(spinner: { start: () => void; text: string; succeed: (text: string) => void }): void {
+        this.spinner = spinner;
+    }
 
     /**
      * 是否是中文翻译成英文
