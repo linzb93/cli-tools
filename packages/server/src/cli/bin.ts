@@ -3,7 +3,6 @@
 import { Command } from 'commander';
 import ip from './commands/ip';
 import ai from './commands/ai';
-import open from './commands/open';
 import eng from './commands/eng';
 import occ from './commands/occ';
 import cookie from './commands/cookie';
@@ -161,14 +160,6 @@ program
     .option('--pt <platformName>', '指定平台名称')
     .action((data, options) => {
         occ(data, options);
-    });
-
-program
-    .command('open [name]')
-    .option('--name <name>', '打开的文件夹')
-    .option('-r, --reuse', '强制在已开启的编辑器里打开')
-    .action((url, cmd) => {
-        open(url, cmd);
     });
 
 program.command('repl').action(() => {

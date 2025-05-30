@@ -45,7 +45,7 @@ export default class extends BaseCommand {
             console.log('无法解析token');
             return;
         }
-
+        console.log('\n');
         console.log(`使用${chalk.magenta(matchParser.getName())}解析结果：`);
 
         if (typeof decoded === 'string') {
