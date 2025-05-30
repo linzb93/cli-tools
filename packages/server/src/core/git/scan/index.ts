@@ -5,6 +5,14 @@ import BaseCommand from '@/core/BaseCommand';
 import useScan from './useScan';
 import progress from '@/utils/progress';
 
+export interface Options {
+    /**
+     * 是否全量扫描
+     * @default false
+     * */
+    full: boolean;
+}
+
 const table = new Table({
     head: ['名称', '地址', '状态'],
     colAligns: ['left', 'left', 'left'],
@@ -23,7 +31,8 @@ interface ResultItem {
 }
 
 export default class extends BaseCommand {
-    async main() {
+    async main(options: Options) {
+        const { full } = options;
         this.logger.info('开始扫描');
         const { counter$, list$, total$ } = await useScan();
         total$.subscribe((total: number) => {
@@ -32,8 +41,14 @@ export default class extends BaseCommand {
         counter$.subscribe(() => {
             progress.tick();
         });
-        list$.subscribe(async (list: ResultItem[]) => {
+        list$.subscribe(async (srcList: ResultItem[]) => {
             this.logger.backwardConsole(2);
+            const list = srcList.filter((item) => {
+                if (full) {
+                    return true;
+                }
+                return item.status !== 4;
+            });
             table.push(
                 ...list.map((item) => [
                     basename(item.path),

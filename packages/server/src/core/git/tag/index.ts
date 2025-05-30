@@ -66,8 +66,6 @@ export default class extends BaseCommand {
             return;
         }
 
-        console.log(subCommand);
-
         // 子命令映射表
         const commandMap: Record<string, () => Promise<void>> = {
             '': () => this.addTag(options),
@@ -156,7 +154,7 @@ export default class extends BaseCommand {
 
             // 创建本地标签并推送到远程
             await executeCommands([this.createTag(newTag), this.pushTag(newTag)]);
-            const { onlineId } = await getProjectName();
+            const { onlineId } = await getProjectName(type);
             this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${onlineId}, ${newTag}`)}`);
             clipboardy.writeSync(`${onlineId}, ${newTag}`);
         } catch (error) {

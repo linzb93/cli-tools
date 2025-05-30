@@ -1,5 +1,4 @@
 import TokenParser from './TokenParser';
-import { Options } from './index';
 
 /**
  * Base64 Token解析器
@@ -11,7 +10,7 @@ class Base64TokenParser extends TokenParser {
      * @param options 解析选项
      * @returns 解析后的数据
      */
-    parse(token: string, options: Options): string {
+    parse(token: string): string {
         const str = Buffer.from(token, 'base64');
         return str.toString('utf8');
     }

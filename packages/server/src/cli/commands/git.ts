@@ -3,7 +3,7 @@ import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
-import Scan from '../../core/git/scan';
+import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -90,7 +90,15 @@ const branch = () => {
  * git scan 子命令的实现
  */
 const scan = () => {
-    new Scan().main();
+    subCommandCompiler((program) => {
+        program
+            .command('scan')
+            .description('扫描Git分支')
+            .option('--full', '是否全量扫描')
+            .action((options: ScanOptions) => {
+                new Scan().main(options);
+            });
+    });
 };
 
 /**
