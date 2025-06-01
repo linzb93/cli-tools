@@ -6,10 +6,7 @@ export default class extends MeituanBase {
     serviceName = '装修神器-美团';
     defaultId = '16159400501';
     testDefaultId = '16159400501';
-    constructor() {
-        super();
-        this.registerOptionHandlers = () => {
-            return [{ option: 'pc', handler: this.occUtils.openPC }];
-        };
+    openPC(url: string, shopName: string) {
+        this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
     }
 }

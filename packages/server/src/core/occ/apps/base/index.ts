@@ -43,12 +43,6 @@ export default abstract class {
     async getUserInfo(token: string, isTest: boolean): Promise<string> {
         return token;
     }
-    protected registerOptionHandlers(): {
-        option: string;
-        handler: (obj: { token: string; shopName: string; serviceName: string; url: string }) => void;
-    }[] {
-        return [];
-    }
     /**
      * 根据应用登录页地址获取token
      * @param url 应用入口，登录页
@@ -78,6 +72,11 @@ export default abstract class {
         }
         await this.afterSearch(url, keyword, options);
     }
+    openPC(url: string, shopName: string) {
+        spinner.fail(
+            `${chalk.yellow(`【${this.serviceName}】`)}当前应用不支持PC端功能，请使用移动端访问店铺【${shopName}】`
+        );
+    }
     private async afterSearch(url: string, shopName: string, options: Options) {
         const token = this.getToken(url);
         if (options.token) {
@@ -100,12 +99,10 @@ export default abstract class {
             );
             return;
         }
-        const handlers = this.registerOptionHandlers();
-        handlers.forEach((handler) => {
-            if (options[handler.option]) {
-                handler.handler({ token, shopName, serviceName: this.serviceName, url });
-            }
-        });
+        if (options.pc) {
+            this.openPC(url, shopName);
+            return;
+        }
         spinner.succeed(`店铺【${shopName}】打开成功!`);
         await open(url);
     }

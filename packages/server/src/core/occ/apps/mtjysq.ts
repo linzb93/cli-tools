@@ -6,11 +6,8 @@ export default class extends MeituanBase {
     defaultId = '15983528161';
     testDefaultId = '15983528161';
     isDefault = true;
-    constructor() {
-        super();
-        this.registerOptionHandlers = () => {
-            return [{ option: 'pc', handler: this.occUtils.openPC }];
-        };
+    openPC(url: string, shopName: string) {
+        this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
     }
     /**
      * 通过版本号获取店铺

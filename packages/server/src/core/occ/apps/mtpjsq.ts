@@ -6,10 +6,8 @@ export default class extends MeituanBase {
     serviceName = '评价神器-美团';
     defaultId = '16499283381';
     testDefaultId = '16499283381';
-    constructor() {
-        super();
-        this.registerOptionHandlers = () => {
-            return [{ option: 'pc', handler: this.occUtils.openPC }];
-        };
+
+    openPC(url: string, shopName: string) {
+        this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
     }
 }

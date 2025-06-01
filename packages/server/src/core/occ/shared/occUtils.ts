@@ -1,5 +1,6 @@
 import clipboard from 'clipboardy';
 import spinner from '@/utils/spinner';
+import open from 'open';
 
 export default class OccUtils {
     static getOccUrl(occUrl: string) {
