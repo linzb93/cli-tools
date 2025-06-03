@@ -22,7 +22,7 @@ export interface Options {
     /**
      * 检索版本
      */
-    version: string;
+    version: number;
     /**
      * 是否在测试站操作
      */

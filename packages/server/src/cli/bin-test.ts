@@ -2,6 +2,8 @@
 import { Command } from 'commander';
 import git from './commands/git';
 import occ from './commands/occ';
+import test from './commands/test';
+import ai from './commands/ai';
 // 创建命令行程序
 const program = new Command();
 
@@ -39,8 +41,20 @@ program
     .option('--full', '先获取登录账号的店铺信息')
     .option('--fix <url>', '补齐完整的登录地址')
     .option('--pt <platformName>', '指定平台名称')
+    .option('--version <version>', '指定版本')
     .action((data, options) => {
         occ(data, options);
+    });
+
+program.command('test').action((opt) => {
+    test(opt);
+});
+
+program
+    .command('ai [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        ai(subCommand, rest, options);
     });
 
 // 解析命令行参数

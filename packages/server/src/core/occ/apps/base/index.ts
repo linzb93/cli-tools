@@ -77,7 +77,7 @@ export default abstract class {
             `${chalk.yellow(`【${this.serviceName}】`)}当前应用不支持PC端功能，请使用移动端访问店铺【${shopName}】`
         );
     }
-    private async afterSearch(url: string, shopName: string, options: Options) {
+    protected async afterSearch(url: string, shopName: string, options: Options) {
         const token = this.getToken(url);
         if (options.token) {
             // 读取token
