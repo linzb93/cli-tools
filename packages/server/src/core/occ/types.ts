@@ -36,3 +36,9 @@ export interface Options {
      * */
     pt: string;
 }
+
+export interface UserInfo {
+    version: number;
+    versionPlus?: number;
+    surplusDays?: number;
+}

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import git from './commands/git';
+// import git from './commands/git';
 import occ from './commands/occ';
-import test from './commands/test';
-import ai from './commands/ai';
+// import test from './commands/test';
+// import ai from './commands/ai';
 // 创建命令行程序
 const program = new Command();
 
@@ -24,12 +24,12 @@ program.hook('preAction', (thisCommand) => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, cmd) => {
-        git(subCommand, rest, cmd);
-    });
+// program
+//     .command('git [sub-command] [rest...]')
+//     .allowUnknownOption()
+//     .action((subCommand, rest, cmd) => {
+//         git(subCommand, rest, cmd);
+//     });
 
 program
     .command('occ [data...]')
@@ -46,16 +46,16 @@ program
         occ(data, options);
     });
 
-program.command('test').action((opt) => {
-    test(opt);
-});
+// program.command('test').action((opt) => {
+//     test(opt);
+// });
 
-program
-    .command('ai [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        ai(subCommand, rest, options);
-    });
+// program
+//     .command('ai [sub-command] [rest...]')
+//     .allowUnknownOption()
+//     .action((subCommand, rest, options) => {
+//         ai(subCommand, rest, options);
+//     });
 
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));

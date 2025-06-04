@@ -1,5 +1,5 @@
 import { Options } from '../../types';
-import spinner from '@/utils/spinner';
+import { logger } from '@/utils/logger';
 import clipboard from 'clipboardy';
 import open from 'open';
 import chalk from 'chalk';
@@ -30,7 +30,7 @@ export default abstract class {
      */
     isDefault = false;
 
-    occUtils = new OccUtils();
+    protected occUtils = new OccUtils();
     /**
      * 根据搜索关键词获取店铺地址
      * @param {string} keyword - 搜索关键词
@@ -40,7 +40,7 @@ export default abstract class {
      * 获取用户信息
      * @param {string} token - 用户token
      */
-    async getUserInfo(token: string, isTest: boolean): Promise<string> {
+    async getUserInfo(token: string, isTest: boolean): Promise<any> {
         return token;
     }
     /**
@@ -57,23 +57,24 @@ export default abstract class {
         return fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
     }
     async run(keyword: string, options: Options) {
-        await this.search(keyword, options);
+        const url = await this.search(keyword, options);
+        await this.afterSearch(url, keyword, options);
     }
     async search(keyword: string, options: Options) {
-        spinner.text = `${chalk.yellow(`【${this.serviceName}】`)}正在获取店铺${chalk.cyan(keyword)}地址`;
+        logger.info(`${chalk.yellow(`【${this.serviceName}】`)}正在获取店铺${chalk.cyan(keyword)}地址`);
         let url = '';
         try {
             const resultUrl = (await this.getShopUrl(keyword, options.test, options.pt)) as any;
             url = resultUrl;
         } catch (error) {
-            spinner.fail('请求失败');
+            logger.error('请求失败');
             console.log(error);
             process.exit(1);
         }
-        await this.afterSearch(url, keyword, options);
+        return url;
     }
     openPC(url: string, shopName: string) {
-        spinner.fail(
+        logger.error(
             `${chalk.yellow(`【${this.serviceName}】`)}当前应用不支持PC端功能，请使用移动端访问店铺【${shopName}】`
         );
     }
@@ -103,7 +104,7 @@ export default abstract class {
             this.openPC(url, shopName);
             return;
         }
-        spinner.succeed(`店铺【${shopName}】打开成功!`);
+        logger.success(`店铺【${shopName}】打开成功!`);
         await open(url);
     }
 }

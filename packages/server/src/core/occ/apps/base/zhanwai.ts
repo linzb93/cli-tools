@@ -3,7 +3,7 @@ import Base from './';
 import serviceGenerator from '@/utils/http';
 import sql from '@/utils/sql';
 import { HTTP_STATUS } from '@/utils/constant';
-import spinner from '@/utils/spinner';
+import { logger } from '@/utils/logger';
 
 export default abstract class Zhanwai extends Base {
     abstract name: string;
@@ -33,7 +33,7 @@ export default abstract class Zhanwai extends Base {
             }
         );
         if (listRes.data.code !== HTTP_STATUS.SUCCESS) {
-            spinner.fail('获取用户信息失败');
+            logger.error('获取用户信息失败');
             process.exit(0);
         }
         const accountId = listRes.data.result.list[0].id;
@@ -51,11 +51,11 @@ export default abstract class Zhanwai extends Base {
             }
         );
         if (shopRes.data.code !== HTTP_STATUS.SUCCESS) {
-            spinner.fail('获取店铺信息失败');
+            logger.error('获取店铺信息失败');
             process.exit(0);
         }
         if (shopRes.data.result.userDetailVoPageInfo.list.length === 0) {
-            spinner.fail('该账号下店铺信息为空');
+            logger.error('该账号下店铺信息为空');
             process.exit(0);
         }
         const { shopId } = shopRes.data.result.userDetailVoPageInfo.list[0];

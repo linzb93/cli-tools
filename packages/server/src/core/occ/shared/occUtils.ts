@@ -1,6 +1,7 @@
 import clipboard from 'clipboardy';
-import spinner from '@/utils/spinner';
+import { logger } from '@/utils/logger';
 import open from 'open';
+import { UserInfo } from '../types';
 
 export default class OccUtils {
     static getOccUrl(occUrl: string) {
@@ -12,7 +13,7 @@ export default class OccUtils {
      */
     copyToken(obj: { token: string; serviceName: string; shopName: string }) {
         clipboard.writeSync(obj.token);
-        spinner.succeed(`【${obj.serviceName}】已复制店铺【${obj.shopName}】 的token\n${obj.token}`);
+        logger.success(`【${obj.serviceName}】已复制店铺【${obj.shopName}】 的token\n${obj.token}`);
     }
     /**
      * 补齐完整的登录地址
@@ -30,7 +31,7 @@ export default class OccUtils {
      */
     copyURL(obj: { url: string; serviceName: string; shopName: string }) {
         clipboard.writeSync(obj.url);
-        spinner.succeed(`【${obj.serviceName}】已复制店铺【${obj.shopName}】 的地址\n${obj.url}`);
+        logger.success(`【${obj.serviceName}】已复制店铺【${obj.shopName}】 的地址\n${obj.url}`);
     }
     /**
      * 打印用户信息
@@ -38,12 +39,17 @@ export default class OccUtils {
      * @param test - 是否是测试环境
      */
     async printUserInfo(
-        obj: { token: string; serviceName: string; shopName: string; getUserInfo: Function },
+        obj: {
+            token: string;
+            serviceName: string;
+            shopName: string;
+            getUserInfo: (tk: string, isTest: boolean) => Promise<UserInfo>;
+        },
         test: boolean
     ) {
-        spinner.text = '正在获取用户信息';
-        const data = (await obj.getUserInfo(obj.token, test)) as any;
-        spinner.succeed(`获取店铺【${obj.shopName}】信息成功!`);
+        logger.info('正在获取用户信息');
+        const data = await obj.getUserInfo(obj.token, test);
+        logger.success(`获取店铺【${obj.shopName}】信息成功!`);
         console.log(data);
     }
     /**
@@ -51,7 +57,14 @@ export default class OccUtils {
      * @param obj - 包含url、服务名称和店铺名称的对象
      */
     openPC(obj: { url: string; serviceName: string; shopName: string }) {
-        spinner.succeed(`店铺【${obj.shopName}】打开成功!`);
+        logger.success(`店铺【${obj.shopName}】打开成功!`);
         open(obj.url.replace('app', ''));
+    }
+    /**
+     * 无法使用version搜索
+     */
+    noVersionSearch(obj: { serviceName: string }) {
+        logger.error(`【${obj.serviceName}】无法使用version搜索`);
+        process.exit(0);
     }
 }

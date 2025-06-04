@@ -9,4 +9,10 @@ export default class extends MeituanBase {
     openPC(url: string, shopName: string) {
         this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
     }
+    protected async getByVersion() {
+        this.occUtils.noVersionSearch({
+            serviceName: this.serviceName,
+        });
+        return '';
+    }
 }
