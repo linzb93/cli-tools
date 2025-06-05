@@ -81,9 +81,12 @@ program
         clear(filename, options);
     });
 
-program.command('analyse [sub-command]').action((subCommand) => {
-    analyse(subCommand);
-});
+program
+    .command('analyse [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        analyse(subCommand, rest, options);
+    });
 
 program
     .command('color [text]')

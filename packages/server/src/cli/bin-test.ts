@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import occ from './commands/occ';
 // import test from './commands/test';
 // import ai from './commands/ai';
+import analyse from './commands/analyse';
 // 创建命令行程序
 const program = new Command();
 
@@ -44,6 +45,13 @@ program
     .option('--version <version>', '指定版本')
     .action((data, options) => {
         occ(data, options);
+    });
+
+program
+    .command('analyse [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        analyse(subCommand, rest, options);
     });
 
 // program.command('test').action((opt) => {
