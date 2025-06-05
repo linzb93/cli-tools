@@ -1,12 +1,12 @@
-import { execa } from 'execa';
 import chalk from 'chalk';
 import BaseCommand from '../../BaseCommand';
-import { isGitProject, getAllTags, deleteTags } from '../utils';
-import inquirer from '@/utils/inquirer';
+import { isGitProject, getAllTags } from '../utils';
 import { executeCommands, CommandConfig } from '@/utils/promise';
 import semver from 'semver';
 import { getProjectName } from '@/utils/jenkins';
 import clipboardy from 'clipboardy';
+import TagDelete from './delete';
+import TagSync from './sync';
 
 /**
  * git tag 命令的选项接口
@@ -69,8 +69,8 @@ export default class extends BaseCommand {
         // 子命令映射表
         const commandMap: Record<string, () => Promise<void>> = {
             '': () => this.addTag(options),
-            'delete': () => this.deleteTag(),
-            'sync': () => this.syncTag(),
+            'delete': () => new TagDelete().main(),
+            'sync': () => new TagSync().main(),
         };
 
         // 执行对应的子命令
@@ -159,68 +159,6 @@ export default class extends BaseCommand {
             clipboardy.writeSync(`${onlineId}, ${newTag}`);
         } catch (error) {
             this.logger.error(`创建标签失败: ${error.message || error}`);
-        }
-    }
-
-    /**
-     * 删除标签
-     * @returns {Promise<void>}
-     */
-    private async deleteTag(): Promise<void> {
-        try {
-            // 获取所有标签
-            const tags = await getAllTags();
-
-            if (tags.length === 0) {
-                this.logger.warn('当前项目没有标签');
-                return;
-            }
-
-            // 提示用户选择要删除的标签
-            const { selectedTags } = await inquirer.prompt({
-                type: 'checkbox',
-                name: 'selectedTags',
-                message: '请选择要删除的标签',
-                choices: tags.map((tag) => ({ name: tag, value: tag })),
-            });
-
-            if (!selectedTags.length) {
-                this.logger.info('未选择任何标签，操作已取消');
-                return;
-            }
-
-            this.logger.info(`正在删除选中的 ${selectedTags.length} 个标签...`);
-            await deleteTags({ tags: selectedTags, remote: true });
-            this.logger.success('标签删除操作完成');
-        } catch (error) {
-            this.logger.error(`删除标签失败: ${error.message || error}`);
-        }
-    }
-
-    /**
-     * 同步标签
-     * @returns {Promise<void>}
-     */
-    private async syncTag(): Promise<void> {
-        try {
-            // 获取所有标签
-            const tags = await getAllTags();
-
-            if (tags.length > 0) {
-                this.logger.info(`正在删除 ${tags.length} 个本地标签...`);
-
-                // 删除所有本地标签
-                await execa('git', ['tag', '-d'].concat(tags));
-            }
-
-            // 拉取所有远程标签
-            this.logger.info('正在从远程拉取所有标签...');
-            await executeCommands([this.fetchTags()]);
-
-            const updatedTags = await getAllTags();
-            this.logger.success(`标签同步完成，现有 ${updatedTags.length} 个标签`);
-        } catch (error) {
-            this.logger.error(`同步标签失败: ${error.message || error}`);
         }
     }
 
