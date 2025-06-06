@@ -1,11 +1,17 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import BaseCommand from '../BaseCommand';
+import BaseCommand from '../../BaseCommand';
 import { cacheRoot } from '@/utils/constant';
 import { splitByLine } from '@/utils/helper';
 
+/**
+ * CLI使用分析命令类
+ */
 export default class extends BaseCommand {
+    /**
+     * 主方法
+     */
     async main() {
         const fileContent = await fs.readFile(join(cacheRoot, 'track.txt'), 'utf8');
         const lines = splitByLine(fileContent);
@@ -32,6 +38,11 @@ export default class extends BaseCommand {
 ${result.map((item) => `${chalk.yellow(item.cmd)}命令，使用过${chalk.cyan(item.count)}次`).join('\n')}`);
     }
 
+    /**
+     * 解析行内容
+     * @param line 行内容
+     * @returns 解析结果
+     */
     private parseLine(line: string) {
         const timeMatch = line.match(/\[(.+)\]/);
         const time = timeMatch ? timeMatch[0] : '';
