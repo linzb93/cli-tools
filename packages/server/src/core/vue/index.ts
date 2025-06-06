@@ -41,88 +41,196 @@ export interface Options {
     publicPath: string;
 }
 
+/**
+ * 项目配置信息
+ */
+interface ProjectConfig {
+    cwd: string;
+    command: string;
+    port: number;
+    publicPath: string;
+    branchName?: string;
+}
+
 export default class Vue extends BaseCommand {
+    /**
+     * 命令主入口
+     * @param options 命令选项
+     */
     async main(options: Options) {
         if (options.checkout) {
             await this.checkoutBranchAndStartServer(options);
             return;
         }
 
-        let cwd = '';
-        let command = '';
-        let port = options.port;
-        let publicPath = options.publicPath;
-        if (options.list) {
-            const list = (await sql((db) => db.vue)) as (Database['vue'][number] & { branchName: string })[];
-            for (const item of list) {
-                item.branchName = await git.getCurrentBranchName(item.path);
-            }
-            const { selectedId } = await this.inquirer.prompt([
-                {
-                    type: 'list',
-                    name: 'selectedId',
-                    message: '请选择运行的项目及命令',
-                    choices: list.map((item) => ({
-                        name: `${chalk.yellow(item.name)}(${chalk.blue(item.path)}) 命令: ${chalk.green(
-                            item.command
-                        )} 分支: ${chalk.blue(item.branchName)}`,
-                        value: item.id,
-                    })),
-                },
-            ]);
-            const match = list.find((item) => item.id === selectedId);
-            if (!match) {
-                return;
-            }
-            cwd = match.path;
-            command = match.command;
-            port = match.defaultPort;
-            publicPath = match.publicPath;
-        } else if (options.current) {
-            command = options.command || 'build';
-            cwd = process.cwd();
-        } else {
-            cwd = await showOpenDialog('directory');
-            if (!cwd) {
-                this.logger.error('请选择项目路径');
-                return;
-            }
-            command = options.command || 'build';
+        // 获取项目配置
+        const projectConfig = await this.getProjectConfig(options);
+        if (!projectConfig) {
+            return;
         }
-        this.logger.backwardConsole();
-        if (options.server) {
-            this.spinner.text = '正在启动服务器';
-        } else {
-            const branchName = await git.getCurrentBranchName(cwd);
-            this.spinner.text = `正在项目${chalk.yellow(cwd)}(${chalk.blue(
-                `${branchName}分支`
-            )})执行命令：${chalk.green(`npm run ${command}`)}，请稍后...`;
-            await execa(`npm run ${command}`, { cwd });
-        }
-        const confFileContent = await fs.readFile(join(cwd, 'vue.config.js'), 'utf-8');
 
-        if (!publicPath) {
+        // 执行构建命令
+        if (!options.server) {
+            await this.buildProject(projectConfig);
+        }
+
+        // 保存项目信息到数据库
+        if (!options.list) {
+            await this.saveProjectToDatabase(projectConfig);
+        }
+
+        // 启动服务器
+        await this.startServer(projectConfig.cwd, projectConfig.publicPath, projectConfig.port);
+    }
+
+    /**
+     * 获取项目配置信息
+     * @param options 命令选项
+     * @returns 项目配置信息
+     */
+    private async getProjectConfig(options: Options): Promise<ProjectConfig | null> {
+        if (options.list) {
+            return await this.getProjectConfigFromList();
+        } else if (options.current) {
+            return this.getProjectConfigFromCurrent(options);
+        } else {
+            return await this.getProjectConfigFromDialog(options);
+        }
+    }
+
+    /**
+     * 从列表中获取项目配置
+     * @returns 项目配置信息
+     */
+    private async getProjectConfigFromList(): Promise<ProjectConfig | null> {
+        const list = (await sql((db) => db.vue)) as (Database['vue'][number] & { branchName: string })[];
+
+        // 获取每个项目的当前分支
+        for (const item of list) {
+            item.branchName = await git.getCurrentBranchName(item.path);
+        }
+
+        const { selectedId } = await this.inquirer.prompt([
+            {
+                type: 'list',
+                name: 'selectedId',
+                message: '请选择运行的项目及命令',
+                choices: list.map((item) => ({
+                    name: `${chalk.yellow(item.name)}(${chalk.blue(item.path)}) 命令: ${chalk.green(
+                        item.command
+                    )} 分支: ${chalk.blue(item.branchName)}`,
+                    value: item.id,
+                })),
+            },
+        ]);
+
+        const match = list.find((item) => item.id === selectedId);
+        if (!match) {
+            return null;
+        }
+
+        return {
+            cwd: match.path,
+            command: match.command,
+            port: match.defaultPort,
+            publicPath: match.publicPath,
+            branchName: match.branchName,
+        };
+    }
+
+    /**
+     * 从当前目录获取项目配置
+     * @param options 命令选项
+     * @returns 项目配置信息
+     */
+    private getProjectConfigFromCurrent(options: Options): ProjectConfig {
+        return {
+            cwd: process.cwd(),
+            command: options.command || 'build',
+            port: options.port,
+            publicPath: options.publicPath,
+        };
+    }
+
+    /**
+     * 从对话框选择获取项目配置
+     * @param options 命令选项
+     * @returns 项目配置信息
+     */
+    private async getProjectConfigFromDialog(options: Options): Promise<ProjectConfig | null> {
+        const cwd = await showOpenDialog('directory');
+        if (!cwd) {
+            this.logger.error('请选择项目路径');
+            return null;
+        }
+
+        return {
+            cwd,
+            command: options.command || 'build',
+            port: options.port,
+            publicPath: options.publicPath,
+        };
+    }
+
+    /**
+     * 构建项目
+     * @param config 项目配置
+     */
+    private async buildProject(config: ProjectConfig): Promise<void> {
+        this.logger.backwardConsole();
+
+        // 获取当前分支
+        const branchName = config.branchName || (await git.getCurrentBranchName(config.cwd));
+
+        this.spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(
+            `${branchName}分支`
+        )})执行命令：${chalk.green(`npm run ${config.command}`)}，请稍后...`;
+
+        await execa(`npm run ${config.command}`, { cwd: config.cwd });
+    }
+
+    /**
+     * 从配置文件获取 publicPath
+     * @param cwd 项目路径
+     * @returns publicPath 值
+     */
+    private async getPublicPathFromConfig(cwd: string): Promise<string | undefined> {
+        try {
+            const confFileContent = await fs.readFile(join(cwd, 'vue.config.js'), 'utf-8');
             const contentSeg = confFileContent.split('\n');
             const matchLine = contentSeg.find((line) => line.includes('publicPath:'));
+
             if (matchLine) {
-                publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
+                return matchLine.split(/: ?/)[1].trim().slice(1, -2);
             }
-        }
-        if (!options.list) {
-            await sql((db) => {
-                db.vue.push({
-                    id: db.vue.length + 1,
-                    path: cwd,
-                    command,
-                    name: basename(cwd),
-                    publicPath,
-                    defaultPort: options.port,
-                });
-            });
+        } catch (error) {
+            this.logger.error(`读取 vue.config.js 失败: ${error}`);
         }
 
-        await this.startServer(cwd, publicPath, port);
+        return undefined;
     }
+
+    /**
+     * 保存项目信息到数据库
+     * @param config 项目配置
+     */
+    private async saveProjectToDatabase(config: ProjectConfig): Promise<void> {
+        if (!config.publicPath) {
+            config.publicPath = (await this.getPublicPathFromConfig(config.cwd)) || '';
+        }
+
+        await sql((db) => {
+            db.vue.push({
+                id: db.vue.length + 1,
+                path: config.cwd,
+                command: config.command,
+                name: basename(config.cwd),
+                publicPath: config.publicPath,
+                defaultPort: config.port,
+            });
+        });
+    }
+
     /**
      * 选择项目和分支
      * @returns 选中的项目路径和分支名称
@@ -173,37 +281,49 @@ export default class Vue extends BaseCommand {
         await execa(`git checkout ${selectedBranch}`, { cwd: selectedPath });
 
         // 3. 获取项目的命令和配置
-        const list = await sql((db) => db.vue);
-        const project = list.find((item) => item.path === selectedPath);
-        if (!project) {
-            this.logger.error('找不到项目配置');
+        const projectConfig = await this.getProjectConfigFromPath(selectedPath, options);
+        if (!projectConfig) {
             return;
         }
 
-        const command = project.command || 'build';
-        let port = options.port || project.defaultPort;
-        let publicPath = options.publicPath || project.publicPath;
-
         // 4. 打包项目
-        this.spinner.text = `正在项目${chalk.yellow(selectedPath)}(${chalk.blue(
-            `${selectedBranch}分支`
-        )})执行命令：${chalk.green(`npm run ${command}`)}，请稍后...`;
-        await execa(`npm run ${command}`, { cwd: selectedPath });
+        projectConfig.branchName = selectedBranch;
+        await this.buildProject(projectConfig);
 
-        // 5. 读取配置文件
-        if (!publicPath) {
-            const confFileContent = await fs.readFile(join(selectedPath, 'vue.config.js'), 'utf-8');
-            const contentSeg = confFileContent.split('\n');
-            const matchLine = contentSeg.find((line) => line.includes('publicPath:'));
-            if (!matchLine) {
-                this.logger.error('vue.config.js not found');
+        // 5. 确保有 publicPath
+        if (!projectConfig.publicPath) {
+            projectConfig.publicPath = (await this.getPublicPathFromConfig(selectedPath)) || '';
+            if (!projectConfig.publicPath) {
+                this.logger.error('无法获取 publicPath');
                 return;
             }
-            publicPath = matchLine.split(/: ?/)[1].trim().slice(1, -2);
         }
 
         // 6. 启动服务器
-        await this.startServer(selectedPath, publicPath, port);
+        await this.startServer(selectedPath, projectConfig.publicPath, projectConfig.port);
+    }
+
+    /**
+     * 从路径获取项目配置
+     * @param path 项目路径
+     * @param options 命令选项
+     * @returns 项目配置
+     */
+    private async getProjectConfigFromPath(path: string, options: Options): Promise<ProjectConfig | null> {
+        const list = await sql((db) => db.vue);
+        const project = list.find((item) => item.path === path);
+
+        if (!project) {
+            this.logger.error('找不到项目配置');
+            return null;
+        }
+
+        return {
+            cwd: path,
+            command: project.command || 'build',
+            port: options.port || project.defaultPort,
+            publicPath: options.publicPath || project.publicPath,
+        };
     }
 
     /**

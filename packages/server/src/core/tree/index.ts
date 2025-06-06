@@ -42,7 +42,13 @@ export default class extends BaseCommand {
             }
         }
     }
-    private init(dir = '.', options: Options) {
+    /**
+     * 初始化命令参数和配置
+     * @param {string} dir - 目标目录路径
+     * @param {Options} options - 命令选项
+     * @returns {void}
+     */
+    private init(dir: string = '.', options: Options): void {
         const defaultOptions = {
             level: 1,
         };
@@ -57,7 +63,14 @@ export default class extends BaseCommand {
         }
         this.outputList = [];
     }
-    private async readdir(root: string, level = 0, paddings: number[] = []) {
+    /**
+     * 递归读取目录并生成树形结构
+     * @param {string} root - 当前读取的根目录路径
+     * @param {number} level - 当前遍历的层级
+     * @param {number[]} paddings - 用于格式化树形结构的填充数组
+     * @returns {Promise<void>}
+     */
+    private async readdir(root: string, level: number = 0, paddings: number[] = []): Promise<void> {
         const dirs = (await fs.readdir(root)).filter((dir) => !this.ignoreDirs.includes(dir));
         for (let i = 0; i < dirs.length; i++) {
             const dir = dirs[i];

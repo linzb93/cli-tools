@@ -83,7 +83,7 @@ export default class extends BaseCommand {
      * @param {string} filename - 文件名
      * @returns {string} - 图片的后缀名
      */
-    private getExtname(filename: string) {
+    private getExtname(filename: string): string {
         return ['.jpg', '.png', '.webp', '.gif'].find((ext) => filename.includes(ext)) || '.png';
     }
 }

@@ -55,113 +55,197 @@ export default class VueModule extends Module {
             };
         }
 
+        // 找出所有标签位置
+        const styleInfo = this.findStyleTagsInfo(nonEmptyLines);
+        const scriptInfo = this.findScriptTagsInfo(nonEmptyLines);
+        const templateLength = this.calculateTemplateLength(nonEmptyLines, scriptInfo, styleInfo);
+
+        return {
+            lines: nonEmptyLines.length,
+            scriptLength: scriptInfo.length,
+            templateLength,
+            styleLength: styleInfo.length,
+        };
+    }
+
+    /**
+     * 查找样式标签的信息
+     * @param nonEmptyLines 非空行数组
+     * @returns 样式标签信息
+     */
+    private findStyleTagsInfo(nonEmptyLines: string[]) {
         // 找出所有 style 标签的起始和结束位置
-        const styleStartIndexes = nonEmptyLines
+        const startIndexes = nonEmptyLines
             .map((line, index) => (line.includes('<style') ? index : -1))
             .filter((index) => index !== -1);
 
-        const styleEndIndexes = nonEmptyLines
+        const endIndexes = nonEmptyLines
             .map((line, index) => (line.includes('</style>') ? index : -1))
             .filter((index) => index !== -1);
 
+        // 计算所有 style 标签内的总行数
+        let length = 0;
+        for (let i = 0; i < startIndexes.length; i++) {
+            const start = startIndexes[i];
+            const end = endIndexes[i];
+            if (start !== undefined && end !== undefined) {
+                length += end - start - 1;
+            }
+        }
+
+        return {
+            startIndexes,
+            endIndexes,
+            length,
+        };
+    }
+
+    /**
+     * 查找脚本标签的信息
+     * @param nonEmptyLines 非空行数组
+     * @returns 脚本标签信息
+     */
+    private findScriptTagsInfo(nonEmptyLines: string[]) {
         // 查找 script 标签
-        const scriptStart = nonEmptyLines.findIndex((line) => line.includes('<script'));
-        const scriptEnd = nonEmptyLines.findIndex((line) => line.includes('</script>'));
+        const start = nonEmptyLines.findIndex((line) => line.includes('<script'));
+        const end = nonEmptyLines.findIndex((line) => line.includes('</script>'));
 
         // 计算 script 标签内的行数
-        const scriptLength = scriptStart !== -1 && scriptEnd !== -1 ? scriptEnd - scriptStart - 1 : 0;
+        const length = start !== -1 && end !== -1 ? end - start - 1 : 0;
 
-        // 正确处理 template 标签，考虑嵌套情况
-        let templateLength = 0;
-        let inTemplate = false;
-        let templateDepth = 0;
-        let templateStartIndex = -1;
+        return {
+            start,
+            end,
+            length,
+        };
+    }
 
+    /**
+     * 计算模板标签的长度
+     * @param nonEmptyLines 非空行数组
+     * @param scriptInfo 脚本标签信息
+     * @param styleInfo 样式标签信息
+     * @returns 模板标签长度
+     */
+    private calculateTemplateLength(
+        nonEmptyLines: string[],
+        scriptInfo: { start: number; end: number; length: number },
+        styleInfo: { startIndexes: number[]; endIndexes: number[]; length: number }
+    ): number {
         // 检查是否存在 template 标签
         const hasTemplateStart = nonEmptyLines.some((line) => line.includes('<template'));
         const hasTemplateEnd = nonEmptyLines.some((line) => line.includes('</template>'));
 
         // 如果没有完整的 template 标签对，尝试估算 template 部分
         if (!hasTemplateStart || !hasTemplateEnd) {
-            // 如果文件中没有 script 和 style 标签，则所有内容都视为 template
-            if (scriptStart === -1 && styleStartIndexes.length === 0) {
-                templateLength = nonEmptyLines.length;
-            } else {
-                // 估算：总行数减去 script 和 style 的行数
-                let nonTemplateLines = scriptLength;
-                if (scriptStart !== -1) nonTemplateLines += 2; // script 标签本身
-
-                // 添加所有 style 标签的行数
-                for (let i = 0; i < styleStartIndexes.length; i++) {
-                    const start = styleStartIndexes[i];
-                    const end = styleEndIndexes[i];
-                    if (start !== undefined && end !== undefined) {
-                        nonTemplateLines += end - start + 1;
-                    }
-                }
-
-                templateLength = nonEmptyLines.length - nonTemplateLines;
-                templateLength = Math.max(0, templateLength); // 确保不是负数
-            }
+            return this.estimateTemplateLength(nonEmptyLines, scriptInfo, styleInfo);
         } else {
-            // 按照嵌套逻辑计算 template 行数
-            for (let i = 0; i < nonEmptyLines.length; i++) {
-                const line = nonEmptyLines[i];
+            return this.calculateNestedTemplateLength(nonEmptyLines, hasTemplateStart, hasTemplateEnd);
+        }
+    }
 
-                // 检测 template 开始标签
-                if (line.includes('<template')) {
-                    if (!inTemplate) {
-                        inTemplate = true;
-                        templateStartIndex = i;
-                    }
-                    templateDepth++;
-                }
+    /**
+     * 估算模板标签的长度（当没有完整的模板标签对时）
+     * @param nonEmptyLines 非空行数组
+     * @param scriptInfo 脚本标签信息
+     * @param styleInfo 样式标签信息
+     * @returns 估算的模板标签长度
+     */
+    private estimateTemplateLength(
+        nonEmptyLines: string[],
+        scriptInfo: { start: number; end: number; length: number },
+        styleInfo: { startIndexes: number[]; endIndexes: number[]; length: number }
+    ): number {
+        // 如果文件中没有 script 和 style 标签，则所有内容都视为 template
+        if (scriptInfo.start === -1 && styleInfo.startIndexes.length === 0) {
+            return nonEmptyLines.length;
+        } else {
+            // 估算：总行数减去 script 和 style 的行数
+            let nonTemplateLines = scriptInfo.length;
+            if (scriptInfo.start !== -1) nonTemplateLines += 2; // script 标签本身
 
-                // 检测 template 结束标签
-                if (line.includes('</template>')) {
-                    templateDepth--;
-
-                    // 当所有嵌套的 template 都结束时，计算总行数
-                    if (templateDepth === 0 && inTemplate) {
-                        // 修正计算方式：包括开始和结束行之间的所有行
-                        const blockLength = i - templateStartIndex - 1;
-                        templateLength += Math.max(0, blockLength);
-                        inTemplate = false;
-                    }
+            // 添加所有 style 标签的行数
+            for (let i = 0; i < styleInfo.startIndexes.length; i++) {
+                const start = styleInfo.startIndexes[i];
+                const end = styleInfo.endIndexes[i];
+                if (start !== undefined && end !== undefined) {
+                    nonTemplateLines += end - start + 1;
                 }
             }
 
-            // 如果计算结果为 0 但存在 template 标签，可能是计算有误
-            if (templateLength === 0 && hasTemplateStart && hasTemplateEnd) {
-                // 寻找第一个 template 开始和最后一个 template 结束
-                const firstTemplateStart = nonEmptyLines.findIndex((line) => line.includes('<template'));
-                const lastTemplateEnd =
-                    nonEmptyLines.length -
-                    1 -
-                    [...nonEmptyLines].reverse().findIndex((line) => line.includes('</template>'));
+            const templateLength = nonEmptyLines.length - nonTemplateLines;
+            return Math.max(0, templateLength); // 确保不是负数
+        }
+    }
 
-                if (firstTemplateStart !== -1 && lastTemplateEnd !== -1 && firstTemplateStart < lastTemplateEnd) {
-                    templateLength = lastTemplateEnd - firstTemplateStart - 1;
+    /**
+     * 计算嵌套模板标签的长度
+     * @param nonEmptyLines 非空行数组
+     * @param hasTemplateStart 是否有模板开始标签
+     * @param hasTemplateEnd 是否有模板结束标签
+     * @returns 计算的模板标签长度
+     */
+    private calculateNestedTemplateLength(
+        nonEmptyLines: string[],
+        hasTemplateStart: boolean,
+        hasTemplateEnd: boolean
+    ): number {
+        let templateLength = 0;
+        let inTemplate = false;
+        let templateDepth = 0;
+        let templateStartIndex = -1;
+
+        // 按照嵌套逻辑计算 template 行数
+        for (let i = 0; i < nonEmptyLines.length; i++) {
+            const line = nonEmptyLines[i];
+
+            // 检测 template 开始标签
+            if (line.includes('<template')) {
+                if (!inTemplate) {
+                    inTemplate = true;
+                    templateStartIndex = i;
+                }
+                templateDepth++;
+            }
+
+            // 检测 template 结束标签
+            if (line.includes('</template>')) {
+                templateDepth--;
+
+                // 当所有嵌套的 template 都结束时，计算总行数
+                if (templateDepth === 0 && inTemplate) {
+                    // 修正计算方式：包括开始和结束行之间的所有行
+                    const blockLength = i - templateStartIndex - 1;
+                    templateLength += Math.max(0, blockLength);
+                    inTemplate = false;
                 }
             }
         }
 
-        // 计算所有 style 标签内的总行数
-        let styleLength = 0;
-        for (let i = 0; i < styleStartIndexes.length; i++) {
-            const start = styleStartIndexes[i];
-            const end = styleEndIndexes[i];
-            if (start !== undefined && end !== undefined) {
-                styleLength += end - start - 1;
-            }
+        // 如果计算结果为 0 但存在 template 标签，可能是计算有误
+        if (templateLength === 0 && hasTemplateStart && hasTemplateEnd) {
+            templateLength = this.fallbackTemplateCalculation(nonEmptyLines);
         }
 
-        return {
-            lines: nonEmptyLines.length,
-            scriptLength,
-            templateLength,
-            styleLength,
-        };
+        return templateLength;
+    }
+
+    /**
+     * 模板长度计算的备选方法（当嵌套计算失败时）
+     * @param nonEmptyLines 非空行数组
+     * @returns 备选计算的模板标签长度
+     */
+    private fallbackTemplateCalculation(nonEmptyLines: string[]): number {
+        // 寻找第一个 template 开始和最后一个 template 结束
+        const firstTemplateStart = nonEmptyLines.findIndex((line) => line.includes('<template'));
+        const lastTemplateEnd =
+            nonEmptyLines.length - 1 - [...nonEmptyLines].reverse().findIndex((line) => line.includes('</template>'));
+
+        if (firstTemplateStart !== -1 && lastTemplateEnd !== -1 && firstTemplateStart < lastTemplateEnd) {
+            return lastTemplateEnd - firstTemplateStart - 1;
+        }
+
+        return 0;
     }
 
     /**
