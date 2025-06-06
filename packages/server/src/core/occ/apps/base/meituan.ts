@@ -1,6 +1,5 @@
 import Base from './';
 import serviceGenerator from '@/utils/http';
-import inquirer from '@/utils/inquirer';
 import sql from '@/utils/sql';
 import { logger } from '@/utils/logger';
 import { login } from '../../shared/login';

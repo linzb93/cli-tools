@@ -42,7 +42,7 @@ export default class extends BaseCommand {
         }
 
         if (!decoded || !matchParser) {
-            console.log('无法解析token');
+            this.logger.error('无法解析token');
             return;
         }
         console.log('\n');
@@ -62,7 +62,7 @@ export default class extends BaseCommand {
             decoded = this.processTimestamps(decoded);
         }
 
-        console.log(decoded || '无法解析token');
+        this.logger.info(decoded || '无法解析token');
     }
 
     /**

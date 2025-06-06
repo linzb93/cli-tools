@@ -13,7 +13,7 @@ class JwtTokenParser extends TokenParser {
      * @param options 解析选项
      * @returns 解析后的数据
      */
-    parse(token: string, options: Options): any {
+    parse(token: string, options: Options): AnyObject {
         const tokenStr = token.replace(/^(.+_)?/, ''); // 把前面可能有的occ_senior_去掉
         const decoded = jwt.decode(tokenStr, {
             complete: options.complete,

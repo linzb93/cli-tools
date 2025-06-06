@@ -85,52 +85,6 @@ export default class extends BaseCommand {
     }
 
     /**
-     * 创建标签
-     * @param {string} tagName - 标签名称
-     * @returns {CommandConfig} 命令配置
-     */
-    private createTag(tagName: string): CommandConfig {
-        return {
-            message: `git tag ${tagName}`,
-        };
-    }
-
-    /**
-     * 推送标签到远程仓库
-     * @param {string} tagName - 标签名称
-     * @returns {CommandConfig} 命令配置
-     */
-    private pushTag(tagName: string): CommandConfig {
-        return {
-            message: `git push origin ${tagName}`,
-            onError: (message) => {
-                if (message.includes('not found')) {
-                    console.warn(`远程仓库不存在标签: ${tagName}`);
-                }
-                return {
-                    shouldStop: false,
-                };
-            },
-        };
-    }
-
-    /**
-     * 拉取所有远程标签
-     * @returns {CommandConfig} 命令配置
-     */
-    private fetchTags(): CommandConfig {
-        return {
-            message: 'git fetch --tags',
-            onError: (message) => {
-                console.error(`拉取远程标签失败: ${message}`);
-                return {
-                    shouldStop: true,
-                };
-            },
-        };
-    }
-
-    /**
      * 添加标签
      * @param {Options} options - 命令选项
      * @returns {Promise<void>}
@@ -153,7 +107,25 @@ export default class extends BaseCommand {
             this.logger.info(`正在创建标签: ${chalk.green(newTag)}`);
 
             // 创建本地标签并推送到远程
-            await executeCommands([this.createTag(newTag), this.pushTag(newTag)]);
+            await executeCommands([
+                // 创建标签
+                {
+                    message: `git tag ${newTag}`,
+                },
+                // 推送标签到远程仓库
+                {
+                    message: `git push origin ${newTag}`,
+                    onError: (message) => {
+                        if (message.includes('not found')) {
+                            console.warn(`远程仓库不存在标签: ${newTag}`);
+                        }
+                        return {
+                            shouldStop: false,
+                        };
+                    },
+                },
+            ]);
+
             const { onlineId } = await getProjectName(type);
             this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${onlineId}, ${newTag}`)}`);
             clipboardy.writeSync(`${onlineId}, ${newTag}`);
