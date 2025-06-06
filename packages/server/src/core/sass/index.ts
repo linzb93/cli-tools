@@ -50,16 +50,8 @@ export default class SassCommand extends BaseCommand {
      * 命令主入口
      */
     async main(): Promise<void> {
-        // 检查是否存在scss目录
-        const scssDir = resolve(process.cwd(), 'scss');
-
-        if (!(await fs.pathExists(scssDir))) {
-            this.logger.error('当前项目中不存在scss目录');
-            process.exit(1);
-        }
-
         // 直接开启监听模式
-        await this.startWatcher(scssDir);
+        await this.startWatcher(process.cwd());
     }
 
     /**
@@ -178,7 +170,6 @@ export default class SassCommand extends BaseCommand {
             });
 
             await fs.writeFile(file.replace('scss', 'wxss'), result.css.toString());
-            this.logger.success(`文件 ${chalk.cyan(file)} 编译完成`);
         } catch (error) {
             this.logger.error(`编译 ${file} 失败: ${error}`);
         }
