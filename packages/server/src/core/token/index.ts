@@ -61,8 +61,11 @@ export default class extends BaseCommand {
         if (!options.origin) {
             decoded = this.processTimestamps(decoded);
         }
-
-        this.logger.info(decoded || '无法解析token');
+        if (decoded) {
+            console.log(decoded);
+        } else {
+            this.logger.error('无法解析token');
+        }
     }
 
     /**

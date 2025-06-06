@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import sass from './sass';
 import globalPkg from '../../../../package.json';
+import token from './commands/token';
+
 // 创建命令行程序
 const program = new Command();
 
@@ -22,9 +23,13 @@ program.hook('preAction', (thisCommand) => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-program.command('sass').action(() => {
-    sass();
-});
+program
+    .command('token [data]')
+    .option('-o --origin', '原始数据')
+    .option('-c --complete', '完整数据')
+    .action((data, options) => {
+        token(data, options);
+    });
 
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));
