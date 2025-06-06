@@ -37,7 +37,7 @@ export default class extends BaseCommand {
             }
             let size = 0;
             const extname = this.getExtname(filePath);
-            const targetName = resolve(root, `temp/getSizeImage${extname}`);
+            const targetName = resolve(root, `cache/temp/getSizeImage${extname}`);
             const settingRect = options.rect;
             await new Promise((resolve) => {
                 res.data

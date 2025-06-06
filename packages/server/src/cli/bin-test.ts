@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import token from './commands/token';
+import size from './commands/size';
 
 // 创建命令行程序
 const program = new Command();
@@ -29,6 +30,13 @@ program
     .option('-c --complete', '完整数据')
     .action((data, options) => {
         token(data, options);
+    });
+
+program
+    .command('size <filePath>')
+    .option('-r, --rect', '获取图片尺寸')
+    .action((filePath, options) => {
+        size(filePath, options);
     });
 
 // 解析命令行参数

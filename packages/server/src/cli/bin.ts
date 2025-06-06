@@ -26,7 +26,7 @@ import time from './commands/time';
 import repl from './commands/repl';
 import vue from './commands/vue';
 import server from './commands/server';
-import sass from './sass';
+import sass from './commands/sass';
 import globalPkg from '../../../../package.json';
 import init from '@/core/init';
 import { generateHelpDoc } from '@/utils/helper';
@@ -123,8 +123,8 @@ program.command('ip [rest...]').action((data) => {
     ip(data);
 });
 
-program.command('kill [data...]').action((data, options) => {
-    kill(data, options);
+program.command('kill [data...]').action((data) => {
+    kill(data);
 });
 
 program.command('lixi').action(() => {
