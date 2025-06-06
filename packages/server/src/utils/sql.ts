@@ -4,6 +4,10 @@ import { cacheRoot } from './constant';
 
 export interface Database {
     lastModifiedTime: string;
+    /**
+     * 最后一次启动服务器的日期，格式为YYYY-MM-DD
+     */
+    lastServerStartDate: string;
     open: {
         [key: string]: string;
     };
