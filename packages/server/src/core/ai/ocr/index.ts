@@ -10,7 +10,7 @@ import { MessageOptions } from '../shared/types';
 export interface Options {
     /**
      * 图片线上地址
-     * @default '''
+     * @default ''
      */
     url: string;
 }

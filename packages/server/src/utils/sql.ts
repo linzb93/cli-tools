@@ -27,6 +27,26 @@ export interface Database {
         path: string;
         name: string;
     }[];
+    /**
+     * Jenkins相关配置
+     */
+    jenkins: {
+        /**
+         * Jenkins用户名
+         */
+        username?: string;
+        /**
+         * Jenkins密码
+         */
+        password?: string;
+        /**
+         * Jenkins URL
+         */
+        url?: {
+            internal: string;
+            public: string;
+        };
+    };
     oa: {
         apiPrefix?: string;
         testPrefix?: string;
