@@ -11,6 +11,7 @@ import fs from 'fs-extra';
 import sql, { Database } from '@/utils/sql';
 import * as git from '@/core/git/utils';
 import { objectToCmdOptions } from '@/utils/helper';
+import globalConfig from '../../../../../config.json';
 export interface Options {
     command: string;
     /**
@@ -338,7 +339,7 @@ export default class Vue extends BaseCommand {
             objectToCmdOptions({
                 cwd,
                 publicPath,
-                port,
+                port: globalConfig.port.production,
             }),
             {
                 detached: true,
