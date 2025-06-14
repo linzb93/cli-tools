@@ -14,8 +14,6 @@ export default async (command: Command) => {
     }
     // 记录每次使用的命令
     logger.cli(command.args.join(' '));
-    await sleep(100);
-
     // 获取上次启动服务器的日期
     const lastServerStartDate = await sql((db) => db.lastServerStartDate);
     const today = dayjs().format('YYYY-MM-DD');

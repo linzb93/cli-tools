@@ -39,31 +39,34 @@ export default class extends BaseCommand {
             await this.openPage(options);
             return;
         }
-        console.log('正在启动服务器');
         const child = fork(resolve(root, 'packages/server/dist/web.js'), [], {
             detached: true,
             stdio: [null, null, null, 'ipc'],
         });
-        child.on('message', async (msgData: any) => {
-            if (msgData.type === 'message') {
-                console.log(msgData.message);
-                return;
-            }
-            if (msgData.type === 'quit') {
-                console.log(
-                    `${chalk.yellow(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)} 服务在${
-                        globalConfig.port.production
-                    }端口启动。`
-                );
-                await this.openPage(options);
-                child.unref();
-                child.disconnect();
-                process.exit(0);
-            }
-        });
-        child.on('error', (error) => {
-            console.log(error);
-            process.exit(1);
+        return new Promise((resolve, reject) => {
+            child.on('message', async (msgObj: { type: string; message: string }) => {
+                if (msgObj.type === 'message') {
+                    console.log(msgObj.message);
+                    return;
+                }
+                if (msgObj.type === 'server-start') {
+                    console.log(
+                        `${chalk.yellow(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)} 服务在${
+                            globalConfig.port.production
+                        }端口启动。`
+                    );
+                    await this.openPage(options);
+                    child.unref();
+                    child.disconnect();
+                    process.exit(0);
+                    resolve(null);
+                }
+            });
+            child.on('error', (error) => {
+                console.log(error);
+                reject(error);
+                process.exit(1);
+            });
         });
     }
     private async openPage(options?: Options) {

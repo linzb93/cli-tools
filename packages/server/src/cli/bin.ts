@@ -52,8 +52,7 @@ program.hook('preAction', (thisCommand) => {
                     process.exit(0);
                 })();
             } else {
-                init(thisCommand);
-                resolve();
+                init(thisCommand).then(resolve);
             }
         }, 100);
     });

@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import express, { Router } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -15,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const router = Router();
-
+app.use('/pages', express.static(join(fileURLToPath(import.meta.url), '../pages')));
 router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
@@ -35,5 +36,7 @@ agentCallback(app);
 })();
 
 app.listen(config.port.production, () => {
-    process.send?.('server-start');
+    process.send?.({
+        type: 'server-start',
+    });
 });

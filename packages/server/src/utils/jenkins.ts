@@ -3,7 +3,7 @@ import readPkg from 'read-pkg';
 import sql from './sql';
 import { readSecret } from './secret';
 import puppeteer from 'puppeteer';
-import readline from 'readline';
+// import readline from 'readline';
 
 interface JenkinsProject {
     name: string;
@@ -70,17 +70,18 @@ export const getProjectName = async (
  * @returns 用户输入的内容
  */
 const askUser = (question: string): Promise<string> => {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
+    // const rl = readline.createInterface({
+    //     input: process.stdin,
+    //     output: process.stdout,
+    // });
 
-    return new Promise((resolve) => {
-        rl.question(question, (answer) => {
-            rl.close();
-            resolve(answer);
-        });
-    });
+    // return new Promise((resolve) => {
+    //     rl.question(question, (answer) => {
+    //         rl.close();
+    //         resolve(answer);
+    //     });
+    // });
+    return Promise.resolve('');
 };
 
 /**
