@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
-import server from './commands/server';
-import vue from './commands/vue';
+import curl from './commands/curl';
 
 // 创建命令行程序
 const program = new Command();
@@ -24,9 +23,12 @@ program.hook('preAction', (thisCommand) => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-program.command('server').action(() => {
-    server('', {});
-});
+program
+    .command('curl')
+    .option('--format <type>', '格式化类型')
+    .action((options) => {
+        curl(options);
+    });
 
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));

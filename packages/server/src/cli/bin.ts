@@ -14,6 +14,7 @@ import kill from './commands/kill';
 import lixi from './commands/lixi';
 // import yapi from './commands/yapi';
 // import mock from "./commands/mock";
+import curl from './commands/curl';
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
 import token from './commands/token';
@@ -100,6 +101,13 @@ program
     .action((data, options) => {
         cookie(data, options);
     });
+program
+    .command('curl')
+    .option('--format <type>', '格式化类型')
+    .action((options) => {
+        curl(options);
+    });
+
 program
     .command('eng [text]')
     .option('-e,--example', '显示范例')

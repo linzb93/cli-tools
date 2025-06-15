@@ -34,7 +34,16 @@ export default class extends BaseCommand {
      * @returns {Promise<void>}
      */
     async main(data: string, options: Options) {
-        const list = data.split(';');
+        const objs = this.parseCookie(data);
+        let result = options.type === 'key' ? Object.keys(objs) : objs;
+        console.log(result);
+        if (options.copy) {
+            clipboardy.writeSync(this.getValue(result));
+            this.logger.success('解析并复制成功');
+        }
+    }
+    parseCookie(cookies: string) {
+        const list = cookies.split(';');
         const objs = list.reduce((acc, item) => {
             const seg = item.split('=');
             return {
@@ -42,12 +51,7 @@ export default class extends BaseCommand {
                 [seg[0].replace(/^\s/, '')]: seg[1],
             };
         }, {});
-        let result = options.type === 'key' ? Object.keys(objs) : objs;
-        console.log(result);
-        if (options.copy) {
-            clipboardy.writeSync(this.getValue(result));
-            this.logger.success('解析并复制成功');
-        }
+        return objs;
     }
 
     /**
