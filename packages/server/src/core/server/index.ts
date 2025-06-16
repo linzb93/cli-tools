@@ -45,6 +45,7 @@ export default class extends BaseCommand {
         });
         return new Promise((resolve, reject) => {
             child.on('message', async (msgObj: { type: string; message: string }) => {
+                console.log(msgObj);
                 if (msgObj.type === 'message') {
                     console.log(msgObj.message);
                     return;

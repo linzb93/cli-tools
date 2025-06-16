@@ -1,11 +1,11 @@
 {
-  "port": {
-    "development_fe": 6547,
-    "production": 9527
-  },
-  "prefix": {
-    "static": "pages",
-    "temp": "/temp",
-    "api": "/api"
-  }
+    "port": {
+        "development_fe": 6547,
+        "production": 9527
+    },
+    "prefix": {
+        "static": "fe",
+        "temp": "/temp",
+        "api": "/api"
+    }
 }

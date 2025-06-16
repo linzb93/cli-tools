@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import config from '../../../../config.json';
 import bug from './controllers/bug';
 import setting from './controllers/setting';
+import { log, run } from './shared/log';
 import agent, { agentCallback } from './controllers/agent';
 import sql from '../utils/sql';
 
@@ -16,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const router = Router();
-app.use('/pages', express.static(join(fileURLToPath(import.meta.url), '../pages')));
+app.use(`/${config.prefix.static}`, express.static(join(fileURLToPath(import.meta.url), `../${config.prefix.static}`)));
 router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
@@ -27,15 +28,16 @@ agentCallback(app);
 (async () => {
     const vueProjects = await sql((db) => db.vue);
     const validProjects = vueProjects.filter((project) => project.publicPath && project.publicPath.trim() !== '');
-
-    for (const project of validProjects) {
+    for (let i = 0; i < validProjects.length; i++) {
+        const project = validProjects[i];
         const staticPath = join(project.path, 'dist');
+        log(`vue静态资源已挂载: ${project.publicPath} -> ${staticPath}`);
         app.use(project.publicPath, express.static(staticPath));
-        console.log(`vue静态资源已挂载: ${project.publicPath} -> ${staticPath}`);
     }
 })();
 
 app.listen(config.port.production, () => {
+    run();
     process.send?.({
         type: 'server-start',
     });
