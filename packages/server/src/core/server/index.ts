@@ -23,6 +23,11 @@ export interface Options {
      * @default false
      * */
     open?: boolean;
+    /**
+     * 是否结束进程
+     * @default false
+     */
+    exit?: boolean;
 }
 
 export default class extends BaseCommand {
@@ -45,7 +50,6 @@ export default class extends BaseCommand {
         });
         return new Promise((resolve, reject) => {
             child.on('message', async (msgObj: { type: string; message: string }) => {
-                console.log(msgObj);
                 if (msgObj.type === 'message') {
                     console.log(msgObj.message);
                     return;
@@ -59,7 +63,9 @@ export default class extends BaseCommand {
                     await this.openPage(options);
                     child.unref();
                     child.disconnect();
-                    process.exit(0);
+                    if (options?.exit) {
+                        process.exit(0);
+                    }
                     resolve(null);
                 }
             });

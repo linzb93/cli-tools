@@ -28,7 +28,9 @@ export default async (command: Command) => {
         // 启动服务器
         console.log('今日首次运行命令，正在启动服务器...');
         const serverInstance = new Server();
-        await serverInstance.main();
+        await serverInstance.main('start', {
+            exit: false,
+        });
 
         // 等待服务器启动完成
         await sleep(1000);
