@@ -3,6 +3,7 @@ import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
+import Commit from '../../core/git/commit';
 import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';
 
@@ -31,6 +32,16 @@ const pull = () => {
             .description('从远程仓库拉取最新代码')
             .action((options: PullOptions) => {
                 new Pull().main(options);
+            });
+    });
+};
+const commit = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('commit')
+            .description('提交Git代码')
+            .action((data: string) => {
+                new Commit().main(data);
             });
     });
 };
@@ -112,6 +123,7 @@ export default function (subCommand: string, data: string[], options: any): void
     const commandMap: Record<string, () => void> = {
         push,
         pull,
+        commit,
         tag,
         deploy,
         branch,

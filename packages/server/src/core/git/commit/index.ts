@@ -1,0 +1,36 @@
+import BaseCommand from '../../BaseCommand';
+import { isGitProject, getCurrentBranchName } from '../utils';
+import gitAtom from '../atom';
+import { executeCommands } from '@/utils/promise';
+import chalk from 'chalk';
+
+/**
+ * git pull 命令的选项接口，无需参数
+ */
+export interface Options {}
+
+/**
+ * git pull 命令的实现类
+ */
+export default class extends BaseCommand {
+    /**
+     * 命令的主入口函数
+     * @param {string} message - 提交信息
+     * @returns {Promise<void>}
+     */
+    async main(message: string): Promise<void> {
+        // 检查当前目录是否是 Git 项目
+        if (!(await isGitProject())) {
+            this.logger.error('当前目录不是 Git 项目');
+            return;
+        }
+
+        try {
+            // 执行 git commit 命令
+            await executeCommands([gitAtom.commit(message)]);
+            this.logger.success('提交成功');
+        } catch (error) {
+            this.logger.error(`提交失败: ${error.message || error}`);
+        }
+    }
+}

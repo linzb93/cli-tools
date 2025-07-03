@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import curl from './commands/curl';
-
+import git from './commands/git';
 // 创建命令行程序
 const program = new Command();
 
@@ -28,6 +28,13 @@ program
     .option('--format <type>', '格式化类型')
     .action((options) => {
         curl(options);
+    });
+
+program
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, cmd) => {
+        git(subCommand, rest, cmd);
     });
 
 // 解析命令行参数

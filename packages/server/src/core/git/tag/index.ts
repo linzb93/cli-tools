@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import BaseCommand from '../../BaseCommand';
 import { isGitProject, getAllTags } from '../utils';
-import { executeCommands, CommandConfig } from '@/utils/promise';
+import { executeCommands } from '@/utils/promise';
 import semver from 'semver';
 import { getProjectName } from '@/utils/jenkins';
 import clipboardy from 'clipboardy';
