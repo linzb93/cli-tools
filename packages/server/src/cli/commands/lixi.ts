@@ -31,4 +31,5 @@ export default () => {
             `${yesterdayLixi}元`
         )}`
     );
+    process.exit(0);
 };
