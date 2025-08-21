@@ -29,14 +29,12 @@ program
     .action((options) => {
         curl(options);
     });
-
 program
     .command('git [sub-command] [rest...]')
     .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
         git(subCommand, rest, cmd);
     });
-
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));
 
