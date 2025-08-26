@@ -2,6 +2,7 @@ import open from 'open';
 import readPkg from 'read-pkg';
 import sql from './sql';
 import { readSecret } from './secret';
+import { j } from 'vitest/dist/reporters-yx5ZTtEV.js';
 // import puppeteer from 'puppeteer';
 // import readline from 'readline';
 
@@ -52,7 +53,7 @@ export const getProjectName = async (
 
         return {
             ...jenkins,
-            onlineId: jenkins.onlineId || '',
+            onlineId: jenkins.onlineId || jenkins.id.replace(/[-_]test$/, ''),
         };
     }
     const jenkins = finded as JenkinsProject;
@@ -65,6 +66,6 @@ export const getProjectName = async (
     }
     return {
         ...jenkins,
-        onlineId: jenkins.onlineId || '',
+        onlineId: jenkins.onlineId || jenkins.id.replace(/[-_]test$/, ''),
     };
 };
