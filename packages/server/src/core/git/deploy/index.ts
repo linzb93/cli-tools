@@ -20,6 +20,7 @@ export default class extends BaseCommand {
 
             // 执行部署流程
             await deployCommand.main();
+            process.exit(0);
         } catch (error) {
             if (error instanceof Error) {
                 this.logger.error(error.message);
