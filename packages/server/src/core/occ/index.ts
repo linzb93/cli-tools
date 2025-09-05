@@ -52,7 +52,6 @@ export default class extends BaseCommand {
         for (const app of this.apps) {
             if (app.name === this.appName) {
                 await app.run(this.searchKeyword, this.options);
-                process.exit(0);
             }
         }
     }
