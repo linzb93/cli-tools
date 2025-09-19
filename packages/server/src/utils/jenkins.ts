@@ -10,30 +10,27 @@ interface JenkinsProject {
     name: string;
     id: string;
     onlineId?: string;
+    onlineName?: string;
 }
 
 /**
  * 打开公司内部Jenkins部署页面
  */
-export const openDeployPage = async (type?: string) => {
-    const { id, name, onlineId } = await getProjectName(type);
+export const openDeployPage = async (type?: string, isOnline?: boolean) => {
+    const { id, name, onlineId, onlineName } = await getProjectName(type);
     if (id) {
         const isWork = true;
         const origin = await readSecret((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
-        await open(`http://${origin}/view/${name}/job/${onlineId || id}/`);
+        await open(
+            `http://${origin}/view/${isOnline ? onlineName || name : name}/job/${isOnline ? onlineId || id : id}/`
+        );
     }
 };
 
 /**
  * 根据项目package.json中的jenkins属性值获取对应jenkins信息
  */
-export const getProjectName = async (
-    type?: string
-): Promise<{
-    name: string;
-    id: string;
-    onlineId?: string;
-}> => {
+export const getProjectName = async (type?: string): Promise<JenkinsProject> => {
     const projectConf = await readPkg({
         cwd: process.cwd(),
     });
@@ -48,6 +45,7 @@ export const getProjectName = async (
                 name: '',
                 id: '',
                 onlineId: '',
+                onlineName: '',
             };
         }
 
