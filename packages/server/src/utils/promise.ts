@@ -16,7 +16,16 @@ interface RetryOptions {
      * @param {number} attempt - 当前重试次数
      * @param {string} error - 错误信息
      */
-    onFail?: (attempt: number, error: string) => void;
+    onFail?: (
+        attempt: number,
+        error: Error
+    ) => {
+        /**
+         * 是否停止执行后续命令
+         * @default false
+         */
+        shouldStop?: boolean;
+    };
 }
 
 /**
@@ -65,7 +74,7 @@ class StopExecutionError extends Error {
  * @param {string} error - 错误信息
  * @returns {string} 格式化后的错误信息
  */
-const formatError = (error: string): string => {
+export const formatError = (error: string): string => {
     const lines = error.split('\n').filter(Boolean);
     if (lines.length === 0) return '';
 
@@ -98,7 +107,7 @@ async function executeCommand(config: CommandConfig): Promise<void> {
                 if (config.onError) {
                     const result = config.onError(errorMessage);
                     if (result && typeof result === 'object' && result.shouldStop) {
-                        throw new StopExecutionError('Command execution stopped by user');
+                        throw new StopExecutionError(errorMessage);
                     }
                 }
 
@@ -108,8 +117,14 @@ async function executeCommand(config: CommandConfig): Promise<void> {
         {
             times: config.retryTimes || 10,
             onFail: (attempt, error) => {
-                console.log(`第${chalk.yellow.bold(attempt.toString())}次重复`);
-                console.log(formatError(error));
+                const shouldStop = error instanceof StopExecutionError;
+                if (!shouldStop) {
+                    console.log(`第${chalk.yellow.bold(attempt.toString())}次重复`);
+                    console.log(formatError(error.message));
+                }
+                return {
+                    shouldStop,
+                };
             },
         }
     );
@@ -129,10 +144,12 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
         try {
             return await fn();
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-
-            if (onFail) {
-                onFail(attempt, errorMessage);
+            if (typeof onFail === 'function') {
+                const { shouldStop } = onFail(attempt, error);
+                if (shouldStop) {
+                    // 抛出和变量error一样的Error类型
+                    throw error instanceof Error ? error : new Error(error);
+                }
             }
 
             if (attempt === times) {
@@ -168,9 +185,9 @@ export async function executeCommands(commands: Command[]): Promise<void> {
         try {
             await executeCommand(config);
         } catch (error) {
+            console.log(`is instanceof:${error instanceof StopExecutionError}`);
             if (error instanceof StopExecutionError) {
                 console.log(chalk.red('命令执行已停止'));
-                break;
             }
             throw error;
         }

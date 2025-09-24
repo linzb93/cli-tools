@@ -85,6 +85,12 @@ async function handleConflict() {
 function commit(message: string): CommandConfig {
     return {
         message: `git commit -m ${fmtCommitMsg(message)}`,
+        onError: () => {
+            // handleConflict();
+            return {
+                shouldStop: true,
+            };
+        },
     };
 }
 

@@ -1,6 +1,6 @@
 import BaseCommand from '../../BaseCommand';
 import { execaCommand as execa } from 'execa';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands, formatError } from '@/utils/promise';
 import gitAtom from '../atom';
 import { getCurrentBranchName, getMainBranchName, isCurrenetBranchPushed, isGitProject } from '../utils';
 
@@ -113,7 +113,7 @@ export default abstract class BaseDeployCommand extends BaseCommand {
 
             this.logger.success('基础Git命令执行完成');
         } catch (error) {
-            this.logger.error('基础Git命令执行失败');
+            this.logger.error('基础Git命令执行失败，部署结束。');
             throw error;
         }
     }
@@ -218,7 +218,7 @@ export default abstract class BaseDeployCommand extends BaseCommand {
             this.logger.success('部署流程已完成');
         } catch (error) {
             if (error instanceof Error) {
-                this.logger.error(error.message);
+                console.log(formatError(error.message));
             } else {
                 this.logger.error('部署过程中发生未知错误');
             }
