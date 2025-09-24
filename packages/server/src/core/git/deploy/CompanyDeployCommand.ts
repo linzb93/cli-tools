@@ -28,6 +28,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
         const tagOptions: TagOptions = {
             type: this.options.type,
             version: this.options.version,
+            msg: this.options.msg ? this.options.commit : '',
         };
 
         await this.tagCommand.addTag(tagOptions);

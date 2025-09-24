@@ -22,6 +22,11 @@ export interface Options {
      * @default "v"
      */
     type?: string;
+    /**
+     * 提交消息
+     * @default ""
+     */
+    msg?: string;
 }
 
 /**
@@ -128,7 +133,7 @@ export default class extends BaseCommand {
 
             const { onlineId } = await getProjectName(type);
             this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${onlineId}, ${newTag}`)}`);
-            clipboardy.writeSync(`${onlineId}, ${newTag}`);
+            clipboardy.writeSync(`${onlineId}, ${newTag}，${options.msg ? `更新内容：${options.msg}` : ''}`);
         } catch (error) {
             this.logger.error(`创建标签失败: ${error.message || error}`);
         }

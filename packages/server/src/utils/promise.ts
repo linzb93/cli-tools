@@ -185,7 +185,6 @@ export async function executeCommands(commands: Command[]): Promise<void> {
         try {
             await executeCommand(config);
         } catch (error) {
-            console.log(`is instanceof:${error instanceof StopExecutionError}`);
             if (error instanceof StopExecutionError) {
                 console.log(chalk.red('命令执行已停止'));
             }

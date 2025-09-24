@@ -75,6 +75,7 @@ const deploy = () => {
             .option('--version <version>', '项目版本号，用于标记tag')
             .option('--open', '是否打开对应的jenkins主页')
             .option('-c, --current', '仅完成基础命令后结束任务')
+            .option('--msg', '是否复制提交消息到剪贴板')
             .requiredOption('--commit [message]', 'git commit提交信息')
             .action((options: DeployOptions) => {
                 new Deploy().main(options);
