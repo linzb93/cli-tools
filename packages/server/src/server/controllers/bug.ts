@@ -3,7 +3,7 @@ import sql from '@/utils/sql';
 import response from '../shared/response';
 const router = Router();
 
-router.post('/getApps', async (req, res) => {
+router.post('/getApps', (req, res) => {
     sql((db) => db.monitor)
         .then((result) => {
             response(res, {
@@ -14,8 +14,8 @@ router.post('/getApps', async (req, res) => {
             res.status(500).send(err);
         });
 });
-router.post('/saveApps', async (req, res) => {
-    const { list } = req.body;
+router.post('/saveApps', (req, res) => {
+    const list = req.body;
     sql((db) => {
         db.monitor = list;
     }).then(() => {

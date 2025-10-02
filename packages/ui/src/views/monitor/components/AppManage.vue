@@ -35,7 +35,7 @@ watch(props, async ({ visible }) => {
       pageSize: 100,
       pageIndex: 1
     }),
-    request('/monitor/getApps')
+    request('/bug/getApps')
   ])
   list.value = siteRes.list
   const selectedIds = selectedRes.list.map((item) => item.siteId)
@@ -45,7 +45,7 @@ watch(props, async ({ visible }) => {
 // 保存
 const save = async () => {
   await request(
-    'monitor/saveApps',
+    'bug/saveApps',
     selected.value.map((item) => ({
       name: item.name,
       siteId: item.sid

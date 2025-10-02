@@ -16,9 +16,7 @@ export default class extends Base {
     async getShopUrl(keyword: string, isTest: boolean) {
         return this.getMoveShopList({
             name: keyword,
-        }).then((res) => {
-            return this.getOpenUrl(res);
-        });
+        }).then(this.getOpenUrl);
     }
     private getOpenUrl(res: any) {
         const item = res.list[0];

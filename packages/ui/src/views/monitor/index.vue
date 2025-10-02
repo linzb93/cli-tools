@@ -135,7 +135,7 @@ const radioChange = (value) => {
     form.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
   }
 }
-const changeDate = (range) => {
+const changeDate = (range: [string, string]) => {
   form.beginDate = dayjs(range[0]).format('YYYY-MM-DD')
   form.endDate = dayjs(range[1]).format('YYYY-MM-DD')
 }

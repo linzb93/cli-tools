@@ -38,9 +38,10 @@ watch(props, async ({ visible }) => {
     column = Number(seg[2])
     return ''
   })
-  const { result } = await request('/fetchApiCrossOrigin', {
+  const result = await request('/common/fetchApiCrossOrigin', {
     url: realPath
   })
+  console.log(result)
   const splitedCode = result.split('\n')
   const preCode = splitedCode[row - 1].slice(column - 100, column - 1)
   const preCodeMatch = preCode.match(/[a-zA-Z0-9]+\.$/)

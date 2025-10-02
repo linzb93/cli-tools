@@ -5,6 +5,7 @@ import cors from 'cors';
 import { join } from 'node:path';
 import config from '../../../../config.json';
 import bug from './controllers/bug';
+import common from './controllers/common';
 import setting from './controllers/setting';
 import { log, run } from './shared/log';
 import agent, { agentCallback } from './controllers/agent';
@@ -21,6 +22,8 @@ app.use(`/${config.prefix.static}`, express.static(join(fileURLToPath(import.met
 router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
+router.use('/common', common);
+
 app.use('/api', router);
 agentCallback(app);
 

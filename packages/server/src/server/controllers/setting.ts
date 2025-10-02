@@ -3,10 +3,11 @@ import { Router } from 'express';
 import response from '../shared/response';
 const router = Router();
 
-router.post('/get', async (req, res) => {
-    const secret = await readSecret((db) => db.oa);
-    response(res, {
-        api: secret,
+router.post('/get', (req, res) => {
+    readSecret((db) => db.oa).then((secret) => {
+        response(res, {
+            api: secret,
+        });
     });
 });
 
