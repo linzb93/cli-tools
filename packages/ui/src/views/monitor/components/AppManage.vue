@@ -24,18 +24,24 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:visible', 'confirm'])
 
-const list = ref([])
-const selected = ref([])
+interface Item {
+  siteId: string
+  name: string
+  sid: string
+}
+
+const list = ref<Item[]>([])
+const selected = ref<Item[]>([])
 watch(props, async ({ visible }) => {
   if (!visible || list.value.length) {
     return
   }
   const [siteRes, selectedRes] = await Promise.all([
-    service.post('/siteInfo/getSiteInfo', {
+    service.post<any, { list: Item[] }>('/siteInfo/getSiteInfo', {
       pageSize: 100,
       pageIndex: 1
     }),
-    request('/bug/getApps')
+    request<{ list: Item[] }>('/bug/getApps')
   ])
   list.value = siteRes.list
   const selectedIds = selectedRes.list.map((item) => item.siteId)

@@ -25,19 +25,21 @@ const code = reactive({
   emphasize: '',
   next: ''
 })
-watch(props, async ({ visible }) => {
+watch(props, async ({ visible, path }) => {
   if (!visible) {
     return
   }
   let row = 0
   let column = 0
   // 将定位从文件地址中分离出来
-  const realPath = props.path.replace(/\:\d+\:\d+/, (match) => {
-    const seg = match.split(':')
-    row = Number(seg[1])
-    column = Number(seg[2])
-    return ''
-  })
+  const realPath = path
+    ? path.replace(/\:\d+\:\d+/, (match) => {
+        const seg = match.split(':')
+        row = Number(seg[1])
+        column = Number(seg[2])
+        return ''
+      })
+    : ''
   const result = await request('/common/fetchApiCrossOrigin', {
     url: realPath
   })

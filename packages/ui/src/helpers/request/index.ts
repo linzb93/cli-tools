@@ -11,7 +11,11 @@ const service = axios.create({
   timeout: 60000
 })
 
-export default async function doRequest(path: string, params?: any, options?: Option) {
+export default async function doRequest<T = any>(
+  path: string,
+  params?: any,
+  options?: Option
+): Promise<T> {
   if (options?.showLoading) {
     loading.open()
   }
