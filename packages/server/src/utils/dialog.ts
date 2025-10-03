@@ -1,6 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import { cmdName, getExecutePath } from './_internal/pythonUtils';
-import sql from './sql';
+import { readSecret } from './secret';
 const pythonExecutePath = getExecutePath('dialog');
 
 /**
@@ -9,7 +9,7 @@ const pythonExecutePath = getExecutePath('dialog');
  * @returns {Promise<string>} 选择的文件/文件夹地址
  */
 export const showOpenDialog = async (type: 'file' | 'files' | 'directory'): Promise<string> => {
-    const root = await sql((db) => db.open.root);
+    const root = await readSecret((db) => db.open.root);
     const { stdout } = await execa(`${cmdName} ${pythonExecutePath} --type=${type} --root="${root}"`);
     return stdout;
 };

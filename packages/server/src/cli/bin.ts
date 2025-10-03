@@ -6,7 +6,6 @@ import ai from './commands/ai';
 import eng from './commands/eng';
 import occ from './commands/occ';
 import cookie from './commands/cookie';
-// import cg from './commands/cg';
 import clear from './commands/clear';
 import color from './commands/color';
 import fork from './commands/fork';

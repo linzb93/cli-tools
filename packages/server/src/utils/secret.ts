@@ -4,6 +4,9 @@ import { cacheRoot } from './constant';
 
 interface Database {
     ai: {
+        /**
+         * 各平台ai api key
+         */
         apiKey: {
             deepseek: string;
             siliconflow: string;
@@ -13,7 +16,13 @@ interface Database {
     };
     jenkins: {
         url: {
+            /**
+             * 公司内部访问ip
+             */
             internal: string;
+            /**
+             * 公司外部访问ip
+             */
             public: string;
         };
     };
@@ -41,6 +50,16 @@ interface Database {
     yapi: {
         username: string;
         password: string;
+    };
+    open: {
+        /**
+         * 根目录
+         */
+        root: string;
+        /**
+         * 项目源目录
+         */
+        source: string;
     };
 }
 

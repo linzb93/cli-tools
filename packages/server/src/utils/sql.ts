@@ -1,16 +1,17 @@
 import { join } from 'node:path';
 import { Low, JSONFile } from 'lowdb';
 import { cacheRoot } from './constant';
-
+/**
+ * 数据由程序录入，非人为操作
+ */
 export interface Database {
-    lastModifiedTime: string;
     /**
      * 最后一次启动服务器的日期，格式为YYYY-MM-DD
      */
     lastServerStartDate: string;
-    open: {
-        [key: string]: string;
-    };
+    /**
+     * vue项目服务器启动配置
+     */
     vue: {
         name: string;
         path: string;
@@ -19,67 +20,73 @@ export interface Database {
         publicPath: string;
         defaultPort?: number;
     }[];
+    /**
+     * 前端页面导航菜单
+     */
     menus: {
         title: string;
         to: string;
     }[];
+    /**
+     * 需要扫描的Git项目父目录
+     */
     gitDirs: {
+        /**
+         * 项目路径
+         */
         path: string;
+        /**
+         * 项目名称，默认是目录名
+         */
         name: string;
     }[];
     /**
-     * Jenkins相关配置
+     * 前端监控的项目列表
      */
-    jenkins: {
-        /**
-         * Jenkins用户名
-         */
-        username?: string;
-        /**
-         * Jenkins密码
-         */
-        password?: string;
-        /**
-         * Jenkins URL
-         */
-        url?: {
-            internal: string;
-            public: string;
-        };
-    };
-    oa: {
-        apiPrefix?: string;
-        testPrefix?: string;
-        userApiPrefix?: string;
-        oldApiPrefix?: string;
-        username?: string;
-        password?: string;
-        token?: string;
-        zhanwai: {
-            baseUrl: string;
-            username: string;
-            password: string;
-        };
-    };
     monitor: {
+        /**
+         * 项目id
+         */
         siteId: string;
+        /**
+         * 项目名称
+         */
         name: string;
     }[];
-    cg: {
-        author: string;
-        nameId: number;
-        oldPrefix: string;
-    };
     yapi: {
+        /**
+         * yapi token
+         */
         token: string;
+        /**
+         * yapi uid
+         */
         uid: string;
     };
     agent: {
+        /**
+         * 代理id
+         */
         id: number;
+        /**
+         * 代理名称
+         */
         name: string;
+        /**
+         * 代理前缀
+         */
         prefix: string;
+        /**
+         * 代理规则
+         */
         rules: {
+            /**
+             * 匹配规则，支持正则表达式
+             */
             from: string;
+            /**
+             * 替换规则，支持正则表达式
+             */
             to: string;
         }[];
     }[];
