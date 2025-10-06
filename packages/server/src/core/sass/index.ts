@@ -266,21 +266,7 @@ export default class SassCommand extends BaseCommand {
      */
     private async compileSassFile(file: string): Promise<void> {
         try {
-            const result = await new Promise<sass.LegacyResult>((resolve, reject) => {
-                sass.render(
-                    {
-                        file,
-                    },
-                    (err, result) => {
-                        if (err) {
-                            reject(err);
-                            return;
-                        }
-                        resolve(result);
-                    }
-                );
-            });
-
+            const result = await sass.compileAsync(file);
             await fs.writeFile(file.replace('scss', 'wxss'), result.css.toString());
         } catch (error) {
             this.logger.error(`编译 ${file} 失败: ${error}`);

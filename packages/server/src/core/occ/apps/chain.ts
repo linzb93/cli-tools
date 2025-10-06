@@ -1,7 +1,7 @@
 import qs from 'node:querystring';
 import Base from './base';
 import serviceGenerator from '@/utils/http';
-import sql from '@/utils/sql';
+import { readSecret } from '@/utils/secret';
 
 export default class extends Base {
     name = 'chain';
@@ -41,7 +41,7 @@ export default class extends Base {
         return obj.token;
     }
     private async getChainList(params: any) {
-        const prefix = await sql((db) => db.oa.oldApiPrefix);
+        const prefix = await readSecret((db) => db.oa.oldApiPrefix);
         const res = await this.service.post(`${prefix}/chain/occ/oa/dkdAccountDetails/accountAnalysisList`, {
             ...params,
             pageSize: 1,
@@ -50,7 +50,7 @@ export default class extends Base {
         return res.data.result;
     }
     private async getChainShopInfo(params: any) {
-        const prefix = await sql((db) => db.oa.oldApiPrefix);
+        const prefix = await readSecret((db) => db.oa.oldApiPrefix);
         const res = await this.service.post(`${prefix}/chain/occ/dkdAccount/oa/getAccountToken`, params);
         return res.data.result;
     }

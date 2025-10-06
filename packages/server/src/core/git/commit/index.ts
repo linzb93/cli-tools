@@ -1,8 +1,7 @@
 import BaseCommand from '../../BaseCommand';
-import { isGitProject, getCurrentBranchName } from '../utils';
+import { isGitProject } from '../utils';
 import gitAtom from '../atom';
 import { executeCommands } from '@/utils/promise';
-import chalk from 'chalk';
 
 /**
  * git pull 命令的选项接口，无需参数

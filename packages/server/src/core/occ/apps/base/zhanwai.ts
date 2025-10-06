@@ -2,6 +2,7 @@ import qs from 'node:querystring';
 import Base from './';
 import serviceGenerator from '@/utils/http';
 import sql from '@/utils/sql';
+import { readSecret } from '@/utils/secret';
 import { HTTP_STATUS } from '@/utils/constant';
 import { logger } from '@/utils/logger';
 
@@ -17,7 +18,7 @@ export default abstract class Zhanwai extends Base {
         baseURL: '',
     });
     async getShopUrl(keyword: string, isTest: boolean, platform: string) {
-        const zhanwai = await sql((db) => db.oa.zhanwai);
+        const zhanwai = await readSecret((db) => db.oa.zhanwai);
         const token = await this.getLoginToken();
         const listRes = await this.service.post(
             `${zhanwai.baseUrl}/authorize/back/produce/user/list`,
@@ -77,7 +78,7 @@ export default abstract class Zhanwai extends Base {
         }/?t=${Date.now()}#/loginByOuter?code=${result.shopToken}&version=1&dueDate=${result.dueDate}&url=/apps`;
     }
     private async getLoginToken() {
-        const data = await sql((db) => db.oa.zhanwai);
+        const data = await readSecret((db) => db.oa.zhanwai);
         const res = await this.service.post(`${data.baseUrl}/authorize/agent/account/login`, {
             areaCode: '+86',
             phoneNumber: data.username,
@@ -86,7 +87,7 @@ export default abstract class Zhanwai extends Base {
         return await this.chooseChannel(res.data.result.token);
     }
     private async chooseChannel(token: string) {
-        const data = await sql((db) => db.oa.zhanwai);
+        const data = await readSecret((db) => db.oa.zhanwai);
         const res = await this.service.post(
             `${data.baseUrl}/authorize/agent/account/choseChannel`,
             {

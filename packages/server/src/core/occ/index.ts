@@ -1,5 +1,18 @@
 import BaseCommand from '../BaseCommand';
-import { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtaibdsq, Mtdjds, Elejysq, Chain, Spbj, Wmb, Kdb } from './apps';
+import {
+    Mtjysq,
+    Mtzxsq,
+    Mtpjsq,
+    Mtimsq,
+    Mtaibdsq,
+    Mtdjds,
+    Elejysq,
+    Chain,
+    Spbj,
+    Wmb,
+    Kdb,
+    DkdMiniProgram,
+} from './apps';
 import BaseApp from './apps/base';
 import { Options } from './types';
 
@@ -37,6 +50,7 @@ export default class extends BaseCommand {
         this.registerApp(Spbj);
         this.registerApp(Wmb);
         this.registerApp(Kdb);
+        this.registerApp(DkdMiniProgram);
     }
     /**
      * 注册应用
@@ -51,7 +65,11 @@ export default class extends BaseCommand {
     private async run() {
         for (const app of this.apps) {
             if (app.name === this.appName) {
-                await app.run(this.searchKeyword, this.options);
+                if (this.options.type) {
+                    await app.customAction(this.searchKeyword, this.options);
+                } else {
+                    await app.run(this.searchKeyword, this.options);
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
 import AiImpl from '@/core/ai/shared/ai-impl';
+import { readSecret } from '@/utils/secret';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import serviceGenerator from '@/utils/http';
 const service = serviceGenerator({
@@ -10,13 +11,13 @@ const service = serviceGenerator({
 });
 export async function login(): Promise<void> {
     try {
-        let { username } = await sql((db) => db.oa);
+        let { username } = await readSecret((db) => db.oa);
         if (!username) {
             await getOCCUserInfo();
         }
-        username = await sql((db) => db.oa.username);
-        const password = await sql((db) => db.oa.password);
-        const prefix = await sql((db) => db.oa.apiPrefix);
+        username = await readSecret((db) => db.oa.username);
+        const password = await readSecret((db) => db.oa.password);
+        const prefix = await readSecret((db) => db.oa.apiPrefix);
 
         let loginSuccess = false;
         let retryCount = 0;
@@ -70,7 +71,7 @@ export async function login(): Promise<void> {
         }
 
         // 保存token
-        await sql((db) => {
+        await readSecret((db) => {
             db.oa.token = loginResult.token;
         });
     } catch (error) {
@@ -92,7 +93,7 @@ async function getOCCUserInfo() {
             message: '请输入密码',
         },
     ]);
-    await sql((db) => {
+    await readSecret((db) => {
         db.oa.username = username;
         db.oa.password = password;
     });
@@ -174,7 +175,7 @@ async function getLoginCaptcha(): Promise<{
     uuid: string;
     removeHandler: () => Promise<void>;
 }> {
-    const prefix = await sql((db) => db.oa.apiPrefix);
+    const prefix = await readSecret((db) => db.oa.apiPrefix);
     const res = await service.get<{
         /**
          * 验证码base64，不含前面`data:image/png;base64,`

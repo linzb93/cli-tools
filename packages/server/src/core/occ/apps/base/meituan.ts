@@ -1,7 +1,6 @@
 import Base from './';
 import serviceGenerator from '@/utils/http';
-import sql from '@/utils/sql';
-import { logger } from '@/utils/logger';
+import { readSecret } from '@/utils/secret';
 import { login } from '../../shared/login';
 import chalk from 'chalk';
 import { Options, UserInfo } from '../../types';
@@ -26,7 +25,7 @@ export default abstract class Meituan extends Base {
      */
     protected async getByVersion(version: number, shopName: string, serviceName: string): Promise<string> {
         try {
-            let { token } = await sql((db) => db.oa);
+            let { token } = await readSecret((db) => db.oa);
             if (!token) {
                 await login();
                 return this.getByVersion(version, shopName, serviceName);
@@ -74,8 +73,8 @@ export default abstract class Meituan extends Base {
         minPrice?: number;
     }) {
         const { version, pageIndex, pageSize = 10 } = obj;
-        const prefix = await sql((db) => db.oa.apiPrefix);
-        const token = await sql((db) => db.oa.token);
+        const prefix = await readSecret((db) => db.oa.apiPrefix);
+        const token = await readSecret((db) => db.oa.token);
         return this.service.post<{
             result: {
                 list: {
@@ -213,6 +212,6 @@ export default abstract class Meituan extends Base {
         return res.data.result;
     }
     private async getPrefix(isTest: boolean) {
-        return await sql((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
+        return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
     }
 }

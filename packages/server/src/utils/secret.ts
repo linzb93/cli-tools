@@ -41,6 +41,7 @@ interface Database {
         oldApiPrefix?: string;
         username?: string;
         password?: string;
+        token: string;
         zhanwai: {
             baseUrl: string;
             username: string;

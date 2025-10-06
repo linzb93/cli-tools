@@ -1,5 +1,5 @@
 import Base from './';
-import sql from '@/utils/sql';
+import { readSecret } from '@/utils/secret';
 import serviceGenerator from '@/utils/http';
 export default abstract class Ele extends Base {
     /**
@@ -64,6 +64,6 @@ export default abstract class Ele extends Base {
         return res.data.result;
     }
     private async getPrefix(isTest: boolean) {
-        return await sql((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
+        return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
     }
 }

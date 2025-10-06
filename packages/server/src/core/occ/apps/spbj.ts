@@ -1,7 +1,7 @@
 import qs from 'node:querystring';
 import Base from './base';
 import serviceGenerator from '@/utils/http';
-import sql from '@/utils/sql';
+import { readSecret } from '@/utils/secret';
 
 export default class extends Base {
     name = 'spbj';
@@ -30,7 +30,7 @@ export default class extends Base {
         return obj.token;
     }
     private async getMoveShopList(params: any) {
-        const prefix = await sql((db) => db.oa.apiPrefix);
+        const prefix = await readSecret((db) => db.oa.apiPrefix);
         const res = await this.service.post(`${prefix}/moving/manage/orderPage`, {
             ...params,
             pageSize: 1,

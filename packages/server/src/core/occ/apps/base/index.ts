@@ -1,6 +1,5 @@
 import { Options } from '../../types';
 import { logger } from '@/utils/logger';
-import clipboard from 'clipboardy';
 import open from 'open';
 import chalk from 'chalk';
 import OccUtils from '../../shared/occUtils';
@@ -77,6 +76,9 @@ export default abstract class {
         logger.error(
             `${chalk.yellow(`【${this.serviceName}】`)}当前应用不支持PC端功能，请使用移动端访问店铺【${shopName}】`
         );
+    }
+    async customAction(keyword: string, options: Options) {
+        throw new Error('请根据type参数值编写执行代码');
     }
     protected async afterSearch(url: string, shopName: string, options: Options) {
         const token = this.getToken(url);
