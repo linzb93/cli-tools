@@ -2,6 +2,7 @@ import qs from 'node:querystring';
 import Base from './base';
 import serviceGenerator from '@/utils/http';
 import { readSecret } from '@/utils/secret';
+import { Options } from '../types';
 
 export default class extends Base {
     name = 'spbj';
@@ -18,9 +19,20 @@ export default class extends Base {
             name: keyword,
         }).then(this.getOpenUrl);
     }
+    override async customAction(keyword: string, options: Options): Promise<any> {
+        if (![].includes(options.type)) {
+            throw new Error(`请指定类型:
+            ms: 京东搬家
+            xigua: 西瓜商品搬家`);
+        }
+        return this.getMoveShopList({
+            name: keyword,
+            wechatAccount: options.type,
+        }).then(this.getOpenUrl);
+    }
     private getOpenUrl(res: any) {
         const item = res.list[0];
-        return `https://spbjapp.diankeduo.net/pages/spbjapp/#/login?openId=${item.wxOpenId}`;
+        return `http://116.196.108.180:30015/#/login?openId=${item.wxOpenId}`;
     }
     getToken(url: string): string {
         const { hash } = new URL(url);
