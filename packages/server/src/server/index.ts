@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { join } from 'node:path';
 import config from '../../../../config.json';
-import bug from './controllers/bug';
+import bug, { bugCallback } from './controllers/bug';
 import common from './controllers/common';
 import setting from './controllers/setting';
 import { log, run } from './shared/log';
@@ -37,6 +37,7 @@ agentCallback(app);
         log(`vue静态资源已挂载: ${project.publicPath} -> ${staticPath}`);
         app.use(project.publicPath, express.static(staticPath));
     }
+    await bugCallback();
 })();
 
 app.listen(config.port.production, () => {

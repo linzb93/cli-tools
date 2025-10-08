@@ -95,8 +95,10 @@ const getSelectedApps = async () => {
   const data = await request('bug/getApps')
   apps.value = data.list
 }
-onMounted(() => {
-  getSelectedApps()
+onMounted(async () => {
+  await getSelectedApps()
+  const initialApps = await request('bug/getInitialApps')
+  form.selected = initialApps.list
 })
 
 const resetSelectedApps = () => {
