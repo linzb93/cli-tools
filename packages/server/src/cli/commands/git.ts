@@ -3,6 +3,7 @@ import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
+import Merge, { type Options as MergeOptions } from '../../core/git/merge';
 import Commit from '../../core/git/commit';
 import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';
@@ -113,6 +114,21 @@ const scan = () => {
     });
 };
 
+/*
+ * git merge 子命令的实现
+ */
+const merge = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('merge')
+            .description('合并最近的提交')
+            .option('--head <number>', '合并最近的几个提交，默认合并最近3个')
+            .action((options: MergeOptions) => {
+                new Merge().main(options);
+            });
+    });
+};
+
 /**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
@@ -129,6 +145,7 @@ export default function (subCommand: string, data: string[], options: any): void
         deploy,
         branch,
         scan,
+        merge,
     };
 
     // 执行对应的子命令
