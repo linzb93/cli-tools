@@ -3,7 +3,7 @@ import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
-import Merge, { type Options as MergeOptions } from '../../core/git/merge';
+import Merge, { type Options as MergeOptions } from '../../core/git/merge';
 import Commit from '../../core/git/commit';
 import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';

@@ -69,9 +69,9 @@ export default class extends BaseCommand {
             name: 'commitMessage',
         });
         const commitMessage = answer.commitMessage || arr.map((item) => item.commit).join('\n');
-        await execa(`git reset --soft --head=${head}`);
+        await execa(`git reset --soft HEAD~${head}`);
         await execa('git add .');
-        await execa(`git commit -m "${commitMessage}"`);
+        await execa(gitAtom.commit(commitMessage).message);
         console.log(chalk.green('合并完成'));
     }
 }
