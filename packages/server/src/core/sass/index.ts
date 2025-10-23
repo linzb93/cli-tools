@@ -5,6 +5,7 @@ import chokidar from 'chokidar';
 import * as sass from 'sass';
 import { sleep } from '@linzb93/utils';
 import BaseCommand from '../BaseCommand';
+import { execaCommand as execa } from 'execa';
 
 /**
  * Sass命令类
@@ -50,8 +51,19 @@ export default class SassCommand extends BaseCommand {
      * 命令主入口
      */
     async main(): Promise<void> {
+        await this.compileChangedFiles();
         // 直接开启监听模式
         await this.startWatcher(process.cwd());
+    }
+
+    /**
+     * 启动服务器时，编译已有变化的scss文件
+     */
+    async compileChangedFiles(): Promise<void> {
+        const { stdout: files } = await execa('git diff --name-only');
+        for (const file of files) {
+            await this.handleFileChange(file);
+        }
     }
 
     /**

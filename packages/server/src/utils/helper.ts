@@ -4,6 +4,7 @@ import { Writable } from 'node:stream';
 import { logger } from '@/utils/logger';
 import { findContent } from './markdown';
 import { fromStream } from './rxjs';
+import { lt } from 'semver';
 /**
  * 注册子命令
  * @param {Function} fn 子命令函数
@@ -58,7 +59,7 @@ export const objectToCmdOptions = (obj: Record<string, any>) => {
 /**
  * 旧版本NodeJS，这里指的是NodeJS 14.
  */
-export const isOldNode = process.version.startsWith('v14.');
+export const isOldNode = lt(process.version, '18.0.0');
 /**
  * 生成命令帮助文档
  */
