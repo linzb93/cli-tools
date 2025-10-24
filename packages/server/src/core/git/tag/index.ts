@@ -132,8 +132,9 @@ export default class extends BaseCommand {
             ]);
 
             const { onlineId } = await getProjectName(type);
-            this.logger.success(`创建成功，复制项目信息 ${chalk.green(`${onlineId}, ${newTag}`)}`);
-            clipboardy.writeSync(`${onlineId}, ${newTag}，${options.msg ? `更新内容：${options.msg}` : ''}`);
+            const copyText = `${onlineId}, ${newTag}${options.msg ? `，更新内容：${options.msg}` : '。'}`;
+            this.logger.success(`创建成功，复制项目信息 ${chalk.green(copyText)}`);
+            clipboardy.writeSync(copyText);
         } catch (error) {
             this.logger.error(`创建标签失败: ${error.message || error}`);
         }
