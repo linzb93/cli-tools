@@ -17,7 +17,7 @@ import curl from './commands/curl';
 import shortcut from './commands/shortcut';
 import getSize from './commands/size';
 import token from './commands/token';
-// import tree from './commands/tree';
+import tree from './commands/tree';
 import test from './commands/test';
 import git from './commands/git';
 import npm from './commands/npm';
@@ -207,15 +207,15 @@ program
         token(data, options);
     });
 
-// program
-//     .command('tree [dir]')
-//     .option('--level <level>', '层级')
-//     .option('--ignore <dirs>', '添加忽略的文件夹')
-//     .option('-c, --copy', '复制')
-//     .option('--help', '显示帮助文档')
-//     .action((dir, option) => {
-//         tree(dir, option);
-//     });
+program
+    .command('tree [dir]')
+    .option('--level <level>', '层级')
+    .option('--ignore <dirs>', '添加忽略的文件夹')
+    .option('-c, --copy', '复制')
+    .option('--help', '显示帮助文档')
+    .action((dir, option) => {
+        tree(dir, option);
+    });
 program.command('test').action((options) => {
     test(options);
 });

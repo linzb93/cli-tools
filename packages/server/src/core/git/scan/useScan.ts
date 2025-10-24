@@ -4,7 +4,7 @@ import pMap from 'p-map';
 import pReduce from 'p-reduce';
 import { Observable, last, skip, skipLast, first } from 'rxjs';
 import sql from '@/utils/sql';
-import * as gitUtil from '../utils';
+import { getGitProjectStatus, GitStatusMap } from '../utils';
 /**
  * 扫描所有git仓库，返回所有需要push的仓库
  * */
@@ -35,7 +35,7 @@ export default async function useScan() {
             allDirs,
             async (dirInfo) => {
                 const full = join(dirInfo.prefix, dirInfo.dir);
-                const { status, branchName } = await gitUtil.getGitProjectStatus(full);
+                const { status, branchName } = await getGitProjectStatus(full);
                 counter += 1;
                 observer.next(counter);
                 return {
@@ -48,8 +48,13 @@ export default async function useScan() {
             },
             { concurrency: 4 }
         ).then((list) => {
-            // console.log(list);
-            observer.next(list.filter((item) => [1, 2, 4].includes(item.status)));
+            observer.next(
+                list.filter((item) =>
+                    [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(
+                        item.status
+                    )
+                )
+            );
             observer.complete();
         });
     });

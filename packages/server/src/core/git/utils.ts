@@ -29,6 +29,14 @@ export async function getCurrentBranchName(projectPath: string = process.cwd()):
     }
 }
 
+export enum GitStatusMap {
+    Unknown = 0,
+    Uncommitted = 1,
+    Unpushed = 2,
+    Pushed = 3,
+    NotOnMainBranch = 4,
+}
+
 /**
  * 获取指定 Git 项目的状态
  * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
@@ -61,26 +69,26 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
             cwd: projectPath,
         });
         if (stdout.includes('Changes not staged for commit') || stdout.includes('Changes to be committed')) {
-            output.status = 1;
+            output.status = GitStatusMap.Uncommitted;
             return output;
         }
         if (stdout.includes('Your branch is ahead of ')) {
-            output.status = 2;
+            output.status = GitStatusMap.Unpushed;
             return output;
         }
         // 检查是否在 master/main 分支
         if (!['master', 'main'].includes(branchName)) {
-            output.status = 4;
+            output.status = GitStatusMap.NotOnMainBranch;
             return output;
         }
         if (stdout.includes('nothing to commit')) {
-            output.status = 3;
+            output.status = GitStatusMap.Pushed;
             return output;
         }
 
         return output;
     } catch (error) {
-        output.status = 0;
+        output.status = GitStatusMap.Unknown;
         return output;
     }
 }

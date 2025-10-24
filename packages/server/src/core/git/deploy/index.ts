@@ -15,6 +15,7 @@ export default class extends BaseCommand {
      */
     async main(options: DeployOptions): Promise<void> {
         try {
+            options.commit = options.commit || 'update';
             // 创建适当的部署命令实例
             const deployCommand = await DeployCommandFactory.createDeployCommand(options);
 

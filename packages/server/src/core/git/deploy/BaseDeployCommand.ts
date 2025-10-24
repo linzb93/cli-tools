@@ -2,7 +2,14 @@ import BaseCommand from '../../BaseCommand';
 import { execaCommand as execa } from 'execa';
 import { executeCommands, formatError } from '@/utils/promise';
 import gitAtom from '../atom';
-import { getCurrentBranchName, getMainBranchName, isCurrenetBranchPushed, isGitProject } from '../utils';
+import {
+    getCurrentBranchName,
+    getMainBranchName,
+    isCurrenetBranchPushed,
+    getGitProjectStatus,
+    GitStatusMap,
+    isGitProject,
+} from '../utils';
 
 /**
  * Deploy命令选项接口
@@ -97,7 +104,9 @@ export default abstract class BaseDeployCommand extends BaseCommand {
         this.logger.info('执行基础Git命令...');
 
         try {
-            const commands = ['git add .', gitAtom.commit(commitMessage)];
+            const gitStatus = await getGitProjectStatus();
+            const commands =
+                gitStatus.status === GitStatusMap.Uncommitted ? ['git add .', gitAtom.commit(commitMessage)] : [];
 
             // 检查当前分支是否已推送到远端
             let isBranchPushed = await isCurrenetBranchPushed();
