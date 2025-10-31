@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
-import curl from './commands/curl';
-import git from './commands/git';
+import ip from './commands/ip';
 import occ from './commands/occ';
 // 创建命令行程序
 const program = new Command();
@@ -24,18 +23,9 @@ program.hook('preAction', (thisCommand) => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-program
-    .command('curl')
-    .option('--format <type>', '格式化类型')
-    .action((options) => {
-        curl(options);
-    });
-program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, cmd) => {
-        git(subCommand, rest, cmd);
-    });
+program.command('ip [rest...]').action((data) => {
+    ip(data);
+});
 
 program
     .command('occ [data...]')

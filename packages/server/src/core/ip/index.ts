@@ -23,7 +23,24 @@ export default class extends BaseCommand {
      */
     private async getIpLocation(ip: string) {
         this.spinner.text = '正在查询IP信息';
-        const { data: html } = await axios.get(`https://www.ip138.com/iplookup.php?ip=${ip}&action=2`);
+        let html = '';
+        try {
+            const { data } = await axios.get(`https://www.ip138.com/iplookup.php?ip=${ip}&action=2`, {
+                headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+                    'Cache-Control': 'no-cache',
+                    'Connection': 'keep-alive',
+                },
+                timeout: 10000,
+            });
+            html = data;
+        } catch (error) {
+            this.spinner.fail('查询失败:' + error.message);
+            return;
+        }
         const $ = load(html);
         let output = $('tbody')
             .first()
