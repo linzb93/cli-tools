@@ -1,3 +1,5 @@
+import { lookup, resolve4 } from 'node:dns';
+import { Socket } from 'node:net';
 import publicIp from 'public-ip';
 import internalIp from 'internal-ip';
 import chalk from 'chalk';
@@ -5,11 +7,16 @@ import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
 import BaseCommand from '../BaseCommand';
+import { resolve } from 'node:path';
 
 export default class extends BaseCommand {
     async main(data?: string[]) {
-        if (data[0] === 'get') {
-            this.getIpLocation(data[1]);
+        if (data[0].match(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/)) {
+            this.getIpLocation(data[0]);
+            return;
+        }
+        if (!!data[0]) {
+            this.getWebsiteIpAndPort(data[0]);
             return;
         }
         this.spinner.text = '正在获取IP';
@@ -73,5 +80,37 @@ export default class extends BaseCommand {
         }
         this.spinner.succeed(`查询成功
 ${table.toString()}`);
+    }
+    /**
+     * 获取网站IP和端口
+     */
+    private async getWebsiteIpAndPort(website: string) {
+        this.spinner.text = '正在查询网站IP和端口';
+        Promise.all([
+            new Promise((resolve) => {
+                const socket = new Socket();
+                socket.connect(443, website, () => {
+                    socket.end();
+                    resolve(socket.remotePort);
+                });
+            }),
+            new Promise((resolve, reject) => {
+                resolve4(website, (err, address) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(address);
+                });
+            }),
+        ])
+            .then(([port, ip]: [number, string[]]) => {
+                this.spinner.succeed(`查询成功
+${ip.join('\n')}
+端口: ${port}`);
+            })
+            .catch((err) => {
+                this.spinner.fail('查询失败:' + err.message);
+            });
     }
 }
