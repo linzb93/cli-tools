@@ -1,4 +1,4 @@
-import Push, { type Options as PushOptions } from '../../core/git/push';
+import Push from '../../core/git/push';
 import Pull, { type Options as PullOptions } from '../../core/git/pull';
 import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
@@ -17,8 +17,8 @@ const push = () => {
             .command('push')
             .description('将本地分支推送到远程仓库')
             .option('-f, --force', '强制推送并设置上游分支')
-            .action((options: PushOptions) => {
-                new Push().main(options);
+            .action(() => {
+                new Push().main();
             });
     });
 };
