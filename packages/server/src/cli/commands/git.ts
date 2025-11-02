@@ -4,6 +4,7 @@ import Tag, { type Options as TagOptions } from '../../core/git/tag';
 import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
 import Merge, { type Options as MergeOptions } from '../../core/git/merge';
+import Log, { type Options as LogOptions } from '../../core/git/log';
 import Commit from '../../core/git/commit';
 import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';
@@ -130,6 +131,22 @@ const merge = () => {
 };
 
 /**
+ * git log 子命令的实现
+ */
+const log = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('log')
+            .description('查看Git提交日志')
+            .option('--head <number>', '查看最近的几个提交，默认查看最近3个')
+            .option('--path <path>', '指定项目路径')
+            .action((options: LogOptions) => {
+                new Log().main(options);
+            });
+    });
+};
+
+/**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  * @param {string[]} data - 子命令参数
@@ -146,6 +163,7 @@ export default function (subCommand: string, data: string[], options: any): void
         branch,
         scan,
         merge,
+        log,
     };
 
     // 执行对应的子命令

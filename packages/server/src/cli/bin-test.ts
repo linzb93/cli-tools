@@ -3,6 +3,8 @@ import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import ip from './commands/ip';
 import occ from './commands/occ';
+import git from './commands/git';
+
 // 创建命令行程序
 const program = new Command();
 
@@ -21,6 +23,13 @@ program.hook('preAction', (thisCommand) => {
         });
     });
 });
+
+program
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, cmd) => {
+        git(subCommand, rest, cmd);
+    });
 
 //**** 请在这里替换需要调试的代码 ****
 program.command('ip [rest...]').action((data) => {

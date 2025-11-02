@@ -324,3 +324,45 @@ export const isCurrenetBranchPushed = async () => {
     const { stdout } = await execa(`git branch --all`);
     return !!stdout.split('\n').find((item) => item.endsWith(`remotes/origin/${current}`));
 };
+
+/**
+ * 分割Git日志字符串，将其转换为数组，每个元素为一个提交记录。
+ */
+export const splitGitLog = async (head: number) => {
+    const log = await execa(`git log -${head}`);
+    const list = log.stdout.split('\n').filter(Boolean);
+    let result: {
+        id: string;
+        author: string;
+        date: string;
+        message: string;
+    }[] = [];
+    for (const line of list) {
+        if (line.startsWith('commit')) {
+            result.at(-1)?.message.trimEnd();
+            result.push({
+                id: line.split(' ')[1],
+                author: '',
+                date: '',
+                message: '',
+            });
+            continue;
+        }
+        if (line.startsWith('Author:')) {
+            result.at(-1).author = line.split('Author: ')[1].trim();
+            continue;
+        }
+        if (line.startsWith('Date:')) {
+            result.at(-1).date = dayjs(line.split('Date: ')[1].trim()).format('YYYY-MM-DD HH:mm:ss');
+            continue;
+        }
+        result.at(-1).message += line.trim() + '\n';
+    }
+    if (result.length) {
+        result = result.map((item) => ({
+            ...item,
+            message: item.message.trimEnd().replace(/\n$/, ''),
+        }));
+    }
+    return result;
+};

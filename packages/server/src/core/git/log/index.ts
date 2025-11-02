@@ -1,11 +1,15 @@
 import BaseCommand from '../../BaseCommand';
 import { execaCommand as execa } from 'execa';
+import { splitGitLog } from '../utils';
+import pMap from 'p-map';
+import chalk from 'chalk';
 
 /**
  * 命令的选项接口
  */
 export interface Options {
     head: number;
+    path: string;
 }
 
 export default class extends BaseCommand {
@@ -19,14 +23,43 @@ export default class extends BaseCommand {
             const unPushed = await execa('git log --oneline --not --branches');
             head = unPushed.stdout.split('\n').length || 3;
         }
-        const log = await execa(`git log -${head}`);
-        // 获取某个Commit在哪个分支提交的
-        const commit = log.stdout.split('\n').at(-1);
-        if (commit) {
-            const branch = await execa(`git branch --contains ${commit}`);
-            console.log(`该提交在${branch.stdout.split('\n')[0].trim()}分支提交`);
-        }
+        const arr = await splitGitLog(head);
+        const output = await pMap(
+            arr,
+            async (item) => {
+                const branch = await execa(`git branch --contains ${item.id}`);
+                const detail = await execa(`git show --name-only ${item.id}`);
+                const detailList = detail.stdout.split('\n');
+                const files = [];
+                for (let i = detailList.length - 1; i >= 0; i--) {
+                    const line = detailList[i];
+                    if (!!line) {
+                        files.push(line);
+                    } else {
+                        break;
+                    }
+                }
+                return {
+                    ...item,
+                    branch: branch.stdout.split('\n')[0].trim().replace('* ', ''),
+                    files,
+                };
+            },
+            { concurrency: 3 }
+        );
         this.spinner.succeed('Git日志获取成功');
-        console.log(log.stdout);
+        output.forEach((item) => {
+            console.log(`------------------------`);
+            console.log(`${chalk.green(`[${item.branch}分支]`)} ${item.message} ${chalk.yellow(item.date)}`);
+            if (options.path) {
+                item.files.forEach((file) => {
+                    if (file.startsWith(options.path)) {
+                        console.log(`${chalk.blue(file)}`);
+                    } else {
+                        console.log(file);
+                    }
+                });
+            }
+        });
     }
 }
