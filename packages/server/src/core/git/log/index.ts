@@ -41,7 +41,7 @@ export default class extends BaseCommand {
                 }
                 return {
                     ...item,
-                    branch: branch.stdout.split('\n')[0].trim().replace('* ', ''),
+                    branch: branch.stdout.split('\n').slice(-1)[0].trim().replace('* ', ''),
                     files,
                 };
             },
@@ -58,6 +58,10 @@ export default class extends BaseCommand {
                     } else {
                         console.log(file);
                     }
+                });
+            } else {
+                item.files.forEach((file) => {
+                    console.log(file);
                 });
             }
         });

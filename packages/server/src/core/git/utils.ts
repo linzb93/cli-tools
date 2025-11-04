@@ -339,7 +339,7 @@ export const splitGitLog = async (head: number) => {
     }[] = [];
     for (const line of list) {
         if (line.startsWith('commit')) {
-            result.at(-1)?.message.trimEnd();
+            result.slice(-1)[0]?.message.trimEnd();
             result.push({
                 id: line.split(' ')[1],
                 author: '',
@@ -349,14 +349,14 @@ export const splitGitLog = async (head: number) => {
             continue;
         }
         if (line.startsWith('Author:')) {
-            result.at(-1).author = line.split('Author: ')[1].trim();
+            result.slice(-1)[0].author = line.split('Author: ')[1].trim();
             continue;
         }
         if (line.startsWith('Date:')) {
-            result.at(-1).date = dayjs(line.split('Date: ')[1].trim()).format('YYYY-MM-DD HH:mm:ss');
+            result.slice(-1)[0].date = dayjs(line.split('Date: ')[1].trim()).format('YYYY-MM-DD HH:mm:ss');
             continue;
         }
-        result.at(-1).message += line.trim() + '\n';
+        result.slice(-1)[0].message += line.trim() + '\n';
     }
     if (result.length) {
         result = result.map((item) => ({
