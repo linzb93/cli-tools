@@ -61,7 +61,7 @@ export default class SassCommand extends BaseCommand {
      */
     async compileChangedFiles(): Promise<void> {
         const { stdout: files } = await execa('git diff --name-only');
-        for (const file of files) {
+        for (const file of files.split('\n').filter((item) => item.endsWith('.scss'))) {
             await this.handleFileChange(file);
         }
     }
