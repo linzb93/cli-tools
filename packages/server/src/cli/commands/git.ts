@@ -40,7 +40,7 @@ const pull = () => {
 const commit = () => {
     subCommandCompiler((program) => {
         program
-            .command('commit')
+            .command('commit <data>')
             .description('提交Git代码')
             .action((data: string) => {
                 new Commit().main(data);

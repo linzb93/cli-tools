@@ -2,6 +2,7 @@ import BaseDeployCommand, { DeployOptions } from './BaseDeployCommand';
 import { openDeployPage } from '@/utils/jenkins';
 import TagCommand from '../tag';
 import { Options as TagOptions } from '../tag';
+import { sleep } from '@linzb93/utils';
 
 /**
  * 公司项目Git部署命令
@@ -39,30 +40,11 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleMasterBranch(): Promise<void> {
-        // 如果明确指定了prod或current选项
-        if (this.options.prod !== undefined || this.options.current !== undefined) {
-            await this.executeBaseCommands(this.options.commit, false);
-
-            // 如果需要发布项目
-            if (this.options.prod) {
-                await this.handleTagAndOutput();
-            }
-        } else {
-            // 询问用户是否发布项目
-            const { shouldPublish } = await this.inquirer.prompt([
-                {
-                    type: 'confirm',
-                    name: 'shouldPublish',
-                    message: '是否发布项目?',
-                    default: false,
-                },
-            ]);
-
-            await this.executeBaseCommands(this.options.commit, false);
-
-            if (shouldPublish) {
-                await this.handleTagAndOutput();
-            }
+        this.logger.warn('当前分支为master，将要发布项目');
+        await sleep(1500);
+        await this.executeBaseCommands(this.options.commit, false);
+        if (!this.options.current) {
+            await this.handleTagAndOutput();
         }
     }
 
