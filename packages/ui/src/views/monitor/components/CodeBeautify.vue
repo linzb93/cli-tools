@@ -1,6 +1,11 @@
 <template>
   <el-dialog :model-value="visible" width="400px" title="错误定位" @close="close" @closed="closed">
-    <div class="code-wrap" v-if="loaded">
+    <el-switch
+      active-text="增加代码定位范围"
+      inactive-text="回复代码定位范围"
+      v-model="includeRange"
+    />
+    <div class="code-wrap mt10" v-if="loaded">
       <span>{{ code.pre }}</span>
       <em class="pre-emp-code">{{ code.preEmp }}</em>
       <em class="emphasize-code">{{ code.emphasize }}</em>
@@ -10,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { shallowRef, watch, reactive } from 'vue'
+import { shallowRef, watch, reactive, computed } from 'vue'
 import request from '@/helpers/request'
 const props = defineProps({
   visible: Boolean,
@@ -18,6 +23,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:visible'])
 
+const includeRange = shallowRef(false)
 const loaded = shallowRef(false)
 const code = reactive({
   pre: '',
@@ -43,9 +49,11 @@ watch(props, async ({ visible, path }) => {
   const result = await request('/common/fetchApiCrossOrigin', {
     url: realPath
   })
-  console.log(result)
+  const range = computed(() => {
+    return includeRange.value ? 200 : 100
+  })
   const splitedCode = result.split('\n')
-  const preCode = splitedCode[row - 1].slice(column - 100, column - 1)
+  const preCode = splitedCode[row - 1].slice(column - range.value, column - 1)
   const preCodeMatch = preCode.match(/[a-zA-Z0-9]+\.$/)
   if (preCodeMatch) {
     code.preEmp = preCodeMatch[0]
@@ -53,7 +61,7 @@ watch(props, async ({ visible, path }) => {
     code.preEmp = preCode
   }
   code.pre = preCode.slice(0, -code.preEmp.length)
-  const nextCode = splitedCode[row - 1].slice(column - 1, column + 100)
+  const nextCode = splitedCode[row - 1].slice(column - 1, column + range.value)
   const nextCodeMatch = nextCode.match(/^[a-zA-Z0-9]+/)
   if (nextCodeMatch) {
     code.emphasize = nextCodeMatch[0]

@@ -7,7 +7,6 @@ import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
 import BaseCommand from '../BaseCommand';
-import { resolve } from 'node:path';
 
 export default class extends BaseCommand {
     async main(data?: string[]) {
