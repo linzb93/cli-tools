@@ -21,9 +21,11 @@ jenkins 地址配置方法：
 
 ```json
 {
-    "name": "店客多", // 项目目录名称
-    "id": "dkd-jysq", // 项目id
-    "type": "wmb" // 项目类型，非必填。
+    "name": "店客多", // 项目目录名称，测试站
+    "id": "dkd-jysq", // 项目id，测试站
+    "type": "wmb", // 项目类型，非必填。
+    "onlineId": "dkd-jysq", // 项目id，正式站
+    "onlineName": "店客多" // 项目目录名称，正式站
 }
 ```
 
@@ -33,7 +35,7 @@ jenkins 地址配置方法：
 $ mycli git deploy [options]
 ```
 
-例如，部署到正式站点，一般对应的是 master 分支，tag 的名称是 1.2.3。
+例如，部署到正式站点，tag 的名称是 1.2.3。
 
 ```bash
 $ mycli git deploy --prod --version=1.2.3
@@ -77,21 +79,19 @@ tag 的版本号。
 
 类型：`string`。
 
-### current
+#### current
 
 简写：`c`
 
 只推送当前分支，不合并。
 
-### msg
+#### msg
 
 是否将提交信息复制进剪贴板。
 
 类型：`boolean`。
 
 默认值：`false`。
-
-### msg
 
 ## git branch
 
@@ -173,6 +173,18 @@ $ mycli git pull
 
 该命令会自动处理代码合并冲突的情况。
 
+## git commit
+
+提交本地代码，无推送。
+
+### 使用方法
+
+```bash
+$ mycli git commit [options]
+```
+
+该命令会格式化提交内容。
+
 ## git tag
 
 管理 Git 标签，支持添加、删除和同步标签。
@@ -187,9 +199,9 @@ $ mycli git tag [options]
 
 例如，如果当前最新标签是 `v4.9.5`，则新标签将为 `v4.9.5.1`。如果再次执行，下一个标签将是 `v4.9.5.2`。
 
-#### 选项
+### 选项
 
-##### version
+#### version
 
 设置具体的版本号。指定版本号时需要使用三段式版本号，且版本号必须大于当前最新版本。
 
@@ -201,7 +213,7 @@ $ mycli git tag [options]
 $ mycli git tag --version=4.9.6  # 创建标签 v4.9.6
 ```
 
-##### type
+#### type
 
 设置标签类型前缀，默认为 `v`。
 
@@ -214,6 +226,14 @@ $ mycli git tag --version=4.9.6  # 创建标签 v4.9.6
 ```bash
 $ mycli git tag --type=wm  # 如果当前最新标签是 wm1.0.0，将创建标签 wm1.0.0.1
 ```
+
+#### msg
+
+是否将提交信息复制进剪贴板。
+
+类型：`boolean`。
+
+默认值：`false`。
 
 ### 删除标签
 
@@ -230,3 +250,55 @@ $ mycli git tag sync
 ```
 
 此命令会删除所有本地标签，然后从远程仓库拉取所有标签，确保本地和远程标签保持同步。
+
+## git merge
+
+合并最近几次的提交。新的提交内容可以自定义，也可以合并之前所有的，用逗号连接。
+
+### 基本用法
+
+```bash
+$ mycli git merge [options]
+```
+
+#### 选项
+
+#### head
+
+合并的次数，默认合并最近一次提交。
+
+类型：`number`
+
+默认值：`1`
+
+例如：
+
+```bash
+$ mycli git merge --head=3
+```
+
+## git log
+
+查询最近几次的提交记录，包括提交的分支、提交时间、提交信息和修改的文件。
+
+### 基本用法
+
+```bash
+$ mycli git log [options]
+```
+
+### 选项
+
+#### head
+
+查询的次数，默认查询最近一次提交。
+
+类型：`number`
+
+默认值：`1`
+
+例如：
+
+```bash
+$ mycli git log --head=3
+```
