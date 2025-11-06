@@ -100,12 +100,9 @@ program
     .action((data, options) => {
         cookie(data, options);
     });
-program
-    .command('curl')
-    .option('--format <type>', '格式化类型')
-    .action((options) => {
-        curl(options);
-    });
+program.command('curl').action(() => {
+    curl();
+});
 
 program
     .command('eng [text]')

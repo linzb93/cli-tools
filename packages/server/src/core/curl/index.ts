@@ -8,7 +8,7 @@ export interface Options {
 }
 
 export default class CurlCommand extends BaseCommand {
-    main(options: Options): void {
+    main(): void {
         // 读取剪贴板
         const curl = clipboardy.readSync();
         if (!curl) {
@@ -19,22 +19,29 @@ export default class CurlCommand extends BaseCommand {
         const urlLine = lines.find((line) => {
             return line.trim().startsWith('curl');
         });
+        if (!urlLine) {
+            this.logger.error('可能剪贴板里的不是curl代码，退出进程');
+            return;
+        }
         let useCookieFormatterFunction = false;
-        const url = urlLine.match(/'([^']+)'/)[1];
+        const url = urlLine.match(/"([^"]+)"/)[1].replace(/\^/g, '');
         const headers = lines
             .filter((line) => {
                 return line.trim().startsWith('-H');
             })
             .reduce((acc, line) => {
-                const [key, value] = line.replace(/' \\/, '').replace("-H '", '').split(':');
-                if (!['token', 'referer', 'content-type', 'cookie'].includes(key.trim())) {
-                    return acc;
-                }
+                const [key, value] = line
+                    .trim()
+                    .replace(/^\-H \^\"/, '')
+                    .replace(/\^\" \^$/, '')
+                    .split(': ');
+                // if (!['token', 'referer', 'content-type', 'cookie'].includes(key.trim().toLowerCase())) {
+                //     return acc;
+                // }
                 if (key.trim() === 'cookie') {
                     useCookieFormatterFunction = true;
-                    acc[key.trim()] = `cookieFormatter(${prettier.format(
-                        JSON.stringify(new CookieService().parseCookie(value.trim())),
-                        { parser: 'json' }
+                    acc[key.trim()] = `cookieFormatter(${JSON.stringify(
+                        new CookieService().parseCookie(value.trim())
                     )}})`;
                 } else {
                     acc[key.trim()] = value.trim();
@@ -48,8 +55,9 @@ export default class CurlCommand extends BaseCommand {
             .trim()
             .replace('--data-raw', '')
             .trim()
-            .replace(/^\'/, '')
-            .replace(/\'$/, '');
+            .replace(/^\^\"\^/, '')
+            .replace(/\^\\\^/g, '')
+            .replace(/\^\}\^\"$/, '}');
         const method = 'post';
         const cookieFormatterFunction = `
         function cookieFormatter(cookieObj) {
@@ -63,7 +71,7 @@ ${useCookieFormatterFunction ? cookieFormatterFunction : ''}
             method: '${method}',
             url: '${url}',
             headers: ${prettier.format(JSON.stringify(headers), { parser: 'json' })},
-            data: ${prettier.format(data, { parser: 'json' })},
+            data: ${data},
         });
         console.log(res.data);
     } catch(e) {
