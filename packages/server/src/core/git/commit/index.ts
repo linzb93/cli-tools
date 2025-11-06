@@ -6,7 +6,9 @@ import { executeCommands } from '@/utils/promise';
 /**
  * git pull 命令的选项接口，无需参数
  */
-export interface Options {}
+export interface Options {
+    path: string;
+}
 
 /**
  * git pull 命令的实现类
@@ -17,7 +19,7 @@ export default class extends BaseCommand {
      * @param {string} message - 提交信息
      * @returns {Promise<void>}
      */
-    async main(message: string): Promise<void> {
+    async main(message: string, options: Options): Promise<void> {
         // 检查当前目录是否是 Git 项目
         if (!(await isGitProject())) {
             this.logger.error('当前目录不是 Git 项目');
@@ -26,7 +28,10 @@ export default class extends BaseCommand {
 
         try {
             // 执行 git commit 命令
-            await executeCommands([gitAtom.commit(message)]);
+            await executeCommands([
+                `git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`,
+                gitAtom.commit(message),
+            ]);
             this.logger.success('提交成功');
         } catch (error) {
             this.logger.error(`提交失败: ${error.message || error}`);

@@ -5,7 +5,7 @@ import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
 import Branch, { type Options as BranchOptions } from '../../core/git/branch';
 import Merge, { type Options as MergeOptions } from '../../core/git/merge';
 import Log, { type Options as LogOptions } from '../../core/git/log';
-import Commit from '../../core/git/commit';
+import Commit, { type Options as CommitOptions } from '../../core/git/commit';
 import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import { subCommandCompiler } from '../../utils/helper';
 
@@ -17,7 +17,6 @@ const push = () => {
         program
             .command('push')
             .description('将本地分支推送到远程仓库')
-            .option('-f, --force', '强制推送并设置上游分支')
             .action(() => {
                 new Push().main();
             });
@@ -42,8 +41,9 @@ const commit = () => {
         program
             .command('commit <data>')
             .description('提交Git代码')
-            .action((data: string) => {
-                new Commit().main(data);
+            .option('--path <path>', '指定要提交的文件路径，默认当前目录')
+            .action((data: string, options: CommitOptions) => {
+                new Commit().main(data, options);
             });
     });
 };
@@ -58,6 +58,7 @@ const tag = () => {
             .description('管理Git标签')
             .option('--version <version>', '设置版本号')
             .option('--type <type>', '设置标签类型前缀，默认为v')
+            .option('--msg', '是否复制提交消息到剪贴板')
             .action((subCommand: string, options: TagOptions) => {
                 new Tag().main(subCommand, options);
             });
@@ -139,7 +140,7 @@ const log = () => {
             .command('log')
             .description('查看Git提交日志')
             .option('--head <number>', '查看最近的几个提交，默认查看最近3个')
-            .option('--path <path>', '指定项目路径')
+            .option('--path <path>', '指定查看的文件目录')
             .action((options: LogOptions) => {
                 new Log().main(options);
             });

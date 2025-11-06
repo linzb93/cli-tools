@@ -302,3 +302,11 @@ $ mycli git log [options]
 ```bash
 $ mycli git log --head=3
 ```
+
+#### path
+
+查询的目录，默认查询当前目录。
+
+类型：`string`
+
+默认值：`.`

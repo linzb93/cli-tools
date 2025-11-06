@@ -1,4 +1,4 @@
-import { lookup, resolve4 } from 'node:dns';
+import { resolve4 } from 'node:dns';
 import { Socket } from 'node:net';
 import publicIp from 'public-ip';
 import internalIp from 'internal-ip';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
 import BaseCommand from '../BaseCommand';
+import { defaultBrowserHeaders } from '@/utils/helper';
 
 export default class extends BaseCommand {
     async main(data?: string[]) {
@@ -32,14 +33,7 @@ export default class extends BaseCommand {
         let html = '';
         try {
             const { data } = await axios.get(`https://www.ip138.com/iplookup.php?ip=${ip}&action=2`, {
-                headers: {
-                    'User-Agent':
-                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-                    'Cache-Control': 'no-cache',
-                    'Connection': 'keep-alive',
-                },
+                headers: defaultBrowserHeaders,
                 timeout: 10000,
             });
             html = data;

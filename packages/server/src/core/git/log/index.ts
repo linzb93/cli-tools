@@ -50,7 +50,7 @@ export default class extends BaseCommand {
         this.spinner.succeed('Git日志获取成功');
         output.forEach((item) => {
             console.log(`------------------------`);
-            console.log(`${chalk.green(`[${item.branch}分支]`)} ${item.message} ${chalk.yellow(item.date)}`);
+            console.log(`${chalk.green(`[${item.branch}分支]`)} ${chalk.yellow(item.date)} ${item.message}`);
             if (options.path) {
                 item.files.forEach((file) => {
                     if (file.startsWith(options.path)) {
@@ -60,9 +60,7 @@ export default class extends BaseCommand {
                     }
                 });
             } else {
-                item.files.forEach((file) => {
-                    console.log(file);
-                });
+                console.log(item.files.join('\n'));
             }
         });
     }
