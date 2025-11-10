@@ -37,6 +37,7 @@ $ mycli occ pj 1234567 --token
 -   chain: 美团连锁品牌
 -   outer: 站外应用
 -   spbj: 商品搬家
+-   minip: 小程序
 
 ## 选项
 

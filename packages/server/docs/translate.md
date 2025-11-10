@@ -7,3 +7,13 @@
 ```bash
 $ mycli eng [text]
 ```
+
+## 选项
+
+### ai
+
+是否使用 ai 翻译。
+
+类型：`boolean`。
+
+默认值：`false`。
