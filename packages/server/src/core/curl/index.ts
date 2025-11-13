@@ -121,20 +121,20 @@ export default class CurlCommand extends BaseCommand {
                     value = valueMatch[1].trim().replace(/\^\"\s\^$/, '');
                     acc[key] = value;
                 } else {
-                    // 处理bash模式：-H 'header: value' \
-                    const match = line.match(/^\s*\-H\s+'([^:]+):\s*([^']*)'\s*\\\?$/);
-                    if (match) {
-                        key = match[1].trim();
-                        // 先判断key是否在允许列表中
-                        const lowerKey = key.toLowerCase();
-                        if (!allowedHeaders.includes(lowerKey)) {
-                            // 如果key不在允许列表中，直接返回当前结果，不解析value
-                            return acc;
-                        }
-                        // 只有key匹配时才解析value
-                        value = match[2].trim();
-                        acc[key] = value;
+                    const keyMatch = line.match(/^\-H\s\'([^:]+)/);
+                    if (!keyMatch) {
+                        return acc;
                     }
+                    key = keyMatch[1].trim();
+                    if (!allowedHeaders.includes(key.toLowerCase())) {
+                        return acc;
+                    }
+                    const valueMatch = line.match(/:\s*(.*?)\'\s*\\$/);
+                    if (!valueMatch) {
+                        return acc;
+                    }
+                    value = valueMatch[1].trim().replace(/\^\"\s\^$/, '');
+                    acc[key] = value;
                 }
 
                 return acc;
@@ -283,8 +283,8 @@ export default class CurlCommand extends BaseCommand {
         console.log(e.message);
     }
 })()`;
-
-        clipboardy.writeSync(prettier.format(result, { parser: 'typescript' }));
+        const output = prettier.format(result, { parser: 'typescript' });
+        clipboardy.writeSync(output);
         this.logger.success('生成成功');
     }
 }
