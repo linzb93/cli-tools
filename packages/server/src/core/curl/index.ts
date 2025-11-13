@@ -93,6 +93,9 @@ export default class CurlCommand extends BaseCommand {
      * @returns 请求头对象
      */
     private parseHeaders(lines: string[], mode: 'cmd' | 'bash'): Record<string, string> {
+        // 只保留特定的请求头：content-type、cookie、token、referer
+        const allowedHeaders = ['content-type', 'cookie', 'token', 'referer'];
+
         return lines
             .filter((line) => {
                 return line.trim().startsWith('-H');
@@ -103,26 +106,35 @@ export default class CurlCommand extends BaseCommand {
                 let value = '';
 
                 if (mode === 'cmd') {
-                    // 处理cmd模式：-H ^"header: value^" ^
-                    // 修复正则表达式：将\\^?改为(\\^)?，正确转义^字符
-                    const match = line.match(/^\s*\-H\s+\\^"([^:]+):\s*([^"]*)\\^"\s*(\\^)?$/);
-                    if (match) {
-                        key = match[1].trim();
-                        value = match[2].trim();
-                        // 处理转义字符
-                        value = value.replace(/\\^\\"/g, '"').replace(/\\^/g, '');
+                    const keyMatch = line.match(/^\-H\s\^"([^:]+)/);
+                    if (!keyMatch) {
+                        return acc;
                     }
+                    key = keyMatch[1].trim();
+                    if (!allowedHeaders.includes(key.toLowerCase())) {
+                        return acc;
+                    }
+                    const valueMatch = line.match(/:\s*(.*?)\s*$/);
+                    if (!valueMatch) {
+                        return acc;
+                    }
+                    value = valueMatch[1].trim().replace(/\^\"\s\^$/, '');
+                    acc[key] = value;
                 } else {
                     // 处理bash模式：-H 'header: value' \
-                    const match = line.match(/^\s*\-H\s+'([^:]+):\s*([^']*)'\s*\\\\?$/);
+                    const match = line.match(/^\s*\-H\s+'([^:]+):\s*([^']*)'\s*\\\?$/);
                     if (match) {
                         key = match[1].trim();
+                        // 先判断key是否在允许列表中
+                        const lowerKey = key.toLowerCase();
+                        if (!allowedHeaders.includes(lowerKey)) {
+                            // 如果key不在允许列表中，直接返回当前结果，不解析value
+                            return acc;
+                        }
+                        // 只有key匹配时才解析value
                         value = match[2].trim();
+                        acc[key] = value;
                     }
-                }
-
-                if (key && value) {
-                    acc[key] = value;
                 }
 
                 return acc;
@@ -150,11 +162,16 @@ export default class CurlCommand extends BaseCommand {
         let data = '';
 
         if (mode === 'cmd') {
-            // 处理cmd模式：--data-raw ^"data^"
-            const match = dataLine.match(/--data-raw\s+\^"([^"]*)\"$/);
-            if (match) {
-                data = match[1].replace(/\\^\\"/g, '"').replace(/\\^/g, '');
-            }
+            data = dataLine
+                .trim()
+                .replace(/^\-\-data-raw\s/, '')
+                .replace(/^\^"/, '"')
+                .replace(/\^"$/, '"')
+                .replace(/\^\{/, '{')
+                .replace(/\^\}/, '}')
+                .replace(/\\\^/g, '')
+                .replace(/\^"/g, '"')
+                .replace(/"(.+)"/, '$1');
         } else {
             // 处理bash模式：--data-raw 'data'
             const match = dataLine.match(/--data-raw\s+'([^']*)'$/);
@@ -174,7 +191,7 @@ export default class CurlCommand extends BaseCommand {
             }
         }
 
-        return data ? `'${data}'` : '';
+        return data || '';
     }
 
     /**
@@ -251,7 +268,7 @@ export default class CurlCommand extends BaseCommand {
 
         if (Object.keys(headers).length > 0) {
             result += `
-            headers: ${prettier.format(JSON.stringify(headers), { parser: 'json' })},`;
+            headers: ${JSON.stringify(headers)},`;
         }
 
         if (data) {
@@ -267,7 +284,7 @@ export default class CurlCommand extends BaseCommand {
     }
 })()`;
 
-        clipboardy.writeSync(result);
+        clipboardy.writeSync(prettier.format(result, { parser: 'typescript' }));
         this.logger.success('生成成功');
     }
 }
