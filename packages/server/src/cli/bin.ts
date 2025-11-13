@@ -103,6 +103,7 @@ program
 program
     .command('curl')
     .option('--extra <extra>', '额外的参数')
+    .option('--full', '显示全部header')
     .action((options) => {
         curl(options);
     });
