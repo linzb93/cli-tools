@@ -33,8 +33,9 @@ export default class extends BaseCommand {
      * @param {Options} options 解析选项
      * @returns {Promise<void>}
      */
-    async main(data: string, options: Options) {
-        const objs = this.parseCookie(data);
+    async main(data: string, options: Options): Promise<void> {
+        const realData = data === '' ? clipboardy.readSync() : data;
+        const objs = this.parseCookie(realData);
         let result = options.type === 'key' ? Object.keys(objs) : objs;
         console.log(result);
         if (options.copy) {

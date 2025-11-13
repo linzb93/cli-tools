@@ -8,7 +8,7 @@ import { resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fork } from 'node:child_process';
 import fs from 'fs-extra';
-import sql, { Database } from '@/utils/sql';
+import { Database } from '@/utils/sql';
 import * as git from '@/core/git/utils';
 import { objectToCmdOptions } from '@/utils/helper';
 import globalConfig from '../../../../../config.json';
@@ -104,7 +104,7 @@ export default class Vue extends BaseCommand {
      * @returns 项目配置信息
      */
     private async getProjectConfigFromList(): Promise<ProjectConfig | null> {
-        const list = (await sql((db) => db.vue)) as (Database['vue'][number] & { branchName: string })[];
+        const list = (await this.sql((db) => db.vue)) as (Database['vue'][number] & { branchName: string })[];
 
         // 获取每个项目的当前分支
         for (const item of list) {
@@ -220,7 +220,7 @@ export default class Vue extends BaseCommand {
             config.publicPath = (await this.getPublicPathFromConfig(config.cwd)) || '';
         }
 
-        await sql((db) => {
+        await this.sql((db) => {
             db.vue.push({
                 id: db.vue.length + 1,
                 path: config.cwd,
@@ -237,7 +237,7 @@ export default class Vue extends BaseCommand {
      * @returns 选中的项目路径和分支名称
      */
     private async selectProjectAndBranch(): Promise<{ selectedPath: string; selectedBranch: string }> {
-        const list = await sql((db) => db.vue);
+        const list = await this.sql((db) => db.vue);
         const pathList = Array.from(new Set(list.map((item) => item.path)));
 
         const { selectedPath } = await this.inquirer.prompt([
@@ -311,7 +311,7 @@ export default class Vue extends BaseCommand {
      * @returns 项目配置
      */
     private async getProjectConfigFromPath(path: string, options: Options): Promise<ProjectConfig | null> {
-        const list = await sql((db) => db.vue);
+        const list = await this.sql((db) => db.vue);
         const project = list.find((item) => item.path === path);
 
         if (!project) {

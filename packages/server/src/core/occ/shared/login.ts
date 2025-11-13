@@ -1,4 +1,3 @@
-import sql from '@/utils/sql';
 import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
@@ -6,9 +5,48 @@ import AiImpl from '@/core/ai/shared/ai-impl';
 import { readSecret } from '@/utils/secret';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import serviceGenerator from '@/utils/http';
+import { isOldNode } from '@/utils/helper';
+
 const service = serviceGenerator({
     baseURL: '',
 });
+/**
+ * 手动输入验证码进行登录
+ * @param username 用户名
+ * @param password 密码
+ * @param prefix API前缀
+ * @returns 登录结果
+ */
+async function manualCaptchaLogin(
+    username: string,
+    password: string,
+    prefix: string
+): Promise<{
+    token: string;
+}> {
+    const { url, uuid, removeHandler } = await getLoginCaptcha();
+    console.log(chalk.green('请在浏览器中打开以下地址查看验证码：'));
+    await open(url);
+
+    const { code } = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'code',
+            message: '请输入验证码:',
+        },
+    ]);
+
+    const res = await service.post(`${prefix}/login`, {
+        username,
+        password,
+        uuid,
+        code,
+    });
+
+    removeHandler();
+    return res.data;
+}
+
 export async function login(): Promise<void> {
     try {
         let { username } = await readSecret((db) => db.oa);
@@ -26,48 +64,39 @@ export async function login(): Promise<void> {
             token: string;
         };
 
-        while (!loginSuccess && retryCount < maxRetries) {
-            try {
-                // 获取验证码并登录
-                loginResult = await processCaptchaAndLogin(username, password, prefix);
-                console.log(loginResult);
-                if (loginResult && loginResult.token) {
-                    loginSuccess = true;
-                } else {
+        // 检查NodeJS版本，如果版本过低则直接使用手动输入方式
+        if (isOldNode) {
+            console.log(
+                chalk.yellow('检测到您使用的是旧版本NodeJS，AI识别功能可能无法正常工作，将使用手动输入验证码方式')
+            );
+            console.log(chalk.yellow('建议升级到NodeJS 18+版本以获得更好的体验'));
+
+            loginResult = await manualCaptchaLogin(username, password, prefix);
+            loginSuccess = true;
+        } else {
+            // 正常流程：先尝试AI识别，失败后使用手动输入
+            while (!loginSuccess && retryCount < maxRetries) {
+                try {
+                    // 获取验证码并登录
+                    loginResult = await processCaptchaAndLogin(username, password, prefix);
+                    console.log(loginResult);
+                    if (loginResult && loginResult.token) {
+                        loginSuccess = true;
+                    } else {
+                        retryCount++;
+                        console.log(chalk.yellow(`登录失败，正在重试 (${retryCount}/${maxRetries})...`));
+                    }
+                } catch (error) {
                     retryCount++;
-                    console.log(chalk.yellow(`登录失败，正在重试 (${retryCount}/${maxRetries})...`));
+                    console.log(chalk.yellow(`验证码识别失败，正在重试 (${retryCount}/${maxRetries})...`));
                 }
-            } catch (error) {
-                retryCount++;
-                console.log(chalk.yellow(`验证码识别失败，正在重试 (${retryCount}/${maxRetries})...`));
             }
-        }
 
-        // 如果AI识别失败5次，则让用户手动输入
-        if (!loginSuccess) {
-            console.log(chalk.red('验证码自动识别失败，请手动输入验证码'));
-
-            const { url, uuid, removeHandler } = await getLoginCaptcha();
-            console.log(chalk.green('请在浏览器中打开以下地址查看验证码：'));
-            await open(url);
-
-            const { code } = await inquirer.prompt([
-                {
-                    type: 'input',
-                    name: 'code',
-                    message: '请输入验证码:',
-                },
-            ]);
-
-            const res = await this.service.post(`${prefix}/login`, {
-                username,
-                password,
-                uuid,
-                code,
-            });
-
-            loginResult = res.data;
-            removeHandler();
+            // 如果AI识别失败5次，则让用户手动输入
+            if (!loginSuccess) {
+                console.log(chalk.red('验证码自动识别失败，请手动输入验证码'));
+                loginResult = await manualCaptchaLogin(username, password, prefix);
+            }
         }
 
         // 保存token
@@ -79,7 +108,6 @@ export async function login(): Promise<void> {
         process.exit(0);
     }
 }
-
 async function getOCCUserInfo() {
     const { username, password } = await inquirer.prompt([
         {

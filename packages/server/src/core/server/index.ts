@@ -9,7 +9,6 @@ import { root } from '@/utils/constant';
 import Kill from '../kill';
 import inquirer from '@/utils/inquirer';
 import globalConfig from '../../../../../config.json';
-import sql from '@/utils/sql';
 
 export interface Options {
     /**
@@ -82,7 +81,7 @@ export default class extends BaseCommand {
             return;
         }
         if (options?.menu) {
-            const menus = await sql((db) => db.menus);
+            const menus = await this.sql((db) => db.menus);
             let menu = '';
             if (options.menu === true && menus && menus.length) {
                 const { answer } = await inquirer.prompt({
