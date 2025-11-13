@@ -4,16 +4,17 @@ import * as prettier from 'prettier';
 import * as querystring from 'node:querystring';
 
 export interface Options {
-    format: string;
+    extra?: string;
 }
 
 export default class CurlCommand extends BaseCommand {
+    private options: Options;
     /**
      * 查询curl中的cookie并返回cookie字符串
      * @param curlText curl命令文本
      * @returns cookie字符串，如果没有找到则返回空字符串
      */
-    public getCookieFromCurl(curlText: string): string {
+    public getCookieFromCurl(curlText: string, mode: 'cmd' | 'bash' = 'bash'): string {
         const lines = curlText.split('\n');
 
         // 查找cookie行，支持多种格式：-b, --cookie, -H 'Cookie:'
@@ -30,9 +31,19 @@ export default class CurlCommand extends BaseCommand {
 
         // 处理 -b 或 --cookie 格式
         if (cookieLine.trim().startsWith('-b ') || cookieLine.trim().startsWith('--cookie ')) {
-            const match = cookieLine.match(/(?:-b|--cookie)\s+(['"`])([^'"`]*)\1/);
-            if (match) {
-                cookieValue = match[2];
+            let match = null;
+            if (mode === 'bash') {
+                match = cookieLine.trim().match(/(?:-b|--cookie)\s+(.+)\'\s\\$/);
+                if (match) {
+                    cookieValue = match[1];
+                }
+            } else if (mode == 'cmd') {
+                cookieValue = cookieLine
+                    .trim()
+                    .replace(/^-b\s\^"/, '')
+                    .replace(/\^"\s\^$/, '')
+                    .replace(/\^%\^/g, '%')
+                    .replace(/\^!/g, '');
             }
         }
         // 处理 -H 'Cookie:' 格式
@@ -45,7 +56,7 @@ export default class CurlCommand extends BaseCommand {
 
         // 处理bash模式中的$'...'转义字符
         if (cookieValue.startsWith("$'")) {
-            cookieValue = cookieValue.slice(2, -1).replace(/\\'/g, "'");
+            cookieValue = cookieValue.slice(2);
         }
 
         return cookieValue;
@@ -79,7 +90,7 @@ export default class CurlCommand extends BaseCommand {
         if (mode === 'cmd') {
             // 处理cmd模式：curl ^"url^" 或 curl ^"url^" [其他参数]
             const match = line.match(/^\s*curl\s+\^"([^"]+)\"\s*/);
-            return match ? match[1].replace('^', '').replace(/\\^/g, '') : '';
+            return match ? match[1].replace(/\^/g, '') : '';
         } else {
             const match = line.match(/'([^']+)'/);
             return match ? match[1] : '';
@@ -93,10 +104,15 @@ export default class CurlCommand extends BaseCommand {
      * @returns 请求头对象
      */
     private parseHeaders(lines: string[], mode: 'cmd' | 'bash'): Record<string, string> {
-        // 只保留特定的请求头：content-type、cookie、token、referer
-        const allowedHeaders = ['content-type', 'cookie', 'token', 'referer'];
+        // 只保留特定的请求头
+        const allowedHeaders = ['content-type', 'cookie', 'token', 'referer', 'user-agent'].concat(
+            this.options.extra
+                .split(',')
+                .filter((item) => !!item)
+                .map((item) => item.trim().toLowerCase())
+        );
 
-        return lines
+        const output = lines
             .filter((line) => {
                 return line.trim().startsWith('-H');
             })
@@ -118,10 +134,15 @@ export default class CurlCommand extends BaseCommand {
                     if (!valueMatch) {
                         return acc;
                     }
-                    value = valueMatch[1].trim().replace(/\^\"\s\^$/, '');
+                    value = valueMatch[1]
+                        .trim()
+                        .replace(/\^\"\s\^$/, '')
+                        .replace(/\^\\\^/g, '')
+                        .replace(/\^\{/, '{')
+                        .replace(/\^\}/, '}');
                     acc[key] = value;
                 } else {
-                    const keyMatch = line.match(/^\-H\s\'([^:]+)/);
+                    const keyMatch = line.match(/^\-H\s\$?\'([^:]+)/);
                     if (!keyMatch) {
                         return acc;
                     }
@@ -139,6 +160,10 @@ export default class CurlCommand extends BaseCommand {
 
                 return acc;
             }, {} as Record<string, string>);
+        if (this.getCookieFromCurl(lines.join('\n'), mode)) {
+            output['Cookie'] = this.getCookieFromCurl(lines.join('\n'), mode);
+        }
+        return output;
     }
 
     /**
@@ -182,13 +207,7 @@ export default class CurlCommand extends BaseCommand {
 
         // 如果是application/x-www-form-urlencoded格式，转换为form-data
         if (contentType === 'application/x-www-form-urlencoded' && data) {
-            try {
-                const parsed = querystring.parse(data);
-                return `new URLSearchParams(${JSON.stringify(parsed)}).toString()`;
-            } catch (error) {
-                // 如果解析失败，返回原始数据
-                return `'${data}'`;
-            }
+            return JSON.stringify(querystring.parse(data.replace(/\^/g, '')));
         }
 
         return data || '';
@@ -219,7 +238,9 @@ export default class CurlCommand extends BaseCommand {
         return hasData ? 'post' : 'get';
     }
 
-    main(): void {
+    main(options: Options): void {
+        this.options = options;
+
         // 读取剪贴板
         const curl = clipboardy.readSync();
         if (!curl) {
@@ -257,10 +278,25 @@ export default class CurlCommand extends BaseCommand {
 
         // 如果是form-urlencoded，需要导入URLSearchParams
         if (contentType === 'application/x-www-form-urlencoded') {
-            result += `// 注意：此请求使用application/x-www-form-urlencoded格式\n`;
+            result += `
+            import FormData from 'form-data';
+            // 注意：此请求使用application/x-www-form-urlencoded格式\n`;
         }
 
         result += `(async () => {
+        ${
+            contentType === 'application/x-www-form-urlencoded'
+                ? `
+                const fd = new FormData();
+                ${Object.keys(JSON.parse(data))
+                    .map((key) => {
+                        const value = JSON.parse(data)[key];
+                        return `fd.append('${key}', '${value}');`;
+                    })
+                    .join('\n')}
+            `
+                : ''
+        }
     try {
         const res = await axios({
             method: '${method}',
@@ -273,7 +309,7 @@ export default class CurlCommand extends BaseCommand {
 
         if (data) {
             result += `
-            data: ${data},`;
+            data: ${contentType === 'application/x-www-form-urlencoded' ? 'fd' : data},`;
         }
 
         result += `

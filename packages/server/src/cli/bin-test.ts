@@ -23,9 +23,12 @@ program.hook('preAction', (thisCommand) => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-program.command('curl').action(() => {
-    curl();
-});
+program
+    .command('curl')
+    .option('--extra <extra>', '额外的参数')
+    .action((options) => {
+        curl(options);
+    });
 
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));

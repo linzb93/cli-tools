@@ -100,9 +100,12 @@ program
     .action((data, options) => {
         cookie(data, options);
     });
-program.command('curl').action(() => {
-    curl();
-});
+program
+    .command('curl')
+    .option('--extra <extra>', '额外的参数')
+    .action((options) => {
+        curl(options);
+    });
 
 program
     .command('eng [text]')

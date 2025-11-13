@@ -1,5 +1,5 @@
-import CurlCommand from '@/core/curl';
+import CurlCommand, { Options } from '@/core/curl';
 
-export default () => {
-    return new CurlCommand().main();
+export default (options: Options) => {
+    return new CurlCommand().main(options);
 };
