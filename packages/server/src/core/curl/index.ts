@@ -1,29 +1,207 @@
 import BaseCommand from '../BaseCommand';
 import clipboardy from 'clipboardy';
-import { InternalAxiosRequestConfig } from 'axios';
-import CookieService from '../cookie';
 import * as prettier from 'prettier';
+import * as querystring from 'node:querystring';
 
-/**
- * cURL(cmd) 和 cURL(bash) 的区别
- * 1. cURL(cmd) 用的是双引号，而 cURL(bash) 用的是单引号
- * 2. cURL(cmd) 每行头尾的双引号前面会加上"^"符号，结尾用"^"换行，而 cURL(bash) 每行结尾用"\^"换行。如下：
- * cmd => -H ^"accept-language: zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7,zh-TW;q=0.6^" ^
- * bash => -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7,zh-TW;q=0.6' \
- * 3. cURL(cmd) 开闭花括号前面有"^"符号，中间的双引号要用"^\^""表示。如下：
- * cmd => --data-raw ^"^{^\^"types^\^":^[2,3^]^}^"
- * bash => --data-raw '{"types":[2,3]}'
- * 4. cURL(bash) 会把特殊字符转成unicode字符，所以要用"unescape"方法把它转回来。如果有用到转义unicode字符，需要在字符前面加上"$"符号。如下：
- * -b $'uuid=a0c9b184cef8b742ffbe.1762825766.1.0.0;' \
- * 其中，"-b"是cookie的表示，有时也会看到：
- * * --cookie（-b 的完整形式）
- * * -H 'Cookie: ...'（在请求头中直接设置）
- */
 export interface Options {
     format: string;
 }
 
 export default class CurlCommand extends BaseCommand {
+    /**
+     * 查询curl中的cookie并返回cookie字符串
+     * @param curlText curl命令文本
+     * @returns cookie字符串，如果没有找到则返回空字符串
+     */
+    public getCookieFromCurl(curlText: string): string {
+        const lines = curlText.split('\n');
+
+        // 查找cookie行，支持多种格式：-b, --cookie, -H 'Cookie:'
+        const cookieLine = lines.find((line) => {
+            const trimmed = line.trim();
+            return trimmed.startsWith('-b ') || trimmed.startsWith('--cookie ') || trimmed.includes('Cookie:');
+        });
+
+        if (!cookieLine) {
+            return '';
+        }
+
+        let cookieValue = '';
+
+        // 处理 -b 或 --cookie 格式
+        if (cookieLine.trim().startsWith('-b ') || cookieLine.trim().startsWith('--cookie ')) {
+            const match = cookieLine.match(/(?:-b|--cookie)\s+(['"`])([^'"`]*)\1/);
+            if (match) {
+                cookieValue = match[2];
+            }
+        }
+        // 处理 -H 'Cookie:' 格式
+        else if (cookieLine.includes('Cookie:')) {
+            const match = cookieLine.match(/Cookie:\s*([^'"`]*)/);
+            if (match) {
+                cookieValue = match[1].trim();
+            }
+        }
+
+        // 处理bash模式中的$'...'转义字符
+        if (cookieValue.startsWith("$'")) {
+            cookieValue = cookieValue.slice(2, -1).replace(/\\'/g, "'");
+        }
+
+        return cookieValue;
+    }
+
+    /**
+     * 检测curl命令是cmd模式还是bash模式
+     * @param curlText curl命令文本
+     * @returns 'cmd' 或 'bash'
+     */
+    private detectCurlMode(curlText: string): 'cmd' | 'bash' {
+        // 检查是否包含cmd模式特有的^符号
+        if (curlText.includes('^"') || curlText.includes('^"')) {
+            return 'cmd';
+        }
+        // 检查是否包含bash模式特有的\换行符
+        if (curlText.includes('\\\n') || curlText.includes("$'")) {
+            return 'bash';
+        }
+        // 默认返回bash模式
+        return 'bash';
+    }
+
+    /**
+     * 解析curl命令中的URL
+     * @param line 包含curl命令的行
+     * @param mode curl模式
+     * @returns 解析出的URL
+     */
+    private parseUrl(line: string, mode: 'cmd' | 'bash'): string {
+        if (mode === 'cmd') {
+            // 处理cmd模式：curl ^"url^" 或 curl ^"url^" [其他参数]
+            const match = line.match(/^\s*curl\s+\^"([^"]+)\"\s*/);
+            return match ? match[1].replace('^', '').replace(/\\^/g, '') : '';
+        } else {
+            const match = line.match(/'([^']+)'/);
+            return match ? match[1] : '';
+        }
+    }
+
+    /**
+     * 解析curl命令中的请求头
+     * @param lines curl命令的所有行
+     * @param mode curl模式
+     * @returns 请求头对象
+     */
+    private parseHeaders(lines: string[], mode: 'cmd' | 'bash'): Record<string, string> {
+        return lines
+            .filter((line) => {
+                return line.trim().startsWith('-H');
+            })
+            .map((line) => line.trim())
+            .reduce((acc, line) => {
+                let key = '';
+                let value = '';
+
+                if (mode === 'cmd') {
+                    // 处理cmd模式：-H ^"header: value^" ^
+                    // 修复正则表达式：将\\^?改为(\\^)?，正确转义^字符
+                    const match = line.match(/^\s*\-H\s+\\^"([^:]+):\s*([^"]*)\\^"\s*(\\^)?$/);
+                    if (match) {
+                        key = match[1].trim();
+                        value = match[2].trim();
+                        // 处理转义字符
+                        value = value.replace(/\\^\\"/g, '"').replace(/\\^/g, '');
+                    }
+                } else {
+                    // 处理bash模式：-H 'header: value' \
+                    const match = line.match(/^\s*\-H\s+'([^:]+):\s*([^']*)'\s*\\\\?$/);
+                    if (match) {
+                        key = match[1].trim();
+                        value = match[2].trim();
+                    }
+                }
+
+                if (key && value) {
+                    acc[key] = value;
+                }
+
+                return acc;
+            }, {} as Record<string, string>);
+    }
+
+    /**
+     * 解析curl命令中的请求体数据
+     * @param lines curl命令的所有行
+     * @param mode curl模式
+     * @param contentType 内容类型
+     * @returns 请求体数据
+     */
+    private parseData(lines: string[], mode: 'cmd' | 'bash', contentType: string): string {
+        const dataLine = lines.find((line) => {
+            return (
+                line.trim().startsWith('--data-raw') || line.trim().startsWith('--data') || line.trim().startsWith('-d')
+            );
+        });
+
+        if (!dataLine) {
+            return '';
+        }
+
+        let data = '';
+
+        if (mode === 'cmd') {
+            // 处理cmd模式：--data-raw ^"data^"
+            const match = dataLine.match(/--data-raw\s+\^"([^"]*)\"$/);
+            if (match) {
+                data = match[1].replace(/\\^\\"/g, '"').replace(/\\^/g, '');
+            }
+        } else {
+            // 处理bash模式：--data-raw 'data'
+            const match = dataLine.match(/--data-raw\s+'([^']*)'$/);
+            if (match) {
+                data = match[1];
+            }
+        }
+
+        // 如果是application/x-www-form-urlencoded格式，转换为form-data
+        if (contentType === 'application/x-www-form-urlencoded' && data) {
+            try {
+                const parsed = querystring.parse(data);
+                return `new URLSearchParams(${JSON.stringify(parsed)}).toString()`;
+            } catch (error) {
+                // 如果解析失败，返回原始数据
+                return `'${data}'`;
+            }
+        }
+
+        return data ? `'${data}'` : '';
+    }
+
+    /**
+     * 解析curl命令中的HTTP方法
+     * @param lines curl命令的所有行
+     * @returns HTTP方法，默认为'get'
+     */
+    private parseMethod(lines: string[]): string {
+        const methodLine = lines.find((line) => {
+            return line.trim().startsWith('-X') || line.trim().startsWith('--request');
+        });
+
+        if (methodLine) {
+            const match = methodLine.match(/-(?:X|\-request)\s+(\w+)/);
+            return match ? match[1].toLowerCase() : 'get';
+        }
+
+        // 如果有数据体，默认为POST
+        const hasData = lines.some((line) => {
+            return (
+                line.trim().startsWith('--data-raw') || line.trim().startsWith('--data') || line.trim().startsWith('-d')
+            );
+        });
+
+        return hasData ? 'post' : 'get';
+    }
+
     main(): void {
         // 读取剪贴板
         const curl = clipboardy.readSync();
@@ -39,74 +217,57 @@ export default class CurlCommand extends BaseCommand {
             this.logger.error('可能剪贴板里的不是curl代码，退出进程');
             return;
         }
-        let useCookieFormatterFunction = false;
-        const url = urlLine.match(/"([^"]+)"/)[1].replace(/\^/g, '');
-        const headers = lines
-            .filter((line) => {
-                return line.trim().startsWith('-H');
-            })
-            .reduce((acc, line) => {
-                const [key, value] = line
-                    .trim()
-                    .replace(/^\-H \^\"/, '')
-                    .replace(/\^\" \^$/, '')
-                    .split(': ');
-                // if (!['token', 'referer', 'content-type', 'cookie'].includes(key.trim().toLowerCase())) {
-                //     return acc;
-                // }
-                if (key.trim() === 'cookie') {
-                    useCookieFormatterFunction = true;
-                    acc[key.trim()] = `cookieFormatter(${JSON.stringify(
-                        new CookieService().parseCookie(value.trim())
-                    )}})`;
-                } else {
-                    acc[key.trim()] = value.trim();
-                }
-                return acc;
-            }, {});
-        const data = lines
-            .find((line) => {
-                return line.trim().startsWith('--data-raw');
-            })
-            .trim()
-            .replace('--data-raw', '')
-            .trim()
-            .replace(/^\^\"\^/, '')
-            .replace(/\^\\\^/g, '')
-            .replace(/\^\}\^\"$/, '}');
-        const method = 'post';
-        const cookieFormatterFunction = `
-        function cookieFormatter(cookieObj) {
-            return Object.keys(cookieObj).map(key => \`\${key}=\${cookieObj[key]}\`).join('; ');
-        }`;
+
+        // 检测curl模式
+        const mode = this.detectCurlMode(curl);
+        this.logger.info(`检测到curl模式: ${mode}`);
+
+        // 解析各个部分
+        const url = this.parseUrl(urlLine, mode);
+        const headers = this.parseHeaders(lines, mode);
+        const method = this.parseMethod(lines);
+        const contentType = headers['content-type'] || headers['Content-Type'] || '';
+        const data = this.parseData(lines, mode, contentType);
+
+        if (!url) {
+            this.logger.error('无法解析URL');
+            return;
+        }
+
+        // 生成JavaScript代码
         let result = `import axios from 'axios';
-(async () => {
-${useCookieFormatterFunction ? cookieFormatterFunction : ''}
+`;
+
+        // 如果是form-urlencoded，需要导入URLSearchParams
+        if (contentType === 'application/x-www-form-urlencoded') {
+            result += `// 注意：此请求使用application/x-www-form-urlencoded格式\n`;
+        }
+
+        result += `(async () => {
     try {
         const res = await axios({
             method: '${method}',
-            url: '${url}',
-            headers: ${prettier.format(JSON.stringify(headers), { parser: 'json' })},
-            data: ${data},
+            url: '${url}',`;
+
+        if (Object.keys(headers).length > 0) {
+            result += `
+            headers: ${prettier.format(JSON.stringify(headers), { parser: 'json' })},`;
+        }
+
+        if (data) {
+            result += `
+            data: ${data},`;
+        }
+
+        result += `
         });
         console.log(res.data);
     } catch(e) {
         console.log(e.message);
     }
 })()`;
+
         clipboardy.writeSync(result);
         this.logger.success('生成成功');
-    }
-    private getCurl(log = console.log) {
-        return function (config: InternalAxiosRequestConfig) {
-            const { headers } = config;
-            const curl = `curl '${config.baseURL || ''}${config.url}' \
-    -H 'accept: ${headers.Accept}' \
-    -H 'content-type: application/json' \
-    -H 'token: ${headers.token}' \
-    --data-raw '${JSON.stringify(config.data)}'`;
-            log(curl);
-            return config;
-        };
     }
 }
