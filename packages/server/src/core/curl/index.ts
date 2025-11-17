@@ -146,4 +146,19 @@ export default class CurlCommand extends BaseCommand {
         clipboardy.writeSync(output);
         this.logger.success('生成成功');
     }
+    isCurl(curl: string): boolean {
+        return curl.trim().startsWith('curl');
+    }
+    getCookieFromCurl(curl: string): string {
+        const lines = curl.split('\n');
+        const urlLine = lines.find((line) => {
+            return line.trim().startsWith('curl');
+        });
+        if (!urlLine) {
+            this.logger.error('可能剪贴板里的不是curl代码，退出进程');
+            process.exit(0);
+        }
+        const parser = CurlParserFactory.createParser(CurlParserFactory.detectCurlMode(curl), this.options);
+        return parser.getCookieFromCurl(curl);
+    }
 }

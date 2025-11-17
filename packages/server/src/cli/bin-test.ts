@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import curl from './commands/curl';
+import cookie from './commands/cookie';
 
 // 创建命令行程序
 const program = new Command();
@@ -23,6 +24,14 @@ program.hook('preAction', (thisCommand) => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
+program
+    .command('cookie [text]')
+    .option('--type <type>', '转换的类型')
+    .option('--copy', '复制结果')
+    .action((data, options) => {
+        cookie(data, options);
+    });
+
 program
     .command('curl')
     .option('--extra <extra>', '额外的参数')

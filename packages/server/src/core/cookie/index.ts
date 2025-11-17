@@ -1,6 +1,7 @@
 import clipboardy from 'clipboardy';
 import { format } from 'prettier';
 import BaseCommand from '../BaseCommand';
+import CurlCommand from '../curl';
 
 /**
  * Cookie 解析选项接口
@@ -34,7 +35,14 @@ export default class extends BaseCommand {
      * @returns {Promise<void>}
      */
     async main(data: string, options: Options): Promise<void> {
-        const realData = data === '' ? clipboardy.readSync() : data;
+        const curlUtil = new CurlCommand();
+        let realData = '';
+        const clipboardData = clipboardy.readSync();
+        if (curlUtil.isCurl(clipboardData)) {
+            realData = curlUtil.getCookieFromCurl(clipboardData);
+        } else {
+            realData = data === '' ? clipboardData : data;
+        }
         const objs = this.parseCookie(realData);
         let result = options.type === 'key' ? Object.keys(objs) : objs;
         console.log(result);
