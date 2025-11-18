@@ -13,6 +13,7 @@ export function fmtCommitMsg(commit: string): string {
     const prefixes: {
         value: string;
         key?: string | string[];
+        replaceFunction?: (commit: string) => string;
     }[] = [
         {
             value: 'feat',
@@ -32,6 +33,7 @@ export function fmtCommitMsg(commit: string): string {
         {
             value: 'refactor',
             key: '重构',
+            replaceFunction: (commit) => commit.replace(/^重构[,|，]/, ''),
         },
         {
             value: 'test',
@@ -53,6 +55,9 @@ export function fmtCommitMsg(commit: string): string {
     });
     if (!match2) {
         return `feat:${commit}`;
+    }
+    if (match2.replaceFunction) {
+        commit = `${match2.replaceFunction(commit)}`;
     }
     return `${match2.value}:${commit}`;
 }
