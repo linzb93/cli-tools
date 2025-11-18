@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import { resolve, join, basename, dirname } from 'node:path';
 import chalk from 'chalk';
+import dayjs from 'dayjs';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
 import { sleep } from '@linzb93/utils';
@@ -61,7 +62,12 @@ export default class SassCommand extends BaseCommand {
      */
     async compileChangedFiles(): Promise<void> {
         const { stdout: files } = await execa('git diff --name-only');
-        for (const file of files.split('\n').filter((item) => item.endsWith('.scss'))) {
+        const list = files.split('\n').filter((item) => item.endsWith('.scss'));
+        if (!list.length) {
+            return;
+        }
+        this.logger.info(`编译已变更的scss文件：${list.join(', ')}`);
+        for (const file of list) {
             await this.handleFileChange(file);
         }
     }
@@ -101,9 +107,13 @@ export default class SassCommand extends BaseCommand {
         this.watcher.on('all', (event, fileParam) => {
             const file = fileParam.replace(/\\/g, '/');
             if (event === 'change') {
-                this.logger.info(`文件${chalk.cyan(file)}发生修改`);
+                this.logger.info(
+                    `${chalk.blue(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}文件${chalk.cyan(file)}发生修改`
+                );
             } else if (event === 'unlink') {
-                this.logger.info(`文件${chalk.cyan(file)}被移除`);
+                this.logger.info(
+                    `${chalk.blue(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}文件${chalk.cyan(file)}被移除`
+                );
             }
         });
     }

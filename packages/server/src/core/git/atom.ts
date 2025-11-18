@@ -6,7 +6,8 @@ import inquirer from '@/utils/inquirer';
  * @param {string} commit - 原始提交信息
  * @returns {string} 格式化后的提交信息
  */
-export function fmtCommitMsg(commit: string): string {
+export function fmtCommitMsg(rawCommit: string): string {
+    let commit = rawCommit.trim().replace(/\s+/g, '-');
     if (!commit) {
         return 'feat:update';
     }

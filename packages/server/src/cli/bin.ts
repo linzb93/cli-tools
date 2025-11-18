@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import globalPkg from '../../../../package.json';
+import init from '@/core/init';
+import { generateHelpDoc } from '@/utils/helper';
 import ip from './commands/ip';
 import ai from './commands/ai';
 import eng from './commands/eng';
@@ -20,16 +23,13 @@ import token from './commands/token';
 import tree from './commands/tree';
 import test from './commands/test';
 import git from './commands/git';
-import npm from './commands/npm';
+// import npm from './commands/npm';
 import analyse from './commands/analyse';
 import time from './commands/time';
 import repl from './commands/repl';
 import vue from './commands/vue';
 import server from './commands/server';
 import sass from './commands/sass';
-import globalPkg from '../../../../package.json';
-import init from '@/core/init';
-import { generateHelpDoc } from '@/utils/helper';
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -147,16 +147,16 @@ program.command('lixi').action(() => {
 //     mock(action, options);
 //   });
 
-program
-    .command('npm [sub-command] [rest...]')
-    .option('-D, --dev', '安装到devDependencies')
-    .option('-g, --global', '全局操作')
-    .option('-f, --full', '完整版')
-    .option('--open', '打开页面')
-    .option('--cjs', '安装commonjs类型的')
-    .action((subCommand: string, rest, cmd) => {
-        npm(subCommand, rest, cmd);
-    });
+// program
+//     .command('npm [sub-command] [rest...]')
+//     .option('-D, --dev', '安装到devDependencies')
+//     .option('-g, --global', '全局操作')
+//     .option('-f, --full', '完整版')
+//     .option('--open', '打开页面')
+//     .option('--cjs', '安装commonjs类型的')
+//     .action((subCommand: string, rest, cmd) => {
+//         npm(subCommand, rest, cmd);
+//     });
 
 program
     .command('occ [data...]')
