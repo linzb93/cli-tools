@@ -91,8 +91,8 @@ async function handleConflict() {
 function commit(message: string): CommandConfig {
     return {
         message: `git commit -m ${fmtCommitMsg(message)}`,
-        onError: () => {
-            // handleConflict();
+        onError: async () => {
+            // await handleConflict();
             return {
                 shouldStop: true,
             };
@@ -108,9 +108,9 @@ function pull(): CommandConfig {
     return {
         message: 'git pull',
         retryTimes: 100,
-        onError: (errMsg) => {
+        onError: async (errMsg) => {
             if (errMsg.includes('You have unstaged changes')) {
-                executeCommands(['git add .', 'git commit -m feat:update', this.pull()]);
+                await executeCommands(['git add .', 'git commit -m feat:update', this.pull()]);
                 return {
                     shouldStop: true,
                 };
@@ -130,8 +130,8 @@ function pull(): CommandConfig {
 function merge(branch: string): CommandConfig {
     return {
         message: `git merge ${branch}`,
-        onError: () => {
-            handleConflict();
+        onError: async () => {
+            await handleConflict();
             return {
                 shouldStop: true,
             };

@@ -47,7 +47,7 @@ export default class TagSync extends BaseCommand {
     private fetchTags(): CommandConfig {
         return {
             message: 'git fetch --tags',
-            onError: (message) => {
+            onError: async (message) => {
                 console.error(`拉取远程标签失败: ${message}`);
                 return {
                     shouldStop: true,

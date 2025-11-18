@@ -120,7 +120,7 @@ export default class extends BaseCommand {
                 // 推送标签到远程仓库
                 {
                     message: `git push origin ${newTag}`,
-                    onError: (message) => {
+                    onError: async (message) => {
                         if (message.includes('not found')) {
                             console.warn(`远程仓库不存在标签: ${newTag}`);
                         }

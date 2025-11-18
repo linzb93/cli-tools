@@ -46,13 +46,13 @@ export interface CommandConfig {
      * @param {string} error - 错误信息
      * @returns { { shouldStop?: boolean }} 返回对象中的shouldStop为true时停止执行
      */
-    onError?: (error: string) => {
+    onError?: (error: string) => Promise<{
         /**
          * 是否停止执行后续命令
          * @default false
          */
         shouldStop?: boolean;
-    };
+    }>;
 }
 
 export type Command = string | CommandConfig;
@@ -105,7 +105,7 @@ async function executeCommand(config: CommandConfig): Promise<void> {
                 const errorMessage = error instanceof Error ? error.message : String(error);
 
                 if (config.onError) {
-                    const result = config.onError(errorMessage);
+                    const result = await config.onError(errorMessage);
                     if (result && typeof result === 'object' && result.shouldStop) {
                         throw new StopExecutionError(errorMessage);
                     }
