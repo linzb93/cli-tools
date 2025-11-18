@@ -11,27 +11,35 @@ export default class extends BaseCommand {
     constructor() {
         super();
     }
-    main(text: string, options: Options) {
-        let ret = convert.hex.rgb(text).join(', ');
-        let blockColor = `#${text}`;
-        if (text.startsWith('#')) {
-            blockColor = text;
-            text = text.slice(1);
-            ret = convert.hex.rgb(text).join(', ');
-        } else if (text.includes(',')) {
-            text = text.replace(/\s/g, '');
-            const colorNumberList = text.split(',').map((item) => Number(item)) as [number, number, number];
-            ret = `#${convert.rgb.hex(colorNumberList)}`;
-            blockColor = ret;
-        }
+    main(input: string, options: Options) {
+        const { output, blockColor } = this.getColorInfo(input);
         if (options.get) {
             this.logger.success(`${chalk.hex(blockColor).bold('示例文字')}`);
             return;
         }
-        if (process.env.VITEST) {
-            return ret;
+        this.logger.success(`${chalk.green('[已复制]')}${chalk.hex(blockColor).bold(output)}`);
+        clipboard.writeSync(output);
+    }
+    getTranslatedColor(input: string) {
+        const { output } = this.getColorInfo(input);
+        return output;
+    }
+    private getColorInfo(input: string) {
+        let ret = convert.hex.rgb(input).join(', ');
+        let blockColor = `#${input}`;
+        if (input.startsWith('#')) {
+            blockColor = input;
+            input = input.slice(1);
+            ret = convert.hex.rgb(input).join(', ');
+        } else if (input.includes(',')) {
+            input = input.replace(/\s/g, '');
+            const colorNumberList = input.split(',').map((item) => Number(item)) as [number, number, number];
+            ret = `#${convert.rgb.hex(colorNumberList)}`;
+            blockColor = ret;
         }
-        this.logger.success(`${chalk.green('[已复制]')}${chalk.hex(blockColor).bold(ret)}`);
-        clipboard.writeSync(ret);
+        return {
+            output: ret,
+            blockColor,
+        };
     }
 }
