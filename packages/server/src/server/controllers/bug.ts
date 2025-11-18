@@ -3,10 +3,11 @@ import axios from 'axios';
 import sql from '@/utils/sql';
 import dayjs from 'dayjs';
 import pMap from 'p-map';
-import chalk from 'chalk';
 import Table from 'cli-table3';
 import { readSecret } from '@/utils/secret';
 import response from '../shared/response';
+import { log } from '../shared/log';
+import { omit } from 'lodash-es';
 const router = Router();
 
 router.post('/getApps', (req, res) => {
@@ -20,11 +21,24 @@ router.post('/getApps', (req, res) => {
             res.status(500).send(err);
         });
 });
-router.post('/getInitialApps', (req, res) => {
-    sql((db) => db.monitorInitialSiteIds)
+router.post('/getCached', (req, res) => {
+    sql((db) => db.monitorResultCache)
         .then((result) => {
+            sql((db) => (db.monitorResultCache = []));
             response(res, {
                 list: result,
+            });
+        })
+        .catch((err) => {
+            sql((db) => (db.monitorResultCache = []));
+            res.status(500).send(err);
+        });
+});
+router.post('/init', (req, res) => {
+    sql((db) => db.monitorResultCache)
+        .then((result) => {
+            response(res, {
+                inited: result && !!result.length,
             });
         })
         .catch((err) => {
@@ -53,6 +67,7 @@ export const bugCallback = async () => {
     } else {
         lastDate = dayjs().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
     }
+    const title = `${lastDate.split(' ')[0]} 至 ${dayjs().format('YYYY-MM-DD')} 错误统计`;
     const resList = await pMap(
         list,
         async (item) => {
@@ -72,26 +87,24 @@ export const bugCallback = async () => {
                 name: item.name,
                 errorTotal: res.data.result.totalCount,
                 emphasizeTotal: res.data.result.list.filter((item) => !item.content.startsWith('Loading chunk')).length,
+                list: res.data.result.list,
             };
         },
         { concurrency: 5 }
     );
     const table = new Table({
-        head: ['应用名称', chalk.yellow('错误总数'), chalk.red('重点错误数')],
+        head: ['应用名称', '错误总数', '重点错误数'],
         colAligns: ['center', 'center', 'center'],
     });
-    const filteredList = resList.filter((item) => item.errorTotal > 0 && item.emphasizeTotal > 0);
     table.push(
         ...resList
             .filter((item) => item.errorTotal > 0)
-            .map((item) => [
-                item.name,
-                chalk.yellow(item.errorTotal),
-                item.emphasizeTotal ? chalk.red(item.emphasizeTotal) : '-',
-            ])
+            .map((item) => [item.name, item.errorTotal, item.emphasizeTotal > 0 ? item.emphasizeTotal : '-'])
     );
-    console.log(table.toString());
+    log(`\n${title}\n${table.toString()}`);
     await sql((db) => {
-        db.monitorInitialSiteIds = filteredList.map((item) => item.siteId);
+        db.monitorResultCache = resList
+            .filter((item) => item.errorTotal > 0)
+            .map((item) => omit(item, ['errorTotal', 'emphasizeTotal']));
     });
 };

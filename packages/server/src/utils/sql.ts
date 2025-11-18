@@ -53,7 +53,7 @@ export interface Database {
          */
         name: string;
     }[];
-    monitorInitialSiteIds: string[];
+    monitorResultCache: any[];
     yapi: {
         /**
          * yapi token

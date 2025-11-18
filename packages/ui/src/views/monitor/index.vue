@@ -44,7 +44,7 @@
       <el-button type="primary" @click="generate">生成</el-button>
     </el-form>
     <div>
-      <div v-for="panel in panels" :key="panel.id" class="panel-wrap mt30">
+      <div v-for="panel in panels" :key="panel.siteId" class="panel-wrap mt30">
         <h2>{{ panel.title }}</h2>
         <el-table :data="panel.data" class="mt20">
           <el-table-column label="错误信息">
@@ -80,12 +80,14 @@ import { reactive, shallowRef, shallowReactive, ref, onMounted, computed } from 
 import dayjs from 'dayjs'
 import { pick } from 'lodash-es'
 import pMap from 'p-map'
-import { ElMessage } from 'element-plus'
+import { ElMessage, type DatePickerInstance } from 'element-plus'
 import request from '@/helpers/request'
 import { service } from './utils'
 import Qa from '@/components/Qa.vue'
 import AppManage from './components/AppManage.vue'
 import CodeBeautify from './components/CodeBeautify.vue'
+import { type Application, type PanelItem, type ErrorItem, type ErrorDetailItem } from './types'
+
 const visible = shallowReactive({
   apps: false,
   code: false
@@ -95,10 +97,28 @@ const getSelectedApps = async () => {
   const data = await request('bug/getApps')
   apps.value = data.list
 }
+
 onMounted(async () => {
-  await getSelectedApps()
-  const initialApps = await request('bug/getInitialApps')
-  form.selected = initialApps.list
+  getSelectedApps()
+  const { inited } = await request('bug/init')
+  if (inited) {
+    form.selected = apps.value.map((item) => item.siteId)
+    const result = (await request('bug/getCached')) as {
+      list: {
+        siteId: string
+        name: string
+        list: ErrorItem[]
+      }[]
+    }
+    panels.value = (result.list || []).map((sub) => {
+      return {
+        id: sub.siteId,
+        siteId: sub.siteId,
+        title: sub.name,
+        data: sub.list
+      }
+    })
+  }
 })
 
 const resetSelectedApps = () => {
@@ -106,13 +126,19 @@ const resetSelectedApps = () => {
   getSelectedApps()
 }
 
-const apps = ref([])
-const form = reactive({
+const apps = ref<Application[]>([])
+const form = reactive<{
+  selected: string[]
+  dateValue: number
+  beginDate: string
+  endDate: string
+  range: [string, string]
+}>({
   selected: [],
   dateValue: 0,
   beginDate: dayjs().format('YYYY-MM-DD'),
   endDate: dayjs().format('YYYY-MM-DD'),
-  range: []
+  range: [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
 })
 
 const dateRange = computed(() => {
@@ -122,12 +148,12 @@ const dateRange = computed(() => {
   return `${form.beginDate}~${form.endDate}`
 })
 
-const customerDatePicker = ref(null)
-const radioChange = (value) => {
+const customerDatePicker = ref<DatePickerInstance>()
+const radioChange = (value: number) => {
   if (value === 3) {
-    customerDatePicker.value.focus()
+    customerDatePicker.value?.focus()
   } else {
-    typeof customerDatePicker.value.blur === 'function' && customerDatePicker.value.blur()
+    typeof customerDatePicker.value?.blur === 'function' && customerDatePicker.value.blur()
     const map = [
       [0, 0],
       [1, 1],
@@ -153,7 +179,7 @@ const selectAll = () => {
   }
 }
 
-const panels = ref([])
+const panels = ref<PanelItem[]>([])
 const generate = async () => {
   if (!form.selected.length) {
     ElMessage.error('请至少选择一个应用')
@@ -164,7 +190,12 @@ const generate = async () => {
       siteId,
       title: getAppName(siteId),
       action: () =>
-        service.post('/data/analysis/jsErrorCount', {
+        service.post<
+          any,
+          {
+            list: ErrorItem[]
+          }
+        >('/data/analysis/jsErrorCount', {
           beginTime: `${form.beginDate} 00:00:00`,
           endTime: `${form.endDate} 23:59:59`,
           orderKey: 'errorCount',
@@ -187,11 +218,11 @@ const generate = async () => {
   })
   panels.value = data
 }
-const getAppName = (id) => {
+const getAppName = (id: string) => {
   const match = apps.value.find((item) => item.siteId === id)
   return match ? match.name : ''
 }
-const renderContentColor = (row) => {
+const renderContentColor = (row: ErrorItem) => {
   const { content } = row
   if (content.startsWith('Cannot read properties of undefined')) {
     return '#F56C6C'
@@ -202,8 +233,13 @@ const renderContentColor = (row) => {
   return ''
 }
 const targetPath = shallowRef('')
-const focusError = async (row, siteId) => {
-  const res = await service.post('/data/analysis/getVisitInfo', {
+const focusError = async (row: ErrorItem, siteId: string) => {
+  const res = await service.post<
+    any,
+    {
+      list: ErrorDetailItem[]
+    }
+  >('/data/analysis/getVisitInfo', {
     ...pick(row, ['content', 'url']),
     beginTime: `${form.beginDate} 00:00:00`,
     endTime: `${form.endDate} 23:59:59`,
@@ -212,6 +248,10 @@ const focusError = async (row, siteId) => {
     siteId,
     type: ['eventError', 'consoleError']
   })
+  if (!res.list.length) {
+    ElMessage.error('该错误无法定位信息')
+    return
+  }
   const target = res.list[0]
   const { errorMsg } = target
   const match = errorMsg.match(/(http.+\.js\:\d+\:\d+)/)

@@ -29,20 +29,26 @@ agentCallback(app);
 
 // 为所有 Vue 项目设置静态资源访问路径
 (async () => {
-    const vueProjects = await sql((db) => db.vue);
-    const validProjects = vueProjects.filter((project) => project.publicPath && project.publicPath.trim() !== '');
-    for (let i = 0; i < validProjects.length; i++) {
-        const project = validProjects[i];
-        const staticPath = join(project.path, 'dist');
-        log(`vue静态资源已挂载: ${project.publicPath} -> ${staticPath}`);
-        app.use(project.publicPath, express.static(staticPath));
-    }
-    await bugCallback();
-})();
-
-app.listen(config.port.production, () => {
-    run();
-    process.send?.({
-        type: 'server-start',
+    await Promise.all([
+        new Promise(async (resolve) => {
+            const vueProjects = await sql((db) => db.vue);
+            const validProjects = vueProjects.filter(
+                (project) => project.publicPath && project.publicPath.trim() !== ''
+            );
+            for (let i = 0; i < validProjects.length; i++) {
+                const project = validProjects[i];
+                const staticPath = join(project.path, 'dist');
+                log(`vue静态资源已挂载: ${project.publicPath} -> ${staticPath}`);
+                app.use(project.publicPath, express.static(staticPath));
+            }
+            resolve(null);
+        }),
+        bugCallback(),
+    ]);
+    app.listen(config.port.production, () => {
+        run();
+        process.send?.({
+            type: 'server-start',
+        });
     });
-});
+})();
