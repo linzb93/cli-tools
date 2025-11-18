@@ -19,10 +19,12 @@ import { ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import request from '@/helpers/request'
 import { service } from '../utils'
-const props = defineProps({
-  visible: Boolean
+
+const visible = defineModel('visible', {
+  type: Boolean,
+  default: false
 })
-const emit = defineEmits(['update:visible', 'confirm'])
+const emit = defineEmits(['confirm'])
 
 interface Item {
   siteId: string
@@ -32,8 +34,8 @@ interface Item {
 
 const list = ref<Item[]>([])
 const selected = ref<Item[]>([])
-watch(props, async ({ visible }) => {
-  if (!visible || list.value.length) {
+watch(visible, async (vis) => {
+  if (!vis || list.value.length) {
     return
   }
   const [siteRes, selectedRes] = await Promise.all([
@@ -67,7 +69,7 @@ const save = async () => {
   })
 }
 const close = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 const closed = () => {}
 </script>

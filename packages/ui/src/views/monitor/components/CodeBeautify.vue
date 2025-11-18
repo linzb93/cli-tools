@@ -18,11 +18,14 @@
 import { shallowRef, watch, reactive, computed } from 'vue'
 import request from '@/helpers/request'
 const props = defineProps({
-  visible: Boolean,
   path: String
 })
 const emit = defineEmits(['update:visible'])
 
+const visible = defineModel('visible', {
+  type: Boolean,
+  default: false
+})
 const includeRange = shallowRef(false)
 const loaded = shallowRef(false)
 const code = reactive({
@@ -31,13 +34,14 @@ const code = reactive({
   emphasize: '',
   next: ''
 })
-watch(props, async ({ visible, path }) => {
-  if (!visible) {
+watch(visible, async (vis) => {
+  if (!vis) {
     return
   }
   let row = 0
   let column = 0
   // 将定位从文件地址中分离出来
+  const { path } = props
   const realPath = path
     ? path.replace(/\:\d+\:\d+/, (match) => {
         const seg = match.split(':')
@@ -80,7 +84,7 @@ watch(props, async ({ visible, path }) => {
   )
 })
 
-const close = () => emit('update:visible')
+const close = () => (visible.value = false)
 // 关闭后初始化
 const closed = () => {
   code.pre = ''
