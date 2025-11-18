@@ -52,7 +52,8 @@ export default abstract class {
             return url;
         }
         const { hash } = new URL(url);
-        const fullToken = hash.replace('#/login?code=', ''); // 不用node:querystring解析是因为有两段url query。
+        const params = new URLSearchParams(hash);
+        const fullToken = params.get('code') || ''; // 不用node:querystring解析是因为有两段url query。
         return fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
     }
     async run(keyword: string, options: Options) {
