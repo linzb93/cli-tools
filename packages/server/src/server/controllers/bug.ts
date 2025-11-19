@@ -10,7 +10,7 @@ import { log } from '../shared/log';
 import { omit } from 'lodash-es';
 const router = Router();
 
-router.post('/getApps', (req, res) => {
+router.post('/getApps', (_, res) => {
     sql((db) => db.monitor)
         .then((result) => {
             response(res, {
@@ -21,7 +21,7 @@ router.post('/getApps', (req, res) => {
             res.status(500).send(err);
         });
 });
-router.post('/getCached', (req, res) => {
+router.post('/getCached', (_, res) => {
     sql((db) => db.monitorResultCache)
         .then((result) => {
             sql((db) => (db.monitorResultCache = []));
@@ -34,7 +34,7 @@ router.post('/getCached', (req, res) => {
             res.status(500).send(err);
         });
 });
-router.post('/init', (req, res) => {
+router.post('/init', (_, res) => {
     sql((db) => db.monitorResultCache)
         .then((result) => {
             response(res, {

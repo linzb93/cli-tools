@@ -5,7 +5,7 @@ import sql from '@/utils/sql';
 import response from '../shared/response';
 const router = Router();
 
-router.post('/list', (req, res) => {
+router.post('/list', (_, res) => {
     sql((db) => db.agent).then((list) => {
         response(res, list);
     });
