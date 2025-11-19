@@ -1,6 +1,6 @@
 # cookie
 
-解析 Http header 中的 cookie 信息的命令。
+解析 Http header 中的 cookie 信息的命令。支持输入 cookie 字符串，或者从剪贴板读取。剪贴板可以是 curl 格式的字符串。
 
 ## 使用方法
 
