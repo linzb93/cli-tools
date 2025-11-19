@@ -26,7 +26,7 @@ export default defineConfig({
         {
           name: 'element-plus',
           var: 'ElementPlus',
-          path: 'https://cdn.bootcdn.net/ajax/libs/element-plus/{version}/index.full.min.js'
+          path: 'https://cdn.bootcdn.net/ajax/libs/element-plus/2.11.4/index.full.min.js'
         }
       ]
     }),
