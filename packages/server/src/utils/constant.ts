@@ -63,6 +63,13 @@ export const HTTP_STATUS = {
      */
     BUSINESSERROR: 7000,
 };
+
+export const levelCharacters = {
+    border: '|',
+    contain: '├',
+    line: '─',
+    last: '└',
+};
 /**
  * cli项目根目录
  */

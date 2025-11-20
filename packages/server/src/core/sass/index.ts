@@ -43,7 +43,7 @@ export default class SassCommand extends BaseCommand {
         });
 
         process.on('SIGINT', () => {
-            console.log(chalk.yellow('关闭进程'));
+            console.log(chalk.yellow('sass自动编译进程已关闭'));
             process.exit(1);
         });
     }
@@ -66,7 +66,7 @@ export default class SassCommand extends BaseCommand {
         if (!list.length) {
             return;
         }
-        this.logger.info(`编译已变更的scss文件：${list.join(', ')}`);
+        this.logger.info(`编译已变更的scss文件：\n${list.map((item) => chalk.cyan(item)).join('\n')}`);
         for (const file of list) {
             await this.handleFileChange(file);
         }
@@ -105,15 +105,11 @@ export default class SassCommand extends BaseCommand {
         if (!this.watcher) return;
 
         this.watcher.on('all', (event, fileParam) => {
-            const file = fileParam.replace(/\\/g, '/');
+            const file = fileParam.replace(process.cwd(), '').replace(/\\/g, '/');
             if (event === 'change') {
-                this.logger.info(
-                    `${chalk.blue(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}文件${chalk.cyan(file)}发生修改`
-                );
+                this.logger.info(`${chalk.blue(`[${dayjs().format('HH:mm:ss')}]`)}文件${chalk.cyan(file)}发生修改`);
             } else if (event === 'unlink') {
-                this.logger.info(
-                    `${chalk.blue(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)}文件${chalk.cyan(file)}被移除`
-                );
+                this.logger.warn(`${chalk.blue(`[${dayjs().format('HH:mm:ss')}]`)}文件${chalk.cyan(file)}被移除`);
             }
         });
     }

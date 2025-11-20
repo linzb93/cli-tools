@@ -8,10 +8,31 @@ export interface Options {
 }
 
 export default class extends BaseCommand {
+    private colorMap = {
+        red: '#ff0000',
+        yellow: '#ffff00',
+        orange: '#ffa500',
+        blue: '#0000ff',
+        lightBlue: '#add8e6',
+        green: '#008000',
+        lightGreen: '#90ee90',
+        cyan: '#00ffff',
+        magenta: '#ff00ff',
+        white: '#ffffff',
+        black: '#000000',
+        pink: '#ffc0cb',
+        purple: '#800080',
+    };
     constructor() {
         super();
     }
     main(input: string, options: Options) {
+        if (this.colorMap[input]) {
+            const output = this.colorMap[input];
+            this.logger.success(`${chalk.green('[已复制]')}${chalk.hex(output).bold(output)}`);
+            clipboard.writeSync(output);
+            return;
+        }
         const { output, blockColor } = this.getColorInfo(input);
         if (options.get) {
             this.logger.success(`${chalk.hex(blockColor).bold('示例文字')}`);

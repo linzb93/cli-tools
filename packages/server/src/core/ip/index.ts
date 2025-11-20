@@ -11,7 +11,7 @@ import { defaultBrowserHeaders } from '@/utils/helper';
 
 export default class extends BaseCommand {
     async main(data?: string[]) {
-        if (data[0].match(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/)) {
+        if (data[0] && data[0].match(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/)) {
             this.getIpLocation(data[0]);
             return;
         }
@@ -21,9 +21,9 @@ export default class extends BaseCommand {
         }
         this.spinner.text = '正在获取IP';
         const [iIp, pIp] = await Promise.all([internalIp.v4(), publicIp.v4()]);
-        this.spinner.succeed(`内网IP: ${chalk.cyan(iIp)}
-  公网IP: ${chalk.cyan(pIp)}`);
-        // ipv6就不要了，时间很久，不知道能不能获取。
+        this.spinner.succeed(`内网IP: ${chalk.hex('#ffa500')(iIp)}
+  公网IP: ${chalk.hex('#ffa500')(pIp)}`);
+        // 公网ipv6就不要了，时间很久，不知道能不能获取。内网的没有ipv6。
     }
     /**
      * 获取IP归属地
@@ -53,7 +53,7 @@ export default class extends BaseCommand {
             })
             .toArray();
         if (!output[1]) {
-            this.logger.info('无搜索结果');
+            this.spinner.fail('无搜索结果');
             return;
         }
         const table = new Table();

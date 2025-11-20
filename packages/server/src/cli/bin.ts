@@ -64,6 +64,13 @@ program
     .action((subCommand, rest, options) => {
         ai(subCommand, rest, options);
     });
+
+program
+    .command('analyse [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        analyse(subCommand, rest, options);
+    });
 // program
 //     .command('cg [action] [...rest]')
 //     .option('--realtime', '实时更新')
@@ -78,13 +85,6 @@ program
     .option('-r, --root', '清理根目录下的')
     .action((filename, options) => {
         clear(filename, options);
-    });
-
-program
-    .command('analyse [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        analyse(subCommand, rest, options);
     });
 
 program

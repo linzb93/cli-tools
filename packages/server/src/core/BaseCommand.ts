@@ -8,8 +8,8 @@ export default abstract class {
     protected logger: Logger;
     protected spinner: Spinner;
     protected inquirer: typeof inquirer;
-    protected sql: (callback: (data: Database) => any) => Promise<any>;
-    protected readSecret: (callback: (data: any) => any) => Promise<any>;
+    protected sql: <T = any>(callback: (data: Database) => T) => Promise<T>;
+    protected readSecret: <T = any>(callback: (data: any) => T) => Promise<T>;
     constructor() {
         this.logger = new Logger();
         this.spinner = spinner;

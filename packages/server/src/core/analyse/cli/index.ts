@@ -2,15 +2,8 @@ import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import BaseCommand from '../../BaseCommand';
-import { cacheRoot } from '@/utils/constant';
+import { cacheRoot, levelCharacters } from '@/utils/constant';
 import { splitByLine } from '@/utils/helper';
-
-const characters = {
-    border: '|',
-    contain: '├',
-    line: '─',
-    last: '└',
-};
 
 /**
  * CLI使用分析命令类
@@ -81,9 +74,9 @@ ${result
 ${item.children
     .map(
         (child, index) =>
-            `${index === item.children.length - 1 ? characters.last : characters.contain}${characters.line.repeat(
-                2
-            )}${chalk.yellow(child.cmd)}，使用过${chalk.cyan(child.count)}次`
+            `${
+                index === item.children.length - 1 ? levelCharacters.last : levelCharacters.contain
+            }${levelCharacters.line.repeat(2)}${chalk.yellow(child.cmd)}，使用过${chalk.cyan(child.count)}次`
     )
     .join('\n')}`;
     })

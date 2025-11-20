@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
 import BaseCommand from '../BaseCommand';
+import { levelCharacters } from '@/utils/constant';
 export interface Options {
     /**
      * 遍历的层数，不填为遍历全部
@@ -18,12 +19,6 @@ export interface Options {
 }
 
 const defaultIgnoreDirs = ['node_modules', '.git', '.DS_Store'];
-const characters = {
-    border: '|',
-    contain: '├',
-    line: '─',
-    last: '└',
-};
 
 export default class extends BaseCommand {
     private outputList: string[];
@@ -75,18 +70,18 @@ export default class extends BaseCommand {
         for (let i = 0; i < dirs.length; i++) {
             const dir = dirs[i];
             const stat = await fs.stat(resolve(root, dir));
-            const preText = paddings.map((count) => `${characters.border} ${' '.repeat(count)}`).join('');
+            const preText = paddings.map((count) => `${levelCharacters.border} ${' '.repeat(count)}`).join('');
             const filePreText = level ? preText : '';
             if (stat.isDirectory()) {
-                this.outputList.push(`${filePreText}${characters.contain} ${dir}`);
+                this.outputList.push(`${filePreText}${levelCharacters.contain} ${dir}`);
                 if (level < this.options.level) {
                     await this.readdir(resolve(root, dir), level + 1, [...paddings, Math.ceil(dir.length / 2)]);
                 }
             } else {
                 if (i === dirs.length - 1) {
-                    this.outputList.push(`${filePreText}${characters.last} ${dir}`);
+                    this.outputList.push(`${filePreText}${levelCharacters.last} ${dir}`);
                 } else {
-                    this.outputList.push(`${filePreText}${characters.contain} ${dir}`);
+                    this.outputList.push(`${filePreText}${levelCharacters.contain} ${dir}`);
                 }
             }
         }

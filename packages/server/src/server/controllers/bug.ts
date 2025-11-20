@@ -7,7 +7,7 @@ import Table from 'cli-table3';
 import { readSecret } from '@/utils/secret';
 import response from '../shared/response';
 import { log } from '../shared/log';
-import { omit } from 'lodash-es';
+import { omit, cloneDeep } from 'lodash-es';
 const router = Router();
 
 router.post('/getApps', (_, res) => {
@@ -22,9 +22,12 @@ router.post('/getApps', (_, res) => {
         });
 });
 router.post('/getCached', (_, res) => {
-    sql((db) => db.monitorResultCache)
+    sql((db) => {
+        const list = cloneDeep(db.monitorResultCache);
+        db.monitorResultCache = [];
+        return list;
+    })
         .then((result) => {
-            sql((db) => (db.monitorResultCache = []));
             response(res, {
                 list: result,
             });
