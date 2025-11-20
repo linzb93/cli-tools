@@ -5,6 +5,13 @@ import BaseCommand from '../../BaseCommand';
 import { cacheRoot } from '@/utils/constant';
 import { splitByLine } from '@/utils/helper';
 
+const characters = {
+    border: '|',
+    contain: '├',
+    line: '─',
+    last: '└',
+};
+
 /**
  * CLI使用分析命令类
  */
@@ -16,26 +23,71 @@ export default class extends BaseCommand {
         const fileContent = await fs.readFile(join(cacheRoot, 'track.txt'), 'utf8');
         const lines = splitByLine(fileContent);
         const errorLines = [];
-        const result = lines.reduce((acc, line) => {
-            const ret = this.parseLine(line);
-            if (!ret.cmd) {
-                errorLines.push(ret.message);
+        const result = lines.reduce<{ cmd: string; count: number; children: { cmd: string; count: number }[] }[]>(
+            (acc, line) => {
+                const ret = this.parseLine(line);
+                if (!ret.cmd) {
+                    errorLines.push(ret.message);
+                    return acc;
+                }
+                const match = acc.find((item) => item.cmd === ret.cmd);
+                if (match) {
+                    match.count += 1;
+                    const subMatch = match.children.find((item) => item.cmd === ret.subCmd);
+                    if (subMatch) {
+                        subMatch.count += 1;
+                    } else if (ret.subCmd) {
+                        match.children.push({
+                            cmd: ret.subCmd,
+                            count: 1,
+                        });
+                    }
+                } else {
+                    acc.push({
+                        cmd: ret.cmd,
+                        count: 1,
+                        children: ret.subCmd
+                            ? [
+                                  {
+                                      cmd: ret.subCmd,
+                                      count: 1,
+                                  },
+                              ]
+                            : [],
+                    });
+                }
                 return acc;
-            }
-            const match = acc.find((item) => item.cmd === ret.cmd);
-            if (match) {
-                match.count += 1;
-            } else {
-                acc.push({
-                    cmd: ret.cmd,
-                    count: 1,
-                });
-            }
-            return acc;
-        }, []);
+            },
+            []
+        );
         result.sort((prev, next) => (prev.count > next.count ? -1 : 1));
-        console.log(`近期cli使用情况如下：
-${result.map((item) => `${chalk.yellow(item.cmd)}命令，使用过${chalk.cyan(item.count)}次`).join('\n')}`);
+        result.forEach((item) => {
+            if (!item.children) {
+                return;
+            }
+            item.children.sort((prev, next) => (prev.count > next.count ? -1 : 1));
+        });
+        const firstItem = this.parseLine(lines[0]);
+        console.log(`从${chalk.magenta(firstItem.time)}开始，cli共使用${chalk.hex('#ffa500')(
+            lines.length
+        )}次。各命令使用情况如下：
+${result
+    .map((item) => {
+        const title = `${chalk.yellow(item.cmd)}命令，使用过${chalk.cyan(item.count)}次`;
+        if (!item.children || item.children.length === 0) {
+            return title;
+        }
+        return `${title}
+${item.children
+    .map(
+        (child, index) =>
+            `${index === item.children.length - 1 ? characters.last : characters.contain}${characters.line.repeat(
+                2
+            )}${chalk.yellow(child.cmd)}，使用过${chalk.cyan(child.count)}次`
+    )
+    .join('\n')}`;
+    })
+    .join('\n')}`);
     }
 
     /**
@@ -45,13 +97,15 @@ ${result.map((item) => `${chalk.yellow(item.cmd)}命令，使用过${chalk.cyan(
      */
     private parseLine(line: string) {
         const timeMatch = line.match(/\[(.+)\]/);
-        const time = timeMatch ? timeMatch[0] : '';
-        const cmdMatch = line.match(/\s([a-z]+)/);
-        const cmd = cmdMatch ? cmdMatch[0] : '';
+        const time = timeMatch ? timeMatch[1] : '';
+        const cmdMatch = line.match(/\s([a-z]+)\s([a-z]*)/);
+        const cmd = cmdMatch ? cmdMatch[1] : '';
+        const subCmd = ['git', 'npm', 'ai'].includes(cmd) && cmdMatch ? cmdMatch[2] : '';
         return {
             time,
             cmd,
             message: !cmd ? line : '',
+            subCmd,
         };
     }
 }
