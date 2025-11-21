@@ -42,11 +42,6 @@ export interface DeployOptions {
      * @default false
      */
     current?: boolean;
-    /**
-     * 是否复制提交消息到剪贴板
-     * @default false
-     */
-    msg?: boolean;
 }
 
 /**
