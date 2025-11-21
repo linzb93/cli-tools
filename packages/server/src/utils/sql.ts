@@ -100,14 +100,14 @@ export interface Database {
  * @param callback 回调函数
  * @returns 回调函数返回值
  */
-export default async function sql<T>(callback: (data: Database) => T): Promise<T> {
+export default async function sql<T>(callback: (data: Database, db?: Low<unknown>) => T): Promise<T> {
     const dbPath = join(cacheRoot, 'app.json');
     const db = new Low(new JSONFile(dbPath));
     await db.read();
     const data = db.data as unknown as Database;
     let result: any;
     if (typeof callback === 'function') {
-        result = await callback(data);
+        result = await callback(data, db);
     }
     if (result === null || result === undefined) {
         await db.write();

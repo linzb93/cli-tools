@@ -21,12 +21,12 @@ export default defineConfig({
         {
           name: 'vue',
           var: 'Vue',
-          path: 'https://cdn.bootcdn.net/ajax/libs/vue/{version}/vue.global.prod.min.js'
+          path: 'https://unpkg.com/vue@{version}/dist/vue.global.js'
         },
         {
           name: 'element-plus',
           var: 'ElementPlus',
-          path: 'https://cdn.bootcdn.net/ajax/libs/element-plus/2.11.4/index.full.min.js'
+          path: 'https://unpkg.com/element-plus@{version}/dist/index.full.min.js'
         }
       ]
     }),

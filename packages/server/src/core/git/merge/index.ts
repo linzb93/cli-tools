@@ -45,7 +45,9 @@ export default class extends BaseCommand {
             message: `请输入合并后的提交信息，默认合并以上所有提交信息`,
             name: 'commitMessage',
         });
-        const commitMessage = fmtCommitMsg(answer.commitMessage || arr.map((item) => item.message).join('\n'));
+        const commitMessage = fmtCommitMsg(
+            answer.commitMessage || arr.map((item) => item.message.replace(/\w+\:/g, '')).join('\n')
+        );
         await execa(`git reset --soft HEAD~${head}`);
         await execa('git add .');
         await execa(gitAtom.commit(commitMessage).message);

@@ -11,7 +11,7 @@ import { defaultBrowserHeaders } from '@/utils/helper';
 
 export default class extends BaseCommand {
     async main(data?: string[]) {
-        if (data[0] && data[0].match(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/)) {
+        if (data[0] && data[0].match(/^(\d{1,3}\.){3}\d{1,3}$/)) {
             this.getIpLocation(data[0]);
             return;
         }
