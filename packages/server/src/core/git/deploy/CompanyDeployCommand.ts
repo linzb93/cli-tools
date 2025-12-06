@@ -40,11 +40,16 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleMasterBranch(): Promise<void> {
-        this.logger.warn('当前分支为master，将要发布项目');
-        await sleep(1500);
+        if (!this.options.current) {
+            this.logger.warn('当前分支为master，将要发布项目');
+            await sleep(1500);
+        }
         await this.executeBaseCommands(this.options.commit, false);
         if (!this.options.current) {
             await this.handleTagAndOutput();
+        }
+        if (this.options.open) {
+            await openDeployPage(this.options.type);
         }
     }
 

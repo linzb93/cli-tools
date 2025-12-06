@@ -141,9 +141,15 @@ export class BranchDeleteService extends BaseCommand {
                 }
                 if (pushSuccess) {
                     for (const branch of branchesWithUnpushedCommits) {
-                        await deleteBranch({
-                            branchName: branch.value,
-                        });
+                        await Promise.all([
+                            deleteBranch({
+                                branchName: branch.value,
+                            }),
+                            deleteBranch({
+                                remote: true,
+                                branchName: branch.value,
+                            }),
+                        ]);
                     }
                 }
             } else {
@@ -169,15 +175,17 @@ export class BranchDeleteService extends BaseCommand {
             if (forceDeleteAnswer.forceDelete) {
                 for (const branch of branchesWithoutUnpushedCommits) {
                     try {
-                        await deleteBranch({
-                            branchName: branch.value,
-                            force: true,
-                        });
-                        await deleteBranch({
-                            branchName: branch.value,
-                            remote: true,
-                            force: true,
-                        });
+                        await Promise.all([
+                            deleteBranch({
+                                branchName: branch.value,
+                                force: true,
+                            }),
+                            deleteBranch({
+                                branchName: branch.value,
+                                remote: true,
+                                force: true,
+                            }),
+                        ]);
                         this.logger.success(`已强制删除分支 ${branch.name}`);
                     } catch (error) {
                         this.logger.error(`强制删除分支 ${branch.name} 失败`);
