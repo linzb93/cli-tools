@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :model-value="visible" width="400px" title="错误定位" @close="close" @closed="closed">
+  <el-dialog :model-value="visible" width="500px" title="错误定位" @close="close" @closed="closed">
     <p class="mb20">错误地址：{{ detail?.url }}</p>
     <template v-if="!isMinip">
       <el-switch
@@ -54,6 +54,7 @@ watch(visible, async (vis) => {
     isMinip.value = true
     return
   }
+  isMinip.value = false
   const realPath = path
     ? path.replace(/\:\d+\:\d+/, (match) => {
         const seg = match.split(':')

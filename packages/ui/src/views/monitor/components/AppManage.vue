@@ -1,8 +1,15 @@
 <template>
   <el-dialog title="应用管理" width="400px" :model-value="visible" @close="close" @closed="closed">
+    <el-input
+      v-model="keyword"
+      placeholder="请输入应用名称"
+      clearable
+      class="mb20"
+      @keypress.stop.prevent.enter="doFilterList"
+    />
     <div class="app-list">
       <el-checkbox-group v-model="selected">
-        <div v-for="app in list" :key="app.siteId">
+        <div v-for="app in filterList" :key="app.siteId">
           <el-checkbox :value="app">{{ app.name }}</el-checkbox>
         </div>
       </el-checkbox-group>
@@ -33,7 +40,10 @@ interface Item {
 }
 
 const list = ref<Item[]>([])
+const filterList = ref<Item[]>([])
 const selected = ref<Item[]>([])
+const keyword = ref('')
+
 watch(visible, async (vis) => {
   if (!vis || list.value.length) {
     return
@@ -46,9 +56,14 @@ watch(visible, async (vis) => {
     request<{ list: Item[] }>('/bug/getApps')
   ])
   list.value = siteRes.list
+  filterList.value = siteRes.list
   const selectedIds = selectedRes.list.map((item) => item.siteId)
   selected.value = siteRes.list.filter((item) => selectedIds.includes(item.sid))
 })
+
+const doFilterList = () => {
+  filterList.value = list.value.filter((item) => item.name.includes(keyword.value))
+}
 
 // 保存
 const save = async () => {
@@ -62,6 +77,7 @@ const save = async () => {
   ElMessage({
     type: 'success',
     message: '保存成功',
+    duration: 1500,
     onClose() {
       close()
       emit('confirm')

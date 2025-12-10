@@ -1,10 +1,5 @@
 <template>
-  <el-popover
-    v-model:visible="visible"
-    placement="top"
-    class="confirm-pop"
-    trigger="click"
-  >
+  <el-popover v-model:visible="visible" placement="top" class="confirm-pop" trigger="click">
     <div class="confirm">
       <h3 class="title">{{ title }}</h3>
       <div class="content"><slot /></div>
@@ -25,34 +20,34 @@
 </template>
 
 <script setup lang="ts">
-import { shallowRef } from "vue";
+import { shallowRef } from 'vue'
 defineProps({
   title: {
     type: String,
-    default: "确认删除？",
+    default: '确认删除？'
   },
   confirmButtonText: {
     type: String,
-    default: "确定",
+    default: '确定'
   },
   deleteText: {
     type: String,
-    default: "删除",
+    default: '删除'
   },
   hasSlot: {
     type: Boolean,
-    default: false,
-  },
-});
-const emit = defineEmits(["confirm"]);
-const visible = shallowRef(false);
+    default: false
+  }
+})
+const emit = defineEmits(['confirm'])
+const visible = shallowRef(false)
 const onCancel = () => {
-  visible.value = false;
-};
+  visible.value = false
+}
 const onConfirm = () => {
-  visible.value = false;
-  emit("confirm");
-};
+  visible.value = false
+  emit('confirm')
+}
 </script>
 <style lang="scss" scoped>
 .confirm {
