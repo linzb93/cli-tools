@@ -72,11 +72,16 @@
     </div>
   </div>
   <app-manage v-model:visible="visible.apps" @confirm="resetSelectedApps" />
-  <code-beautify v-model:visible="visible.code" :path="targetPath" />
+  <code-beautify
+    v-model:visible="visible.code"
+    :path="targetPath"
+    :detail="currentItem"
+    :error-msg="currentErrorMsg"
+  />
 </template>
 
 <script setup lang="ts">
-import { reactive, shallowRef, shallowReactive, ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import dayjs from 'dayjs'
 import { pick } from 'lodash-es'
 import pMap from 'p-map'
@@ -88,7 +93,7 @@ import AppManage from './components/AppManage.vue'
 import CodeBeautify from './components/CodeBeautify.vue'
 import { type Application, type PanelItem, type ErrorItem, type ErrorDetailItem } from './types'
 
-const visible = shallowReactive({
+const visible = ref({
   apps: false,
   code: false
 })
@@ -102,14 +107,17 @@ onMounted(async () => {
   getSelectedApps()
   const { inited } = await request('bug/init')
   if (inited) {
-    form.selected = apps.value.map((item) => item.siteId)
+    form.value.selected = apps.value.map((item) => item.siteId)
     const result = (await request('bug/getCached')) as {
       list: {
         siteId: string
         name: string
         list: ErrorItem[]
       }[]
+      lastDate: string
     }
+    form.value.dateValue = 3
+    form.value.beginDate = result.lastDate.split(' ')[0]
     panels.value = (result.list || []).map((sub) => {
       return {
         id: sub.siteId,
@@ -122,12 +130,12 @@ onMounted(async () => {
 })
 
 const resetSelectedApps = () => {
-  form.selected = []
+  form.value.selected = []
   getSelectedApps()
 }
 
 const apps = ref<Application[]>([])
-const form = reactive<{
+const form = ref<{
   selected: string[]
   dateValue: number
   beginDate: string
@@ -142,10 +150,10 @@ const form = reactive<{
 })
 
 const dateRange = computed(() => {
-  if (form.beginDate === form.endDate) {
-    return form.beginDate
+  if (form.value.beginDate === form.value.endDate) {
+    return form.value.beginDate
   }
-  return `${form.beginDate}~${form.endDate}`
+  return `${form.value.beginDate}~${form.value.endDate}`
 })
 
 const customerDatePicker = ref<DatePickerInstance>()
@@ -159,33 +167,33 @@ const radioChange = (value: number) => {
       [1, 1],
       [7, 0]
     ]
-    form.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD')
-    form.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
+    form.value.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD')
+    form.value.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
   }
 }
 const changeDate = (range: [string, string]) => {
-  form.beginDate = dayjs(range[0]).format('YYYY-MM-DD')
-  form.endDate = dayjs(range[1]).format('YYYY-MM-DD')
+  form.value.beginDate = dayjs(range[0]).format('YYYY-MM-DD')
+  form.value.endDate = dayjs(range[1]).format('YYYY-MM-DD')
 }
 
 const isSelectAll = computed(() => {
-  return form.selected.length === apps.value.length
+  return form.value.selected.length === apps.value.length
 })
 const selectAll = () => {
-  if (form.selected.length < apps.value.length) {
-    form.selected = apps.value.map((item) => item.siteId)
+  if (form.value.selected.length < apps.value.length) {
+    form.value.selected = apps.value.map((item) => item.siteId)
   } else {
-    form.selected = []
+    form.value.selected = []
   }
 }
 
 const panels = ref<PanelItem[]>([])
 const generate = async () => {
-  if (!form.selected.length) {
+  if (!form.value.selected.length) {
     ElMessage.error('请至少选择一个应用')
     return
   }
-  const promiseList = form.selected.map((siteId) => {
+  const promiseList = form.value.selected.map((siteId) => {
     return {
       siteId,
       title: getAppName(siteId),
@@ -196,8 +204,8 @@ const generate = async () => {
             list: ErrorItem[]
           }
         >('/data/analysis/jsErrorCount', {
-          beginTime: `${form.beginDate} 00:00:00`,
-          endTime: `${form.endDate} 23:59:59`,
+          beginTime: `${form.value.beginDate} 00:00:00`,
+          endTime: `${form.value.endDate} 23:59:59`,
           orderKey: 'errorCount',
           orderByAsc: false,
           pageIndex: 1,
@@ -232,8 +240,11 @@ const renderContentColor = (row: ErrorItem) => {
   }
   return ''
 }
-const targetPath = shallowRef('')
+const targetPath = ref('')
+const currentItem = ref<ErrorItem>()
+const currentErrorMsg = ref('')
 const focusError = async (row: ErrorItem, siteId: string) => {
+  currentItem.value = row
   const res = await service.post<
     any,
     {
@@ -241,8 +252,8 @@ const focusError = async (row: ErrorItem, siteId: string) => {
     }
   >('/data/analysis/getVisitInfo', {
     ...pick(row, ['content', 'url']),
-    beginTime: `${form.beginDate} 00:00:00`,
-    endTime: `${form.endDate} 23:59:59`,
+    beginTime: `${form.value.beginDate} 00:00:00`,
+    endTime: `${form.value.endDate} 23:59:59`,
     pageIndex: 1,
     pageSize: 1,
     siteId,
@@ -254,12 +265,17 @@ const focusError = async (row: ErrorItem, siteId: string) => {
   }
   const target = res.list[0]
   const { errorMsg } = target
+  if (errorMsg.startsWith('MiniProgramError')) {
+    visible.value.code = true
+    targetPath.value = 'MiniProgramError'
+    currentErrorMsg.value = errorMsg
+    return
+  }
   const match = errorMsg.match(/(http.+\.js\:\d+\:\d+)/)
   if (match && match[1]) {
-    visible.code = true
+    visible.value.code = true
     targetPath.value = match[1]
   }
-  // TODO:取错误定位前200个字符，后100个字符。去掉无用的代码，然后格式化，定位改成用箭头指示。
 }
 
 const yesterdayInfo = {

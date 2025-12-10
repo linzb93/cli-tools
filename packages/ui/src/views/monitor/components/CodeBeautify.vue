@@ -1,24 +1,31 @@
 <template>
   <el-dialog :model-value="visible" width="400px" title="错误定位" @close="close" @closed="closed">
-    <el-switch
-      active-text="增加代码定位范围"
-      inactive-text="恢复代码定位范围"
-      v-model="includeRange"
-    />
-    <div class="code-wrap mt10" v-if="loaded">
-      <span>{{ code.pre }}</span>
-      <em class="pre-emp-code">{{ code.preEmp }}</em>
-      <em class="emphasize-code">{{ code.emphasize }}</em>
-      <span>{{ code.next }}</span>
-    </div>
+    <p class="mb20">错误地址：{{ detail?.url }}</p>
+    <template v-if="!isMinip">
+      <el-switch
+        active-text="增加代码定位范围"
+        inactive-text="恢复代码定位范围"
+        v-model="includeRange"
+      />
+      <div class="code-wrap mt10" v-if="loaded">
+        <span>{{ code.pre }}</span>
+        <em class="pre-emp-code">{{ code.preEmp }}</em>
+        <em class="emphasize-code">{{ code.emphasize }}</em>
+        <span>{{ code.next }}</span>
+      </div>
+    </template>
+    <div v-else class="pre">{{ errorMsg }}</div>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { shallowRef, watch, reactive, computed } from 'vue'
+import { shallowRef, ref, watch, reactive, computed } from 'vue'
 import request from '@/helpers/request'
+import { type ErrorItem } from '../types'
 const props = defineProps({
-  path: String
+  path: String,
+  errorMsg: String,
+  detail: Object as () => ErrorItem
 })
 const emit = defineEmits(['update:visible'])
 
@@ -34,6 +41,7 @@ const code = reactive({
   emphasize: '',
   next: ''
 })
+const isMinip = ref(false)
 watch(visible, async (vis) => {
   if (!vis) {
     return
@@ -42,6 +50,10 @@ watch(visible, async (vis) => {
   let column = 0
   // 将定位从文件地址中分离出来
   const { path } = props
+  if (path === 'MiniProgramError') {
+    isMinip.value = true
+    return
+  }
   const realPath = path
     ? path.replace(/\:\d+\:\d+/, (match) => {
         const seg = match.split(':')
@@ -100,6 +112,10 @@ const closed = () => {
   border-radius: 2px;
   color: #fff;
   word-break: break-all;
+}
+.pre {
+  font-size: 14px;
+  white-space: pre-wrap;
 }
 .pre-emp-code {
   color: #e6a23c;

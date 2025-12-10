@@ -7,8 +7,15 @@ import Table from 'cli-table3';
 import { readSecret } from '@/utils/secret';
 import response from '../shared/response';
 import { log } from '../shared/log';
-import { omit, cloneDeep, clone } from 'lodash-es';
+import { omit, clone } from 'lodash-es';
 const router = Router();
+
+const getLastDate = () => {
+    if (dayjs().day() === 1) {
+        return dayjs().subtract(3, 'day').format('YYYY-MM-DD 00:00:00');
+    }
+    return dayjs().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
+};
 
 router.post('/getApps', (_, res) => {
     sql((db) => db.monitor)
@@ -31,6 +38,7 @@ router.post('/getCached', (_, res) => {
         .then((result) => {
             response(res, {
                 list: result,
+                lastDate: getLastDate(),
             });
         })
         .catch((err) => {
@@ -64,12 +72,7 @@ export const bugCallback = async () => {
         return;
     }
     const prefix = await readSecret((db) => db.oa.apiPrefix);
-    let lastDate = '';
-    if (dayjs().day() === 1) {
-        lastDate = dayjs().subtract(3, 'day').format('YYYY-MM-DD 00:00:00');
-    } else {
-        lastDate = dayjs().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
-    }
+    let lastDate = getLastDate();
     const title = `${lastDate.split(' ')[0]} 至 ${dayjs().format('YYYY-MM-DD')} 错误统计`;
     const resList = await pMap(
         list,
