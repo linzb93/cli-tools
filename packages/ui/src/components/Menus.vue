@@ -1,10 +1,10 @@
 <template>
   <div class="menu-list full-height">
-    <div class="top-btn flexpack-end">
+    <!-- <div class="top-btn flexpack-end">
       <router-link to="/setting"
         ><el-icon class="sub-btn curp" title="设置"><Setting /></el-icon
       ></router-link>
-    </div>
+    </div> -->
     <ul>
       <li v-for="menu in menuList" :key="menu.title" :class="{ active: isActive(menu) }">
         <div class="flexalign-center" @click="jump(menu)">

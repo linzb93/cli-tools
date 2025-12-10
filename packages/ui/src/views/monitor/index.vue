@@ -20,27 +20,35 @@
         <p v-else>无</p>
       </el-form-item>
       <el-form-item label="选择日期">
-        <el-radio-group v-model="form.dateValue" @change="radioChange">
-          <el-radio-button :value="0">今日</el-radio-button>
-          <el-radio-button :value="1"
-            >昨日<qa class="ml10" v-if="yesterdayInfo.is" :content="yesterdayInfo.content"
-          /></el-radio-button>
-          <el-radio-button :value="2">近7日</el-radio-button>
-          <el-radio-button :value="3" class="date-picker-wrap">
-            <span>自定义</span>
-            <em class="contact-layer"></em>
-            <el-date-picker
-              ref="customerDatePicker"
-              v-model="form.range"
-              @change="changeDate"
-              type="daterange"
-              placeholder="请选择日期"
-              class="above"
-            ></el-date-picker>
-          </el-radio-button>
-        </el-radio-group>
-        <span class="ml10">{{ dateRange }}</span>
+        <el-form-item>
+          <el-radio-group :model-value="form.dateValue" @input="radioChange">
+            <el-radio-button :value="0">今日</el-radio-button>
+            <el-radio-button :value="1"
+              >昨日<qa class="ml10" v-if="yesterdayInfo.is" :content="yesterdayInfo.content"
+            /></el-radio-button>
+            <el-radio-button :value="2">近7日</el-radio-button>
+            <el-radio-button :value="3" class="date-picker-wrap">
+              <span>自定义</span>
+              <em class="contact-layer"></em>
+            </el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item>
+          <div class="flexalign-center">
+            <div style="white-space: nowrap">
+              <el-date-picker
+                ref="customerDatePickerRef"
+                v-model="dateRange"
+                @change="changeDate"
+                type="daterange"
+                placeholder="请选择日期"
+                class="above"
+              ></el-date-picker>
+            </div>
+          </div>
+        </el-form-item>
       </el-form-item>
+
       <el-button type="primary" @click="generate">生成</el-button>
     </el-form>
     <div>
@@ -140,40 +148,45 @@ const form = ref<{
   dateValue: number
   beginDate: string
   endDate: string
-  range: [string, string]
 }>({
   selected: [],
   dateValue: 0,
   beginDate: dayjs().format('YYYY-MM-DD'),
-  endDate: dayjs().format('YYYY-MM-DD'),
-  range: [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
+  endDate: dayjs().format('YYYY-MM-DD')
 })
-
-const dateRange = computed(() => {
-  if (form.value.beginDate === form.value.endDate) {
-    return form.value.beginDate
-  }
-  return `${form.value.beginDate}~${form.value.endDate}`
-})
-
-const customerDatePicker = ref<DatePickerInstance>()
-const radioChange = (value: number) => {
+const radioChange = (e: InputEvent) => {
+  const value = Number((e.target as HTMLInputElement).value)
+  form.value.dateValue = value
   if (value === 3) {
-    customerDatePicker.value?.focus()
-  } else {
-    typeof customerDatePicker.value?.blur === 'function' && customerDatePicker.value.blur()
-    const map = [
-      [0, 0],
-      [1, 1],
-      [7, 0]
-    ]
-    form.value.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD')
-    form.value.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
+    return
   }
+
+  const map = [
+    [0, 0],
+    [1, 1],
+    [7, 0]
+  ]
+  form.value.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD')
+  form.value.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
 }
+const dateRange = computed({
+  get() {
+    return [form.value.beginDate, form.value.endDate]
+  },
+  set(value) {
+    if (value) {
+      form.value.beginDate = dayjs(value[0]).format('YYYY-MM-DD')
+      form.value.endDate = dayjs(value[1]).format('YYYY-MM-DD')
+    }
+  }
+})
 const changeDate = (range: [string, string]) => {
+  if (!range) {
+    form.value.dateValue = 0
+  }
   form.value.beginDate = dayjs(range[0]).format('YYYY-MM-DD')
   form.value.endDate = dayjs(range[1]).format('YYYY-MM-DD')
+  form.value.dateValue = 3
 }
 
 const isSelectAll = computed(() => {
@@ -303,7 +316,8 @@ const yesterdayInfo = {
 }
 :deep(.above) {
   z-index: 1 !important;
-  width: 100% !important;
+  width: 300px;
+  margin-left: 10px;
   cursor: pointer;
 }
 .panel-wrap {
