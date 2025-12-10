@@ -52,12 +52,12 @@ export default abstract class Meituan extends Base {
      * @param {string} keyword 搜索关键词
      * @param {Options} options 搜索选项
      */
-    override async search(keyword: string, options: Options) {
-        if (options.version) {
-            return await this.getByVersion(options.version, keyword, this.serviceName);
-        }
-        return await this.getShopUrl(keyword, options.test);
-    }
+    // override async search(keyword: string, options: Options) {
+    //     if (options.version) {
+    //         return await this.getByVersion(options.version, keyword, this.serviceName);
+    //     }
+    //     return await this.getShopUrl(keyword, options.test);
+    // }
     /**
      * 查询店铺列表，只在按版本查询时使用
      * @param {Object} obj - 查询参数

@@ -2,6 +2,7 @@ import Base from './base';
 import serviceGenerator from '@/utils/http';
 import { readSecret } from '@/utils/secret';
 import { Options } from '../types';
+import { logger } from '@/utils/logger';
 const platformTypeEnum = {
     meituan: '8',
     ele: '11',
@@ -58,6 +59,7 @@ export default class extends Base {
         return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
     }
     private async getUserCommonInfo(keyword: string, isTest: boolean) {
+        logger.info(`【${this.serviceName}】正在获取账号【${keyword}】详情`);
         const prefix = await this.getPrefix(isTest);
         let searchParams = {};
         if (!/\d+/.test(keyword)) {
@@ -81,6 +83,7 @@ export default class extends Base {
         if (!userRes.data.result) {
             throw new Error('未查询到用户');
         }
+        logger.info(`【${this.serviceName}】正在获取账号【${keyword}】下的门店`);
         const userInfo = userRes.data.result.list[0];
         const listRes = await this.service.post(
             `${prefix}/miniProgram/queryAccountDetail`,

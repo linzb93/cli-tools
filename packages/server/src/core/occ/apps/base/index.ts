@@ -52,7 +52,8 @@ export default abstract class {
             return url;
         }
         const { hash } = new URL(url);
-        const fullToken = hash.replace('#/login?code=', ''); // 不用node:querystring解析是因为有两段url query。
+        const params = new URLSearchParams(hash.replace(/^#\/[0-9a-zA-Z]+/, ''));
+        const fullToken = params.get('code') || '';
         return fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
     }
     async run(keyword: string, options: Options) {
@@ -60,7 +61,7 @@ export default abstract class {
         await this.afterSearch(url, keyword, options);
     }
     async search(keyword: string, options: Options) {
-        logger.info(`${chalk.yellow(`【${this.serviceName}】`)}正在获取店铺${chalk.cyan(keyword)}地址`);
+        logger.info(`【${this.serviceName}】正在获取店铺【${keyword}】地址`);
         let url = '';
         try {
             const resultUrl = (await this.getShopUrl(keyword, options.test, options.pt)) as any;
