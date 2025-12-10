@@ -34,11 +34,20 @@ export const tempUpload = async (data: Params) => {
         },
     };
 };
-
+/**
+ * 将图片base64字符串转换为图片流
+ * @param base64 图片base64字符串
+ * @returns 图片流
+ */
 export const imageBase64ToStream = (base64: string) => {
     return intoStream(imageBase64ToBuffer(base64));
 };
 
+/**
+ * 将图片base64字符串转换为图片Buffer
+ * @param base64 图片base64字符串
+ * @returns 图片Buffer
+ */
 export const imageBase64ToBuffer = (base64: string) => {
     return Buffer.from(base64, 'base64');
 };
