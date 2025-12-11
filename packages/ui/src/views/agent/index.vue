@@ -1,26 +1,34 @@
 <template>
   <el-button type="primary" @click="handleAdd">新增代理</el-button>
   <el-table :data="tableData" style="width: 100%">
-    <el-table-column prop="name" label="名称" />
-    <el-table-column prop="prefix" label="前缀" />
+    <el-table-column prop="name" label="名称" width="130" />
+    <el-table-column prop="prefix" label="前缀" width="130" />
     <el-table-column prop="rule" label="规则">
       <template #default="scope">
-        {{ scope.row.rule }}
+        <p v-for="rule in scope.row.rules" :key="rule.to" class="flexalign-center">
+          <span style="color: #409eff">{{ rule.from }}</span>
+          <el-icon style="margin: 0 5px"><right /></el-icon>
+          <span style="color: #67c23a">{{ rule.to }}</span>
+        </p>
       </template>
     </el-table-column>
     <el-table-column prop="action" label="操作">
       <template #default="scope">
         <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+        <el-button type="primary" @click="handleDebug(scope.row)">调试</el-button>
         <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
-  <edit v-model:visible="editVisible" :row="editRow" />
+  <edit-dialog v-model:visible="editVisible" :row="editRow" @save="getList" />
+  <debug-dialog v-model:visible="debugVisible" :rules="editRow.rules" @save="getList" />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import Edit from './components/Edit.vue'
+import { Right } from '@element-plus/icons-vue'
+import EditDialog from './components/Edit.vue'
+import DebugDialog from './components/DebugDialog.vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import request from '@/helpers/request'
 import type { Agent } from './types'
@@ -36,6 +44,16 @@ const editRow = ref<Agent>({
 const handleEdit = (row: Agent) => {
   editRow.value = row
   editVisible.value = true
+}
+
+const debugVisible = ref(false)
+const handleDebug = (row: Agent) => {
+  if (row.rules.length === 0) {
+    ElMessage.error('请先添加规则')
+    return
+  }
+  editRow.value = row
+  debugVisible.value = true
 }
 
 const handleAdd = () => {

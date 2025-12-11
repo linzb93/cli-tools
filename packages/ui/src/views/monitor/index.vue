@@ -94,7 +94,6 @@
 import { ref, onMounted, computed } from 'vue'
 import dayjs from 'dayjs'
 import { pick } from 'lodash-es'
-import pMap from 'p-map'
 import { ElMessage } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import request from '@/helpers/request'
@@ -232,14 +231,16 @@ const generate = async () => {
         })
     }
   })
-  const data = await pMap(promiseList, async (item) => {
-    const result = await item.action()
-    return {
-      siteId: item.siteId,
-      title: item.title,
-      data: result.list
-    }
-  })
+  const data = await Promise.all(
+    promiseList.map(async (item) => {
+      const result = await item.action()
+      return {
+        siteId: item.siteId,
+        title: item.title,
+        data: result.list
+      }
+    })
+  )
   panels.value = data.filter((item) => item.data.length)
   loaded.value = true
 }

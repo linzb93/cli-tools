@@ -92,10 +92,9 @@ export default abstract class BaseDeployCommand extends BaseCommand {
     /**
      * 完成基础git命令（add, commit, pull, push）
      * @param {string} commitMessage - 提交信息
-     * @param {boolean} [skipPull=false] - 是否跳过pull命令
      * @returns {Promise<void>}
      */
-    protected async executeBaseCommands(commitMessage: string, skipPull: boolean = false): Promise<void> {
+    protected async executeBaseCommands(commitMessage: string): Promise<void> {
         this.logger.info('执行基础Git命令...');
 
         try {
@@ -106,8 +105,8 @@ export default abstract class BaseDeployCommand extends BaseCommand {
             // 检查当前分支是否已推送到远端
             let isBranchPushed = await isCurrenetBranchPushed();
 
-            // 根据 skipPull 参数和分支推送状态决定是否添加 pull 命令
-            if (!skipPull && isBranchPushed) {
+            // 根据分支推送状态决定是否添加 pull 命令
+            if (isBranchPushed) {
                 commands.push(gitAtom.pull());
             }
 

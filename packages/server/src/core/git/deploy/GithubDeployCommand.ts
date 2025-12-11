@@ -19,7 +19,7 @@ export default class GithubDeployCommand extends BaseDeployCommand {
      */
     private async handleMainBranch(): Promise<void> {
         // 在主分支上只需要执行基础命令
-        await this.executeBaseCommands(this.options.commit, true);
+        await this.executeBaseCommands(this.options.commit);
     }
 
     /**
@@ -27,7 +27,7 @@ export default class GithubDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleOtherBranch(): Promise<void> {
-        await this.executeBaseCommands(this.options.commit, true);
+        await this.executeBaseCommands(this.options.commit);
 
         // 如果指定了prod选项，合并到主分支
         if (this.options.prod) {
