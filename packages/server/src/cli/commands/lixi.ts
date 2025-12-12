@@ -19,6 +19,11 @@ export default () => {
             rate: 12,
             saveDate: '2025-06-27',
         },
+        {
+            money: 100000,
+            rate: 1.9,
+            saveDate: '2025-12-11',
+        },
     ];
     const lixiTotal = source.reduce((sum, item) => {
         return sum + Number((((item.money * item.rate) / 100 / 365) * dayjs().diff(item.saveDate, 'd')).toFixed(2));
