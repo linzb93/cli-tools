@@ -2,14 +2,19 @@
   <el-dialog title="调试" v-model="visible" width="500px" @close="close" @closed="closed">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="接口" prop="url">
-        <el-select v-model="form.url" placeholder="请选择接口">
-          <el-option
-            v-for="rule in props.rules"
-            :key="rule.from"
-            :label="rule.from"
-            :value="rule.from"
-          />
-        </el-select>
+        <el-form-item>
+          <el-select v-model="form.prefix" placeholder="请选择接口">
+            <el-option
+              v-for="rule in props.rules"
+              :key="rule.from"
+              :label="rule.from"
+              :value="rule.from"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="form.url" placeholder="请输入调试URL" />
+        </el-form-item>
       </el-form-item>
       <el-form-item label="方法" prop="method">
         <el-select v-model="form.method" placeholder="请选择方法">
@@ -37,6 +42,7 @@
 
 <script setup>
 import Js from '@/components/icons/Js.vue'
+import doRequest from '@/helpers/request'
 import { ref } from 'vue'
 
 const visible = defineModel('visible', {
@@ -52,6 +58,7 @@ const props = defineProps({
 const formRef = ref()
 
 const form = ref({
+  prefix: '',
   url: '',
   method: 'POST',
   body: '',
@@ -59,6 +66,7 @@ const form = ref({
 })
 
 const rules = ref({
+  prefix: [{ required: true, message: '请选择接口', trigger: 'blur' }],
   url: [{ required: true, message: '请输入调试URL', trigger: 'blur' }],
   method: [{ required: true, message: '请选择方法', trigger: 'blur' }],
   body: [
@@ -101,10 +109,12 @@ const loaded = ref(false)
 const responseData = ref('')
 
 const submit = async () => {
-  await formRef.value.validate()
-  if (!loaded.value) {
-    loaded.value = true
+  const isValid = await formRef.value.validate()
+  if (!isValid) {
+    return
   }
+  await doRequest('/agent/debug', form.value)
+  loaded.value = true
 }
 
 const close = () => {
@@ -114,6 +124,7 @@ const close = () => {
 const closed = () => {
   responseData.value = ''
   form.value = {
+    prefix: '',
     url: '',
     method: 'POST',
     body: '',
