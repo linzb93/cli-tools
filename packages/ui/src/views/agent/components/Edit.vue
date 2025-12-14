@@ -97,21 +97,31 @@ const handleAddRule = () => {
     to: ''
   })
 }
-
+const formatFormValue = () => {
+  if (!form.value.prefix.startsWith('/')) {
+    form.value.prefix = `/${form.value.prefix}`
+  }
+  form.value.rules = form.value.rules.map((rule) => ({
+    from: !rule.from.startsWith('/') ? `/${rule.from}` : rule.from,
+    to: !rule.to.startsWith('/') ? `/${rule.to}` : rule.to
+  }))
+}
 const handleSave = () => {
   formRef.value?.validate((valid) => {
-    if (valid) {
-      request('agent/save', form.value).then(() => {
-        ElMessage.success({
-          message: '保存成功',
-          duration: 1000,
-          onClose: () => {
-            emit('save')
-            handleClose()
-          }
-        })
-      })
+    if (!valid) {
+      return
     }
+    formatFormValue()
+    request('agent/save', form.value).then(() => {
+      ElMessage.success({
+        message: '保存成功',
+        duration: 1000,
+        onClose: () => {
+          emit('save')
+          handleClose()
+        }
+      })
+    })
   })
 }
 const handleDeleteRule = (index: number) => {

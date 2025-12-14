@@ -14,6 +14,10 @@ router.post('/list', (_, res) => {
 router.post('/save', (req, res) => {
     const { id, name, prefix, rules } = req.body;
     sql((db) => {
+        if (!db.agent) {
+            db.agent = [{ id, name, prefix, rules }];
+            return;
+        }
         const match = db.agent.find((item) => item.id === id);
         if (match) {
             match.name = name;
@@ -34,6 +38,38 @@ router.post('/delete', (req, res) => {
     }).then(() => {
         response(res, {});
     });
+});
+
+router.post('/debug', (req, res) => {
+    const { method, url, body, prefix, headers, id } = req.body;
+    sql((db) => db.agent.find((item) => item.id === id))
+        .then((agent) => {
+            if (!agent) {
+                return Promise.reject({ status: 404, message: '未找到匹配的代理配置' });
+            }
+            const { rules } = agent;
+            const matchedRule = rules.find((rule) => prefix === rule.from);
+            if (!matchedRule) {
+                return Promise.reject({ status: 404, message: '未找到匹配的代理规则' });
+            }
+            const fullUrl = `${matchedRule.to}${url}`;
+            return axios({
+                method,
+                url: fullUrl,
+                data: body ? JSON.parse(body) : {},
+                headers: headers ? JSON.parse(headers) : {},
+            });
+        })
+        .then((res1) => {
+            response(res, res1.data);
+        })
+        .catch((err) => {
+            response(res, {
+                code: err.response.status || 500,
+                message: err.message,
+                data: err.response.data,
+            });
+        });
 });
 
 export default router;

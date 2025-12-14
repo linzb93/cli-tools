@@ -152,7 +152,47 @@ class Logger {
      * @param content - 日志内容
      */
     cli(content: string): void {
-        fs.appendFile(resolve(cacheRoot, 'track.txt'), `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
+        const oldFile = resolve(cacheRoot, 'track.txt');
+        if (fs.existsSync(oldFile)) {
+            // 分割文件，按季度
+            const listStr = fs.readFileSync(oldFile, 'utf-8');
+            const list = listStr.split('\n');
+            const filenames = [];
+            for (const item of list) {
+                // 匹配年月日时分秒
+                const match = item.match(/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/);
+                if (match) {
+                    // 根据获取的年份，获取所在的年份和季度
+                    const year = match[1].substring(0, 4);
+                    const quarter = Math.ceil(Number(match[1].substring(5, 7)) / 3);
+                    const filename = `${year}Q${quarter}`;
+                    if (!filenames.find((item) => item.filename === filename)) {
+                        filenames.push({ filename, data: item });
+                    } else {
+                        filenames.find((item) => item.filename === filename).data.push(item);
+                    }
+                }
+            }
+            for (const item of filenames) {
+                fs.writeFileSync(resolve(cacheRoot, 'track', item.filename), item.data.join('\n'));
+            }
+            fs.unlinkSync(oldFile);
+        }
+        // 获取当前时间的年份和季度
+        const year = dayjs().format('YYYY');
+        const quarter = Math.ceil(Number(dayjs().format('MM')) / 3);
+        const filename = `${year}Q${quarter}`;
+        if (fs.existsSync(filename)) {
+            fs.appendFileSync(
+                resolve(cacheRoot, 'track', filename),
+                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`
+            );
+        } else {
+            fs.writeFileSync(
+                resolve(cacheRoot, 'track', filename),
+                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`
+            );
+        }
     }
 
     /**

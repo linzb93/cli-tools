@@ -21,7 +21,12 @@
     </el-table-column>
   </el-table>
   <edit-dialog v-model:visible="editVisible" :row="editRow" @save="getList" />
-  <debug-dialog v-model:visible="debugVisible" :rules="editRow.rules" @save="getList" />
+  <debug-dialog
+    v-model:visible="debugVisible"
+    :rules="editRow.rules"
+    :item-id="editRow.id"
+    @save="getList"
+  />
 </template>
 
 <script setup lang="ts">
