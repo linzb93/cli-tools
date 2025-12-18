@@ -42,6 +42,7 @@ interface Database {
         username?: string;
         password?: string;
         token: string;
+        dkdPrefix: string;
         zhanwai: {
             baseUrl: string;
             username: string;
@@ -61,6 +62,10 @@ interface Database {
          * 项目源目录
          */
         source: string;
+    };
+    cg: {
+        name: string;
+        nameId: number;
     };
 }
 

@@ -8,6 +8,7 @@ import ip from './commands/ip';
 import ai from './commands/ai';
 import eng from './commands/eng';
 import occ from './commands/occ';
+import cg from './commands/cg';
 import cookie from './commands/cookie';
 import clear from './commands/clear';
 import color from './commands/color';
@@ -86,7 +87,14 @@ program
     .action((filename, options) => {
         clear(filename, options);
     });
-
+program
+    .command('cg [action] [data]')
+    .option('--realtime', '实时更新')
+    .option('-f, --full', '全部')
+    .option('--help', '显示帮助文档')
+    .action((action, data, options) => {
+        cg(action, data, options);
+    });
 program
     .command('color [text]')
     .option('--get')

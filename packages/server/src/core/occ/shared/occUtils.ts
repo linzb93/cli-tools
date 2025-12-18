@@ -13,7 +13,7 @@ export default class OccUtils {
      */
     copyToken(obj: { token: string; serviceName: string; shopName: string }) {
         clipboard.writeSync(obj.token);
-        logger.success(`【${obj.serviceName}】已复制店铺【${obj.shopName}】 的token\n${obj.token}`);
+        logger.success(`【${obj.serviceName}】已复制店铺【${obj.shopName}】的token\n${obj.token}`);
     }
     /**
      * 补齐完整的登录地址
@@ -31,7 +31,7 @@ export default class OccUtils {
      */
     copyURL(obj: { url: string; serviceName: string; shopName: string }) {
         clipboard.writeSync(obj.url);
-        logger.success(`【${obj.serviceName}】已复制店铺【${obj.shopName}】 的地址\n${obj.url}`);
+        logger.success(`【${obj.serviceName}】已复制店铺【${obj.shopName}】的地址\n${obj.url}`);
     }
     /**
      * 打印用户信息
