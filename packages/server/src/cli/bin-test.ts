@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
-import cg from './commands/cg';
+import yapi from './commands/yapi';
 // 创建命令行程序
 const program = new Command();
 
@@ -23,12 +23,10 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('cg [action] [data]')
-    .option('--realtime', '实时更新')
-    .option('-f, --full', '全部')
-    .option('--help', '显示帮助文档')
-    .action((action, data, options) => {
-        cg(action, data, options);
+    .command('yapi <url>')
+    .description('获取yapi接口文档')
+    .action((url) => {
+        yapi(url);
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));
