@@ -128,14 +128,16 @@ onMounted(async () => {
     }
     form.value.dateValue = 3
     form.value.beginDate = result.lastDate.split(' ')[0]
-    panels.value = (result.list || []).map((sub) => {
-      return {
-        id: sub.siteId,
-        siteId: sub.siteId,
-        title: sub.name,
-        data: sub.list
-      }
-    })
+    panels.value = (result.list || [])
+      .map((sub) => {
+        return {
+          id: sub.siteId,
+          siteId: sub.siteId,
+          title: sub.name,
+          data: sub.list
+        }
+      })
+      .filter((item) => item.data.length)
   }
 })
 

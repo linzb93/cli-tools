@@ -72,14 +72,14 @@ program
     .action((subCommand, rest, options) => {
         analyse(subCommand, rest, options);
     });
-// program
-//     .command('cg [action] [...rest]')
-//     .option('--realtime', '实时更新')
-//     .option('-f, --full', '全部')
-//     .option('--help', '显示帮助文档')
-//     .action((action, rest, options) => {
-//         cg(action, rest, options);
-//     });
+program
+    .command('cg [action] [...rest]')
+    .option('--realtime', '实时更新')
+    .option('-f, --full', '全部')
+    .option('--help', '显示帮助文档')
+    .action((action, rest, options) => {
+        cg(action, rest, options);
+    });
 
 program
     .command('clear [filename]')

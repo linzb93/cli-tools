@@ -44,7 +44,7 @@ export const setUserForcast = async (amount: number) => {
             nameId: cg.nameId,
         });
         if (res.data.code !== HTTP_STATUS.SUCCESS) {
-            throw new Error('设置用户预测失败');
+            throw new Error('设置用户预测失败：' + res.data.msg);
         }
     } catch {
         logger.error('设置用户预测失败');
