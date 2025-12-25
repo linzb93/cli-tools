@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import init from '@/core/init';
 import { generateHelpDoc } from '@/utils/helper';
+import beauty from './commands/beauty';
 import ip from './commands/ip';
 import ai from './commands/ai';
 import eng from './commands/eng';
@@ -71,6 +72,12 @@ program
     .allowUnknownOption()
     .action((subCommand, rest, options) => {
         analyse(subCommand, rest, options);
+    });
+program
+    .command('beauty')
+    .description('格式化剪贴板中的内容')
+    .action(() => {
+        beauty();
     });
 program
     .command('cg [action] [...rest]')

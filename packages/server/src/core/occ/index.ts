@@ -70,6 +70,7 @@ export default class extends BaseCommand {
                 } else {
                     await app.run(this.searchKeyword, this.options);
                 }
+                return;
             }
         }
     }
@@ -90,6 +91,10 @@ export default class extends BaseCommand {
             if (/^[a-z]+$/.test(input[0])) {
                 this.appName = input[0];
                 const matchApp = this.apps.find((app) => app.name === this.appName) as BaseApp;
+                if (!matchApp) {
+                    this.logger.error(`未找到应用: ${this.appName}`);
+                    return;
+                }
                 this.searchKeyword = this.options.test ? matchApp.testDefaultId : matchApp.defaultId;
                 return;
             }

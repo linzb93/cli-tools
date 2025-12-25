@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
-import yapi from './commands/yapi';
-import cg from './commands/cg';
+import beauty from './commands/beauty';
 // 创建命令行程序
 const program = new Command();
 
@@ -24,18 +23,10 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('yapi <url>')
-    .description('获取yapi接口文档')
-    .action((url) => {
-        yapi(url);
-    });
-program
-    .command('cg [action] [...rest]')
-    .option('--realtime', '实时更新')
-    .option('-f, --full', '全部')
-    .option('--help', '显示帮助文档')
-    .action((action, rest, options) => {
-        cg(action, rest, options);
+    .command('beauty')
+    .description('格式化剪贴板中的内容')
+    .action(() => {
+        beauty();
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug'].includes(cmd) === false));

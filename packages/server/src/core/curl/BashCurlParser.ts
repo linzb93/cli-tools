@@ -12,7 +12,7 @@ export class BashCurlParser extends BaseCurlParser {
 
     parseHeaders(lines: string[]): Record<string, string> {
         // 只保留特定的请求头
-        const extra = this.options.extra || '';
+        const extra = this.options?.extra || '';
         const allowedHeaders = ['content-type', 'cookie', 'token', 'referer', 'user-agent'].concat(
             extra
                 .split(',')
@@ -32,7 +32,7 @@ export class BashCurlParser extends BaseCurlParser {
                 }
 
                 const key = keyMatch[1].trim();
-                if (!this.options.full && !allowedHeaders.includes(key.toLowerCase())) {
+                if (!this.options?.full && !allowedHeaders.includes(key.toLowerCase())) {
                     return acc;
                 }
 

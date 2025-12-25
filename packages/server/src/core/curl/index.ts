@@ -161,4 +161,39 @@ export default class CurlCommand extends BaseCommand {
         const parser = CurlParserFactory.createParser(CurlParserFactory.detectCurlMode(curl), this.options);
         return parser.getCookieFromCurl(curl);
     }
+
+    /**
+     * 获取curl命令中的HTTP请求体
+     * @param curl curl命令文本
+     * @returns 请求体数据，如果没有请求体则返回空字符串
+     */
+    getBodyFromCurl(curl: string): string {
+        if (!this.isCurl(curl)) {
+            this.logger.error('不是有效的curl命令');
+            return '';
+        }
+
+        const lines = curl.split('\n');
+        const urlLine = lines.find((line) => {
+            return line.trim().startsWith('curl');
+        });
+
+        if (!urlLine) {
+            this.logger.error('无法找到curl命令起始行');
+            return '';
+        }
+
+        // 检测curl模式
+        const mode = CurlParserFactory.detectCurlMode(curl);
+
+        // 创建对应的解析器
+        const parser = CurlParserFactory.createParser(mode, this.options);
+
+        // 解析请求头以获取内容类型
+        const headers = parser.parseHeaders(lines);
+        const contentType = headers['content-type'] || headers['Content-Type'] || '';
+
+        // 解析请求体数据
+        return parser.parseData(lines, contentType);
+    }
 }

@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import BaseCommand from '@/core/BaseCommand';
 import { getPerformanceData, userForcastList, setUserForcast } from './shared';
-import { cloneDeep } from 'lodash-es';
 
 export interface Options {
     full: boolean;
