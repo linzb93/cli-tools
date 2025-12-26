@@ -98,7 +98,7 @@ export default abstract class {
         }
         if (options.user) {
             this.occUtils.printUserInfo(
-                { token, serviceName: this.serviceName, shopName, getUserInfo: this.getUserInfo },
+                { token, serviceName: this.serviceName, shopName, getUserInfo: this.getUserInfo.bind(this) },
                 options.test
             );
             return;
