@@ -1,7 +1,7 @@
 import qs from 'node:querystring';
 import Base from './';
 import serviceGenerator from '@/utils/http';
-import sql from '@/utils/sql';
+import encryptPassword from '../../shared/encryptPassword';
 import { readSecret } from '@/utils/secret';
 import { HTTP_STATUS } from '@/utils/constant';
 import { logger } from '@/utils/logger';
@@ -9,7 +9,7 @@ import { logger } from '@/utils/logger';
 export default abstract class Zhanwai extends Base {
     abstract name: string;
     searchKey = 'searchParam';
-    serviceName = '外卖宝';
+    serviceName = '';
     defaultId = '测试';
     testDefaultId = '13023942325';
     prefix = '';
@@ -18,8 +18,12 @@ export default abstract class Zhanwai extends Base {
         baseURL: '',
     });
     async getShopUrl(keyword: string, isTest: boolean, platform: string) {
+        if (this.name === 'kdb' && platform === 'jingdong') {
+            logger.error(`京东店铺不支持${this.serviceName}`, true);
+        }
         const zhanwai = await readSecret((db) => db.oa.zhanwai);
         const token = await this.getLoginToken();
+
         const listRes = await this.service.post(
             `${zhanwai.baseUrl}/authorize/back/produce/user/list`,
             {
@@ -59,12 +63,28 @@ export default abstract class Zhanwai extends Base {
             logger.error('该账号下店铺信息为空');
             process.exit(0);
         }
-        const { shopId } = shopRes.data.result.userDetailVoPageInfo.list[0];
+
+        const { shopId } = shopRes.data.result.userDetailVoPageInfo.list.find((item: { platForm: string }) => {
+            if (platform === 'meituan') {
+                return item.platForm === '美团';
+            } else if (platform === 'ele') {
+                return item.platForm === '饿了么';
+            } else if (platform === 'jingdong') {
+                return item.platForm === '京东';
+            }
+            return false;
+        });
+        const ptMap = {
+            meituan: '8',
+            ele: '11',
+            jingdong: '4',
+        };
         const res = await this.service.post(
             `${zhanwai.baseUrl}/authorize/back/produce/shop/detail`,
             {
+                accountId,
                 shopId,
-                platform: platform === 'ele' ? '11' : '8',
+                platform: ptMap[platform],
             },
             {
                 headers: {
@@ -73,23 +93,34 @@ export default abstract class Zhanwai extends Base {
             }
         );
         const { result } = res.data;
-        return `https://kdb.fzmskj.com/pages/${
-            platform === 'ele' ? 'elejysqapp' : 'jyzsapp'
-        }/?t=${Date.now()}#/loginByOuter?code=${result.shopToken}&version=1&dueDate=${result.dueDate}&url=/apps`;
+        let folder = '';
+        if (platform === 'meituan') {
+            folder = 'jyzsapp';
+        } else if (platform === 'ele') {
+            folder = 'elejysqapp';
+        } else if (platform === 'jingdong') {
+            folder = 'jdjysq';
+        }
+        const url = `${this.prefix}/pages/${folder}/?t=${Date.now()}#/${
+            platform === 'jingdong' ? 'login' : 'loginByOuter'
+        }?code=${result.shopToken}&version=1&shopId=${result.shopId}&dueDate=${
+            result.dueDate ? result.dueDate.split(' ')[0] : ''
+        }&url=${platform === 'jingdong' ? '/' : '/apps'}`;
+        return url;
     }
     private async getLoginToken() {
-        const data = await readSecret((db) => db.oa.zhanwai);
-        const res = await this.service.post(`${data.baseUrl}/authorize/agent/account/login`, {
+        const zhanwai = await readSecret((db) => db.oa.zhanwai);
+        const res = await this.service.post(`${zhanwai.baseUrl}/authorize/agent/account/login`, {
             areaCode: '+86',
-            phoneNumber: data.username,
-            pwd: data.password,
+            phoneNumber: zhanwai.username,
+            pwd: encryptPassword(zhanwai.password),
         });
         return await this.chooseChannel(res.data.result.token);
     }
     private async chooseChannel(token: string) {
-        const data = await readSecret((db) => db.oa.zhanwai);
+        const zhanwai = await readSecret((db) => db.oa.zhanwai);
         const res = await this.service.post(
-            `${data.baseUrl}/authorize/agent/account/choseChannel`,
+            `${zhanwai.baseUrl}/authorize/agent/account/choseChannel`,
             {
                 adminId: 1,
                 agentId: this.agentId,
