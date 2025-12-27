@@ -1,7 +1,7 @@
 import BaseCommand from '../../BaseCommand';
 import { execaCommand as execa } from 'execa';
 import { executeCommands, formatError } from '@/utils/promise';
-import gitAtom from '../atom';
+import gitAtom from '../utils/atom';
 import {
     getCurrentBranchName,
     getMainBranchName,

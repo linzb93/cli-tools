@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import occ from './commands/occ';
-
+import color from './commands/color';
 // 创建命令行程序
 const program = new Command();
 
@@ -10,6 +10,12 @@ const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
 
 //**** 请在这里替换需要调试的代码 ****
+program
+    .command('color [text]')
+    .option('--get', '用指定颜色显示文字')
+    .action((data, options) => {
+        color(data, options);
+    });
 program
     .command('occ [data...]')
     .option('--token', '获取token')

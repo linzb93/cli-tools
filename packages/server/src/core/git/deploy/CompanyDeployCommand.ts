@@ -1,5 +1,5 @@
 import BaseDeployCommand, { DeployOptions } from './BaseDeployCommand';
-import { openDeployPage } from '@/utils/jenkins';
+import { openDeployPage } from '../utils/jenkins';
 import TagCommand from '../tag';
 import { Options as TagOptions } from '../tag';
 import { sleep } from '@linzb93/utils';

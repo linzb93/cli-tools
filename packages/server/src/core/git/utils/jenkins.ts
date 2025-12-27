@@ -1,10 +1,6 @@
 import open from 'open';
 import readPkg from 'read-pkg';
-import sql from './sql';
-import { readSecret } from './secret';
-import { j } from 'vitest/dist/reporters-yx5ZTtEV.js';
-// import puppeteer from 'puppeteer';
-// import readline from 'readline';
+import { readSecret } from '../../../utils/secret';
 
 interface JenkinsProject {
     name: string;

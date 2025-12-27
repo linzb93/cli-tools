@@ -1,10 +1,9 @@
 import BaseCommand from '../../BaseCommand';
-import gitAtom from '../atom';
 import Table from 'cli-table3';
 import { isGitProject, splitGitLog } from '../utils';
 import { execaCommand as execa } from 'execa';
 import chalk from 'chalk';
-import { fmtCommitMsg } from '../atom';
+import gitAtom, { fmtCommitMsg } from '../utils/atom';
 
 /**
  * 命令的选项接口，无需参数

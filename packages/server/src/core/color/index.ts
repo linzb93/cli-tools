@@ -3,7 +3,13 @@ import chalk from 'chalk';
 import clipboard from 'clipboardy';
 import BaseCommand from '../BaseCommand';
 export interface Options {
+    /**
+     * 是否显示颜色示例
+     */
     get: boolean;
+    /**
+     * 是否显示帮助文档
+     */
     help?: boolean;
 }
 
@@ -14,7 +20,7 @@ export default class extends BaseCommand {
         orange: '#ffa500',
         blue: '#0000ff',
         lightBlue: '#add8e6',
-        green: '#008000',
+        green: '#00ff00',
         lightGreen: '#90ee90',
         cyan: '#00ffff',
         magenta: '#ff00ff',
@@ -27,13 +33,13 @@ export default class extends BaseCommand {
         super();
     }
     main(input: string, options: Options) {
+        const { output, blockColor } = this.getColorInfo(input);
         if (this.colorMap[input]) {
             const output = this.colorMap[input];
             this.logger.success(`${chalk.green('[已复制]')}${chalk.hex(output).bold(output)}`);
             clipboard.writeSync(output);
             return;
         }
-        const { output, blockColor } = this.getColorInfo(input);
         if (options.get) {
             this.logger.success(`${chalk.hex(blockColor).bold('示例文字')}`);
             return;

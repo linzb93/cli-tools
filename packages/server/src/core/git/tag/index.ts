@@ -3,7 +3,7 @@ import BaseCommand from '../../BaseCommand';
 import { isGitProject, getAllTags } from '../utils';
 import { executeCommands } from '@/utils/promise';
 import semver from 'semver';
-import { getProjectName } from '@/utils/jenkins';
+import { getProjectName } from '../utils/jenkins';
 import clipboardy from 'clipboardy';
 import TagDelete from './delete';
 import TagSync from './sync';

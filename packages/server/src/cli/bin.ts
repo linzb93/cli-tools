@@ -104,7 +104,7 @@ program
     });
 program
     .command('color [text]')
-    .option('--get')
+    .option('--get', '用指定颜色显示文字')
     .action((data, options) => {
         color(data, options);
     });

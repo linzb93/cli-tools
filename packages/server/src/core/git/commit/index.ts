@@ -1,6 +1,6 @@
 import BaseCommand from '../../BaseCommand';
 import { isGitProject } from '../utils';
-import gitAtom from '../atom';
+import gitAtom from '../utils/atom';
 import { executeCommands } from '@/utils/promise';
 
 /**
