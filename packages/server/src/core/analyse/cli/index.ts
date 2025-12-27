@@ -13,8 +13,13 @@ export default class extends BaseCommand {
      * 主方法
      */
     async main() {
-        const fileContent = await fs.readFile(join(cacheRoot, 'track.txt'), 'utf8');
-        const lines = splitByLine(fileContent);
+        const trackDir = join(cacheRoot, 'track');
+        const files = (await fs.readdir(trackDir)).sort();
+        const lines: string[] = [];
+        for (const file of files) {
+            const content = await fs.readFile(join(trackDir, file), 'utf8');
+            lines.push(...splitByLine(content));
+        }
         const errorLines = [];
         const result = lines.reduce<{ cmd: string; count: number; children: { cmd: string; count: number }[] }[]>(
             (acc, line) => {
