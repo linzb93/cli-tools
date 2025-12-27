@@ -3,12 +3,15 @@ import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import occ from './commands/occ';
 import color from './commands/color';
+// import { logger } from '@/utils/logger';
 // 创建命令行程序
 const program = new Command();
 
 // 设置程序基本信息
 program.version(globalPkg.version).description('CLI工具集合');
-
+// program.hook('preAction', (thisCommand) => {
+//     logger.cli(thisCommand.args.join(' '));
+// });
 //**** 请在这里替换需要调试的代码 ****
 program
     .command('color [text]')

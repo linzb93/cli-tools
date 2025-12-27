@@ -155,6 +155,8 @@ class Logger {
         const oldFile = resolve(cacheRoot, 'track.txt');
         if (fs.existsSync(oldFile)) {
             // 分割文件，按季度
+            this.info('正在分割日志文件');
+            fs.mkdirSync(resolve(cacheRoot, 'track'), { recursive: true });
             const listStr = fs.readFileSync(oldFile, 'utf-8');
             const list = listStr.split('\n');
             const filenames = [];
@@ -166,22 +168,24 @@ class Logger {
                     const year = match[1].substring(0, 4);
                     const quarter = Math.ceil(Number(match[1].substring(5, 7)) / 3);
                     const filename = `${year}Q${quarter}`;
+                    // console.log(filenames.find((item) => item.filename === filename));
                     if (!filenames.find((item) => item.filename === filename)) {
-                        filenames.push({ filename, data: item });
+                        filenames.push({ filename, data: [item] });
                     } else {
                         filenames.find((item) => item.filename === filename).data.push(item);
                     }
                 }
             }
             for (const item of filenames) {
-                fs.writeFileSync(resolve(cacheRoot, 'track', item.filename), item.data.join('\n'));
+                fs.writeFileSync(resolve(cacheRoot, 'track', `${item.filename}.log`), item.data.join('\n'));
             }
+            this.info('日志文件分割完成');
             fs.unlinkSync(oldFile);
         }
         // 获取当前时间的年份和季度
         const year = dayjs().format('YYYY');
         const quarter = Math.ceil(Number(dayjs().format('MM')) / 3);
-        const filename = `${year}Q${quarter}`;
+        const filename = `${year}Q${quarter}.log`;
         if (fs.existsSync(filename)) {
             fs.appendFileSync(
                 resolve(cacheRoot, 'track', filename),
