@@ -17,6 +17,7 @@ export default abstract class Meituan extends Base {
     service = serviceGenerator({
         baseURL: '',
     });
+    userApi = 'home';
     /**
      * 根据版本号获取店铺地址
      * @param {number} version 版本号
@@ -196,7 +197,7 @@ export default abstract class Meituan extends Base {
         const res = await this.service.post<{
             result: UserInfo;
         }>(
-            `${prefix}/meituan/homeUserInfo`,
+            `${prefix}/meituan/${this.userApi}`,
             {},
             {
                 headers: {

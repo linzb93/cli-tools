@@ -6,6 +6,7 @@ export default class extends MeituanBase {
     defaultId = '15983528161';
     testDefaultId = '15983528161';
     isDefault = true;
+    override userApi = 'homeUserInfo';
     openPC(url: string, shopName: string) {
         this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
     }
