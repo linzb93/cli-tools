@@ -119,7 +119,11 @@ async function executeCommand(config: CommandConfig): Promise<void> {
             onFail: (attempt, error) => {
                 const shouldStop = error instanceof StopExecutionError;
                 if (!shouldStop) {
-                    console.log(`第${chalk.yellow.bold(attempt.toString())}次重复`);
+                    console.log(
+                        `第${chalk.yellow.bold(attempt.toString())}次重复${chalk.magenta(
+                            `[${dayjs().format('HH:mm:ss')}]`
+                        )}`
+                    );
                     console.log(formatError(error.message));
                 }
                 return {
