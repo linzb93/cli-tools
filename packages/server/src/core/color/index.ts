@@ -14,6 +14,9 @@ export interface Options {
 }
 
 export default class extends BaseCommand {
+    /**
+     * 颜色映射表
+     */
     private colorMap = {
         red: '#ff0000',
         yellow: '#ffff00',
@@ -32,6 +35,12 @@ export default class extends BaseCommand {
     constructor() {
         super();
     }
+
+    /**
+     * 主函数，处理颜色转换和输出
+     * @param {string} input - 输入的颜色值
+     * @param {Options} options - 选项
+     */
     main(input: string, options: Options) {
         const { output, blockColor } = this.getColorInfo(input);
         if (this.colorMap[input]) {
@@ -47,10 +56,24 @@ export default class extends BaseCommand {
         this.logger.success(`${chalk.green('[已复制]')}${chalk.hex(blockColor).bold(output)}`);
         clipboard.writeSync(output);
     }
+
+    /**
+     * 获取转换后的颜色值
+     * @param {string} input - 输入的颜色值
+     * @returns {string} 转换后的颜色值
+     * @example
+     * getTranslatedColor('#ff0000') // returns '255, 0, 0'
+     */
     getTranslatedColor(input: string) {
         const { output } = this.getColorInfo(input);
         return output;
     }
+
+    /**
+     * 获取颜色信息
+     * @param {string} input - 输入的颜色值
+     * @returns {{output: string, blockColor: string}} 颜色信息对象
+     */
     private getColorInfo(input: string) {
         let ret = convert.hex.rgb(input).join(', ');
         let blockColor = `#${input}`;

@@ -114,12 +114,12 @@ export default abstract class Meituan extends Base {
                 headers: {
                     token,
                 },
-            }
+            },
         );
     }
     private async findMatchShop(
         obj: { version: number; pageIndex: number; pageSize?: number; minPrice?: number },
-        condition: (shop: UserInfo) => boolean
+        condition: (shop: UserInfo) => boolean,
     ) {
         let { version, pageIndex, pageSize = 10, minPrice = 0 } = obj;
         let resultURL = '';
@@ -139,7 +139,7 @@ export default abstract class Meituan extends Base {
                         memberId,
                         platform: this.platform,
                     },
-                    false
+                    false,
                 );
                 const token = this.getToken(shopUrl);
                 const userInfo = await this.getUserInfo(token, false);
@@ -189,7 +189,7 @@ export default abstract class Meituan extends Base {
                 memberId: keyword,
                 platform: this.platform,
             },
-            isTest
+            isTest,
         );
     }
     async getUserInfo(token: string, isTest: boolean): Promise<UserInfo> {
@@ -203,15 +203,28 @@ export default abstract class Meituan extends Base {
                 headers: {
                     token,
                 },
-            }
+            },
         );
         return res.data.result;
     }
+
+    /**
+     * 获取美团店铺URL
+     * @param {any} params - 请求参数
+     * @param {boolean} isTest - 是否为测试环境
+     * @returns {Promise<any>} 结果
+     */
     private async getMeituanShopUrl(params: any, isTest: boolean) {
         const prefix = await this.getPrefix(isTest);
         const res = await this.service.post(`${prefix}/occ/order/replaceUserLogin`, params);
         return res.data.result;
     }
+
+    /**
+     * 获取API前缀
+     * @param {boolean} isTest - 是否为测试环境
+     * @returns {Promise<string>} API前缀
+     */
     private async getPrefix(isTest: boolean) {
         return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
     }

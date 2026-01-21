@@ -17,6 +17,14 @@ export default abstract class Zhanwai extends Base {
     service = serviceGenerator({
         baseURL: '',
     });
+
+    /**
+     * 获取站外店铺URL
+     * @param {string} keyword - 搜索关键词
+     * @param {boolean} isTest - 是否为测试环境
+     * @param {string} platform - 平台名称
+     * @returns {Promise<string>} 店铺URL
+     */
     async getShopUrl(keyword: string, isTest: boolean, platform: string) {
         if (this.name === 'kdb' && platform === 'jingdong') {
             logger.error(`京东店铺不支持${this.serviceName}`, true);
@@ -35,7 +43,7 @@ export default abstract class Zhanwai extends Base {
                 headers: {
                     token,
                 },
-            }
+            },
         );
         if (listRes.data.code !== HTTP_STATUS.SUCCESS) {
             logger.error('获取用户信息失败');
@@ -53,7 +61,7 @@ export default abstract class Zhanwai extends Base {
                 headers: {
                     token,
                 },
-            }
+            },
         );
         if (shopRes.data.code !== HTTP_STATUS.SUCCESS) {
             logger.error('获取店铺信息失败');
@@ -90,7 +98,7 @@ export default abstract class Zhanwai extends Base {
                 headers: {
                     token,
                 },
-            }
+            },
         );
         const { result } = res.data;
         let folder = '';
@@ -108,6 +116,11 @@ export default abstract class Zhanwai extends Base {
         }&url=${platform === 'jingdong' ? '/' : '/apps'}`;
         return url;
     }
+
+    /**
+     * 获取登录Token
+     * @returns {Promise<string>} Token
+     */
     private async getLoginToken() {
         const zhanwai = await readSecret((db) => db.oa.zhanwai);
         const res = await this.service.post(`${zhanwai.baseUrl}/authorize/agent/account/login`, {
@@ -117,6 +130,12 @@ export default abstract class Zhanwai extends Base {
         });
         return await this.chooseChannel(res.data.result.token);
     }
+
+    /**
+     * 选择渠道
+     * @param {string} token - 登录Token
+     * @returns {Promise<string>} 新Token
+     */
     private async chooseChannel(token: string) {
         const zhanwai = await readSecret((db) => db.oa.zhanwai);
         const res = await this.service.post(
@@ -129,10 +148,18 @@ export default abstract class Zhanwai extends Base {
                 headers: {
                     token,
                 },
-            }
+            },
         );
         return res.data.result.token;
     }
+
+    /**
+     * 从URL中解析Token
+     * @param {string} url - URL地址
+     * @returns {string} Token
+     * @example
+     * getToken('http://example.com/#/loginByOuter?code=123') // returns '123'
+     */
     getToken(url: string): string {
         const { hash } = new URL(url);
         const obj = qs.parse(hash.replace(`#/loginByOuter?`, '')) as {
