@@ -158,9 +158,24 @@ function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConf
     };
 }
 
+/**
+ * 生成 Git 克隆命令配置
+ * @param {string} repo - 远程仓库地址
+ * @param {string} [dir] - 目标目录
+ * @returns {CommandConfig} Git 克隆命令配置对象
+ */
+function clone(repo: string, dir?: string): CommandConfig {
+    const cmd = dir ? `git clone ${repo} ${dir}` : `git clone ${repo}`;
+    return {
+        message: cmd,
+        retryTimes: 100,
+    };
+}
+
 export default {
     commit,
     pull,
     merge,
     push,
+    clone,
 };
