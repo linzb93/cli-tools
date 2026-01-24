@@ -3,6 +3,8 @@ import { openDeployPage } from '../utils/jenkins';
 import TagCommand from '../tag';
 import { Options as TagOptions } from '../tag';
 import { sleep } from '@linzb93/utils';
+import path from 'path';
+import fs from 'fs-extra';
 
 /**
  * 公司项目Git部署命令
@@ -25,10 +27,25 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     protected async handleTagAndOutput(): Promise<void> {
+        let version = this.options.version;
+
+        // 如果没有指定version，尝试从package.json读取
+        if (!version) {
+            try {
+                const pkgPath = path.resolve(process.cwd(), 'package.json');
+                if (await fs.pathExists(pkgPath)) {
+                    const pkg = await fs.readJson(pkgPath);
+                    version = pkg.version;
+                }
+            } catch (error) {
+                // 读取失败则忽略，保持version为undefined
+            }
+        }
+
         // 创建tag选项
         const tagOptions: TagOptions = {
             type: this.options.type,
-            version: this.options.version,
+            version: version,
             msg: this.options.commit,
         };
 
@@ -90,7 +107,6 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
             }
             // 合并到主分支
             await this.mergeToBranch(this.mainBranch, false);
-            // 发布项目流程
             await this.handleTagAndOutput();
         } else if (!this.options.current) {
             // 合并到release分支
