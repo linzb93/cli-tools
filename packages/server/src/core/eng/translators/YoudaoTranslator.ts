@@ -62,7 +62,7 @@ export default class YoudaoTranslator extends BaseTranslator {
      * @param text - 需要翻译的文本
      * @returns cheerio对象
      */
-    private getYoudaoHTML(text: string) {
+    public getYoudaoHTML(text: string) {
         return getHtml('https://youdao.com/w/eng', `/${encodeURIComponent(text)}`);
     }
 }

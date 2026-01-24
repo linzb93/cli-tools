@@ -56,9 +56,8 @@ export default class extends BaseCommand {
         this.logger.success(`${chalk.green('[已复制]')}${chalk.hex(blockColor).bold(output)}`);
         clipboard.writeSync(output);
     }
-
     /**
-     * 获取转换后的颜色值
+     * 获取转换后的颜色值。单元测试用
      * @param {string} input - 输入的颜色值
      * @returns {string} 转换后的颜色值
      * @example

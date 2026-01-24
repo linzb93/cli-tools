@@ -1,4 +1,3 @@
-import clipboardy from 'clipboardy';
 import { format } from 'prettier';
 import BaseCommand from '../BaseCommand';
 import CurlCommand from '../curl';
@@ -19,12 +18,6 @@ export interface Options {
      * @default 'json'
      */
     type: 'key' | 'json';
-
-    /**
-     * 是否复制解析结果到剪贴板
-     * @default false
-     */
-    copy: boolean;
 }
 
 export default class extends BaseCommand {
@@ -36,28 +29,30 @@ export default class extends BaseCommand {
      */
     async main(data: string, options: Options): Promise<void> {
         const curlUtil = new CurlCommand();
-        let realData = '';
-        const clipboardData = clipboardy.readSync();
-        if (curlUtil.isCurl(clipboardData)) {
-            realData = curlUtil.getCookieFromCurl(clipboardData);
-        } else {
-            realData = data === '' ? clipboardData : data;
+        let realData = data;
+
+        // 检查输入数据是否是curl命令
+        if (typeof data === 'string' && curlUtil.isCurl(data)) {
+            realData = curlUtil.getCookieFromCurl(data);
         }
+
         const objs = this.parseCookie(realData);
         let result = options.type === 'key' ? Object.keys(objs) : objs;
         console.log(result);
-        if (options.copy) {
-            clipboardy.writeSync(this.getValue(result));
-            this.logger.success('解析并复制成功');
-        }
     }
     parseCookie(cookies: string) {
+        if (!cookies.trim()) {
+            return {};
+        }
         const list = cookies.split(';');
         const objs = list.reduce((acc, item) => {
             const seg = item.split('=');
+            const key = seg[0].trim();
+            // 如果没有等号，返回undefined；如果有等号但值为空，返回空字符串
+            const value = seg.length > 1 ? (seg[1] ? seg[1].trim() : '') : undefined;
             return {
                 ...acc,
-                [seg[0].replace(/^\s/, '')]: seg[1],
+                [key]: value,
             };
         }, {});
         return objs;
@@ -73,7 +68,12 @@ export default class extends BaseCommand {
         if (Array.isArray(data)) {
             return data.join(',');
         }
-        return format(JSON.stringify(data), {
+        const jsonString = JSON.stringify(data);
+        // 如果是空对象，直接返回{}，避免prettier添加换行符
+        if (jsonString === '{}') {
+            return '{}';
+        }
+        return format(jsonString, {
             parser: 'json',
         });
     }

@@ -9,7 +9,7 @@
     "scripts": {
         "dev": "tsc && vite build --watch",
         "build": "tsc && vite build",
-        "test": "vitest"
+        "test": "vitest run"
     },
     "bin": {
         "mycli": "./dist/cli.js",

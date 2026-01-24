@@ -8,6 +8,7 @@ import Log, { type Options as LogOptions } from '../../core/git/log';
 import Commit, { type Options as CommitOptions } from '../../core/git/commit';
 import Scan, { type Options as ScanOptions } from '../../core/git/scan';
 import Clone, { type Options as CloneOptions } from '../../core/git/clone';
+import Version from '../../core/git/version';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -149,16 +150,15 @@ const log = () => {
 };
 
 /**
- * git clone 子命令的实现
+ * git version 子命令的实现
  */
-const clone = () => {
+const version = () => {
     subCommandCompiler((program) => {
         program
-            .command('clone <repo>')
-            .description('克隆远程仓库')
-            .option('--dir <dir>', '指定目标目录')
-            .action((repo: string, options: CloneOptions) => {
-                new Clone().main({ repo, dir: options.dir });
+            .command('version [newVersion]')
+            .description('创建新版本分支并更新版本号')
+            .action((newVersion: string) => {
+                new Version().main(newVersion);
             });
     });
 };
@@ -181,7 +181,7 @@ export default function (subCommand: string, data: string[], options: any): void
         scan,
         merge,
         log,
-        clone,
+        version,
     };
 
     // 执行对应的子命令
