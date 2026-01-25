@@ -14,5 +14,5 @@
     }
   },
   "include": ["src/**/*", "env.d.ts"],
-  "exclude": ["packages/server/src/application/web"]
+  "exclude": ["packages/server/src/application/web", "**/__tests__/**/*"]
 }
