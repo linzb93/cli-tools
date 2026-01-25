@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import pkg from './package.json';
 import rootPkg from '../../package.json';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 const allDependencies = {
     ...pkg.dependencies,
@@ -16,7 +17,7 @@ const input: {
 if (process.env.MODE === 'cliTest') {
     input.vueServer = 'src/core/vue/server.ts';
     input['cli-test'] = 'src/cli/bin-test.ts';
-} else if (process.env.MODE === 'cli') {
+} else if (['cli', 'report'].includes(process.env.MODE as string)) {
     input.vueServer = 'src/core/vue/server.ts';
     input.cli = 'src/cli/bin.ts';
 } else if (process.env.MODE === 'web') {
@@ -58,5 +59,15 @@ export default defineConfig({
             '@/': resolve(fileURLToPath(import.meta.url), './src'),
         },
     },
-    plugins: [tsconfigPaths()],
+    plugins: [
+        tsconfigPaths(),
+        process.env.MODE === 'report'
+            ? visualizer({
+                  filename: 'stats.html',
+                  open: true, // 构建后自动打开
+                  gzipSize: true,
+                  brotliSize: true,
+              })
+            : null,
+    ],
 });

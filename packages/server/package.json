@@ -9,6 +9,7 @@
     "scripts": {
         "dev": "tsc && vite build --watch",
         "build": "tsc && vite build",
+        "build:report": "cross-env MODE=report vite build",
         "test": "vitest run"
     },
     "bin": {
