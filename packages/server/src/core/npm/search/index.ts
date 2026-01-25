@@ -2,8 +2,8 @@ import open from 'open';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { AxiosError } from 'axios';
-import BaseCommand from '../BaseCommand';
-import npm from './shared';
+import BaseCommand from '../../BaseCommand';
+import npm from '../shared';
 
 export interface Options {
     open?: boolean;
@@ -38,7 +38,7 @@ export default class extends BaseCommand {
     private async fetchNpmPackage(
         packageName: string,
         isMultiple: boolean,
-        options: Options = {}
+        options: Options = {},
     ): Promise<OutputPkgItem> {
         const { spinner } = this;
         if (!isMultiple) {
@@ -107,7 +107,7 @@ export default class extends BaseCommand {
                     output.splice(1, 1);
                 }
                 return output;
-            })
+            }),
         );
         console.log(table.toString());
     }

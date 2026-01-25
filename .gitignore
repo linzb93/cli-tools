@@ -5,3 +5,4 @@ packages/server/config.secret.json
 pnpm-lock.yaml
 cache/
 package-lock.json
+.trae/documents

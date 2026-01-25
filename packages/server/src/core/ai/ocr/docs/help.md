@@ -1,8 +1,4 @@
-# ai
-
-命令行调用 ai 的工具。
-
-## ocr
+# OCR
 
 ### 使用方法
 
@@ -21,13 +17,3 @@ $ mycli ai ocr
 类型：`string`。
 
 默认值：``。
-
-## regexp
-
-解析正则表达式。
-
-### 使用方法
-
-```bash
-$ mycli ai regexp '/^[a-z]+$/'
-```

@@ -6,16 +6,13 @@ import binarySplit from 'binary-split';
 import through from 'through2';
 
 interface Options {
-    fileName: string;
+    moduleName: string;
     title: string;
-    level: number;
 }
 /**
  * 在markdown文件中，查找指定标题的内容，匹配到下一个级别和当前级别相同甚至更高的为止。
  * @param {object} options
  * @param {string} option.fileName - markdown文件名
- * @param {string} option.title - 标题
- * @param {number} option.level - 标题级别
  */
 /**
  * 在markdown文件中查找指定标题的内容
@@ -23,24 +20,21 @@ interface Options {
  * @returns {NodeJS.Transform} 返回一个可读流，包含匹配标题的内容
  */
 export const findContent = (options: Options): Transform => {
-    const { fileName, title, level } = options;
-    const filePathStr = join(fileURLToPath(import.meta.url), '../../docs', `${fileName}.md`);
-    const regex = new RegExp(`^#{${level}} ${title}`);
-    let isInRange = false;
+    const { moduleName, title } = options;
+    const fileDirStr = join(fileURLToPath(import.meta.url), '../../src/core', moduleName);
+    let filePathStr = '';
+    if (!title.startsWith('--')) {
+        filePathStr = join(fileDirStr, title, `docs/help.md`);
+    } else {
+        filePathStr = join(fileDirStr, 'docs/help.md');
+    }
     const stream = fs.createReadStream(filePathStr);
     return stream.pipe(binarySplit('\n')).pipe(
         through(function (chunk: Buffer, enc, next) {
             const line = chunk.toString();
-            if (regex.test(line)) {
-                isInRange = true;
-                this.push(line);
-            } else if (isInRange && matches(line, level) !== null) {
-                isInRange = false;
-            } else if (isInRange) {
-                this.push(line);
-            }
+            this.push(line);
             next();
-        })
+        }),
     );
 };
 

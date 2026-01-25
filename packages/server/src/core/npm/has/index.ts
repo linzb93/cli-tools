@@ -1,5 +1,5 @@
-import BaseCommand from '../BaseCommand';
-import npm from './shared';
+import BaseCommand from '../../BaseCommand';
+import npm from '../shared';
 
 export interface Options {
     dev?: boolean;

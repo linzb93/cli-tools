@@ -67,9 +67,8 @@ export const generateHelpDoc = (commands: string[]) => {
     return new Promise<void>(async (resolve) => {
         try {
             const stream = findContent({
-                fileName: commands[0],
-                title: commands.join(' '),
-                level: commands.length,
+                moduleName: commands[0],
+                title: commands[1],
             });
             fromStream(stream)
                 .pipe(
@@ -79,11 +78,11 @@ export const generateHelpDoc = (commands: string[]) => {
                             concatMap((char) =>
                                 interval(100).pipe(
                                     first(),
-                                    map(() => char)
-                                )
-                            )
-                        )
-                    )
+                                    map(() => char),
+                                ),
+                            ),
+                        ),
+                    ),
                 )
                 .subscribe({
                     next(data) {
