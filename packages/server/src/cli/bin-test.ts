@@ -17,6 +17,8 @@ program.hook('preAction', (thisCommand) => {
                     await generateHelpDoc([mainCommand, process.argv[3]]);
                     process.exit(0);
                 })();
+            } else {
+                resolve();
             }
         }, 100);
     });

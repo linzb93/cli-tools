@@ -1,28 +1,11 @@
 import BaseManager from '../BaseManager';
-import {
-    Mtjysq,
-    Mtzxsq,
-    Mtpjsq,
-    Mtimsq,
-    Mtaibdsq,
-    Mtdjds,
-    Elejysq,
-    Chain,
-    Spbj,
-    Wmb,
-    Kdb,
-    DkdMiniProgram,
-} from './apps';
-import BaseApp from './apps/base';
 import { Options } from './types';
-
-type AppCtor = new () => BaseApp;
+import { AppFactory } from './AppFactory';
 
 /**
  * 常用命令
  */
 export class OccManager extends BaseManager {
-    private apps: BaseApp[] = [];
     private options: Options;
     /**
      * 从输入中获取的应用名称
@@ -32,72 +15,68 @@ export class OccManager extends BaseManager {
      * 搜索内容，支持门店ID或门店名称关键字
      */
     private searchKeyword = '';
+
     async main(input: string[], options: Options) {
-        this.options = options;
-        this.registerAllApps();
-        this.parseArgs(input);
-        await this.run();
+        try {
+            this.options = options;
+            this.parseArgs(input);
+            await this.run();
+        } catch (error) {
+            console.log(error);
+        }
     }
-    private registerAllApps() {
-        this.registerApp(Mtjysq);
-        this.registerApp(Mtzxsq);
-        this.registerApp(Mtpjsq);
-        this.registerApp(Mtimsq);
-        this.registerApp(Mtdjds);
-        this.registerApp(Mtaibdsq);
-        this.registerApp(Elejysq);
-        this.registerApp(Chain);
-        this.registerApp(Spbj);
-        this.registerApp(Wmb);
-        this.registerApp(Kdb);
-        this.registerApp(DkdMiniProgram);
-    }
-    /**
-     * 注册应用
-     * @param app
-     */
-    private registerApp(app: AppCtor) {
-        this.apps.push(new app());
-    }
+
     /**
      * 添加app后运行
      */
     private async run() {
-        for (const app of this.apps) {
-            if (app.name === this.appName) {
-                if (this.options.type) {
-                    await app.customAction(this.searchKeyword, this.options);
-                } else {
-                    await app.run(this.searchKeyword, this.options);
-                }
-                return;
+        try {
+            const app = AppFactory.createApp(this.appName);
+
+            if (this.options.type) {
+                await app.customAction(this.searchKeyword, this.options);
+            } else {
+                await app.run(this.searchKeyword, this.options);
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                this.logger.error(error.message);
+            } else {
+                this.logger.error(`应用执行失败: ${this.appName}`);
             }
         }
     }
+
     private parseArgs(input: string[]) {
-        const defaultApp = this.apps.find((app) => app.isDefault) as BaseApp;
-        const defaultAppName = defaultApp.name;
+        const defaultAppName = AppFactory.getDefaultAppName();
+
         if (!input.length) {
             this.appName = defaultAppName;
+            const defaultApp = AppFactory.getDefaultApp();
             this.searchKeyword = this.options.test ? defaultApp.testDefaultId : defaultApp.defaultId;
             return;
         }
+
         if (input.length === 2) {
             this.appName = input[0];
             this.searchKeyword = input[1];
             return;
         }
+
         if (input.length === 1) {
             if (/^[a-z]+$/.test(input[0])) {
                 this.appName = input[0];
-                const matchApp = this.apps.find((app) => app.name === this.appName) as BaseApp;
-                if (!matchApp) {
+
+                if (!AppFactory.hasApp(this.appName)) {
                     this.logger.error(`未找到应用: ${this.appName}`);
                     return;
                 }
+
+                const matchApp = AppFactory.createApp(this.appName);
                 this.searchKeyword = this.options.test ? matchApp.testDefaultId : matchApp.defaultId;
                 return;
             }
+
             this.appName = defaultAppName;
             this.searchKeyword = input[0];
         }
