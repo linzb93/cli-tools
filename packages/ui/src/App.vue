@@ -7,24 +7,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import Menus from './components/Menus.vue'
-import { useGlobalStore } from '@/store'
+import Menus from './components/Menus.vue';
+import { useGlobalStore } from '@/store';
 
-const globalStore = useGlobalStore()
-globalStore.getSetting()
-// globalStore.listenIpcConnected();
-if (process.env.NODE_ENV === 'development') {
-  document.title = '我的工具箱（开发版）'
-} else {
-  document.title = '我的工具箱'
-}
+const globalStore = useGlobalStore();
+globalStore.getSetting();
+document.title = `我的工具箱${process.env.NODE_ENV === 'development' ? '（开发版）' : ''}`;
 
 document.body.addEventListener('dragover', function (event) {
-  event.preventDefault()
-})
+  event.preventDefault();
+});
 document.body.addEventListener('drop', function (event) {
-  event.preventDefault()
-})
+  event.preventDefault();
+});
 </script>
 <style scoped>
 .cont {
