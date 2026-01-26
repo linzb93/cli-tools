@@ -1,5 +1,5 @@
-import Cg, { Options } from '@/core/cg';
+import { CgManager, Options } from '@/core/cg';
 
 export const cgCommand = (action: string, data: string, options?: Options) => {
-    return new Cg().main(action, data, options);
+    return new CgManager().main(action, data, options);
 };

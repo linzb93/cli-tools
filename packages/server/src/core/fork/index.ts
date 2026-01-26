@@ -2,7 +2,7 @@ import { fork } from 'node:child_process';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
 import internalIp from 'internal-ip';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 
 interface Message {
     port: string;
@@ -12,7 +12,7 @@ interface Message {
  * 在子进程中启动服务，退出父进程。
  * 只能用在HTTP服务中，TCP和IPC在父进程退出后也会自动结束
  */
-export default class extends BaseCommand {
+export class ForkManager extends BaseManager {
     async main(filename: string) {
         const cwd = process.cwd();
         const child = fork(resolve(cwd, filename), {

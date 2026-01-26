@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
 import { sleep } from '@linzb93/utils';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { execaCommand as execa } from 'execa';
 
 /**
@@ -13,7 +13,7 @@ import { execaCommand as execa } from 'execa';
  * 用于编译scss文件并监听文件变化自动重新编译
  * 仅在当前项目的scss目录下运行
  */
-export default class SassCommand extends BaseCommand {
+export class SassManager extends BaseManager {
     /**
      * 依赖图正则表达式
      */
@@ -255,7 +255,7 @@ export default class SassCommand extends BaseCommand {
         const delMatch = this.depRepo.find((item) => item.name === resolve(file));
         if (delMatch) {
             this.logger.warn(
-                `该删除的文件有被下列文件引用，\n请尽快修改，或还原被删除的文件：\n ${delMatch.refed.join('\n')}`
+                `该删除的文件有被下列文件引用，\n请尽快修改，或还原被删除的文件：\n ${delMatch.refed.join('\n')}`,
             );
         }
     }
@@ -316,7 +316,7 @@ export default class SassCommand extends BaseCommand {
             while ((pattern = this.reg.exec(content)) !== null) {
                 const dependencyName = resolve(
                     dirname(fullFile),
-                    pattern[1].endsWith('.scss') ? pattern[1] : `${pattern[1]}.scss`
+                    pattern[1].endsWith('.scss') ? pattern[1] : `${pattern[1]}.scss`,
                 );
 
                 const existingDep = depRepo.find((item) => item.name === dependencyName);

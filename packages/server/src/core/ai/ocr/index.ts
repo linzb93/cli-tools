@@ -1,7 +1,7 @@
 import imageClipboard from '@/utils/clipboard';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import clipboardy from 'clipboardy';
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import AiImpl from '../shared/ai-impl';
 import { MessageOptions } from '../shared/types';
 /**
@@ -18,7 +18,7 @@ export interface Options {
  * OCR功能类
  * 处理图像识别相关功能
  */
-export class OCRManager extends BaseCommand {
+export class OCRManager extends BaseManager {
     /**
      * 移除临时上传文件的处理函数
      */

@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import AiImpl from '../shared/ai-impl';
 import { MessageOptions } from '../shared/types';
 import { printObject } from '../shared/utils';
@@ -7,7 +7,7 @@ import { printObject } from '../shared/utils';
  * 正则表达式解析类
  * 处理正则表达式解析功能
  */
-export class RegexManager extends BaseCommand {
+export class RegexManager extends BaseManager {
     /**
      * 提示内容
      */

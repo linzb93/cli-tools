@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { isGitProject, getAllTags } from '../utils';
 import { executeCommands } from '@/utils/promise';
 import semver from 'semver';
@@ -58,7 +58,7 @@ interface VersionInfo {
 /**
  * git tag 命令的实现类
  */
-export class TagManager extends BaseCommand {
+export class TagManager extends BaseManager {
     /**
      * 命令的主入口函数
      * @param {Options} options - 命令选项

@@ -1,5 +1,5 @@
 import { format } from 'prettier';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { CurlManager } from '../curl';
 
 /**
@@ -20,7 +20,7 @@ export interface Options {
     type: 'key' | 'json';
 }
 
-export class CookieManager extends BaseCommand {
+export class CookieManager extends BaseManager {
     /**
      * 解析 Cookie 字符串
      * @param {string} data Cookie 字符串

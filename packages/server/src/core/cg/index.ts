@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-import BaseCommand from '@/core/BaseCommand';
+import BaseManager from '@/core/BaseManager';
 import { getPerformanceData, userForcastList, setUserForcast } from './shared';
 
 export interface Options {
@@ -13,7 +13,7 @@ interface User {
     amount: number;
 }
 
-export default class extends BaseCommand {
+export class CgManager extends BaseManager {
     async main(action: string, data: string, options: Options) {
         if (action === 'get') {
             this.renderTodayResult();
@@ -35,7 +35,7 @@ export default class extends BaseCommand {
                 `今日业绩：${chalk.yellow(todayData)}，本月业绩：${chalk.yellow(monthData)}${`(${(
                     (monthData / plan) *
                     100
-                ).toFixed(2)}%)`} ${chalk.gray(`[${dayjs().format('HH:mm:ss')}]`)}`
+                ).toFixed(2)}%)`} ${chalk.gray(`[${dayjs().format('HH:mm:ss')}]`)}`,
             );
         } catch (error) {
             this.spinner.fail(error);
@@ -76,7 +76,7 @@ export default class extends BaseCommand {
                             }
                             return output;
                         })
-                        .join('\n')
+                        .join('\n'),
                 );
             }
         });

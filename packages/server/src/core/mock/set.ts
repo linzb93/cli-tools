@@ -1,4 +1,4 @@
-// import BaseCommand from "../../shared/BaseCommand";
+// import BaseManager from "../../shared/BaseManager";
 // import fs from "fs-extra";
 // import path from "node:path";
 // import * as helper from '../../shared/helper';
@@ -10,7 +10,7 @@
 //   }[];
 // }
 
-// class Set extends BaseCommand {
+// class Set extends BaseManager {
 //   async run() {
 //     const { name, prefix, id } = await this.inquirer.prompt([
 //       {

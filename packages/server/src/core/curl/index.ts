@@ -1,4 +1,4 @@
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
 import { BaseCurlParser } from './BaseCurlParser';
@@ -56,7 +56,7 @@ class CurlParserFactory {
     }
 }
 
-export class CurlManager extends BaseCommand {
+export class CurlManager extends BaseManager {
     private options: Options;
 
     main(options: Options): void {

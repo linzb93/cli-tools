@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { DeployOptions } from './BaseDeployCommand';
 import DeployCommandFactory from './DeployCommandFactory';
 
@@ -8,7 +8,7 @@ import DeployCommandFactory from './DeployCommandFactory';
  */
 export type { DeployOptions as Options };
 
-export class DeployManager extends BaseCommand {
+export class DeployManager extends BaseManager {
     /**
      * 主执行函数
      * @param {DeployOptions} options - 命令选项

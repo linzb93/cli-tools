@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { levelCharacters } from '@/utils/constant';
 export interface Options {
     /**
@@ -20,7 +20,7 @@ export interface Options {
 
 const defaultIgnoreDirs = ['node_modules', '.git', '.DS_Store'];
 
-export default class extends BaseCommand {
+export class TreeManager extends BaseManager {
     private outputList: string[];
     private ignoreDirs: string[];
     private options: Options;

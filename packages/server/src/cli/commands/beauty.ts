@@ -1,5 +1,5 @@
-import BeautyCommand from '@/core/beauty';
+import { BeautyManager } from '@/core/beauty';
 
 export const beautyCommand = () => {
-    return new BeautyCommand().main();
+    return new BeautyManager().main();
 };

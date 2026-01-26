@@ -1,5 +1,5 @@
-import Fork from '@/core/fork';
+import { ForkManager } from '@/core/fork';
 
 export const forkCommand = (filename: string) => {
-    new Fork().main(filename);
+    new ForkManager().main(filename);
 };

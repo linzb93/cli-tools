@@ -1,5 +1,5 @@
-import SassCommand from '../../core/sass';
+import { SassManager } from '@/core/sass';
 
 export const sassCommand = function (): void {
-    new SassCommand().main();
+    new SassManager().main();
 };

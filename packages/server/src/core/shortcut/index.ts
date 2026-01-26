@@ -1,4 +1,4 @@
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import chalk from 'chalk';
 import { isWin } from '@/utils/constant';
 import { groupBy } from 'lodash-es';
@@ -10,7 +10,7 @@ interface IShortcutItem {
     type: 'all' | 'vscode' | 'chrome';
 }
 
-export default class Shortcut extends BaseCommand {
+export class ShortcutManager extends BaseManager {
     private name: string;
     main(name: string) {
         this.name = name;
@@ -139,7 +139,7 @@ export default class Shortcut extends BaseCommand {
 ${chalk.red(`-------------------`)}
 ${grouped[key].map((item) => this.renderItem(item)).join('\n')}`;
                     })
-                    .join('\n\n')
+                    .join('\n\n'),
             );
         } else if (['chrome', 'vscode'].includes(this.name)) {
             let arr = [];

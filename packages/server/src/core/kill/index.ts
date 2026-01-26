@@ -2,7 +2,7 @@ import rawKillPort from 'kill-port';
 import detectPort from 'detect-port';
 import { last, isPlainObject } from 'lodash-es';
 import chalk from 'chalk';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 
 const numberRE = /[1-9][0-9]*/;
 
@@ -15,7 +15,7 @@ export interface IOption {
 }
 
 export type Params = [number] | [string, number];
-export class KillManager extends BaseCommand {
+export class KillManager extends BaseManager {
     private options: IOption = {
         log: true,
     };

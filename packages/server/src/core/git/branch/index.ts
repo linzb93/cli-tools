@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import BaseCommand from '@/core/BaseCommand';
+import BaseManager from '@/core/BaseManager';
 import { getAllBranches, BranchInfo } from '../utils';
 import BranchDeleteService from './delete';
 
@@ -16,7 +16,7 @@ export interface Options {
     key: string;
 }
 
-export class BranchManager extends BaseCommand {
+export class BranchManager extends BaseManager {
     async main(options: Options) {
         if (options.delete) {
             const deleteService = new BranchDeleteService();
@@ -56,7 +56,7 @@ export class BranchManager extends BaseCommand {
         table.push(
             ...branches.map((item) => {
                 return [item.name, item.type, item.createTime];
-            })
+            }),
         );
         console.log(table.toString());
     }

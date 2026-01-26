@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { TimeManager } from '../time';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { AnyObject } from '@/typings';
 import TokenParser from './TokenParser';
 import JwtTokenParser from './JwtTokenParser';
@@ -17,7 +17,7 @@ export interface Options {
     complete?: boolean;
 }
 
-export class TokenManager extends BaseCommand {
+export class TokenManager extends BaseManager {
     /**
      * 解析token的主方法
      * @param tk 待解析的token字符串

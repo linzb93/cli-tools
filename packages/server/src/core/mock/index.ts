@@ -9,7 +9,7 @@
 // import { sleep } from '@linzb93/utils';
 // import pMap from 'p-map';
 // import path from 'node:path';
-// import BaseCommand from '../BaseCommand';
+// import BaseManager from '../BaseManager';
 // // import set from "./set";
 // import { AnyObject } from '@/typings';
 // // import * as helper from "@/utils/helper";
@@ -63,7 +63,7 @@
 //     (err) => err
 // );
 
-// export default class extends BaseCommand {
+// export default class extends BaseManager {
 //     action: string;
 //     private cookie = '';
 //     private subProcess: ChildProcess | undefined;

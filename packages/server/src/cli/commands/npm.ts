@@ -11,9 +11,11 @@ interface IOption {
 const search = (args: string[], options: SearchOptions) => {
     new SearchManager().main(args, options);
 };
+
 const has = (args: string[], options: HasOptions) => {
     return new HasManager().main(args, options);
 };
+
 const uninstall = (args: string[], options: UninstallOptions) => {
     new UninstallManager().main(args, options);
 };

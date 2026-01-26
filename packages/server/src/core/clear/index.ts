@@ -1,14 +1,14 @@
 import del from 'del';
 import { globby } from 'globby';
 import pMap from 'p-map';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 export interface IOptions {
     root?: boolean;
     help?: boolean;
 }
 
 // 主要是来清理Windows上被Git同步过来的 macOS 的 .DS_Store
-export default class extends BaseCommand {
+export class ClearManager extends BaseManager {
     /**
      * 主函数，执行清理逻辑
      * @param {string} filename - 要清理的文件名

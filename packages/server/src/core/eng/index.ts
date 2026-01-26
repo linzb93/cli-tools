@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { BaseTranslator, YoudaoTranslator, AiTranslator, type TranslateResultItem } from './translators';
 
 export interface Options {
@@ -12,7 +12,7 @@ export interface Options {
 /**
  * 翻译命令类
  */
-export class TranslateManager extends BaseCommand {
+export class TranslateManager extends BaseManager {
     /**
      * 是否是中文翻译成英文
      */

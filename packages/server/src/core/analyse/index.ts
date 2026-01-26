@@ -1,4 +1,4 @@
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import CodeAnalyse from './code';
 import CliAnalyse from './cli';
 
@@ -12,7 +12,7 @@ export interface Options {
 /**
  * 分析命令类
  */
-export default class extends BaseCommand {
+export default class extends BaseManager {
     /**
      * 主方法
      * @param subCommand 子命令

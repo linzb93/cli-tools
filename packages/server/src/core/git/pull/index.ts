@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { isGitProject, getCurrentBranchName } from '../utils';
 import gitAtom from '../utils/atom';
 import { executeCommands } from '@/utils/promise';
@@ -12,7 +12,7 @@ export interface Options {}
 /**
  * git pull 命令的实现类
  */
-export class PullManager extends BaseCommand {
+export class PullManager extends BaseManager {
     /**
      * 命令的主入口函数
      * @param {Options} options - 命令选项

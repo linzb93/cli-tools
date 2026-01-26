@@ -4,7 +4,7 @@ import open from 'open';
 import dayjs from 'dayjs';
 import detectPort from 'detect-port';
 import chalk from 'chalk';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { root } from '@/utils/constant';
 import { KillManager } from '../kill';
 import inquirer from '@/utils/inquirer';
@@ -29,7 +29,7 @@ export interface Options {
     exit?: boolean;
 }
 
-export class ServerManager extends BaseCommand {
+export class ServerManager extends BaseManager {
     async main(command?: string, options?: Options) {
         const port = globalConfig.port.production;
         if (command === 'stop') {
@@ -57,7 +57,7 @@ export class ServerManager extends BaseCommand {
                     console.log(
                         `${chalk.yellow(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)} 服务在${
                             globalConfig.port.production
-                        }端口启动。`
+                        }端口启动。`,
                     );
                     await this.openPage(options);
                     child.unref();

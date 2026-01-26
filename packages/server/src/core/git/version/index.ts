@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { isGitProject } from '../utils';
 import { executeCommands } from '@/utils/promise';
 import fs from 'fs-extra';
@@ -9,7 +9,7 @@ import chalk from 'chalk';
 /**
  * git version 命令的实现类
  */
-export class VersionManager extends BaseCommand {
+export class VersionManager extends BaseManager {
     /**
      * 命令的主入口函数
      * @param {string} [versionArg] - 可选的版本号参数

@@ -1,4 +1,4 @@
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import {
     Mtjysq,
     Mtzxsq,
@@ -21,7 +21,7 @@ type AppCtor = new () => BaseApp;
 /**
  * 常用命令
  */
-export class OccManager extends BaseCommand {
+export class OccManager extends BaseManager {
     private apps: BaseApp[] = [];
     private options: Options;
     /**

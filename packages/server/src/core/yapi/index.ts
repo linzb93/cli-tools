@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import dayjs from 'dayjs';
 import {
     getYapiInterfaceTotal,
@@ -8,7 +8,6 @@ import {
     getYapiInterfaceDetail,
     type YapiInterfaceDetail,
     type SavedData,
-    type SavedFullData,
 } from './api';
 import { yapiAuth } from './auth';
 import pMap from 'p-map';
@@ -16,7 +15,7 @@ import pMap from 'p-map';
 /**
  * Yapi接口文档处理类
  */
-export default class extends BaseCommand {
+export class YapiManager extends BaseManager {
     /**
      * 文档存储路径
      */
@@ -118,7 +117,7 @@ export default class extends BaseCommand {
                             _id: urlInfo.apiId,
                         },
                     ],
-                    cookie
+                    cookie,
                 );
 
                 // 更新索引文件
@@ -232,8 +231,8 @@ export default class extends BaseCommand {
                                 response: JSON.parse(apiDetail.res_body),
                             },
                             null,
-                            4
-                        )
+                            4,
+                        ),
                     );
 
                     // 创建空的 api.md 文件
@@ -245,7 +244,7 @@ export default class extends BaseCommand {
                     this.logger.error(`处理接口 ${apiItem._id} 时出错:`, error.message);
                 }
             },
-            { concurrency: 4 }
+            { concurrency: 4 },
         );
     }
 
@@ -270,7 +269,7 @@ export default class extends BaseCommand {
 
             this.apiDocs.forEach((newDoc) => {
                 const existingIndex = mergedDocs.findIndex(
-                    (doc) => doc.id === newDoc.id && doc.projectId === newDoc.projectId
+                    (doc) => doc.id === newDoc.id && doc.projectId === newDoc.projectId,
                 );
 
                 if (existingIndex === -1) {

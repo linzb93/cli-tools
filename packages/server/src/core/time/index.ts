@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import { logger } from '@/utils/logger';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 
-export class TimeManager extends BaseCommand {
+export class TimeManager extends BaseManager {
     main(timeParam: string): void {
         const time = this.get(timeParam);
         console.log(time);

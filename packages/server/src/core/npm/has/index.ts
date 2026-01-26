@@ -1,11 +1,11 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import npm from '../shared';
 
 export interface Options {
     dev?: boolean;
     help?: boolean;
 }
-export class HasManager extends BaseCommand {
+export class HasManager extends BaseManager {
     async main(args: string[], options: Options) {
         const { spinner } = this;
         const name = args[0];

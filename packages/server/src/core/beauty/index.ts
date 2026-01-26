@@ -1,9 +1,9 @@
-import BaseCommand from '@/core/BaseCommand';
+import BaseManager from '@/core/BaseManager';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
 import { CurlManager } from '../curl';
 
-export default class extends BaseCommand {
+export class BeautyManager extends BaseManager {
     private curlService: CurlManager;
     constructor() {
         super();

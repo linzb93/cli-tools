@@ -1,10 +1,10 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { isGitProject, getAllTags, deleteTags } from '../utils';
 
 /**
  * 删除Git标签的类
  */
-export default class TagDelete extends BaseCommand {
+export default class TagDelete extends BaseManager {
     /**
      * 命令的主入口函数
      * @returns {Promise<void>}

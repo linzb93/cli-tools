@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import del from 'del';
 import globalNpm from 'global-modules';
 import readPkg, { NormalizedPackageJson } from 'read-pkg';
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import npm from '../shared';
 
 export interface Options {
@@ -11,7 +11,7 @@ export interface Options {
 interface SimilarOption {
     name: string;
 }
-export class UninstallManager extends BaseCommand {
+export class UninstallManager extends BaseManager {
     async main(args: string[], options: Options) {
         const name = args[0];
         if (options.global) {

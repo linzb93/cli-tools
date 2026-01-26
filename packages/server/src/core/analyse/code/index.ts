@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import pMap from 'p-map';
 import { globby } from 'globby';
 import chalk from 'chalk';
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { splitByLine } from '@/utils/helper';
 import Module, { IFileAnalysis } from './Module';
 import VueModule from './VueModule';
@@ -12,7 +12,7 @@ import JavascriptModule from './JavascriptModule';
 /**
  * 代码分析命令类
  */
-export default class extends BaseCommand {
+export default class extends BaseManager {
     /**
      * 可用的分析模块
      */
@@ -97,13 +97,13 @@ export default class extends BaseCommand {
                     ) {
                         row.push(
                             chalk.cyan(
-                                `template:${item.templateLength}行;script:${item.scriptLength}行;style:${item.styleLength}行`
-                            )
+                                `template:${item.templateLength}行;script:${item.scriptLength}行;style:${item.styleLength}行`,
+                            ),
                         );
                     }
 
                     return row;
-                })
+                }),
         );
         console.log(table.toString());
     }

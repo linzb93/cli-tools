@@ -60,7 +60,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
             this.logger.warn('当前分支为master，将要发布项目');
             await sleep(1500);
         }
-        await this.executeBaseCommands(this.options.commit);
+        await this.executeBaseManagers(this.options.commit);
         if (!this.options.current) {
             await this.handleTagAndOutput();
         }
@@ -74,7 +74,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleReleaseBranch(): Promise<void> {
-        await this.executeBaseCommands(this.options.commit);
+        await this.executeBaseManagers(this.options.commit);
 
         // 打开Jenkins主页
         if (this.options.open !== false) {
@@ -87,7 +87,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      * @returns {Promise<void>}
      */
     private async handleOtherBranch(): Promise<void> {
-        await this.executeBaseCommands(this.options.commit);
+        await this.executeBaseManagers(this.options.commit);
 
         if (this.options.prod) {
             // 询问用户是否确认发布

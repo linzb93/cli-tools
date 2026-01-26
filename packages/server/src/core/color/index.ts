@@ -1,7 +1,7 @@
 import convert from 'color-convert';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 export interface Options {
     /**
      * 是否显示颜色示例
@@ -13,7 +13,7 @@ export interface Options {
     help?: boolean;
 }
 
-export class ColorManager extends BaseCommand {
+export class ColorManager extends BaseManager {
     /**
      * 颜色映射表
      */

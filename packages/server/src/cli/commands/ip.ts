@@ -1,5 +1,5 @@
-import Ip from '@/core/ip';
+import { IpManager } from '@/core/ip';
 
 export const ipCommand = (data: string[]) => {
-    new Ip().main(data);
+    new IpManager().main(data);
 };

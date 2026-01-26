@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { isGitProject, getCurrentBranchName, isCurrenetBranchPushed } from '../utils';
 import gitAtom from '../utils/atom';
 import { executeCommands } from '@/utils/promise';
@@ -7,7 +7,7 @@ import chalk from 'chalk';
 /**
  * git push 命令的实现类
  */
-export class PushManager extends BaseCommand {
+export class PushManager extends BaseManager {
     /**
      * 命令的主入口函数
      * @returns {Promise<void>}

@@ -1,14 +1,14 @@
 import { execaCommand } from 'execa';
 import chalk from 'chalk';
 import pMap from 'p-map';
-import BaseCommand from '@/core/BaseCommand';
+import BaseManager from '@/core/BaseManager';
 import { getAllBranches, deleteBranch, BranchInfo } from '../utils';
 
 interface BranchExtraItem extends BranchInfo {
     value: string;
 }
 
-export class BranchDeleteService extends BaseCommand {
+export class BranchDeleteService extends BaseManager {
     async main() {
         const branches = (await getAllBranches()).reduce<BranchExtraItem[]>((acc, branchItem) => {
             if (['master', 'main', 'release'].includes(branchItem.name)) {
@@ -75,7 +75,7 @@ export class BranchDeleteService extends BaseCommand {
                     }
                 }
             },
-            { concurrency: 4 }
+            { concurrency: 4 },
         );
 
         this.spinner.stop();

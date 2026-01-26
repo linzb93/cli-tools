@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { execaCommand as execa } from 'execa';
 import { splitGitLog } from '../utils';
 import pMap from 'p-map';
@@ -12,7 +12,7 @@ export interface Options {
     path: string;
 }
 
-export class LogManager extends BaseCommand {
+export class LogManager extends BaseManager {
     async main(options: Options) {
         this.spinner.text = '正在获取Git日志';
         let head = 0;
@@ -45,7 +45,7 @@ export class LogManager extends BaseCommand {
                     files,
                 };
             },
-            { concurrency: 3 }
+            { concurrency: 3 },
         );
         this.spinner.succeed('Git日志获取成功');
         output.forEach((item) => {

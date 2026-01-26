@@ -6,10 +6,10 @@ import chalk from 'chalk';
 import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { defaultBrowserHeaders } from '@/utils/helper';
 
-export default class extends BaseCommand {
+export class IpManager extends BaseManager {
     async main(data?: string[]) {
         if (data[0] && data[0].match(/^(\d{1,3}\.){3}\d{1,3}$/)) {
             this.getIpLocation(data[0]);
@@ -66,7 +66,7 @@ export default class extends BaseCommand {
             },
             {
                 [chalk.green(output[2])]: output[3],
-            }
+            },
         );
         if (!output[2]) {
             table.pop();

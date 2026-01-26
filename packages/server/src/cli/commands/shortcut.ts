@@ -1,5 +1,5 @@
-import Shortcut from '@/core/shortcut';
+import { ShortcutManager } from '@/core/shortcut';
 
 export const shortcutCommand = (name: string) => {
-    new Shortcut().main(name);
+    new ShortcutManager().main(name);
 };

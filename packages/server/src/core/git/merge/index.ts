@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import Table from 'cli-table3';
 import { isGitProject, splitGitLog } from '../utils';
 import { execaCommand as execa } from 'execa';
@@ -15,7 +15,7 @@ export interface Options {
 /**
  * git merge 命令的实现类
  */
-export class MergeManager extends BaseCommand {
+export class MergeManager extends BaseManager {
     /**
      * 命令的主入口函数
      * @param {Options} options - 命令选项
@@ -45,7 +45,7 @@ export class MergeManager extends BaseCommand {
             name: 'commitMessage',
         });
         const commitMessage = fmtCommitMsg(
-            answer.commitMessage || arr.map((item) => item.message.replace(/\w+\:/g, '')).join('\n')
+            answer.commitMessage || arr.map((item) => item.message.replace(/\w+\:/g, '')).join('\n'),
         );
         await execa(`git reset --soft HEAD~${head}`);
         await execa('git add .');

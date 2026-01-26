@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import gitAtom from '../utils/atom';
 import { executeCommands } from '@/utils/promise';
 import chalk from 'chalk';
@@ -14,7 +14,7 @@ export interface Options {
 /**
  * git clone 命令的实现类
  */
-export class CloneManager extends BaseCommand {
+export class CloneManager extends BaseManager {
     /**
      * 命令的主入口函数
      * @param {Options} options - 命令选项

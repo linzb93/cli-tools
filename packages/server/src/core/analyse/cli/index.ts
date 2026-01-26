@@ -1,14 +1,14 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { cacheRoot, levelCharacters } from '@/utils/constant';
 import { splitByLine } from '@/utils/helper';
 
 /**
  * CLI使用分析命令类
  */
-export default class extends BaseCommand {
+export default class extends BaseManager {
     /**
      * 主方法
      */
@@ -56,7 +56,7 @@ export default class extends BaseCommand {
                 }
                 return acc;
             },
-            []
+            [],
         );
         result.sort((prev, next) => (prev.count > next.count ? -1 : 1));
         result.forEach((item) => {
@@ -67,7 +67,7 @@ export default class extends BaseCommand {
         });
         const firstItem = this.parseLine(lines[0]);
         console.log(`从${chalk.magenta(firstItem.time)}开始，cli共使用${chalk.hex('#ffa500')(
-            lines.length
+            lines.length,
         )}次。各命令使用情况如下：
 ${result
     .map((item) => {
@@ -81,7 +81,7 @@ ${item.children
         (child, index) =>
             `${
                 index === item.children.length - 1 ? levelCharacters.last : levelCharacters.contain
-            }${levelCharacters.line.repeat(2)}${chalk.yellow(child.cmd)}，使用过${chalk.cyan(child.count)}次`
+            }${levelCharacters.line.repeat(2)}${chalk.yellow(child.cmd)}，使用过${chalk.cyan(child.count)}次`,
     )
     .join('\n')}`;
     })

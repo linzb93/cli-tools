@@ -22,8 +22,8 @@ vi.mock('prettier', () => ({
     format: vi.fn((code) => code),
 }));
 
-// 模拟BaseCommand
-vi.mock('../BaseCommand', () => ({
+// 模拟BaseManager
+vi.mock('../BaseManager', () => ({
     default: class {
         logger = {
             info: vi.fn(),

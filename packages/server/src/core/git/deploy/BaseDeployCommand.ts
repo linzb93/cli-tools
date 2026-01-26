@@ -1,4 +1,4 @@
-import BaseCommand from '../../BaseCommand';
+import BaseManager from '../../BaseManager';
 import { execaCommand as execa } from 'execa';
 import { executeCommands, formatError } from '@/utils/promise';
 import gitAtom from '../utils/atom';
@@ -48,7 +48,7 @@ export interface DeployOptions {
  * Git Deploy命令基类
  * 定义了部署命令的通用结构和抽象方法
  */
-export default abstract class BaseDeployCommand extends BaseCommand {
+export default abstract class BaseDeployCommand extends BaseManager {
     protected options: DeployOptions;
     protected currentBranch: string = '';
     protected mainBranch: string = '';
@@ -94,7 +94,7 @@ export default abstract class BaseDeployCommand extends BaseCommand {
      * @param {string} commitMessage - 提交信息
      * @returns {Promise<void>}
      */
-    protected async executeBaseCommands(commitMessage: string): Promise<void> {
+    protected async executeBaseManagers(commitMessage: string): Promise<void> {
         this.logger.info('执行基础Git命令...');
 
         try {

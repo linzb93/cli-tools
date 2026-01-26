@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import sizeOf from 'image-size';
 import through from 'through2';
 import del from 'del';
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { isURL, emptyWritableStream } from '@/utils/helper';
 import { root } from '@/utils/constant';
 
@@ -21,7 +21,7 @@ interface Dimensions {
     height: number | undefined;
 }
 
-export default class extends BaseCommand {
+export class SizeManager extends BaseManager {
     async main(filePath: string, options: Options) {
         if (isURL(filePath)) {
             let res: AxiosResponse;
@@ -46,7 +46,7 @@ export default class extends BaseCommand {
                             size += data.toString().length;
                             this.push(data);
                             callback();
-                        })
+                        }),
                     )
                     .pipe(settingRect ? fs.createWriteStream(targetName) : emptyWritableStream)
                     .on('finish', () => {

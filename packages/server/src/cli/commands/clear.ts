@@ -1,5 +1,5 @@
-import Clear, { IOptions } from '@/core/clear';
+import { ClearManager, IOptions } from '@/core/clear';
 
 export const clearCommand = (filename: string, options?: IOptions) => {
-    return new Clear().main(filename, options);
+    return new ClearManager().main(filename, options);
 };

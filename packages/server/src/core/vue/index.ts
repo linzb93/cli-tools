@@ -1,4 +1,4 @@
-import BaseCommand from '../BaseCommand';
+import BaseManager from '../BaseManager';
 import { showOpenDialog } from '@/utils/dialog';
 import { execaCommand as execa } from 'execa';
 import clipboardy from 'clipboardy';
@@ -10,7 +10,7 @@ import { fork } from 'node:child_process';
 import fs from 'fs-extra';
 import { Database } from '@/utils/sql';
 import * as git from '@/core/git/utils';
-import { objectToCmdOptions } from '@/utils/helper';
+import { objectToCmdOptions, isOldNode } from '@/utils/helper';
 import globalConfig from '../../../../../config.json';
 export interface Options {
     command: string;
@@ -53,12 +53,16 @@ interface ProjectConfig {
     branchName?: string;
 }
 
-export default class Vue extends BaseCommand {
+export class VueManager extends BaseManager {
     /**
      * 命令主入口
      * @param options 命令选项
      */
     async main(options: Options) {
+        if (!isOldNode) {
+            this.logger.error('请使用node14版本');
+            return;
+        }
         if (options.checkout) {
             await this.checkoutBranchAndStartServer(options);
             return;
@@ -118,7 +122,7 @@ export default class Vue extends BaseCommand {
                 message: '请选择运行的项目及命令',
                 choices: list.map((item) => ({
                     name: `${chalk.yellow(item.name)}(${chalk.blue(item.path)}) 命令: ${chalk.green(
-                        item.command
+                        item.command,
                     )} 分支: ${chalk.blue(item.branchName)}`,
                     value: item.id,
                 })),
@@ -184,7 +188,7 @@ export default class Vue extends BaseCommand {
         const branchName = config.branchName || (await git.getCurrentBranchName(config.cwd));
 
         this.spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(
-            `${branchName}分支`
+            `${branchName}分支`,
         )})执行命令：${chalk.green(`npm run ${config.command}`)}，请稍后...`;
 
         await execa(`npm run ${config.command}`, { cwd: config.cwd });
@@ -344,7 +348,7 @@ export default class Vue extends BaseCommand {
             {
                 detached: true,
                 stdio: [null, null, null, 'ipc'],
-            }
+            },
         );
 
         return new Promise((resolve) => {
