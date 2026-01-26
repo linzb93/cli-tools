@@ -58,7 +58,7 @@ interface VersionInfo {
 /**
  * git tag 命令的实现类
  */
-export default class extends BaseCommand {
+export class TagManager extends BaseCommand {
     /**
      * 命令的主入口函数
      * @param {Options} options - 命令选项

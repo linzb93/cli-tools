@@ -7,7 +7,7 @@ import { printObject } from '../shared/utils';
  * 正则表达式解析类
  * 处理正则表达式解析功能
  */
-export default class Regex extends BaseCommand {
+export class RegexManager extends BaseCommand {
     /**
      * 提示内容
      */

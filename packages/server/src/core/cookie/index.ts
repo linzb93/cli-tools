@@ -1,6 +1,6 @@
 import { format } from 'prettier';
 import BaseCommand from '../BaseCommand';
-import CurlCommand from '../curl';
+import { CurlManager } from '../curl';
 
 /**
  * Cookie 解析选项接口
@@ -20,7 +20,7 @@ export interface Options {
     type: 'key' | 'json';
 }
 
-export default class extends BaseCommand {
+export class CookieManager extends BaseCommand {
     /**
      * 解析 Cookie 字符串
      * @param {string} data Cookie 字符串
@@ -28,7 +28,7 @@ export default class extends BaseCommand {
      * @returns {Promise<void>}
      */
     async main(data: string, options: Options): Promise<void> {
-        const curlUtil = new CurlCommand();
+        const curlUtil = new CurlManager();
         let realData = data;
 
         // 检查输入数据是否是curl命令

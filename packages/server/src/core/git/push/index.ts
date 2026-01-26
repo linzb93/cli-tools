@@ -7,7 +7,7 @@ import chalk from 'chalk';
 /**
  * git push 命令的实现类
  */
-export default class extends BaseCommand {
+export class PushManager extends BaseCommand {
     /**
      * 命令的主入口函数
      * @returns {Promise<void>}

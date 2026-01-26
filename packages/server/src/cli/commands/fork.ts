@@ -1,5 +1,5 @@
 import Fork from '@/core/fork';
 
-export default (filename: string) => {
+export const forkCommand = (filename: string) => {
     new Fork().main(filename);
 };

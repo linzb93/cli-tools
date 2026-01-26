@@ -18,7 +18,7 @@ export interface Options {
  * OCR功能类
  * 处理图像识别相关功能
  */
-export default class OCR extends BaseCommand {
+export class OCRManager extends BaseCommand {
     /**
      * 移除临时上传文件的处理函数
      */

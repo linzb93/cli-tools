@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { logger } from '@/utils/logger';
 import BaseCommand from '../BaseCommand';
 
-export default class extends BaseCommand {
+export class TimeManager extends BaseCommand {
     main(timeParam: string): void {
         const time = this.get(timeParam);
         console.log(time);

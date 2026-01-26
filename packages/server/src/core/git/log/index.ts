@@ -12,7 +12,7 @@ export interface Options {
     path: string;
 }
 
-export default class extends BaseCommand {
+export class LogManager extends BaseCommand {
     async main(options: Options) {
         this.spinner.text = '正在获取Git日志';
         let head = 0;

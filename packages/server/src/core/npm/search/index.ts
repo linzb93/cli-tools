@@ -22,7 +22,7 @@ interface OutputPkgItem {
  * 查询npm模块信息，支持单包查询和多包查询
  * 单包查询的可以访问npm主页
  */
-export default class extends BaseCommand {
+export class SearchManager extends BaseCommand {
     private options: Options;
     async main(packages: string[], options: Options) {
         this.options = options;
@@ -38,7 +38,7 @@ export default class extends BaseCommand {
     private async fetchNpmPackage(
         packageName: string,
         isMultiple: boolean,
-        options: Options = {},
+        options: Options = {}
     ): Promise<OutputPkgItem> {
         const { spinner } = this;
         if (!isMultiple) {
@@ -107,7 +107,7 @@ export default class extends BaseCommand {
                     output.splice(1, 1);
                 }
                 return output;
-            }),
+            })
         );
         console.log(table.toString());
     }

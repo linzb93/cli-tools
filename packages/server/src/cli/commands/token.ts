@@ -1,5 +1,5 @@
-import Token, { Options } from '@/core/token';
+import { TokenManager, Options } from '@/core/token';
 
-export default (data: string, options: Options) => {
-    return new Token().main(data, options);
+export const tokenCommand = (data: string, options: Options) => {
+    return new TokenManager().main(data, options);
 };

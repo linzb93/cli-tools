@@ -1,13 +1,13 @@
 import BaseCommand from '@/core/BaseCommand';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
-import CurlCommand from '../curl';
+import { CurlManager } from '../curl';
 
 export default class extends BaseCommand {
-    private curlService: CurlCommand;
+    private curlService: CurlManager;
     constructor() {
         super();
-        this.curlService = new CurlCommand();
+        this.curlService = new CurlManager();
     }
     async main() {
         // 目前只支持格式化剪贴板中的JSON内容

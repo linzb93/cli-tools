@@ -36,7 +36,7 @@ const code = () => {
  * @param data 数据
  * @param options 选项
  */
-export default function (subCommand: string, data: string[], options: any) {
+export function analyseCommand(subCommand: string, data: string[], options: any) {
     const commandMap = {
         cli,
         code,

@@ -5,7 +5,7 @@ export interface Options {
     dev?: boolean;
     help?: boolean;
 }
-export default class extends BaseCommand {
+export class HasManager extends BaseCommand {
     async main(args: string[], options: Options) {
         const { spinner } = this;
         const name = args[0];

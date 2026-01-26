@@ -1,8 +1,8 @@
 import { isOldNode } from '@/utils/helper';
 import { logger } from '@/utils/logger';
 import { subCommandCompiler } from '@/utils/helper';
-import OCR, { Options } from '@/core/ai/ocr/index';
-import Regex from '@/core/ai/regex';
+import { OCRManager, Options } from '@/core/ai/ocr/index';
+import { RegexManager } from '@/core/ai/regex';
 /**
  * OCR子命令
  */
@@ -17,7 +17,7 @@ const ocr = () => {
                     logger.error('请使用node18+版本');
                     return;
                 }
-                new OCR().main(options);
+                new OCRManager().main(options);
             });
     });
 };
@@ -35,7 +35,7 @@ const regex = () => {
                     logger.error('请使用node18+版本');
                     return;
                 }
-                new Regex().main(pattern);
+                new RegexManager().main(pattern);
             });
     });
 };
@@ -46,7 +46,7 @@ const regex = () => {
  * @param rest 其余参数
  * @param options 命令选项
  */
-export default function (subCommand: string, rest: string[], options: any): void {
+export function aiCommand(subCommand: string, rest: string[], options: any): void {
     // 子命令映射表
     const commandMap: Record<string, () => void> = {
         ocr,

@@ -6,7 +6,7 @@ import detectPort from 'detect-port';
 import chalk from 'chalk';
 import BaseCommand from '../BaseCommand';
 import { root } from '@/utils/constant';
-import Kill from '../kill';
+import { KillManager } from '../kill';
 import inquirer from '@/utils/inquirer';
 import globalConfig from '../../../../../config.json';
 
@@ -29,11 +29,11 @@ export interface Options {
     exit?: boolean;
 }
 
-export default class extends BaseCommand {
+export class ServerManager extends BaseCommand {
     async main(command?: string, options?: Options) {
         const port = globalConfig.port.production;
         if (command === 'stop') {
-            new Kill().main('port', port, {
+            new KillManager().main('port', port, {
                 log: true,
             });
             return;

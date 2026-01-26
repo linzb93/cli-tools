@@ -1,5 +1,5 @@
-import Kill, { Params } from '@/core/kill';
+import { KillManager, Params } from '@/core/kill';
 
-export default async (args: Params) => {
-    await new Kill().main(...args);
+export const killCommand = (args: Params) => {
+    new KillManager().main(...args);
 };

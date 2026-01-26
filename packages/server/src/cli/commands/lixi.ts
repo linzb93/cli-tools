@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { logger } from '@/utils/logger';
 
-export default () => {
+export const lixiCommand = () => {
     const source = [
         {
             money: 200000,

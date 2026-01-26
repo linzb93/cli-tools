@@ -1,7 +1,7 @@
-import Server, { Options } from '@/core/server';
+import { ServerManager, Options } from '@/core/server';
 
-export default (command: string, options: Options) => {
-    new Server().main(command, {
+export const serverCommand = (command: string, options: Options) => {
+    new ServerManager().main(command, {
         ...options,
         exit: true,
     });

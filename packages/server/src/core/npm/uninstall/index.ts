@@ -11,7 +11,7 @@ export interface Options {
 interface SimilarOption {
     name: string;
 }
-export default class extends BaseCommand {
+export class UninstallManager extends BaseCommand {
     async main(args: string[], options: Options) {
         const name = args[0];
         if (options.global) {

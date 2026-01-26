@@ -13,7 +13,7 @@ export interface Options {
 /**
  * git pull 命令的实现类
  */
-export default class extends BaseCommand {
+export class CommitManager extends BaseCommand {
     /**
      * 命令的主入口函数
      * @param {string} message - 提交信息

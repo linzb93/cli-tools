@@ -1,5 +1,5 @@
-import Time from '@/core/time';
+import { TimeManager } from '@/core/time';
 
-export default function (timeParam: string) {
-    new Time().main(timeParam);
-}
+export const timeCommand = function (timeParam: string) {
+    new TimeManager().main(timeParam);
+};

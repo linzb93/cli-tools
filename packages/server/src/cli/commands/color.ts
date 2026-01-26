@@ -1,5 +1,5 @@
-import Color, { Options } from '@/core/color';
+import { ColorManager, Options } from '@/core/color';
 
-export default function (text: string, options: Options) {
-    new Color().main(text, options);
-}
+export const colorCommand = function (text: string, options: Options) {
+    new ColorManager().main(text, options);
+};

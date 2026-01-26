@@ -1,7 +1,6 @@
 import BaseDeployCommand, { DeployOptions } from './BaseDeployCommand';
 import { openDeployPage } from '../utils/jenkins';
-import TagCommand from '../tag';
-import { Options as TagOptions } from '../tag';
+import { TagManager, Options as TagOptions } from '../tag';
 import { sleep } from '@linzb93/utils';
 import path from 'node:path';
 import fs from 'fs-extra';
@@ -11,7 +10,7 @@ import fs from 'fs-extra';
  * 处理公司内部项目的部署流程
  */
 export default class CompanyDeployCommand extends BaseDeployCommand {
-    private tagCommand: TagCommand;
+    private tagCommand: TagManager;
 
     /**
      * 构造函数
@@ -19,7 +18,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
      */
     constructor(options: DeployOptions) {
         super(options);
-        this.tagCommand = new TagCommand();
+        this.tagCommand = new TagManager();
     }
 
     /**

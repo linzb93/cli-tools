@@ -16,11 +16,7 @@ export interface Options {
     key: string;
 }
 
-interface BranchExtraItem extends BranchInfo {
-    value: string;
-}
-
-export default class extends BaseCommand {
+export class BranchManager extends BaseCommand {
     async main(options: Options) {
         if (options.delete) {
             const deleteService = new BranchDeleteService();

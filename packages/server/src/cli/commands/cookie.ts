@@ -1,5 +1,4 @@
-import Cookie, { Options } from '@/core/cookie';
-
-export default (data: string, options: Options) => {
-    new Cookie().main(data, options);
+import { CookieManager, Options } from '@/core/cookie';
+export const cookieCommand = (data: string, options: Options) => {
+    new CookieManager().main(data, options);
 };

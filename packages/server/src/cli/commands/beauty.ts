@@ -1,5 +1,5 @@
 import BeautyCommand from '@/core/beauty';
 
-export default () => {
+export const beautyCommand = () => {
     return new BeautyCommand().main();
 };

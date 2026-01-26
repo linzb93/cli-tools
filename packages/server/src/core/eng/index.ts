@@ -9,11 +9,10 @@ export interface Options {
      */
     ai: boolean;
 }
-
 /**
  * 翻译命令类
  */
-export default class extends BaseCommand {
+export class TranslateManager extends BaseCommand {
     /**
      * 是否是中文翻译成英文
      */

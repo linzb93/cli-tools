@@ -4,34 +4,34 @@ import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
 import init from '@/core/init';
 import { generateHelpDoc } from '@/utils/helper';
-import beauty from './commands/beauty';
-import ip from './commands/ip';
-import ai from './commands/ai';
-import eng from './commands/eng';
-import occ from './commands/occ';
-import cg from './commands/cg';
-import cookie from './commands/cookie';
-import clear from './commands/clear';
-import color from './commands/color';
-import fork from './commands/fork';
-import kill from './commands/kill';
-import lixi from './commands/lixi';
-import yapi from './commands/yapi';
+import { beautyCommand } from './commands/beauty';
+import { ipCommand } from './commands/ip';
+import { aiCommand } from './commands/ai';
+import { engCommand } from './commands/eng';
+import { occCommand } from './commands/occ';
+import { cgCommand } from './commands/cg';
+import { cookieCommand } from './commands/cookie';
+import { clearCommand } from './commands/clear';
+import { colorCommand } from './commands/color';
+import { forkCommand } from './commands/fork';
+import { killCommand } from './commands/kill';
+import { lixiCommand } from './commands/lixi';
+import { yapiCommand } from './commands/yapi';
 // import mock from "./commands/mock";
-import curl from './commands/curl';
-import shortcut from './commands/shortcut';
-import getSize from './commands/size';
-import token from './commands/token';
-import tree from './commands/tree';
-import test from './commands/test';
-import git from './commands/git';
+import { curlCommand } from './commands/curl';
+import { shortcutCommand } from './commands/shortcut';
+import { sizeCommand } from './commands/size';
+import { tokenCommand } from './commands/token';
+import { treeCommand } from './commands/tree';
+// import {testCommand} from './commands/test';
+import { gitCommand } from './commands/git';
 // import npm from './commands/npm';
-import analyse from './commands/analyse';
-import time from './commands/time';
-import repl from './commands/repl';
-import vue from './commands/vue';
-import server from './commands/server';
-import sass from './commands/sass';
+import { analyseCommand } from './commands/analyse';
+import { timeCommand } from './commands/time';
+import { replCommand } from './commands/repl';
+import { vueCommand } from './commands/vue';
+import { serverCommand } from './commands/server';
+import { sassCommand } from './commands/sass';
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -64,20 +64,20 @@ program
     .command('ai [sub-command] [rest...]')
     .allowUnknownOption()
     .action((subCommand, rest, options) => {
-        ai(subCommand, rest, options);
+        aiCommand(subCommand, rest, options);
     });
 
 program
     .command('analyse [sub-command] [rest...]')
     .allowUnknownOption()
     .action((subCommand, rest, options) => {
-        analyse(subCommand, rest, options);
+        analyseCommand(subCommand, rest, options);
     });
 program
     .command('beauty')
     .description('格式化剪贴板中的内容')
     .action(() => {
-        beauty();
+        beautyCommand();
     });
 program
     .command('cg [action] [...rest]')
@@ -85,72 +85,65 @@ program
     .option('-f, --full', '全部')
     .option('--help', '显示帮助文档')
     .action((action, rest, options) => {
-        cg(action, rest, options);
+        cgCommand(action, rest, options);
     });
 
 program
     .command('clear [filename]')
     .option('-r, --root', '清理根目录下的')
     .action((filename, options) => {
-        clear(filename, options);
+        clearCommand(filename, options);
     });
-program
-    .command('cg [action] [data]')
-    .option('--realtime', '实时更新')
-    .option('-f, --full', '全部')
-    .option('--help', '显示帮助文档')
-    .action((action, data, options) => {
-        cg(action, data, options);
-    });
+
 program
     .command('color [text]')
     .option('--get', '用指定颜色显示文字')
     .action((data, options) => {
-        color(data, options);
+        colorCommand(data, options);
     });
 program
     .command('cookie [text]')
     .option('--type <type>', '转换的类型')
     .option('--copy', '复制结果')
     .action((data, options) => {
-        cookie(data, options);
+        cookieCommand(data, options);
     });
 program
     .command('curl')
     .option('--extra <extra>', '额外的参数')
     .option('--full', '显示全部header')
     .action((options) => {
-        curl(options);
+        curlCommand(options);
     });
 
 program
     .command('eng [text]')
     .option('-e,--example', '显示范例')
     .action((text, options) => {
-        eng(text, options);
+        engCommand(text, options);
     });
 
 program.command('fork [filename]').action((file) => {
-    fork(file);
+    forkCommand(file);
 });
 
 program
     .command('git [sub-command] [rest...]')
     .allowUnknownOption()
     .action((subCommand, rest, cmd) => {
-        git(subCommand, rest, cmd);
+        gitCommand(subCommand, rest, cmd);
     });
 
 program.command('ip [rest...]').action((data) => {
-    ip(data);
+    ipCommand(data);
 });
 
 program.command('kill [data...]').action((data) => {
-    kill(data);
+    killCommand(data);
 });
 
 program.command('lixi').action(() => {
-    lixi();
+    lixiCommand();
 });
 
 // program
@@ -186,11 +179,15 @@ program
     .option('--version <version>', '指定版本')
     .option('--type <type>', '指定类型')
     .action((data, options) => {
-        occ(data, options);
+        occCommand(data, options);
     });
 
 program.command('repl').action(() => {
-    repl();
+    replCommand();
+});
+
+program.command('sass').action(() => {
+    sassCommand();
 });
 
 program
@@ -198,22 +195,22 @@ program
     .option('--menu [name]', '菜单名称')
     .option('-o, --open', '打开浏览器')
     .action((command, option) => {
-        server(command, option);
+        serverCommand(command, option);
     });
 
 program.command('shortcut [name]').action((name) => {
-    shortcut(name);
+    shortcutCommand(name);
 });
 
 program
     .command('size [url]')
     .option('--rect', '获取宽高')
     .action((filename, options) => {
-        getSize(filename, options);
+        sizeCommand(filename, options);
     });
 
 program.command('time [time]').action((data) => {
-    time(data);
+    timeCommand(data);
 });
 
 program
@@ -221,7 +218,7 @@ program
     .option('-o --origin', '原始数据')
     .option('-c --complete', '完整数据')
     .action((data, options) => {
-        token(data, options);
+        tokenCommand(data, options);
     });
 
 program
@@ -231,15 +228,11 @@ program
     .option('-c, --copy', '复制')
     .option('--help', '显示帮助文档')
     .action((dir, option) => {
-        tree(dir, option);
+        treeCommand(dir, option);
     });
-program.command('test').action((options) => {
-    test(options);
-});
-
-program.command('sass').action(() => {
-    sass();
-});
+// program.command('test').action((options) => {
+//     test(options);
+// });
 
 program
     .command('vue')
@@ -252,13 +245,13 @@ program
     .option('--port <port>', '启动的端口号')
     .option('--publicPath <path>', '设置publicPath')
     .action((option) => {
-        vue(option);
+        vueCommand(option);
     });
 program
     .command('yapi <url>')
     .description('获取yapi接口文档')
     .action((url) => {
-        yapi(url);
+        yapiCommand(url);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import Time from '../time';
+import { TimeManager } from '../time';
 import BaseCommand from '../BaseCommand';
 import { AnyObject } from '@/typings';
 import TokenParser from './TokenParser';
@@ -17,7 +17,7 @@ export interface Options {
     complete?: boolean;
 }
 
-export default class extends BaseCommand {
+export class TokenManager extends BaseCommand {
     /**
      * 解析token的主方法
      * @param tk 待解析的token字符串
@@ -79,7 +79,7 @@ export default class extends BaseCommand {
                 // 可能是时间戳
                 return {
                     ...obj,
-                    [key]: new Time().get(data[key]),
+                    [key]: new TimeManager().get(data[key]),
                 };
             }
             return {

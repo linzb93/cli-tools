@@ -1,5 +1,5 @@
-import CurlCommand, { Options } from '@/core/curl';
+import { CurlManager, Options } from '@/core/curl';
 
-export default (options: Options) => {
-    return new CurlCommand().main(options);
+export const curlCommand = (options: Options) => {
+    return new CurlManager().main(options);
 };

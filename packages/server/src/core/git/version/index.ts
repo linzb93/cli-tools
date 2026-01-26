@@ -9,7 +9,7 @@ import chalk from 'chalk';
 /**
  * git version 命令的实现类
  */
-export default class Version extends BaseCommand {
+export class VersionManager extends BaseCommand {
     /**
      * 命令的主入口函数
      * @param {string} [versionArg] - 可选的版本号参数

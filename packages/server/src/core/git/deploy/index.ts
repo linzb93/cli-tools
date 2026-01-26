@@ -8,7 +8,7 @@ import DeployCommandFactory from './DeployCommandFactory';
  */
 export type { DeployOptions as Options };
 
-export default class extends BaseCommand {
+export class DeployManager extends BaseCommand {
     /**
      * 主执行函数
      * @param {DeployOptions} options - 命令选项

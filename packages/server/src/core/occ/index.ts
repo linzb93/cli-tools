@@ -21,7 +21,7 @@ type AppCtor = new () => BaseApp;
 /**
  * 常用命令
  */
-export default class extends BaseCommand {
+export class OccManager extends BaseCommand {
     private apps: BaseApp[] = [];
     private options: Options;
     /**

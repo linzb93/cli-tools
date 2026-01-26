@@ -1,14 +1,14 @@
-import Push from '../../core/git/push';
-import Pull, { type Options as PullOptions } from '../../core/git/pull';
-import Tag, { type Options as TagOptions } from '../../core/git/tag';
-import Deploy, { type Options as DeployOptions } from '../../core/git/deploy';
-import Branch, { type Options as BranchOptions } from '../../core/git/branch';
-import Merge, { type Options as MergeOptions } from '../../core/git/merge';
-import Log, { type Options as LogOptions } from '../../core/git/log';
-import Commit, { type Options as CommitOptions } from '../../core/git/commit';
-import Scan, { type Options as ScanOptions } from '../../core/git/scan';
-import Clone, { type Options as CloneOptions } from '../../core/git/clone';
-import Version from '../../core/git/version';
+import { PushManager } from '../../core/git/push';
+import { PullManager, type Options as PullOptions } from '../../core/git/pull';
+import { TagManager, type Options as TagOptions } from '../../core/git/tag';
+import { DeployManager, type Options as DeployOptions } from '../../core/git/deploy';
+import { BranchManager, type Options as BranchOptions } from '../../core/git/branch';
+import { MergeManager, type Options as MergeOptions } from '../../core/git/merge';
+import { LogManager, type Options as LogOptions } from '../../core/git/log';
+import { CommitManager, type Options as CommitOptions } from '../../core/git/commit';
+import { ScanManager, type Options as ScanOptions } from '../../core/git/scan';
+import { CloneManager, type Options as CloneOptions } from '../../core/git/clone';
+import { VersionManager } from '../../core/git/version';
 import { subCommandCompiler } from '../../utils/helper';
 
 /**
@@ -20,7 +20,7 @@ const push = () => {
             .command('push')
             .description('将本地分支推送到远程仓库')
             .action(() => {
-                new Push().main();
+                new PushManager().main();
             });
     });
 };
@@ -34,7 +34,7 @@ const pull = () => {
             .command('pull')
             .description('从远程仓库拉取最新代码')
             .action((options: PullOptions) => {
-                new Pull().main(options);
+                new PullManager().main(options);
             });
     });
 };
@@ -45,7 +45,7 @@ const commit = () => {
             .description('提交Git代码')
             .option('--path <path>', '指定要提交的文件路径，默认当前目录')
             .action((data: string, options: CommitOptions) => {
-                new Commit().main(data, options);
+                new CommitManager().main(data, options);
             });
     });
 };
@@ -62,7 +62,7 @@ const tag = () => {
             .option('--type <type>', '设置标签类型前缀，默认为v')
             .option('--msg', '是否复制提交消息到剪贴板')
             .action((subCommand: string, options: TagOptions) => {
-                new Tag().main(subCommand, options);
+                new TagManager().main(subCommand, options);
             });
     });
 };
@@ -83,7 +83,7 @@ const deploy = () => {
             .option('--msg', '是否复制提交消息到剪贴板')
             .option('--commit [message]', 'git commit提交信息')
             .action((options: DeployOptions) => {
-                new Deploy().main(options);
+                new DeployManager().main(options);
             });
     });
 };
@@ -98,7 +98,7 @@ const branch = () => {
             .description('管理Git分支')
             .option('-d, --delete', '删除分支')
             .action((options: BranchOptions) => {
-                new Branch().main(options);
+                new BranchManager().main(options);
             });
     });
 };
@@ -113,7 +113,7 @@ const scan = () => {
             .description('扫描Git分支')
             .option('--full', '是否全量扫描')
             .action((options: ScanOptions) => {
-                new Scan().main(options);
+                new ScanManager().main(options);
             });
     });
 };
@@ -128,7 +128,7 @@ const merge = () => {
             .description('合并最近的提交')
             .option('--head <number>', '合并最近的几个提交，默认合并最近3个')
             .action((options: MergeOptions) => {
-                new Merge().main(options);
+                new MergeManager().main(options);
             });
     });
 };
@@ -144,11 +144,24 @@ const log = () => {
             .option('--head <number>', '查看最近的几个提交，默认查看最近3个')
             .option('--path <path>', '指定查看的文件目录')
             .action((options: LogOptions) => {
-                new Log().main(options);
+                new LogManager().main(options);
             });
     });
 };
-
+/**
+ * git clone 子命令的实现
+ */
+const clone = () => {
+    subCommandCompiler((program) => {
+        program
+            .command('clone <repo>')
+            .description('克隆远程仓库')
+            .option('--dir <dir>', '指定目标目录')
+            .action((repo: string, options: CloneOptions) => {
+                new CloneManager().main({ repo, dir: options.dir });
+            });
+    });
+};
 /**
  * git version 子命令的实现
  */
@@ -158,7 +171,7 @@ const version = () => {
             .command('version [newVersion]')
             .description('创建新版本分支并更新版本号')
             .action((newVersion: string) => {
-                new Version().main(newVersion);
+                new VersionManager().main(newVersion);
             });
     });
 };
@@ -169,7 +182,7 @@ const version = () => {
  * @param {string[]} data - 子命令参数
  * @param {any} options - 命令选项
  */
-export default function (subCommand: string, data: string[], options: any): void {
+export const gitCommand = function (subCommand: string, data: string[], options: any): void {
     // 子命令映射表
     const commandMap: Record<string, () => void> = {
         push,
@@ -191,4 +204,4 @@ export default function (subCommand: string, data: string[], options: any): void
         console.log(`未知的 git 子命令: ${subCommand}`);
         console.log('可用的子命令: ' + Object.keys(commandMap).join(', '));
     }
-}
+};

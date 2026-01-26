@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../../package.json';
-import occ from './commands/occ';
-import ai from './commands/ai';
+import { occCommand } from './commands/occ';
 // import { logger } from '@/utils/logger';
 // 创建命令行程序
 const program = new Command();
@@ -24,12 +23,6 @@ program.hook('preAction', (thisCommand) => {
 });
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('ai [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        ai(subCommand, rest, options);
-    });
-program
     .command('occ [data...]')
     .option('--token', '获取token')
     .option('--pc', '打开PC端')
@@ -42,7 +35,7 @@ program
     .option('--version <version>', '指定版本')
     .option('--type <type>', '指定类型')
     .action((data, options) => {
-        occ(data, options);
+        occCommand(data, options);
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

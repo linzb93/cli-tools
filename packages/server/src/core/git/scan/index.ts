@@ -30,7 +30,7 @@ interface ResultItem {
     branchName: string;
 }
 
-export default class extends BaseCommand {
+export class ScanManager extends BaseCommand {
     async main(options: Options) {
         const { full } = options;
         this.logger.info('开始扫描');

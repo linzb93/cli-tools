@@ -56,7 +56,7 @@ class CurlParserFactory {
     }
 }
 
-export default class CurlCommand extends BaseCommand {
+export class CurlManager extends BaseCommand {
     private options: Options;
 
     main(options: Options): void {

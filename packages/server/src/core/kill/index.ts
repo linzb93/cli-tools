@@ -15,7 +15,7 @@ export interface IOption {
 }
 
 export type Params = [number] | [string, number];
-export default class extends BaseCommand {
+export class KillManager extends BaseCommand {
     private options: IOption = {
         log: true,
     };

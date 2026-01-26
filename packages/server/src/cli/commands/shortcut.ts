@@ -1,5 +1,5 @@
 import Shortcut from '@/core/shortcut';
 
-export default (name: string) => {
+export const shortcutCommand = (name: string) => {
     new Shortcut().main(name);
 };

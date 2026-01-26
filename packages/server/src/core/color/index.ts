@@ -13,7 +13,7 @@ export interface Options {
     help?: boolean;
 }
 
-export default class extends BaseCommand {
+export class ColorManager extends BaseCommand {
     /**
      * 颜色映射表
      */

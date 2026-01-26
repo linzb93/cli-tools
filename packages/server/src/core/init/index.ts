@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import { logger } from '@/utils/logger';
 import { Command } from 'commander';
-import Server from '@/core/server';
+import { ServerManager } from '@/core/server';
 import dayjs from 'dayjs';
 import sql from '@/utils/sql';
 import { isWin, tempPath } from '@/utils/constant';
@@ -27,7 +27,7 @@ export default async (command: Command) => {
 
         // 启动服务器
         console.log('今日首次运行命令，正在启动服务器...');
-        const serverInstance = new Server();
+        const serverInstance = new ServerManager();
         await serverInstance.main('start', {
             exit: false,
         });
