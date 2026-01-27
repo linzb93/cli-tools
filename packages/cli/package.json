@@ -1,0 +1,27 @@
+{
+    "name": "@cli-tools/cli",
+    "version": "6.0.0",
+    "description": "A cli for personal use",
+    "type": "module",
+    "private": true,
+    "keywords": [
+        "cli"
+    ],
+    "bin": {
+        "mycli": "./dist/cli.js",
+        "myclit": "./dist/cli-test.js"
+    },
+    "scripts": {
+        "dev": "tsc && vite build --watch",
+        "build": "tsc && vite build",
+        "build:report": "cross-env MODE=report vite build",
+        "test": "vitest run"
+    },
+    "author": "linzb93",
+    "license": "ISC",
+    "dependencies": {
+        "@cli-tools/shared": "workspace:*",
+        "commander": "^8.3.0"
+    },
+    "devDependencies": {}
+}

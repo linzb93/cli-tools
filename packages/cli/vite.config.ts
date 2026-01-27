@@ -4,12 +4,23 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import pkg from './package.json';
 import rootPkg from '../../package.json';
+import sharedPkg from '../shared/package.json';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 const allDependencies = {
     ...pkg.dependencies,
     ...rootPkg.dependencies,
+    ...sharedPkg.dependencies,
 };
+
+const input: {
+    [key: string]: string;
+} = {};
+if (process.env.MODE === 'cliTest') {
+    input['cli-test'] = 'src/bin-test.ts';
+} else if (['cli', 'report'].includes(process.env.MODE as string)) {
+    input.cli = 'src/bin.ts';
+}
 
 export default defineConfig({
     resolve: {
@@ -23,9 +34,7 @@ export default defineConfig({
         minify: false,
         emptyOutDir: !process.env.MODE,
         rollupOptions: {
-            input: {
-                web: 'src/index.ts',
-            },
+            input,
             output: {
                 dir: 'dist',
                 entryFileNames: '[name].js',
