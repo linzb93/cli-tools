@@ -5,6 +5,9 @@ import sql, { type Database } from '@/utils/sql';
 import { readSecret } from '@/utils/secret';
 import { Low } from 'lowdb';
 
+/**
+ * 基础类，封装常用功能
+ */
 export default abstract class {
     protected logger: Logger;
     protected spinner: Spinner;
