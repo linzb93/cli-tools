@@ -1,5 +1,5 @@
-import { TimeManager } from '@cli-tools/shared/src/core/time';
+import { TimeService } from '@cli-tools/shared/src/business/time';
 
 export const timeCommand = function (timeParam: string) {
-    new TimeManager().main(timeParam);
+    new TimeService().main(timeParam);
 };

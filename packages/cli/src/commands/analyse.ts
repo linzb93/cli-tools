@@ -1,4 +1,4 @@
-import Analyse from '@cli-tools/shared/src/core/analyse';
+import Analyse from '@cli-tools/shared/src/business/analyse';
 import { subCommandCompiler } from '@/utils';
 
 /**

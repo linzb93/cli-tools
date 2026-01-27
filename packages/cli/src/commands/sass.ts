@@ -1,5 +1,5 @@
-import { SassManager } from '@cli-tools/shared/src/core/sass';
+import { SassService } from '@cli-tools/shared/src/business/sass';
 
 export const sassCommand = function (): void {
-    new SassManager().main();
+    new SassService().main();
 };

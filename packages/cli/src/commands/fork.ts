@@ -1,5 +1,5 @@
-import { ForkManager } from '@cli-tools/shared/src/core/fork';
+import { ForkService } from '@cli-tools/shared/src/business/fork';
 
 export const forkCommand = (filename: string) => {
-    new ForkManager().main(filename);
+    new ForkService().main(filename);
 };

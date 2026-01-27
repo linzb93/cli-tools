@@ -1,5 +1,5 @@
-import { IpManager } from '@cli-tools/shared/src/core/ip';
+import { IpService } from '@cli-tools/shared/src/business/ip';
 
 export const ipCommand = (data: string[]) => {
-    new IpManager().main(data);
+    new IpService().main(data);
 };

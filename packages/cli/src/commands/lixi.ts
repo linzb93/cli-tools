@@ -1,5 +1,5 @@
-import { LixiManager } from '@cli-tools/shared/src/core/lixi';
+import { LixiService } from '@cli-tools/shared/src/business/lixi';
 
 export const lixiCommand = () => {
-    new LixiManager().main();
+    new LixiService().main();
 };

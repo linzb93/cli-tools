@@ -1,6 +1,6 @@
-import { HasManager, type Options as HasOptions } from '@cli-tools/shared/src/core/npm/has';
-import { UninstallManager, type Options as UninstallOptions } from '@cli-tools/shared/src/core/npm/uninstall';
-import { SearchManager, type Options as SearchOptions } from '@cli-tools/shared/src/core/npm/search';
+import { HasService, type Options as HasOptions } from '@cli-tools/shared/src/business/npm/has';
+import { UninstallService, type Options as UninstallOptions } from '@cli-tools/shared/src/business/npm/uninstall';
+import { SearchService, type Options as SearchOptions } from '@cli-tools/shared/src/business/npm/search';
 interface IOption {
     help?: boolean;
     // 子模块的
@@ -9,15 +9,15 @@ interface IOption {
     global?: boolean;
 }
 const search = (args: string[], options: SearchOptions) => {
-    new SearchManager().main(args, options);
+    return new SearchService().main(args, options);
 };
 
 const has = (args: string[], options: HasOptions) => {
-    return new HasManager().main(args, options);
+    return new HasService().main(args, options);
 };
 
 const uninstall = (args: string[], options: UninstallOptions) => {
-    new UninstallManager().main(args, options);
+    return new UninstallService().main(args, options);
 };
 
 export const npmCommand = function (subCommand: string, data: string[], options: IOption) {

@@ -1,5 +1,5 @@
-import { CgManager, Options } from '@cli-tools/shared/src/core/cg';
+import { CgService, Options } from '@cli-tools/shared/src/business/cg';
 
 export const cgCommand = (action: string, data: string, options?: Options) => {
-    return new CgManager().main(action, data, options);
+    return new CgService().main(action, data, options);
 };

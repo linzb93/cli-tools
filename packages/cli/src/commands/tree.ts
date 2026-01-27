@@ -1,5 +1,5 @@
-import { TreeManager, Options } from '@cli-tools/shared/src/core/tree';
+import { TreeService, Options } from '@cli-tools/shared/src/business/tree';
 
 export const treeCommand = (dir: string, options: Options) => {
-    new TreeManager().main(dir, options);
+    new TreeService().main(dir, options);
 };

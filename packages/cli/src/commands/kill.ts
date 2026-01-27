@@ -1,5 +1,5 @@
-import { KillManager, Params } from '@cli-tools/shared/src/core/kill';
+import { KillService, Params } from '@cli-tools/shared/src/business/kill';
 
 export const killCommand = (args: Params) => {
-    new KillManager().main(...args);
+    new KillService().main(...args);
 };

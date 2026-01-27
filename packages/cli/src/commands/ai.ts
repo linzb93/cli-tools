@@ -1,8 +1,8 @@
 import { isOldNode } from '@cli-tools/shared/src/utils/helper';
 import { logger } from '@cli-tools/shared/src/utils/logger';
 import { subCommandCompiler } from '@/utils';
-import { OCRManager, Options } from '@cli-tools/shared/src/core/ai/ocr/index';
-import { RegexManager } from '@cli-tools/shared/src/core/ai/regex';
+import { OCRService, Options } from '@cli-tools/shared/src/business/ai/ocr/index';
+import { RegexService } from '@cli-tools/shared/src/business/ai/regex';
 /**
  * OCR子命令
  */
@@ -17,7 +17,7 @@ const ocr = () => {
                     logger.error('请使用node18+版本');
                     return;
                 }
-                new OCRManager().main(options);
+                new OCRService().main(options);
             });
     });
 };
@@ -35,7 +35,7 @@ const regex = () => {
                     logger.error('请使用node18+版本');
                     return;
                 }
-                new RegexManager().main(pattern);
+                new RegexService().main(pattern);
             });
     });
 };

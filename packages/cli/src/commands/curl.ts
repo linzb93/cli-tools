@@ -1,5 +1,5 @@
-import { CurlManager, Options } from '@cli-tools/shared/src/core/curl';
+import { CurlService, Options } from '@cli-tools/shared/src/business/curl';
 
 export const curlCommand = (options: Options) => {
-    return new CurlManager().main(options);
+    return new CurlService().main(options);
 };

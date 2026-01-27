@@ -1,5 +1,5 @@
-import { VueManager, Options } from '@cli-tools/shared/src/core/vue';
+import { VueService, Options } from '@cli-tools/shared/src/business/vue';
 
 export const vueCommand = (options: Options) => {
-    new VueManager().main(options);
+    new VueService().main(options);
 };

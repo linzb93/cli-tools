@@ -1,9 +1,9 @@
-import { YapiManager } from '@cli-tools/shared/src/core/yapi';
+import { YapiService } from '@cli-tools/shared/src/business/yapi';
 
 /**
  * Yapi接口文档获取命令
  * @param url Yapi网址
  */
 export const yapiCommand = (url: string) => {
-    new YapiManager().main(url);
+    new YapiService().main(url);
 };

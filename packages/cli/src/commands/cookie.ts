@@ -1,4 +1,4 @@
-import { CookieManager, Options } from '@cli-tools/shared/src/core/cookie';
+import { CookieService, Options } from '@cli-tools/shared/src/business/cookie';
 export const cookieCommand = (data: string, options: Options) => {
-    new CookieManager().main(data, options);
+    new CookieService().main(data, options);
 };

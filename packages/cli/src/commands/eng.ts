@@ -1,4 +1,4 @@
-import { TranslateManager, Options } from '@cli-tools/shared/src/core/eng';
+import { TranslateService, Options } from '@cli-tools/shared/src/business/translate';
 export const engCommand = (text: string, options: Options) => {
-    new TranslateManager().main(text, options);
+    new TranslateService().main(text, options);
 };

@@ -1,6 +1,6 @@
-import { OccManager } from '@cli-tools/shared/src/core/occ';
-import { Options } from '@cli-tools/shared/src/core/occ/types';
+import { OccService } from '@cli-tools/shared/src/business/occ';
+import { Options } from '@cli-tools/shared/src/business/occ/types';
 
 export const occCommand = (input: string[], options: Options) => {
-    new OccManager().main(input, options);
+    return new OccService().main(input, options);
 };

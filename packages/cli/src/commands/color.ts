@@ -1,5 +1,5 @@
-import { ColorManager, Options } from '@cli-tools/shared/src/core/color';
+import { ColorService, Options } from '@cli-tools/shared/src/business/color';
 
 export const colorCommand = function (text: string, options: Options) {
-    new ColorManager().main(text, options);
+    new ColorService().main(text, options);
 };

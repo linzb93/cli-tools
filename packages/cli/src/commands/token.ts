@@ -1,5 +1,5 @@
-import { TokenManager, Options } from '@cli-tools/shared/src/core/token';
+import { TokenService, Options } from '@cli-tools/shared/src/business/token';
 
 export const tokenCommand = (data: string, options: Options) => {
-    return new TokenManager().main(data, options);
+    return new TokenService().main(data, options);
 };

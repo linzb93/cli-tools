@@ -1,5 +1,5 @@
-import { SizeManager, Options } from '@cli-tools/shared/src/core/size';
+import { SizeService, Options } from '@cli-tools/shared/src/business/size';
 
 export const sizeCommand = (filePath: string, options: Options) => {
-    new SizeManager().main(filePath, options);
+    new SizeService().main(filePath, options);
 };
