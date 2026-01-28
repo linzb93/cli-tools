@@ -2,7 +2,7 @@ import imageClipboard from '../../../utils/clipboard';
 import { imageBase64ToStream, tempUpload } from '../../../utils/image';
 import clipboardy from 'clipboardy';
 import BaseService from '../../core/BaseService.abstract';
-import AiImpl from '../shared/ai-impl';
+import { AiImplementation } from '../shared/utils/implementation';
 import { MessageOptions } from '../shared/types';
 /**
  * 选项接口
@@ -74,7 +74,7 @@ export class OCRService extends BaseService {
      * @returns 识别结果
      */
     private async processImage(imageUrl: string): Promise<string> {
-        const ai = new AiImpl();
+        const ai = new AiImplementation();
         const params: MessageOptions[] = [
             {
                 role: 'assistant',

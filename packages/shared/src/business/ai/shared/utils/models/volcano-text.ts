@@ -1,14 +1,14 @@
-import { readSecret } from '../../../../utils/secret';
+import { readSecret } from '../../../../../utils/secret';
 import BaseModel from './base';
 
 /**
- * 火山方舟大模型图像识别
+ * 火山方舟大模型Deepseek-v3
  */
-export default class VolcanoImageModel extends BaseModel {
+export default class VolcanoTextModel extends BaseModel {
     /**
      * 模型标题
      */
-    title = '火山方舟大模型图像识别';
+    title = '火山方舟大模型Deepseek-v3';
 
     /**
      * API基础URL
@@ -18,12 +18,12 @@ export default class VolcanoImageModel extends BaseModel {
     /**
      * 模型标识符
      */
-    model = 'doubao-1-5-vision-pro-32k-250115';
+    model = 'deepseek-v3-250324';
 
     /**
      * 模型类型
      */
-    type = 'image';
+    type = 'text';
 
     /**
      * 构造函数
@@ -32,8 +32,9 @@ export default class VolcanoImageModel extends BaseModel {
         super();
         this.init();
     }
+
     async init() {
-        this.apiKey = await readSecret((db) => db.ai.apiKey.volcano);
+        this.apiKey = await readSecret((db) => db.ai.apiKey.volcanoDeepseekV3);
     }
 
     /**

@@ -12,7 +12,7 @@ import JavascriptModule from './JavascriptModule';
 /**
  * 代码分析命令类
  */
-export default class extends BaseService {
+export class CodeAnalyseService extends BaseService {
     /**
      * 可用的分析模块
      */

@@ -1,7 +1,7 @@
 import inquirer from '../../../utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
-import AiImpl from '../../../business/ai/shared/ai-impl';
+import { AiImplementation } from '../../../business/ai/shared/utils/implementation';
 import { readSecret } from '../../../utils/secret';
 import { imageBase64ToStream, tempUpload } from '../../../utils/image';
 import serviceGenerator from '../../../utils/http';
@@ -143,7 +143,7 @@ async function processCaptchaAndLogin(
     const { url, uuid, removeHandler } = await getLoginCaptcha();
 
     try {
-        const ocrResult = await new AiImpl().use(
+        const ocrResult = await new AiImplementation().use(
             [
                 {
                     role: 'assistant',

@@ -1,5 +1,5 @@
 import BaseTranslator, { TranslateResultItem } from './BaseTranslator';
-import AiImpl from '../../ai/shared/ai-impl';
+import { AiImplementation } from '../../ai/index';
 
 /**
  * AI翻译器
@@ -21,7 +21,7 @@ export default class AiTranslator extends BaseTranslator {
             this.spinner.text = '使用AI翻译中...';
         }
 
-        const translateResult = await new AiImpl().use([
+        const translateResult = await new AiImplementation().use([
             {
                 role: 'assistant',
                 content: `你是一个中英文的翻译家，你需要判断用户提供的是中文还是英文。如果是中文，将其翻译成英文；如果是英文，将其翻译成中文。如果原文不含有空格，每个词汇类型，你提供最多3个翻译结果，否则你只要提供1个翻译结果。用json格式输出结果，json不要换行。格式如下：

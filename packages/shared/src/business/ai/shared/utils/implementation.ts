@@ -1,11 +1,11 @@
 import getModels from './models';
-import { MessageOptions } from './types';
+import { MessageOptions } from '../types';
 
 /**
  * AI实现类
  * 处理AI请求和响应
  */
-export default class AiImpl {
+export class AiImplementation {
     /**
      * 使用AI接口，返回完整响应
      * @param messages 消息数组
@@ -18,7 +18,7 @@ export default class AiImpl {
             type: string;
         } = {
             type: 'text',
-        }
+        },
     ) {
         const stream = await this.useStream(messages, options);
         let contents = '';
@@ -42,7 +42,7 @@ export default class AiImpl {
             type: string;
         } = {
             type: 'text',
-        }
+        },
     ) {
         const models = await getModels(options.type);
         const modelItem = models[0];

@@ -1,4 +1,4 @@
-import Analyse from '@cli-tools/shared/src/business/analyse';
+import { CliAnalyseService, CodeAnalyseService } from '@cli-tools/shared/src/business/analyse';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -13,8 +13,8 @@ interface Options {
  */
 const cli = () => {
     subCommandCompiler((program) => {
-        program.command('cli').action((options: Options) => {
-            new Analyse().main('cli', options);
+        program.command('cli').action(() => {
+            new CliAnalyseService().main();
         });
     });
 };
@@ -24,8 +24,8 @@ const cli = () => {
  */
 const code = () => {
     subCommandCompiler((program) => {
-        program.command('code').action((options: Options) => {
-            new Analyse().main('code', options);
+        program.command('code').action(() => {
+            new CodeAnalyseService().main();
         });
     });
 };
@@ -41,12 +41,6 @@ export function analyseCommand(subCommand: string, data: string[], options: any)
         cli,
         code,
     };
-
-    // 如果没有指定子命令或者子命令不存在，默认执行code命令
-    if (!subCommand || !commandMap[subCommand]) {
-        new Analyse().main('', options);
-        return;
-    }
 
     commandMap[subCommand]();
 }

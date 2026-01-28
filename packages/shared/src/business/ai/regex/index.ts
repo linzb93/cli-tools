@@ -1,7 +1,7 @@
 import BaseService from '../../core/BaseService.abstract';
-import AiImpl from '../shared/ai-impl';
+import { AiImplementation } from '../shared/utils/implementation';
 import { MessageOptions } from '../shared/types';
-import { printObject } from '../shared/utils';
+import { printObject } from '../shared/utils/index';
 
 /**
  * 正则表达式解析类
@@ -33,7 +33,7 @@ export class RegexService extends BaseService {
      * @param input 处理后的输入
      */
     private async processRegex(input: string): Promise<void> {
-        const ai = new AiImpl();
+        const ai = new AiImplementation();
         const params: MessageOptions[] = [
             {
                 role: 'assistant',

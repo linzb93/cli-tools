@@ -8,7 +8,7 @@ import { splitByLine } from '../../../utils/helper';
 /**
  * CLI使用分析命令类
  */
-export default class extends BaseService {
+export class CliAnalyseService extends BaseService {
     /**
      * 主方法
      */

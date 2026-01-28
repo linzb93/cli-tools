@@ -1,34 +1,39 @@
+import { readSecret } from '../../../../../utils/secret';
 import BaseModel from './base';
-import { readSecret } from '../../../../utils/secret';
+
 /**
- * DeepSeek模型
+ * 火山方舟大模型图像识别
  */
-export default class DeepseekModel extends BaseModel {
+export default class VolcanoImageModel extends BaseModel {
     /**
      * 模型标题
      */
-    title = 'DeepSeek';
+    title = '火山方舟大模型图像识别';
 
     /**
      * API基础URL
      */
-    baseURL = 'https://api.deepseek.com';
+    baseURL = 'https://ark.cn-beijing.volces.com/api/v3';
 
     /**
      * 模型标识符
      */
-    model = 'deepseek-chat';
+    model = 'doubao-1-5-vision-pro-32k-250115';
 
     /**
      * 模型类型
      */
-    type = 'text';
+    type = 'image';
+
+    /**
+     * 构造函数
+     */
     constructor() {
         super();
         this.init();
     }
     async init() {
-        this.apiKey = await readSecret((db) => db.ai.apiKey.deepseek);
+        this.apiKey = await readSecret((db) => db.ai.apiKey.volcano);
     }
 
     /**
@@ -37,9 +42,6 @@ export default class DeepseekModel extends BaseModel {
      * @returns 处理后的错误信息
      */
     errorHandler(errorMessage: string): string {
-        if (errorMessage.includes('Insufficient Balance')) {
-            return 'DeepSeek余额不足';
-        }
         return errorMessage;
     }
 }

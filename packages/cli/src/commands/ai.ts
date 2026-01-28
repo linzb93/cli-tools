@@ -1,8 +1,7 @@
 import { isOldNode } from '@cli-tools/shared/src/utils/helper';
 import { logger } from '@cli-tools/shared/src/utils/logger';
 import { subCommandCompiler } from '@/utils';
-import { OCRService, Options } from '@cli-tools/shared/src/business/ai/ocr/index';
-import { RegexService } from '@cli-tools/shared/src/business/ai/regex';
+import { OCRService, OCROptions, RegexService } from '@cli-tools/shared/src/business/ai/index';
 /**
  * OCR子命令
  */
@@ -12,7 +11,7 @@ const ocr = () => {
             .command('ocr')
             .description('图像识别工具')
             .option('--url <url>', '图片线上地址')
-            .action((options: Options) => {
+            .action((options: OCROptions) => {
                 if (isOldNode) {
                     logger.error('请使用node18+版本');
                     return;

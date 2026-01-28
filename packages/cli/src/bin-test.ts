@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { gitCommand } from './commands/git/index';
+import { aiCommand } from './commands/ai';
+import { analyseCommand } from './commands/analyse';
 // import { logger } from '@/utils/logger';
 // 创建命令行程序
 const program = new Command();
@@ -25,10 +26,16 @@ program.hook('preAction', (thisCommand) => {
 });
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('git [sub-command] [rest...]')
+    .command('ai [sub-command] [rest...]')
     .allowUnknownOption()
-    .action((subCommand) => {
-        gitCommand(subCommand);
+    .action((subCommand, rest, options) => {
+        aiCommand(subCommand, rest, options);
+    });
+program
+    .command('analyse [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        analyseCommand(subCommand, rest, options);
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
