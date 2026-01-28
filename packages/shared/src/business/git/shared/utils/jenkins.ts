@@ -1,6 +1,6 @@
 import open from 'open';
 import readPkg from 'read-pkg';
-import { readSecret } from '../../../utils/secret';
+import { readSecret } from '../../../../utils/secret';
 
 interface JenkinsProject {
     name: string;
@@ -18,7 +18,7 @@ export const openDeployPage = async (type?: string, isOnline?: boolean) => {
         const isWork = true;
         const origin = await readSecret((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
         await open(
-            `http://${origin}/view/${isOnline ? onlineName || name : name}/job/${isOnline ? onlineId || id : id}/`
+            `http://${origin}/view/${isOnline ? onlineName || name : name}/job/${isOnline ? onlineId || id : id}/`,
         );
     }
 };

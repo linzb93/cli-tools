@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import BaseService from '../../core/BaseService.abstract';
-import { getAllBranches, BranchInfo } from '../utils';
-import BranchDeleteService from './delete';
+import BaseService from '../../../core/BaseService.abstract';
+import { getAllBranches } from '../../shared/utils';
 
 export interface Options {
     /**
@@ -18,11 +17,6 @@ export interface Options {
 
 export class BranchService extends BaseService {
     async main(options: Options) {
-        if (options.delete) {
-            const deleteService = new BranchDeleteService();
-            await deleteService.main();
-            return;
-        }
         this.renderBranchList({
             keyword: options.key,
             showCreateTime: true,

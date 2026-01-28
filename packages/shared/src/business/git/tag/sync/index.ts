@@ -1,12 +1,12 @@
 import { execa } from 'execa';
-import BaseService from '../../core/BaseService.abstract';
-import { isGitProject, getAllTags } from '../utils';
-import { executeCommands, CommandConfig } from '../../../utils/promise';
+import BaseService from '../../../core/BaseService.abstract';
+import { isGitProject, getAllTags } from '../../shared/utils';
+import { executeCommands, CommandConfig } from '../../../../utils/promise';
 
 /**
  * 同步Git标签的类
  */
-export default class TagSync extends BaseService {
+export class TagSyncService extends BaseService {
     /**
      * 命令的主入口函数
      * @returns {Promise<void>}

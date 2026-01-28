@@ -1,10 +1,10 @@
-import BaseService from '../../core/BaseService.abstract';
-import { isGitProject, getAllTags, deleteTags } from '../utils';
+import BaseService from '../../../core/BaseService.abstract';
+import { isGitProject, getAllTags, deleteTags } from '../../shared/utils';
 
 /**
  * 删除Git标签的类
  */
-export default class TagDelete extends BaseService {
+export class TagDeleteService extends BaseService {
     /**
      * 命令的主入口函数
      * @returns {Promise<void>}

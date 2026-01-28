@@ -6,7 +6,7 @@ import init from './hooks/init';
 import { generateHelpDoc } from '@cli-tools/shared/src/utils/helper';
 import { beautyCommand } from './commands/beauty';
 import { ipCommand } from './commands/ip';
-import { aiCommand } from './commands/ai';
+import { aiCommand } from './commands/ai/index';
 import { engCommand } from './commands/eng';
 import { occCommand } from './commands/occ';
 import { cgCommand } from './commands/cg';
@@ -24,9 +24,9 @@ import { sizeCommand } from './commands/size';
 import { tokenCommand } from './commands/token';
 import { treeCommand } from './commands/tree';
 // import {testCommand} from './commands/test';
-import { gitCommand } from './commands/git';
+import { gitCommand } from './commands/git/index';
 // import npm from './commands/npm';
-import { analyseCommand } from './commands/analyse';
+import { analyseCommand } from './commands/analyse/index';
 import { timeCommand } from './commands/time';
 import { replCommand } from './commands/repl';
 import { vueCommand } from './commands/vue';
@@ -130,8 +130,8 @@ program.command('fork [filename]').action((file) => {
 program
     .command('git [sub-command] [rest...]')
     .allowUnknownOption()
-    .action((subCommand, rest, cmd) => {
-        gitCommand(subCommand, rest, cmd);
+    .action((subCommand) => {
+        gitCommand(subCommand);
     });
 
 program.command('ip [rest...]').action((data) => {

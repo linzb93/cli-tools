@@ -1,12 +1,10 @@
 import chalk from 'chalk';
-import BaseService from '../../core/BaseService.abstract';
-import { isGitProject, getAllTags } from '../utils';
-import { executeCommands } from '../../../utils/promise';
+import BaseService from '../../../core/BaseService.abstract';
+import { isGitProject, getAllTags } from '../../shared/utils';
+import { executeCommands } from '../../../../utils/promise';
 import semver from 'semver';
-import { getProjectName } from '../utils/jenkins';
+import { getProjectName } from '../../shared/utils/jenkins';
 import clipboardy from 'clipboardy';
-import TagDelete from './delete';
-import TagSync from './sync';
 
 /**
  * git tag 命令的选项接口
@@ -64,7 +62,7 @@ export class TagService extends BaseService {
      * @param {Options} options - 命令选项
      * @returns {Promise<void>}
      */
-    async main(subCommand: string, options: Options): Promise<void> {
+    async main(options: Options): Promise<void> {
         // 检查当前目录是否是 Git 项目
         if (!(await isGitProject())) {
             this.logger.error('当前目录不是 Git 项目');
@@ -72,21 +70,7 @@ export class TagService extends BaseService {
         }
 
         // 子命令映射表
-        const commandMap: Record<string, () => Promise<void>> = {
-            '': () => this.addTag(options),
-            'delete': () => new TagDelete().main(),
-            'sync': () => new TagSync().main(),
-        };
-
-        // 执行对应的子命令
-        if (!subCommand) {
-            await this.addTag(options);
-        } else if (commandMap[subCommand]) {
-            await commandMap[subCommand]();
-        } else {
-            this.logger.error(`未知的 git tag 子命令: ${subCommand}`);
-            this.logger.info('可用的子命令: ' + Object.keys(commandMap).filter(Boolean).join(', '));
-        }
+        this.addTag(options);
     }
 
     /**

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { treeCommand } from './commands/tree';
+import { gitCommand } from './commands/git/index';
 // import { logger } from '@/utils/logger';
 // 创建命令行程序
 const program = new Command();
@@ -25,13 +25,10 @@ program.hook('preAction', (thisCommand) => {
 });
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('tree [dir]')
-    .option('--level <level>', '层级')
-    .option('--ignore <dirs>', '添加忽略的文件夹')
-    .option('-c, --copy', '复制')
-    .option('--help', '显示帮助文档')
-    .action((dir, option) => {
-        treeCommand(dir, option);
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand) => {
+        gitCommand(subCommand);
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
