@@ -8,13 +8,13 @@
     "scripts": {
         "dev": "npm run dev:cli",
         "dev:ui": "pnpm --filter \"ui\" dev",
-        "dev:cli": "cross-env MODE=cliTest pnpm --filter \"@cli-tools/cli\" dev",
-        "dev:web": "cross-env MODE=web pnpm --filter \"@cli-tools/server\" dev",
+        "dev:cli": "pnpm --filter \"@cli-tools/cli\" dev",
+        "dev:web": "pnpm --filter \"@cli-tools/server\" dev",
         "mon:web": "nodemon packages/server/dist/web.js --watch packages/server/dist",
         "build": "npm run build:cli",
         "build:report": "pnpm --filter \"@cli-tools/cli\" build:report",
-        "build:cli": "cross-env MODE=cli pnpm --filter \"@cli-tools/cli\" build",
-        "build:web": "cross-env MODE=web pnpm --filter \"@cli-tools/server\" build",
+        "build:cli": "pnpm --filter \"@cli-tools/cli\" build",
+        "build:web": "pnpm --filter \"@cli-tools/server\" build",
         "build:ui": "pnpm --filter \"@cli-tools/ui\" build-only",
         "build:web-all": "npm run build:web && npm run build:ui"
     },

@@ -14,6 +14,7 @@ const allDependencies = {
 const input: {
     [key: string]: string;
 } = {};
+console.log(process.env.MODE);
 if (process.env.MODE === 'cliTest') {
     input['cli-test'] = 'src/bin-test.ts';
 } else if (['cli', 'report'].includes(process.env.MODE as string)) {
