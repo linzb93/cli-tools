@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import { aiCommand } from './commands/ai';
 import { analyseCommand } from './commands/analyse';
+import { timeCommand } from './commands/time';
 // import { logger } from '@/utils/logger';
 // 创建命令行程序
 const program = new Command();
@@ -37,6 +38,9 @@ program
     .action((subCommand, rest, options) => {
         analyseCommand(subCommand, rest, options);
     });
+program.command('time [time]').action((data) => {
+    timeCommand(data);
+});
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
 

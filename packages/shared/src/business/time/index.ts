@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
 import BaseService from '../core/BaseService.abstract';
+import { Log } from '../../utils/logger';
 
 export class TimeService extends BaseService {
+    @Log.info('TimeService main executed')
     main(timeParam: string): void {
         const time = this.get(timeParam);
         console.log(time);

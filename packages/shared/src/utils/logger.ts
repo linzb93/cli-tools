@@ -130,8 +130,8 @@ class Logger {
         const titleEdgeLength = Math.floor((columns - stringWidth(title)) / 2);
         console.log(
             `${chalk[options.borderColor](`-`.repeat(titleEdgeLength))}${title}${chalk[options.borderColor](
-                `-`.repeat(titleEdgeLength)
-            )}`
+                `-`.repeat(titleEdgeLength),
+            )}`,
         );
         if (options.padding) {
             for (let i = 0; i < options.padding; i++) {
@@ -189,12 +189,12 @@ class Logger {
         if (fs.existsSync(filename)) {
             fs.appendFileSync(
                 resolve(cacheRoot, 'track', filename),
-                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`
+                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`,
             );
         } else {
             fs.writeFileSync(
                 resolve(cacheRoot, 'track', filename),
-                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`
+                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`,
             );
         }
     }
@@ -210,6 +210,49 @@ class Logger {
 
 // 创建并导出Logger类的实例
 export const logger = new Logger();
+
+/**
+ * Logger 装饰器，用于在类方法执行前输出日志
+ * 用法: @Log.info('message')
+ */
+export const Log = {
+    success(text: string | number) {
+        return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+            const originalMethod = descriptor.value;
+            descriptor.value = function (...args: any[]) {
+                logger.success(text);
+                return originalMethod.apply(this, args);
+            };
+        };
+    },
+    info(text: string | number) {
+        return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+            const originalMethod = descriptor.value;
+            descriptor.value = function (...args: any[]) {
+                logger.info(text);
+                return originalMethod.apply(this, args);
+            };
+        };
+    },
+    warn(text: string | number) {
+        return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+            const originalMethod = descriptor.value;
+            descriptor.value = function (...args: any[]) {
+                logger.warn(text);
+                return originalMethod.apply(this, args);
+            };
+        };
+    },
+    error(text: string | number, needExit?: boolean) {
+        return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+            const originalMethod = descriptor.value;
+            descriptor.value = function (...args: any[]) {
+                logger.error(text, needExit);
+                return originalMethod.apply(this, args);
+            };
+        };
+    },
+};
 
 // 默认导出Logger类
 export default Logger;

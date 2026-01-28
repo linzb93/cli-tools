@@ -8,6 +8,7 @@
         "outDir": "./dist/",
         "baseUrl": "./src",
         "noEmit": true,
+        "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
             "@/*": ["*"]
