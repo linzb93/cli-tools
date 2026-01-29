@@ -29,7 +29,7 @@ export class MergeService extends BaseService {
         }
         const { head } = options;
         console.log(`您将要合并最近${head}个提交`);
-        // 获取最近3个提交的信息
+        // 获取最近几个提交的信息
         const arr = await splitGitLog(head);
         const table = new Table({
             head: ['日期', '提交内容'],
@@ -41,11 +41,11 @@ export class MergeService extends BaseService {
         console.log(table.toString());
         const answer = await this.inquirer.prompt({
             type: 'input',
-            message: `请输入合并后的提交信息，默认合并以上所有提交信息`,
+            message: `请输入合并后的提交信息，默认使用最近一次的提交信息`,
             name: 'commitMessage',
         });
         const commitMessage = fmtCommitMsg(
-            answer.commitMessage || arr.map((item) => item.message.replace(/\w+\:/g, '')).join('\n'),
+            answer.commitMessage !== '' ? answer.commitMessage : arr[0].message.replace(/\w+\:/g, ''),
         );
         await execa(`git reset --soft HEAD~${head}`);
         await execa('git add .');
