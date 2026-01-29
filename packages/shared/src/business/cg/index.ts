@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import BaseService from '../core/BaseService.abstract';
-import { getPerformanceData, userForcastList, setUserForcast } from './shared';
+import { getPerformanceData, userForcastList, setUserForcast } from './repository';
 
 export interface Options {
     full: boolean;

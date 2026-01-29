@@ -57,24 +57,4 @@ export class CookieService extends BaseService {
         }, {});
         return objs;
     }
-
-    /**
-     * 将解析结果转换为字符串
-     * @param {any} data 解析结果数据
-     * @returns {string} 格式化后的字符串
-     * @private
-     */
-    private getValue(data: any): string {
-        if (Array.isArray(data)) {
-            return data.join(',');
-        }
-        const jsonString = JSON.stringify(data);
-        // 如果是空对象，直接返回{}，避免prettier添加换行符
-        if (jsonString === '{}') {
-            return '{}';
-        }
-        return format(jsonString, {
-            parser: 'json',
-        });
-    }
 }
