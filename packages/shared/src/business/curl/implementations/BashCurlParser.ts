@@ -1,14 +1,13 @@
 import * as querystring from 'node:querystring';
-import { BaseCurlParser } from './BaseCurlParser';
+import { BaseCurlParser } from '../BaseCurlParser';
 
 /**
- * CMD模式curl解析器
+ * Bash模式curl解析器
  */
-export class CmdCurlParser extends BaseCurlParser {
+export class BashCurlParser extends BaseCurlParser {
     parseUrl(line: string): string {
-        // 处理cmd模式：curl ^"url^" 或 curl ^"url^" [其他参数]
-        const match = line.match(/^\s*curl\s+\^"([^"]+)\"\s*/);
-        return match ? match[1].replace(/\^/g, '') : '';
+        const match = line.match(/'([^']+)'/);
+        return match ? match[1] : '';
     }
 
     parseHeaders(lines: string[]): Record<string, string> {
@@ -18,7 +17,7 @@ export class CmdCurlParser extends BaseCurlParser {
             extra
                 .split(',')
                 .filter((item) => !!item)
-                .map((item) => item.trim().toLowerCase())
+                .map((item) => item.trim().toLowerCase()),
         );
 
         const output = lines
@@ -27,7 +26,7 @@ export class CmdCurlParser extends BaseCurlParser {
             })
             .map((line) => line.trim())
             .reduce((acc, line) => {
-                const keyMatch = line.match(/^\-H\s\^"([^:]+)/);
+                const keyMatch = line.match(/^\-H\s\$?\'([^:]+)/);
                 if (!keyMatch) {
                     return acc;
                 }
@@ -37,17 +36,17 @@ export class CmdCurlParser extends BaseCurlParser {
                     return acc;
                 }
 
-                const valueMatch = line.match(/:\s*(.*?)\s*$/);
+                const valueMatch = line.match(/:\s*(.*?)\'\s*\\$/);
                 if (!valueMatch) {
                     return acc;
                 }
 
-                const value = valueMatch[1]
-                    .trim()
-                    .replace(/\^\"\s\^$/, '')
-                    .replace(/\^\\\^/g, '')
-                    .replace(/\^\{/, '{')
-                    .replace(/\^\}/, '}');
+                let value = valueMatch[1].trim().replace(/\^\"\s\^$/, '');
+
+                // 处理bash模式中的$'...'转义字符
+                if (value.startsWith("$'")) {
+                    value = value.slice(2);
+                }
 
                 acc[key] = value;
                 return acc;
@@ -62,30 +61,23 @@ export class CmdCurlParser extends BaseCurlParser {
     }
 
     parseData(lines: string[], contentType: string): string {
-        const dataLine = lines.find((line) => {
-            return (
-                line.trim().startsWith('--data-raw') || line.trim().startsWith('--data') || line.trim().startsWith('-d')
-            );
-        });
-
+        const dataLine = lines.find(
+            (line) =>
+                line.trim().startsWith('--data-raw') ||
+                line.trim().startsWith('--data') ||
+                line.trim().startsWith('-d'),
+        );
         if (!dataLine) {
             return '';
         }
 
-        const data = dataLine
-            .trim()
-            .replace(/^\-\-data-raw\s/, '')
-            .replace(/^\^"/, '"')
-            .replace(/\^"$/, '"')
-            .replace(/\^\{/, '{')
-            .replace(/\^\}/, '}')
-            .replace(/\\\^/g, '')
-            .replace(/\^"/g, '"')
-            .replace(/"(.+)"/, '$1');
+        // 处理bash模式：--data-raw 'data'
+        const match = dataLine.match(/--data-raw\s+'([^']*)'$/);
+        const data = match ? match[1] : '';
 
         // 如果是application/x-www-form-urlencoded格式，转换为form-data
         if (contentType === 'application/x-www-form-urlencoded' && data) {
-            return JSON.stringify(querystring.parse(data.replace(/\^/g, '')));
+            return JSON.stringify(querystring.parse(data));
         }
 
         return data || '';
@@ -108,12 +100,10 @@ export class CmdCurlParser extends BaseCurlParser {
 
         // 处理 -b 或 --cookie 格式
         if (cookieLine.trim().startsWith('-b ') || cookieLine.trim().startsWith('--cookie ')) {
-            cookieValue = cookieLine
-                .trim()
-                .replace(/^-b\s\^"/, '')
-                .replace(/\^"\s\^$/, '')
-                .replace(/\^%\^/g, '%')
-                .replace(/\^!/g, '');
+            const match = cookieLine.trim().match(/(?:-b|--cookie)\s+(.+)\'\s\\$/);
+            if (match) {
+                cookieValue = match[1];
+            }
         }
         // 处理 -H 'Cookie:' 格式
         else if (cookieLine.includes('Cookie:')) {
@@ -121,6 +111,11 @@ export class CmdCurlParser extends BaseCurlParser {
             if (match) {
                 cookieValue = match[1].trim();
             }
+        }
+
+        // 处理bash模式中的$'...'转义字符
+        if (cookieValue.startsWith("$'")) {
+            cookieValue = cookieValue.slice(2);
         }
 
         return cookieValue;

@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
 import { sleep } from '@linzb93/utils';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { execaCommand as execa } from 'execa';
 
 /**

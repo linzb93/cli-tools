@@ -1,4 +1,4 @@
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { showOpenDialog } from '../../utils/dialog';
 import { execaCommand as execa } from 'execa';
 import clipboardy from 'clipboardy';

@@ -1,4 +1,4 @@
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
 import { CurlService } from '../curl';

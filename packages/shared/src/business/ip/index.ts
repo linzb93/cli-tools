@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { defaultBrowserHeaders } from '../../utils/helper';
 
 export class IpService extends BaseService {

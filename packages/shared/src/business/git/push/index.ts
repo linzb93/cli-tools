@@ -1,4 +1,4 @@
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import { isGitProject, getCurrentBranchName, isCurrenetBranchPushed } from '../utils';
 import gitAtom from '../utils/atom';
 import { executeCommands } from '../../../utils/promise';

@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import del from 'del';
 import globalNpm from 'global-modules';
 import readPkg, { NormalizedPackageJson } from 'read-pkg';
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import npm from '../shared';
 
 export interface Options {

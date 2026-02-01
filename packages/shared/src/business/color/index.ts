@@ -1,7 +1,7 @@
 import convert from 'color-convert';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 export interface Options {
     /**
      * 是否显示颜色示例

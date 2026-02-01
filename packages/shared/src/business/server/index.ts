@@ -4,7 +4,7 @@ import open from 'open';
 import dayjs from 'dayjs';
 import detectPort from 'detect-port';
 import chalk from 'chalk';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { root } from '../../utils/constant';
 import { KillService } from '../kill';
 import inquirer from '../../utils/inquirer';

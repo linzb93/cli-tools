@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import { cacheRoot, levelCharacters } from '../../../utils/constant';
 import { splitByLine } from '../../../utils/helper';
 

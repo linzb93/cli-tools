@@ -1,7 +1,7 @@
-import BaseService from '../../core/BaseService.abstract';
-import { AiImplementation } from '../shared/utils/implementation';
-import { MessageOptions } from '../shared/types';
-import { printObject } from '../shared/utils/index';
+import { BaseService } from '../../../base/BaseService';
+import { AiImplementation } from '../common/implementation';
+import { MessageOptions } from '../common/types';
+import { printObject } from '../common/utils/index';
 
 /**
  * 正则表达式解析类

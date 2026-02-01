@@ -1,5 +1,5 @@
 import BaseTranslator, { TranslateResultItem } from './BaseTranslator';
-import { AiImplementation } from '../../ai/index';
+import { AiImplementation } from '../../ai/common/implementation/index';
 
 /**
  * AI翻译器

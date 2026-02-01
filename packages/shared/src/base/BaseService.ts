@@ -1,14 +1,14 @@
-import Logger from '../../utils/logger';
-import spinner, { Spinner } from '../../utils/spinner';
-import inquirer from '../../utils/inquirer';
-import sql, { type Database } from '../../utils/sql';
-import { readSecret } from '../../utils/secret';
+import Logger from '../utils/logger';
+import spinner, { Spinner } from '../utils/spinner';
+import inquirer from '../utils/inquirer';
+import sql, { type Database } from '../utils/sql';
+import { readSecret } from '../utils/secret';
 import { Low } from 'lowdb';
 
 /**
  * 基础类，封装常用功能
  */
-export default abstract class {
+export abstract class BaseService {
     protected logger: Logger;
     protected spinner: Spinner;
     protected inquirer: typeof inquirer;

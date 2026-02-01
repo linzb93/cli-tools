@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import sizeOf from 'image-size';
 import through from 'through2';
 import del from 'del';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { isURL, emptyWritableStream } from '../../utils/helper';
 import { root } from '../../utils/constant';
 

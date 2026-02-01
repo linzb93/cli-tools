@@ -20,8 +20,7 @@
     "author": "linzb93",
     "license": "ISC",
     "dependencies": {
-        "@cli-tools/shared": "workspace:*",
-        "commander": "^8.3.0"
+        "@cli-tools/shared": "workspace:*"
     },
     "devDependencies": {}
 }

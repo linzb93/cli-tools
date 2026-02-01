@@ -1,4 +1,4 @@
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import gitAtom from '../utils/atom';
 import { executeCommands } from '../../../utils/promise';
 import chalk from 'chalk';

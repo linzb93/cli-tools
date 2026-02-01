@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { levelCharacters } from '../../utils/constant';
 import { Options } from './types';
 

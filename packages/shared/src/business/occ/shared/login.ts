@@ -1,7 +1,7 @@
 import inquirer from '../../../utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
-import { AiImplementation } from '../../../business/ai/shared/utils/implementation';
+import { AiImplementation } from '../../ai/common/implementation/index';
 import { readSecret } from '../../../utils/secret';
 import { imageBase64ToStream, tempUpload } from '../../../utils/image';
 import serviceGenerator from '../../../utils/http';

@@ -1,7 +1,7 @@
 import { execaCommand } from 'execa';
 import chalk from 'chalk';
 import pMap from 'p-map';
-import BaseService from '../../../core/BaseService.abstract';
+import { BaseService } from '../../../../base/BaseService';
 import { getAllBranches, deleteBranch, BranchInfo } from '../../shared/utils';
 
 interface BranchExtraItem extends BranchInfo {

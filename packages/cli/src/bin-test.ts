@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { aiCommand } from './commands/ai';
-import { analyseCommand } from './commands/analyse';
-import { timeCommand } from './commands/time';
-// import { logger } from '@/utils/logger';
+import { curlCommand } from './commands/curl';
 // 创建命令行程序
 const program = new Command();
 import { generateHelpDoc } from '@cli-tools/shared/src/utils/helper';
@@ -27,20 +24,12 @@ program.hook('preAction', (thisCommand) => {
 });
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('ai [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        aiCommand(subCommand, rest, options);
+    .command('curl')
+    .option('--extra <extra>', '额外的参数')
+    .option('--full', '显示全部header')
+    .action((options) => {
+        curlCommand(options);
     });
-program
-    .command('analyse [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        analyseCommand(subCommand, rest, options);
-    });
-program.command('time [time]').action((data) => {
-    timeCommand(data);
-});
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
 

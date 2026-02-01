@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import BaseService from '../../../core/BaseService.abstract';
+import { BaseService } from '../../../../base/BaseService';
 import { isGitProject, getAllTags } from '../../shared/utils';
 import { executeCommands, CommandConfig } from '../../../../utils/promise';
 

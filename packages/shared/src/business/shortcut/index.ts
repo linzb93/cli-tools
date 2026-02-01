@@ -1,4 +1,4 @@
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import chalk from 'chalk';
 import { isWin } from '../../utils/constant';
 import { groupBy } from 'lodash-es';

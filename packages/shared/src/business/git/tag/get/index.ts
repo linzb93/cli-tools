@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import BaseService from '../../../core/BaseService.abstract';
+import { BaseService } from '../../../../base/BaseService';
 import { isGitProject, getAllTags } from '../../shared/utils';
 import { executeCommands } from '../../../../utils/promise';
 import semver from 'semver';

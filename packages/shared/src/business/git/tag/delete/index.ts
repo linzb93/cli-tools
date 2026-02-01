@@ -1,4 +1,4 @@
-import BaseService from '../../../core/BaseService.abstract';
+import { BaseService } from '../../../../base/BaseService';
 import { isGitProject, getAllTags, deleteTags } from '../../shared/utils';
 
 /**

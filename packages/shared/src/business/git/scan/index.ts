@@ -1,7 +1,7 @@
 import { basename } from 'node:path';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import useScan from './useScan';
 import progress from '../../../utils/progress';
 

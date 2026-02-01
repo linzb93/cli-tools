@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import pMap from 'p-map';
 import { globby } from 'globby';
 import chalk from 'chalk';
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import { splitByLine } from '../../../utils/helper';
 import Module, { IFileAnalysis } from './Module';
 import VueModule from './VueModule';

@@ -1,4 +1,4 @@
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { Options } from './types';
 import { AppFactory } from './AppFactory';
 

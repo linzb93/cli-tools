@@ -1,4 +1,4 @@
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import { DeployOptions } from './BaseDeployCommand';
 import DeployCommandFactory from './DeployCommandFactory';
 

@@ -1,4 +1,4 @@
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import Table from 'cli-table3';
 import { isGitProject, splitGitLog } from '../utils';
 import { execaCommand as execa } from 'execa';

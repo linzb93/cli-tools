@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
-import BaseService from '../core/BaseService.abstract';
-import { Log } from '../../utils/logger';
+import { BaseService } from '../../base/BaseService';
+import { Log } from '../../utils/decorators/logger';
+import { dClass } from '../../utils/decorators/dClass';
 
+@dClass
 export class TimeService extends BaseService {
     @Log.info('TimeService main executed')
     main(timeParam: string): void {

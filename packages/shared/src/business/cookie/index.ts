@@ -1,5 +1,4 @@
-import { format } from 'prettier';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { CurlService } from '../curl';
 
 /**

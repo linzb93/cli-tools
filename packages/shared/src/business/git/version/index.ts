@@ -1,4 +1,4 @@
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import { isGitProject } from '../utils';
 import { executeCommands } from '../../../utils/promise';
 import fs from 'fs-extra';

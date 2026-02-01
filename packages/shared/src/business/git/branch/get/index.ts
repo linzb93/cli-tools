@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import BaseService from '../../../core/BaseService.abstract';
+import { BaseService } from '../../../../base/BaseService';
 import { getAllBranches } from '../../shared/utils';
 
 export interface Options {

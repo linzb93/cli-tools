@@ -1,4 +1,4 @@
-import BaseService from '../../core/BaseService.abstract';
+import { BaseService } from '../../../base/BaseService';
 import { execaCommand as execa } from 'execa';
 import { executeCommands, formatError } from '../../../utils/promise';
 import gitAtom from '../utils/atom';

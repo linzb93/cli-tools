@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { TimeService } from '../time';
-import BaseService from '../core/BaseService.abstract';
+import { BaseService } from '../../base/BaseService';
 import { AnyObject } from '../../types';
 import TokenParser from './TokenParser';
 import JwtTokenParser from './JwtTokenParser';

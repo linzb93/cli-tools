@@ -1,9 +1,9 @@
 import imageClipboard from '../../../utils/clipboard';
 import { imageBase64ToStream, tempUpload } from '../../../utils/image';
 import clipboardy from 'clipboardy';
-import BaseService from '../../core/BaseService.abstract';
-import { AiImplementation } from '../shared/utils/implementation';
-import { MessageOptions } from '../shared/types';
+import { BaseService } from '../../../base/BaseService';
+import { AiImplementation } from '../common/implementation';
+import { MessageOptions } from '../common/types';
 /**
  * 选项接口
  */
