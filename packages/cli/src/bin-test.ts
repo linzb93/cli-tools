@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { tokenCommand } from './commands/token';
+import { engCommand } from './commands/eng';
 // 创建命令行程序
 const program = new Command();
 import { generateHelpDoc } from '@cli-tools/shared/src/utils/helper';
@@ -24,11 +24,10 @@ program.hook('preAction', (thisCommand) => {
 });
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('token [data]')
-    .option('-o --origin', '原始数据')
-    .option('-c --complete', '完整数据')
-    .action((data, options) => {
-        tokenCommand(data, options);
+    .command('eng [text]')
+    .option('-e,--example', '显示范例')
+    .action((text, options) => {
+        engCommand(text, options);
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
