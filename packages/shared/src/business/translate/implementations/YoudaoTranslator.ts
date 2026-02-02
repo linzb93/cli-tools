@@ -1,10 +1,10 @@
-import BaseTranslator, { TranslateResultItem } from './BaseTranslator';
+import { BaseTranslator, TranslateResultItem } from '../core/BaseTranslator';
 import { getHtml } from '../../../utils/http/spider';
 
 /**
  * 有道翻译器
  */
-export default class YoudaoTranslator extends BaseTranslator {
+export class YoudaoTranslator extends BaseTranslator {
     /**
      * 翻译器名称
      */
@@ -41,7 +41,7 @@ export default class YoudaoTranslator extends BaseTranslator {
                             type: '',
                             content: typeRet,
                         };
-                    })
+                    }),
             );
 
             if (arr.length) {

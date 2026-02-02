@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { BaseService } from '../../base/BaseService';
-import { BaseTranslator, YoudaoTranslator, AiTranslator, type TranslateResultItem } from './translators';
+import { BaseTranslator, YoudaoTranslator, AiTranslator, type TranslateResultItem } from './implementations';
 
 export interface Options {
     /**

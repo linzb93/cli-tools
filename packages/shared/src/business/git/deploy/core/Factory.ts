@@ -1,13 +1,13 @@
 import { execaCommand as execa } from 'execa';
 import BaseDeployCommand, { DeployOptions } from './BaseDeployCommand';
-import CompanyDeployCommand from './CompanyDeployCommand';
-import GithubDeployCommand from './GithubDeployCommand';
+import CompanyDeployCommand from '../implementations/CompanyDeployCommand';
+import GithubDeployCommand from '../implementations/GithubDeployCommand';
 
 /**
  * 部署命令工厂类
  * 负责创建适当的部署命令实例
  */
-export default class DeployCommandFactory {
+export class DeployCommandFactory {
     /**
      * 检查是否为Github项目
      * @returns {Promise<boolean>} 是否为Github项目

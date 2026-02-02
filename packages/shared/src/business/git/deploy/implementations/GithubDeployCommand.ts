@@ -1,4 +1,4 @@
-import BaseDeployCommand, { DeployOptions } from './BaseDeployCommand';
+import BaseDeployCommand, { DeployOptions } from '../core/BaseDeployCommand';
 
 /**
  * Github项目Git部署命令

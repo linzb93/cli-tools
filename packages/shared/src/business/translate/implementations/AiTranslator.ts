@@ -1,10 +1,10 @@
-import BaseTranslator, { TranslateResultItem } from './BaseTranslator';
+import { BaseTranslator, TranslateResultItem } from '../core/BaseTranslator';
 import { AiImplementation } from '../../ai/common/implementation/index';
 
 /**
  * AI翻译器
  */
-export default class AiTranslator extends BaseTranslator {
+export class AiTranslator extends BaseTranslator {
     /**
      * 翻译器名称
      */

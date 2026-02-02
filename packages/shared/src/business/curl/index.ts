@@ -1,7 +1,7 @@
 import { BaseService } from '../../base/BaseService';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
-import { CurlParserFactory } from './ModuleFactory';
+import { CurlParserFactory } from './core/Factory';
 import type { Options } from './types';
 
 export type { Options };
@@ -27,12 +27,14 @@ export class CurlService extends BaseService {
             return;
         }
 
+        const factory = new CurlParserFactory();
+
         // 检测curl模式
-        const mode = CurlParserFactory.detectCurlMode(curl);
+        const mode = factory.detectCurlMode(curl);
         this.logger.info(`检测到curl模式: ${mode}`);
 
         // 创建对应的解析器
-        const parser = CurlParserFactory.createParser(mode, options);
+        const parser = factory.create(mode, options);
 
         // 解析各个部分
         const url = parser.parseUrl(urlLine);
@@ -108,7 +110,8 @@ export class CurlService extends BaseService {
             this.logger.error('可能剪贴板里的不是curl代码，退出进程');
             process.exit(0);
         }
-        const parser = CurlParserFactory.createParser(CurlParserFactory.detectCurlMode(curl), this.options);
+        const factory = new CurlParserFactory();
+        const parser = factory.create(factory.detectCurlMode(curl), this.options);
         return parser.getCookieFromCurl(curl);
     }
 
@@ -132,12 +135,12 @@ export class CurlService extends BaseService {
             this.logger.error('无法找到curl命令起始行');
             return '';
         }
-
+        const factory = new CurlParserFactory();
         // 检测curl模式
-        const mode = CurlParserFactory.detectCurlMode(curl);
+        const mode = factory.detectCurlMode(curl);
 
         // 创建对应的解析器
-        const parser = CurlParserFactory.createParser(mode, this.options);
+        const parser = factory.create(mode, this.options);
 
         // 解析请求头以获取内容类型
         const headers = parser.parseHeaders(lines);

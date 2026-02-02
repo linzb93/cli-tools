@@ -1,5 +1,5 @@
 import * as querystring from 'node:querystring';
-import { BaseCurlParser } from '../BaseCurlParser';
+import { BaseCurlParser } from '../core/BaseCurlParser';
 
 /**
  * Bash模式curl解析器

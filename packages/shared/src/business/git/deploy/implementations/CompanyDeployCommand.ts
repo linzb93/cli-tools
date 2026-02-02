@@ -1,6 +1,6 @@
-import BaseDeployCommand, { DeployOptions } from './BaseDeployCommand';
-import { openDeployPage } from '../utils/jenkins';
-import { TagService, Options as TagOptions } from '../tag/get';
+import BaseDeployCommand, { DeployOptions } from '../core/BaseDeployCommand';
+import { openDeployPage } from '../../utils/jenkins';
+import { TagService, Options as TagOptions } from '../../tag/get';
 import { sleep } from '@linzb93/utils';
 import path from 'node:path';
 import fs from 'fs-extra';

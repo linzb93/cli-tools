@@ -1,7 +1,7 @@
-import { BaseService } from '../../../base/BaseService';
+import { BaseService } from '../../../../base/BaseService';
 import { execaCommand as execa } from 'execa';
-import { executeCommands, formatError } from '../../../utils/promise';
-import gitAtom from '../utils/atom';
+import { executeCommands, formatError } from '../../../../utils/promise';
+import gitAtom from '../../utils/atom';
 import {
     getCurrentBranchName,
     getMainBranchName,
@@ -9,7 +9,7 @@ import {
     getGitProjectStatus,
     GitStatusMap,
     isGitProject,
-} from '../utils';
+} from '../../utils';
 
 /**
  * Deploy命令选项接口
