@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
-import TokenParser from './TokenParser';
-import { Options } from './index';
-import { AnyObject } from '../../types';
+import { TokenParser } from '../core/TokenParser';
+import { Options } from '../types';
+import { AnyObject } from '../../../types';
 
 /**
  * JWT Token解析器
  */
-class JwtTokenParser extends TokenParser {
+export class JwtTokenParser extends TokenParser {
     /**
      * 解析JWT格式token
      * @param token JWT token字符串
@@ -32,5 +32,3 @@ class JwtTokenParser extends TokenParser {
         return 'jwt';
     }
 }
-
-export default JwtTokenParser;
