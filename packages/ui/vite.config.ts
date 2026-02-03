@@ -1,9 +1,9 @@
-import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
-import cdn from 'vite-plugin-cdn-import'
-import vue from '@vitejs/plugin-vue'
-import globalConfig from '../../config.json'
-import move from './vite-plugins/move'
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+// import cdn from 'vite-plugin-cdn-import'
+import vue from '@vitejs/plugin-vue';
+import globalConfig from '../../config.json';
+import move from './vite-plugins/move';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,20 +16,20 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    cdn({
-      modules: [
-        {
-          name: 'vue',
-          var: 'Vue',
-          path: 'https://unpkg.com/vue@{version}/dist/vue.global.js'
-        },
-        {
-          name: 'element-plus',
-          var: 'ElementPlus',
-          path: 'https://unpkg.com/element-plus@{version}/dist/index.full.min.js'
-        }
-      ]
-    }),
+    // cdn({
+    //   modules: [
+    //     {
+    //       name: 'vue',
+    //       var: 'Vue',
+    //       path: 'https://unpkg.com/vue@{version}/dist/vue.global.js'
+    //     },
+    //     {
+    //       name: 'element-plus',
+    //       var: 'ElementPlus',
+    //       path: 'https://unpkg.com/element-plus@{version}/dist/index.full.min.js'
+    //     }
+    //   ]
+    // }),
     move(`../server/dist/${globalConfig.prefix.static}`)
   ],
   resolve: {
@@ -37,4 +37,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
-})
+});
