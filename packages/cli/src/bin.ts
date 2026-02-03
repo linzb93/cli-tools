@@ -32,6 +32,7 @@ import { replCommand } from './commands/repl';
 import { vueCommand } from './commands/vue';
 import { serverCommand } from './commands/server';
 import { sassCommand } from './commands/sass';
+import { versionCommand } from './commands/version';
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -247,6 +248,12 @@ program
     .option('--publicPath <path>', '设置publicPath')
     .action((option) => {
         vueCommand(option);
+    });
+program
+    .command('version [newVersion]')
+    .description('创建新版本分支并更新版本号')
+    .action((newVersion: string) => {
+        versionCommand(newVersion);
     });
 program
     .command('yapi <url>')

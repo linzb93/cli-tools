@@ -1,6 +1,5 @@
-import { BaseService } from '../../../base/BaseService';
-import { isGitProject } from '../utils';
-import { executeCommands } from '../../../utils/promise';
+import { BaseService } from '../../base/BaseService';
+import { executeCommands } from '../../utils/promise';
 import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';
@@ -16,12 +15,6 @@ export class VersionService extends BaseService {
      * @returns {Promise<void>}
      */
     async main(versionArg?: string): Promise<void> {
-        // 检查当前目录是否是 Git 项目
-        if (!(await isGitProject())) {
-            this.logger.error('当前目录不是 Git 项目');
-            return;
-        }
-
         const pkgPath = path.resolve(process.cwd(), 'package.json');
         if (!fs.existsSync(pkgPath)) {
             this.logger.error('未找到 package.json 文件');
