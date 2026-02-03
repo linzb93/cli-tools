@@ -1,21 +1,27 @@
-import { CliAnalyseService, CodeAnalyseService } from '@cli-tools/shared/src/business/analyse';
+import { CliAnalyseService, CodeAnalyseService, CliAnalyseOptions } from '@cli-tools/shared/src/business/analyse';
 import { subCommandCompiler } from '@/utils';
 
 /**
  * 分析命令选项接口
  */
 interface Options {
-    // 命令选项
+    period?: 'day' | 'week' | 'month' | 'all';
 }
 
 /**
  * 命令行分析
  */
-const cli = () => {
+const cli = (options: Options) => {
     subCommandCompiler((program) => {
-        program.command('cli').action(() => {
-            new CliAnalyseService().main();
-        });
+        program
+            .command('cli')
+            .option('-p, --period <period>', '时间周期 (day|week|month|all)', 'all')
+            .action((cmdOptions) => {
+                const cliOptions: CliAnalyseOptions = {
+                    period: cmdOptions.period || options.period || 'all',
+                };
+                new CliAnalyseService(cliOptions).main();
+            });
     });
 };
 
@@ -36,11 +42,11 @@ const code = () => {
  * @param data 数据
  * @param options 选项
  */
-export function analyseCommand(subCommand: string, data: string[], options: any) {
+export function analyseCommand(subCommand: string, data: string[], options: Options) {
     const commandMap = {
         cli,
         code,
     };
 
-    commandMap[subCommand]();
+    commandMap[subCommand](options);
 }

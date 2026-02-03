@@ -4,12 +4,11 @@ import { pullCommand } from './pull';
 import { deployCommand } from './deploy';
 import { branchCommand } from './branch';
 import { commitCommand } from './commit';
-import { versionCommand } from './version';
+import { versionCommand } from '../version';
 import { cloneCommand } from './clone';
 import { scanCommand } from './scan';
 import { mergeCommand } from './merge';
 import { logCommand } from './log';
-import { subCommandCompiler } from '@/utils';
 import { tagCommand } from './tag';
 
 /**
