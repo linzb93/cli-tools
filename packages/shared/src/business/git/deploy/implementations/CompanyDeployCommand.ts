@@ -65,7 +65,7 @@ export default class CompanyDeployCommand extends BaseDeployCommand {
             await this.handleTagAndOutput();
         }
         if (this.options.open) {
-            await openDeployPage(this.options.type);
+            await openDeployPage(this.options.type, true);
         }
     }
 

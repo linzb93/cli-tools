@@ -48,6 +48,10 @@ interface Database {
             username: string;
             password: string;
         };
+        zdb: {
+            baseUrl: string;
+            unionId: string;
+        };
     };
     yapi: {
         username: string;

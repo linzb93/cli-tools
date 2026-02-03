@@ -10,5 +10,6 @@ import Spbj from './spbj';
 import Wmb from './wmb';
 import Kdb from './kdb';
 import DkdMiniProgram from './dkdMiniProgram';
+import Zdb from './zdb';
 
-export { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtdjds, Mtaibdsq, Elejysq, Chain, Spbj, Wmb, Kdb, DkdMiniProgram };
+export { Mtjysq, Mtzxsq, Mtpjsq, Mtimsq, Mtdjds, Mtaibdsq, Elejysq, Chain, Spbj, Wmb, Kdb, DkdMiniProgram, Zdb };

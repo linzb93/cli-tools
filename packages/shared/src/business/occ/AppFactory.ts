@@ -12,6 +12,7 @@ import {
     Wmb,
     Kdb,
     DkdMiniProgram,
+    Zdb,
 } from './apps';
 
 type AppCtor = new () => BaseApp;
@@ -40,6 +41,7 @@ export class AppFactory {
             this.appClasses.set('wmb', Wmb);
             this.appClasses.set('kdb', Kdb);
             this.appClasses.set('minip', DkdMiniProgram);
+            this.appClasses.set('zdb', Zdb);
         }
     }
 
