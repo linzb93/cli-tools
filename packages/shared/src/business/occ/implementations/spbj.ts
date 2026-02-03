@@ -1,10 +1,13 @@
 import qs from 'node:querystring';
-import Base from './base';
+import Base from '../core/AbstractApp';
 import serviceGenerator from '../../../utils/http';
 import { readSecret } from '../../../utils/secret';
 import { Options } from '../types';
 
-export default class extends Base {
+/**
+ * 商品搬家应用实现
+ */
+export default class Spbj extends Base {
     name = 'spbj';
     searchKey = 'searchParam';
     serviceName = '商品搬家';

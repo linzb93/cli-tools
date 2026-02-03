@@ -1,6 +1,9 @@
-import MeituanBase from './base/meituan';
+import MeituanBase from '../core/MeituanBase';
 
-export default class extends MeituanBase {
+/**
+ * 点金大师-美团应用实现
+ */
+export default class Mtdjds extends MeituanBase {
     name = 'dj';
     appKey = '85';
     serviceName = '点金大师-美团';

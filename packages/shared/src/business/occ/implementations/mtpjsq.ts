@@ -1,6 +1,9 @@
-import MeituanBase from './base/meituan';
+import MeituanBase from '../core/MeituanBase';
 
-export default class extends MeituanBase {
+/**
+ * 评价神器-美团应用实现
+ */
+export default class Mtpjsq extends MeituanBase {
     name = 'pj';
     appKey = '73';
     serviceName = '评价神器-美团';

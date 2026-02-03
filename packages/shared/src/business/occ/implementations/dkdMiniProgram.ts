@@ -1,17 +1,19 @@
-import Base from './base';
+import Base from '../core/AbstractApp';
 import serviceGenerator from '../../../utils/http';
 import { readSecret } from '../../../utils/secret';
 import { Options } from '../types';
 import { logger } from '../../../utils/logger';
+
 const platformTypeEnum = {
     meituan: '8',
     ele: '11',
     jingdong: '4',
 };
+
 /**
- * 小程序的应用类
+ * 小程序应用实现
  */
-export default class extends Base {
+export default class DkdMiniProgram extends Base {
     name = 'minip';
     searchKey = 'searchParam';
     serviceName = '小程序';
@@ -135,8 +137,6 @@ export default class extends Base {
      * 获取数据汇总匹配的店铺
      * @param {any[]} list - 店铺列表
      * @returns {{platform: string, shopId: string, venderId: string} | null} 匹配的店铺信息
-     * @example
-     * getDataSummarizingMatchShop([{platform: '8', shopId: '1', venderId: '2'}]) // returns {platform: 'meituan', shopId: '1', venderId: '2'}
      */
     private getDataSummarizingMatchShop = (list: any[]) => {
         for (const shop of list) {

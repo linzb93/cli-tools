@@ -1,10 +1,13 @@
-import { Options } from '../../types';
-import { logger } from '../../../../utils/logger';
+import { Options } from '../types';
+import { logger } from '../../../utils/logger';
 import open from 'open';
 import chalk from 'chalk';
-import OccUtils from '../../shared/occUtils';
+import OccUtils from '../utils/occUtils';
 
-export default abstract class {
+/**
+ * 应用抽象基类
+ */
+export default abstract class AbstractApp {
     appKey: string;
     /**
      * 名称（缩写）
@@ -75,7 +78,7 @@ export default abstract class {
     }
     openPC(url: string, shopName: string) {
         logger.error(
-            `${chalk.yellow(`【${this.serviceName}】`)}当前应用不支持PC端功能，请使用移动端访问店铺【${shopName}】`
+            `${chalk.yellow(`【${this.serviceName}】`)}当前应用不支持PC端功能，请使用移动端访问店铺【${shopName}】`,
         );
     }
     async customAction(keyword: string, options: Options) {
@@ -99,7 +102,7 @@ export default abstract class {
         if (options.user) {
             this.occUtils.printUserInfo(
                 { token, serviceName: this.serviceName, shopName, getUserInfo: this.getUserInfo.bind(this) },
-                options.test
+                options.test,
             );
             return;
         }

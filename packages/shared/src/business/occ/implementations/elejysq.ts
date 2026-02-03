@@ -1,6 +1,9 @@
-import EleBase from './base/ele';
+import EleBase from '../core/EleBase';
 
-export default class extends EleBase {
+/**
+ * 饿了么经营神器应用实现
+ */
+export default class Elejysq extends EleBase {
     name = 'ele';
     appKey = '29665924';
     serviceName = '店客多-饿了么经营神器';

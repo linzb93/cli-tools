@@ -1,4 +1,4 @@
-import BaseApp from './apps/base';
+import AbstractApp from './AbstractApp';
 import {
     Mtjysq,
     Mtzxsq,
@@ -13,15 +13,15 @@ import {
     Kdb,
     DkdMiniProgram,
     Zdb,
-} from './apps';
+} from '../implementations/index';
 
-type AppCtor = new () => BaseApp;
+type AppCtor = new () => AbstractApp;
 
 /**
  * 应用工厂类
  * 负责按需创建应用实例，优化内存使用
  */
-export class AppFactory {
+export class Factory {
     private static appClasses: Map<string, AppCtor> = new Map();
 
     /**
@@ -50,7 +50,7 @@ export class AppFactory {
      * @param appName 应用名称（缩写）
      * @returns 应用实例
      */
-    static createApp(appName: string): BaseApp {
+    static createApp(appName: string): AbstractApp {
         this.initializeAppClasses();
 
         const appClass = this.appClasses.get(appName);
@@ -84,7 +84,7 @@ export class AppFactory {
      * 获取默认应用实例
      * @returns 默认应用实例
      */
-    static getDefaultApp(): BaseApp {
+    static getDefaultApp(): AbstractApp {
         return new Mtjysq(); // jysq 作为默认应用
     }
 

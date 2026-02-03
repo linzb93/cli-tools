@@ -1,6 +1,9 @@
-import MeituanBase from './base/meituan';
+import MeituanBase from '../core/MeituanBase';
 
-export default class extends MeituanBase {
+/**
+ * IM神器-美团应用实现
+ */
+export default class Mtimsq extends MeituanBase {
     name = 'im';
     appKey = '75';
     serviceName = 'IM神器-美团';

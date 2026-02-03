@@ -1,12 +1,15 @@
 import qs from 'node:querystring';
-import Base from '.';
-import serviceGenerator from '../../../../utils/http';
-import encryptPassword from '../../shared/encryptPassword';
-import { readSecret } from '../../../../utils/secret';
-import { HTTP_STATUS } from '../../../../utils/constant';
-import { logger } from '../../../../utils/logger';
+import Base from './AbstractApp';
+import serviceGenerator from '../../../utils/http';
+import encryptPassword from '../utils/encryptPassword';
+import { readSecret } from '../../../utils/secret';
+import { HTTP_STATUS } from '../../../utils/constant';
+import { logger } from '../../../utils/logger';
 
-export default abstract class Zhanwai extends Base {
+/**
+ * 站外平台应用基类
+ */
+export default abstract class ZhanwaiBase extends Base {
     abstract name: string;
     searchKey = 'searchParam';
     serviceName = '';

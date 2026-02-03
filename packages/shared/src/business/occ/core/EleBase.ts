@@ -1,7 +1,11 @@
-import Base from '.';
-import { readSecret } from '../../../../utils/secret';
-import serviceGenerator from '../../../../utils/http';
-export default abstract class Ele extends Base {
+import Base from './AbstractApp';
+import { readSecret } from '../../../utils/secret';
+import serviceGenerator from '../../../utils/http';
+
+/**
+ * 饿了么平台应用基类
+ */
+export default abstract class EleBase extends Base {
     /**
      * appKey，各应用不一样
      */

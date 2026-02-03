@@ -10,6 +10,7 @@ import { isOldNode } from '../../../utils/helper';
 const service = serviceGenerator({
     baseURL: '',
 });
+
 /**
  * 手动输入验证码进行登录
  * @param username 用户名
@@ -108,6 +109,7 @@ export async function login(): Promise<void> {
         process.exit(0);
     }
 }
+
 async function getOCCUserInfo() {
     const { username, password } = await inquirer.prompt([
         {
@@ -126,6 +128,7 @@ async function getOCCUserInfo() {
         db.oa.password = password;
     });
 }
+
 /**
  * 获取验证码并登录
  * @param username 用户名
@@ -198,6 +201,7 @@ async function processCaptchaAndLogin(
         throw error;
     }
 }
+
 async function getLoginCaptcha(): Promise<{
     url: string;
     uuid: string;

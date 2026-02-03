@@ -1,6 +1,9 @@
-import MeituanBase from './base/meituan';
+import MeituanBase from '../core/MeituanBase';
 
-export default class extends MeituanBase {
+/**
+ * AI爆单神器-美团应用实现
+ */
+export default class Mtaibdsq extends MeituanBase {
     name = 'ai';
     appKey = '106';
     serviceName = 'AI爆单神器-美团';

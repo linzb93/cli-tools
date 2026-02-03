@@ -1,6 +1,6 @@
 import { BaseService } from '../../base/BaseService';
 import { Options } from './types';
-import { AppFactory } from './AppFactory';
+import { Factory as AppFactory } from './core/Factory';
 
 /**
  * 常用命令

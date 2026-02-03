@@ -1,9 +1,12 @@
 import qs from 'node:querystring';
-import Base from './base';
+import Base from '../core/AbstractApp';
 import serviceGenerator from '../../../utils/http';
 import { readSecret } from '../../../utils/secret';
 
-export default class extends Base {
+/**
+ * 店客多品牌连锁应用实现
+ */
+export default class Chain extends Base {
     name = 'chain';
     searchKey = 'searchParam';
     serviceName = '店客多品牌连锁';

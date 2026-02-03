@@ -1,12 +1,14 @@
 const keyChain = 'dkdbrandadmincreatedbydiankeduofront';
 const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const excursion = 3;
+
 function changeLetter(source: string, isLower?: boolean) {
     const index = letters.split('').findIndex((letter) => (isLower ? letter.toLowerCase() : letter) === source);
     const ret =
         index + excursion >= 26 ? letters.split('')[index - 26 + excursion] : letters.split('')[index + excursion];
     return isLower ? ret.toLowerCase() : ret;
 }
+
 /**
  * 加密函数，别改算法!!
  * 算法：密码每一位右边插入 keyChain 按顺序的字母，然后无论是数字还是字母往后挪3位，

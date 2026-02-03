@@ -1,10 +1,14 @@
-import Base from '.';
-import serviceGenerator from '../../../../utils/http';
-import { readSecret } from '../../../../utils/secret';
-import { login } from '../../shared/login';
+import Base from './AbstractApp';
+import serviceGenerator from '../../../utils/http';
+import { readSecret } from '../../../utils/secret';
+import { login } from '../utils/login';
 import chalk from 'chalk';
-import { Options, UserInfo } from '../../types';
-export default abstract class Meituan extends Base {
+import { Options, UserInfo } from '../types';
+
+/**
+ * 美团平台应用基类
+ */
+export default abstract class MeituanBase extends Base {
     /**
      * appKey，各应用不一样
      */

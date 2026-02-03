@@ -3,6 +3,9 @@ import { logger } from '../../../utils/logger';
 import open from 'open';
 import { UserInfo } from '../types';
 
+/**
+ * OCC 工具类
+ */
 export default class OccUtils {
     static getOccUrl(occUrl: string) {
         return occUrl;

@@ -1,6 +1,9 @@
-import MeituanBase from './base/meituan';
+import MeituanBase from '../core/MeituanBase';
 
-export default class extends MeituanBase {
+/**
+ * 装修神器-美团应用实现
+ */
+export default class Mtzxsq extends MeituanBase {
     name = 'zx';
     appKey = '36';
     serviceName = '装修神器-美团';
