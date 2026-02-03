@@ -25,7 +25,7 @@ export interface ITranslator {
 /**
  * 基础翻译器类
  */
-export default abstract class BaseTranslator implements ITranslator {
+export abstract class BaseTranslator implements ITranslator {
     /**
      * 翻译器名称
      */

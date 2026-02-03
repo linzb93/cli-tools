@@ -1,6 +1,6 @@
 import { BaseService } from '../../../base/BaseService';
-import { DeployOptions } from './BaseDeployCommand';
-import DeployCommandFactory from './DeployCommandFactory';
+import { DeployOptions } from './core/BaseDeployCommand';
+import { DeployCommandFactory } from './core/Factory';
 
 /**
  * Git Deploy命令入口类

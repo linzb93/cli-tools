@@ -1,6 +1,11 @@
+/**
+ * 翻译模块统一入口
+ * 使用工厂模式管理翻译器实例
+ */
 import chalk from 'chalk';
 import { BaseService } from '../../base/BaseService';
-import { BaseTranslator, YoudaoTranslator, AiTranslator, type TranslateResultItem } from './translators';
+import { TranslatorFactory, TranslatorType } from './core/Factory';
+import { TranslateResultItem } from './core/BaseTranslator';
 
 export interface Options {
     /**
@@ -9,14 +14,26 @@ export interface Options {
      */
     ai: boolean;
 }
+
 /**
  * 翻译服务类
+ * 使用工厂模式创建和管理翻译器
  */
 export class TranslateService extends BaseService {
     /**
      * 是否是中文翻译成英文
      */
     private isC2E = false;
+
+    /**
+     * 翻译器工厂实例
+     */
+    private translatorFactory: TranslatorFactory;
+
+    constructor() {
+        super();
+        this.translatorFactory = new TranslatorFactory();
+    }
 
     /**
      * 主方法
@@ -26,25 +43,13 @@ export class TranslateService extends BaseService {
     async main(text: string, options: Options): Promise<void> {
         this.isC2E = !/[a-z]+/.test(text);
 
-        // 创建翻译器实例
-        const youdaoTranslator = new YoudaoTranslator();
-        const aiTranslator = new AiTranslator();
+        // 使用工厂创建翻译器数组
+        const translators = TranslatorFactory.createDefaultTranslators(options.ai);
 
-        // 传递spinner给翻译器
-        youdaoTranslator.setSpinner(this.spinner);
-        aiTranslator.setSpinner(this.spinner);
-
-        // 定义翻译器数组
-        let translators: BaseTranslator[] = [];
-
-        // 根据选项决定翻译器顺序
-        if (options.ai) {
-            // 如果指定AI优先，则AI翻译器放在前面
-            translators = [aiTranslator, youdaoTranslator];
-        } else {
-            // 默认有道翻译器在前
-            translators = [youdaoTranslator, aiTranslator];
-        }
+        // 为所有翻译器设置spinner
+        translators.forEach((translator) => {
+            translator.setSpinner(this.spinner);
+        });
 
         // 存储翻译结果
         let match: {
@@ -106,7 +111,7 @@ ${result.length ? result.map((item) => `${chalk.gray(item.type)} ${item.content}
      * @param originText - 原文
      */
     async translateByAI(originText: string) {
-        const aiTranslator = new AiTranslator();
+        const aiTranslator = this.translatorFactory.create(TranslatorType.AI);
         aiTranslator.setSpinner(this.spinner);
         const result = await aiTranslator.translate(originText);
 

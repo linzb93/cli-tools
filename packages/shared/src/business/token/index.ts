@@ -2,21 +2,17 @@ import chalk from 'chalk';
 import { TimeService } from '../time';
 import { BaseService } from '../../base/BaseService';
 import { AnyObject } from '../../types';
-import TokenParser from './TokenParser';
-import JwtTokenParser from './JwtTokenParser';
-import Base64TokenParser from './Base64TokenParser';
-
-export interface Options {
-    /**
-     * 原始数据，时间戳没有解析成标准时间格式
-     */
-    origin?: boolean;
-    /**
-     * 完整数据，包括算法等
-     */
-    complete?: boolean;
+import type { TokenParser } from './core/TokenParser';
+import { TokenParserFactory } from './core/Factory';
+import type { Options } from './types';
+export type { Options };
+// 定义解析结果类型
+interface ParseResult<T = any> {
+    success: boolean;
+    data?: T;
+    parser?: TokenParser;
+    error?: Error;
 }
-
 export class TokenService extends BaseService {
     /**
      * 解析token的主方法
@@ -24,9 +20,7 @@ export class TokenService extends BaseService {
      * @param options 解析选项
      */
     async main(tk: string, options: Options) {
-        // 创建解析器列表
-        const parsers: TokenParser[] = [new JwtTokenParser(), new Base64TokenParser()];
-
+        const parsers = TokenParserFactory.getAllParsers();
         let decoded: any = '';
         let matchParser: TokenParser | null = null;
 
@@ -45,6 +39,7 @@ export class TokenService extends BaseService {
             this.logger.error('无法解析token');
             return;
         }
+
         console.log('\n');
         console.log(`使用${chalk.magenta(matchParser.getName())}解析结果：`);
 

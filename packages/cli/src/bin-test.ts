@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { curlCommand } from './commands/curl';
+import { engCommand } from './commands/eng';
 // 创建命令行程序
 const program = new Command();
 import { generateHelpDoc } from '@cli-tools/shared/src/utils/helper';
@@ -24,11 +24,10 @@ program.hook('preAction', (thisCommand) => {
 });
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('curl')
-    .option('--extra <extra>', '额外的参数')
-    .option('--full', '显示全部header')
-    .action((options) => {
-        curlCommand(options);
+    .command('eng [text]')
+    .option('-e,--example', '显示范例')
+    .action((text, options) => {
+        engCommand(text, options);
     });
 // 解析命令行参数
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

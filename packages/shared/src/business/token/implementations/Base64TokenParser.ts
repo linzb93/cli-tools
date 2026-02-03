@@ -1,9 +1,9 @@
-import TokenParser from './TokenParser';
+import { TokenParser } from '../core/TokenParser';
 
 /**
  * Base64 Token解析器
  */
-class Base64TokenParser extends TokenParser {
+export class Base64TokenParser extends TokenParser {
     /**
      * 解析Base64格式token
      * @param token Base64编码的token字符串
@@ -33,5 +33,3 @@ class Base64TokenParser extends TokenParser {
         return 'base64';
     }
 }
-
-export default Base64TokenParser;

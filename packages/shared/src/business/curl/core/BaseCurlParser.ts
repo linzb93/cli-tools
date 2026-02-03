@@ -1,4 +1,4 @@
-import { Options } from './types';
+import { Options } from '../types';
 
 /**
  * 抽象基类，定义curl解析器的通用接口

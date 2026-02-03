@@ -1,9 +1,9 @@
-import { Options } from './index';
+import { Options } from '../types';
 
 /**
  * Token解析器基类
  */
-abstract class TokenParser {
+export abstract class TokenParser {
     /**
      * 解析token的方法，子类必须实现
      * @param token 待解析的token字符串
@@ -18,5 +18,3 @@ abstract class TokenParser {
      */
     abstract getName(): string;
 }
-
-export default TokenParser;
