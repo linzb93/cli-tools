@@ -62,7 +62,8 @@ export class SassService extends BaseService {
      */
     async compileChangedFiles(): Promise<void> {
         const { stdout: files } = await execa('git diff --name-only');
-        const list = files.split('\n').filter((item) => item.endsWith('.scss'));
+        const all = files.split('\n').filter(Boolean);
+        const list = all.filter((item) => item.endsWith('.scss') && !all.includes(item.replace(/\.scss$/, '.wxss')));
         if (!list.length) {
             return;
         }

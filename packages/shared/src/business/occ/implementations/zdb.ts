@@ -9,14 +9,14 @@ import { readSecret } from '../../../utils/secret';
 export default class Zdb extends Base {
     name = 'zdb';
     searchKey = 'searchParam';
-    serviceName = '店客多品牌连锁';
-    defaultId = '13023942325';
-    testDefaultId = '13023942325';
+    serviceName = '涨单宝小程序';
+    defaultId = '-';
+    testDefaultId = '-';
     prefix = '';
     service = serviceGenerator({
         baseURL: '',
     });
-    async getShopUrl(keyword: string, isTest: boolean) {
+    async getShopUrl() {
         const { zdb } = await readSecret((db) => db.oa);
         return this.service
             .post(`${zdb.baseUrl}/login/directLogin`, {
