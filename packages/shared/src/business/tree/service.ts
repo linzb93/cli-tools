@@ -1,8 +1,8 @@
 import { resolve } from 'node:path';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
-import { BaseService } from '../../base/BaseService';
-import { levelCharacters } from '../../utils/constant';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { levelCharacters } from '@cli-tools/shared/src/utils/constant';
 import { Options } from './types';
 
 const defaultIgnoreDirs = ['node_modules', '.git', '.DS_Store'];

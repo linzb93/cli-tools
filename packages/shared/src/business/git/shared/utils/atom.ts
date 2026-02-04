@@ -1,5 +1,5 @@
-import { executeCommands, CommandConfig } from '../../../../utils/promise';
-import inquirer from '../../../../utils/inquirer';
+import { executeCommands, CommandConfig } from '@cli-tools/shared/src/utils/promise';
+import inquirer from '@cli-tools/shared/src/utils/inquirer';
 
 /**
  * 格式化提交信息，确保提交信息符合规范

@@ -1,6 +1,6 @@
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import chalk from 'chalk';
-import { isWin } from '../../utils/constant';
+import { isWin } from '@cli-tools/shared/src/utils/constant';
 import { groupBy } from 'lodash-es';
 
 interface IShortcutItem {

@@ -1,7 +1,7 @@
 import { execa } from 'execa';
-import { BaseService } from '../../../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import { isGitProject, getAllTags } from '../../shared/utils';
-import { executeCommands, CommandConfig } from '../../../../utils/promise';
+import { executeCommands, CommandConfig } from '@cli-tools/shared/src/utils/promise';
 
 /**
  * 同步Git标签的类

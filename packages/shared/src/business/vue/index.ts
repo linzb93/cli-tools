@@ -1,5 +1,5 @@
-import { BaseService } from '../../base/BaseService';
-import { showOpenDialog } from '../../utils/dialog';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { showOpenDialog } from '@cli-tools/shared/src/utils/dialog';
 import { execaCommand as execa } from 'execa';
 import clipboardy from 'clipboardy';
 import chalk from 'chalk';
@@ -8,9 +8,9 @@ import { resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fork } from 'node:child_process';
 import fs from 'fs-extra';
-import { Database } from '../../utils/sql';
+import { Database } from '@cli-tools/shared/src/utils/sql';
 import * as git from '../git/utils';
-import { objectToCmdOptions, isOldNode } from '../../utils/helper';
+import { objectToCmdOptions, isOldNode } from '@cli-tools/shared/src/utils/helper';
 import globalConfig from '../../../../../config.json';
 export interface Options {
     command: string;

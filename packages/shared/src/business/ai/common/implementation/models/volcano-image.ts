@@ -1,4 +1,4 @@
-import { readSecret } from '../../../../../utils/secret';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
 import BaseModel from './base';
 
 /**

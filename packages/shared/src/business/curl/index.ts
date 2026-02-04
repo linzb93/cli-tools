@@ -1,4 +1,4 @@
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
 import { CurlParserFactory } from './core/Factory';

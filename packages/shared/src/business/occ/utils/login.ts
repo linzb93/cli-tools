@@ -1,11 +1,11 @@
-import inquirer from '../../../utils/inquirer';
+import inquirer from '@cli-tools/shared/src/utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
-import { AiImplementation } from '../../ai/common/implementation/index';
-import { readSecret } from '../../../utils/secret';
-import { imageBase64ToStream, tempUpload } from '../../../utils/image';
-import serviceGenerator from '../../../utils/http';
-import { isOldNode } from '../../../utils/helper';
+import { AiImplementation } from '@cli-tools/shared/src/business/ai/common/implementation/index';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import { imageBase64ToStream, tempUpload } from '@cli-tools/shared/src/utils/image';
+import serviceGenerator from '@cli-tools/shared/src/utils/http';
+import { isOldNode } from '@cli-tools/shared/src/utils/helper';
 
 const service = serviceGenerator({
     baseURL: '',

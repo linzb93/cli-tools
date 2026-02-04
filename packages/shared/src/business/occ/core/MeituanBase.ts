@@ -1,6 +1,6 @@
 import Base from './AbstractApp';
-import serviceGenerator from '../../../utils/http';
-import { readSecret } from '../../../utils/secret';
+import serviceGenerator from '@cli-tools/shared/src/utils/http';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
 import { login } from '../utils/login';
 import chalk from 'chalk';
 import { Options, UserInfo } from '../types';

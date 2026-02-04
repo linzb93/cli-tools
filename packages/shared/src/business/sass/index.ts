@@ -1,12 +1,12 @@
 import fs from 'fs-extra';
 import { resolve, join, basename, dirname } from 'node:path';
 import chalk from 'chalk';
+import { execaCommand as execa } from 'execa';
 import dayjs from 'dayjs';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
 import { sleep } from '@linzb93/utils';
-import { BaseService } from '../../base/BaseService';
-import { execaCommand as execa } from 'execa';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 
 /**
  * Sass命令类

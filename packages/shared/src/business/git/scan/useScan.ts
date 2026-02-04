@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises';
 import pMap from 'p-map';
 import pReduce from 'p-reduce';
 import { Observable, last, skip, skipLast, first } from 'rxjs';
-import sql from '../../../utils/sql';
+import sql from '@cli-tools/shared/src/utils/sql';
 import { getGitProjectStatus, GitStatusMap } from '../utils';
 /**
  * 扫描所有git仓库，返回所有需要push的仓库
@@ -22,11 +22,11 @@ export default async function useScan() {
                         prefix: dir.path,
                         folderName: dir.name,
                     }),
-                    { concurrency: 4 }
-                )
+                    { concurrency: 4 },
+                ),
             );
         },
-        []
+        [],
     );
     const obs$ = new Observable((observer) => {
         let counter = 0;
@@ -46,14 +46,14 @@ export default async function useScan() {
                     branchName,
                 };
             },
-            { concurrency: 4 }
+            { concurrency: 4 },
         ).then((list) => {
             observer.next(
                 list.filter((item) =>
                     [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(
-                        item.status
-                    )
-                )
+                        item.status,
+                    ),
+                ),
             );
             observer.complete();
         });

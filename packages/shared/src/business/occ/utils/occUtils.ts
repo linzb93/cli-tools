@@ -1,5 +1,5 @@
 import clipboard from 'clipboardy';
-import { logger } from '../../../utils/logger';
+import { logger } from '@cli-tools/shared/src/utils/logger';
 import open from 'open';
 import { UserInfo } from '../types';
 
@@ -48,7 +48,7 @@ export default class OccUtils {
             shopName: string;
             getUserInfo: (tk: string, isTest: boolean) => Promise<UserInfo>;
         },
-        test: boolean
+        test: boolean,
     ) {
         logger.info('正在获取用户信息');
         const data = await obj.getUserInfo(obj.token, test);

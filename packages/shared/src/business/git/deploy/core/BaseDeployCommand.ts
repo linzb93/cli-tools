@@ -1,6 +1,6 @@
-import { BaseService } from '../../../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import { execaCommand as execa } from 'execa';
-import { executeCommands, formatError } from '../../../../utils/promise';
+import { executeCommands, formatError } from '@cli-tools/shared/src/utils/promise';
 import gitAtom from '../../utils/atom';
 import {
     getCurrentBranchName,

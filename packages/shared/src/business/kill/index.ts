@@ -2,7 +2,7 @@ import rawKillPort from 'kill-port';
 import detectPort from 'detect-port';
 import { last, isPlainObject } from 'lodash-es';
 import chalk from 'chalk';
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 
 const numberRE = /[1-9][0-9]*/;
 

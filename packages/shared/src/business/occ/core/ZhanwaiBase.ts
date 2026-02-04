@@ -1,10 +1,10 @@
 import qs from 'node:querystring';
 import Base from './AbstractApp';
-import serviceGenerator from '../../../utils/http';
+import serviceGenerator from '@cli-tools/shared/src/utils/http';
 import encryptPassword from '../utils/encryptPassword';
-import { readSecret } from '../../../utils/secret';
-import { HTTP_STATUS } from '../../../utils/constant';
-import { logger } from '../../../utils/logger';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import { HTTP_STATUS } from '@cli-tools/shared/src/utils/constant';
+import { logger } from '@cli-tools/shared/src/utils/logger';
 
 /**
  * 站外平台应用基类

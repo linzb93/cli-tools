@@ -1,4 +1,4 @@
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import { Options } from './types';
 import { Factory as AppFactory } from './core/Factory';
 

@@ -16,7 +16,7 @@ import { colorCommand } from './commands/color';
 import { forkCommand } from './commands/fork';
 import { killCommand } from './commands/kill';
 import { lixiCommand } from './commands/lixi';
-import { yapiCommand } from './commands/yapi';
+// import { yapiCommand } from './commands/yapi';
 // import mock from "./commands/mock";
 import { curlCommand } from './commands/curl';
 import { shortcutCommand } from './commands/shortcut';
@@ -255,11 +255,11 @@ program
     .action((newVersion: string) => {
         versionCommand(newVersion);
     });
-program
-    .command('yapi <url>')
-    .description('获取yapi接口文档')
-    .action((url) => {
-        yapiCommand(url);
-    });
+// program
+//     .command('yapi <url>')
+//     .description('获取yapi接口文档')
+//     .action((url) => {
+//         yapiCommand(url);
+//     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

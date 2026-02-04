@@ -1,7 +1,7 @@
 import qs from 'node:querystring';
 import Base from '../core/AbstractApp';
-import serviceGenerator from '../../../utils/http';
-import { readSecret } from '../../../utils/secret';
+import serviceGenerator from '@cli-tools/shared/src/utils/http';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
 
 /**
  * 店客多品牌连锁应用实现
@@ -31,9 +31,9 @@ export default class Chain extends Base {
     }
     getOpenUrl(res: any) {
         return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(
-            res.createTime
+            res.createTime,
         )}&id=${encodeURIComponent(res.id)}&phoneNumber=${encodeURIComponent(
-            res.phoneNumber
+            res.phoneNumber,
         )}&shopNumber=${encodeURIComponent(res.shopNumber)}&token=${encodeURIComponent(res.token)}`;
     }
     getToken(url: string): string {

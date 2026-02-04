@@ -1,9 +1,9 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { BaseService } from '../../../base/BaseService';
-import { cacheRoot, levelCharacters } from '../../../utils/constant';
-import { splitByLine } from '../../../utils/helper';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { cacheRoot, levelCharacters } from '@cli-tools/shared/src/utils/constant';
+import { splitByLine } from '@cli-tools/shared/src/utils/helper';
 
 export type TimePeriod = 'day' | 'week' | 'month' | 'all';
 
