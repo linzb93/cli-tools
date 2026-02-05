@@ -1,5 +1,5 @@
 import clipboard from 'clipboardy';
-import { logger } from '@cli-tools/shared/src/utils/logger';
+import { logger } from '@cli-tools/shared/utils/logger';
 import open from 'open';
 import { UserInfo } from '../types';
 

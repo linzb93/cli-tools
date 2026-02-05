@@ -1,4 +1,4 @@
-import { LogService, type Options as LogOptions } from '@cli-tools/shared/src/business/git/log';
+import { LogService, type Options as LogOptions } from '@cli-tools/shared/business/git/log';
 import { subCommandCompiler } from '@/utils';
 
 /**

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { TimeService } from '../time';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
-import { AnyObject } from '@cli-tools/shared/src/types';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
+import { AnyObject } from '@cli-tools/shared/types';
 import type { TokenParser } from './core/TokenParser';
 import { TokenParserFactory } from './core/Factory';
 import type { Options } from './types';

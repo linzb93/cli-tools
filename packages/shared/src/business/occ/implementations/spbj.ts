@@ -1,7 +1,7 @@
 import qs from 'node:querystring';
 import Base from '../core/AbstractApp';
-import serviceGenerator from '@cli-tools/shared/src/utils/http';
-import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import serviceGenerator from '@cli-tools/shared/utils/http';
+import { readSecret } from '@cli-tools/shared/utils/secret';
 import { Options } from '../types';
 
 /**

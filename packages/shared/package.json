@@ -7,6 +7,9 @@
     "keywords": [
         "cli"
     ],
+    "exports": {
+        "./*": "./src/*"
+    },
     "scripts": {
         "test": "vitest run"
     },

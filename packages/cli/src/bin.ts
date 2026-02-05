@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import init from './hooks/init';
-import { generateHelpDoc } from '@cli-tools/shared/src/utils/helper';
+import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
 import { beautyCommand } from './commands/beauty';
 import { ipCommand } from './commands/ip';
 import { aiCommand } from './commands/ai';

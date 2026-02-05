@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { logger } from '../../utils/logger';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 
 export class LixiService extends BaseService {
     main() {

@@ -1,6 +1,6 @@
-import { TagService, type Options as TagOptions } from '@cli-tools/shared/src/business/git/tag/get';
-import { TagSyncService } from '@cli-tools/shared/src/business/git/tag/sync';
-import { TagDeleteService } from '@cli-tools/shared/src/business/git/tag/delete';
+import { TagService, type Options as TagOptions } from '@cli-tools/shared/business/git/tag/get';
+import { TagSyncService } from '@cli-tools/shared/business/git/tag/sync';
+import { TagDeleteService } from '@cli-tools/shared/business/git/tag/delete';
 import { subCommandCompiler } from '@/utils';
 
 /**

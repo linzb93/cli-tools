@@ -2,7 +2,7 @@ import open from 'open';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { AxiosError } from 'axios';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import npm from '../shared';
 
 export interface Options {

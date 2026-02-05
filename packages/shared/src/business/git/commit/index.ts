@@ -1,7 +1,7 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { isGitProject } from '../utils';
 import gitAtom from '../utils/atom';
-import { executeCommands } from '@cli-tools/shared/src/utils/promise';
+import { executeCommands } from '@cli-tools/shared/utils/promise';
 
 /**
  * git commit 命令的选项接口，无需参数

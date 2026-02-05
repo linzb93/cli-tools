@@ -1,7 +1,7 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { isGitProject, getCurrentBranchName, isCurrenetBranchPushed } from '../utils';
 import gitAtom from '../utils/atom';
-import { executeCommands } from '@cli-tools/shared/src/utils/promise';
+import { executeCommands } from '@cli-tools/shared/utils/promise';
 import chalk from 'chalk';
 
 /**

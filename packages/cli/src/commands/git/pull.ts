@@ -1,4 +1,4 @@
-import { PullService, type Options as PullOptions } from '@cli-tools/shared/src/business/git/pull';
+import { PullService, type Options as PullOptions } from '@cli-tools/shared/business/git/pull';
 import { subCommandCompiler } from '@/utils';
 
 /**

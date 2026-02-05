@@ -6,8 +6,8 @@ import chalk from 'chalk';
 import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
-import { defaultBrowserHeaders } from '@cli-tools/shared/src/utils/helper';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
+import { defaultBrowserHeaders } from '@cli-tools/shared/utils/helper';
 
 export class IpService extends BaseService {
     async main(data?: string[]) {

@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import dayjs from 'dayjs';
 import {
     getYapiInterfaceTotal,

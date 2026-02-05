@@ -1,6 +1,6 @@
-import Logger from '@cli-tools/shared/src/utils/logger';
-import inquirer from '@cli-tools/shared/src/utils/inquirer';
-import sql, { type Database } from '@cli-tools/shared/src/utils/sql';
+import Logger from '@cli-tools/shared/utils/logger';
+import inquirer from '@cli-tools/shared/utils/inquirer';
+import sql, { type Database } from '@cli-tools/shared/utils/sql';
 
 /**
  * Yapi身份验证处理类

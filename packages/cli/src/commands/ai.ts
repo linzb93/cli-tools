@@ -1,7 +1,7 @@
-import { isOldNode } from '@cli-tools/shared/src/utils/helper';
-import { logger } from '@cli-tools/shared/src/utils/logger';
+import { isOldNode } from '@cli-tools/shared/utils/helper';
+import { logger } from '@cli-tools/shared/utils/logger';
 import { subCommandCompiler } from '@/utils';
-import { OCRService, OCROptions, RegexService } from '@cli-tools/shared/src/business/ai/index';
+import { OCRService, OCROptions, RegexService } from '@cli-tools/shared/business/ai/index';
 /**
  * OCR子命令
  */

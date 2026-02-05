@@ -1,4 +1,4 @@
-import { PushService } from '@cli-tools/shared/src/business/git/push';
+import { PushService } from '@cli-tools/shared/business/git/push';
 import { subCommandCompiler } from '@/utils';
 
 /**

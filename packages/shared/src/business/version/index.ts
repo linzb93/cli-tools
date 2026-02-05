@@ -1,5 +1,5 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
-import { executeCommands } from '@cli-tools/shared/src/utils/promise';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
+import { executeCommands } from '@cli-tools/shared/utils/promise';
 import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';

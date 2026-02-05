@@ -1,4 +1,4 @@
-import { CloneService, type Options as CloneOptions } from '@cli-tools/shared/src/business/git/clone';
+import { CloneService, type Options as CloneOptions } from '@cli-tools/shared/business/git/clone';
 import { subCommandCompiler } from '@/utils';
 
 /**

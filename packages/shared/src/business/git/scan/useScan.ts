@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises';
 import pMap from 'p-map';
 import pReduce from 'p-reduce';
 import { Observable, last, skip, skipLast, first } from 'rxjs';
-import sql from '@cli-tools/shared/src/utils/sql';
+import sql from '@cli-tools/shared/utils/sql';
 import { getGitProjectStatus, GitStatusMap } from '../utils';
 /**
  * 扫描所有git仓库，返回所有需要push的仓库

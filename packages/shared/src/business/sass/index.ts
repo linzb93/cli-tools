@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
 import { sleep } from '@linzb93/utils';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 
 /**
  * Sass命令类

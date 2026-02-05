@@ -11,7 +11,8 @@
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["*"]
+            "@/*": ["*"],
+            "@cli-tools/shared/*": ["../../shared/src/*"]
         }
     },
     "include": ["src/**/*", "env.d.ts"],

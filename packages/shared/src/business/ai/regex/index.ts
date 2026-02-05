@@ -1,4 +1,4 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { AiImplementation } from '../common/implementation';
 import { MessageOptions } from '../common/types';
 import { printObject } from '../common/utils/index';

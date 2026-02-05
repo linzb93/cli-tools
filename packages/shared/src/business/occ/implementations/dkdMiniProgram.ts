@@ -1,8 +1,8 @@
 import Base from '../core/AbstractApp';
-import serviceGenerator from '@cli-tools/shared/src/utils/http';
-import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import serviceGenerator from '@cli-tools/shared/utils/http';
+import { readSecret } from '@cli-tools/shared/utils/secret';
 import { Options } from '../types';
-import { logger } from '@cli-tools/shared/src/utils/logger';
+import { logger } from '@cli-tools/shared/utils/logger';
 
 const platformTypeEnum = {
     meituan: '8',

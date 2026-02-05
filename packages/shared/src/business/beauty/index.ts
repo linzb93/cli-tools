@@ -1,4 +1,4 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
 import { CurlService } from '../curl';

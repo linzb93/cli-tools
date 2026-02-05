@@ -5,13 +5,15 @@
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
+        "rootDir": ".",
         "outDir": "./dist/",
         "baseUrl": "./src",
         "noEmit": true,
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["*"]
+            "@/*": ["*"],
+            "@cli-tools/shared/*": ["./*"]
         }
     },
     "include": ["src/**/*", "env.d.ts"],

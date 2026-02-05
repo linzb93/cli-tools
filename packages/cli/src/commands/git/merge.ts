@@ -1,4 +1,4 @@
-import { MergeService, type Options as MergeOptions } from '@cli-tools/shared/src/business/git/merge';
+import { MergeService, type Options as MergeOptions } from '@cli-tools/shared/business/git/merge';
 import { subCommandCompiler } from '@/utils';
 
 /*

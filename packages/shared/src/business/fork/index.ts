@@ -2,7 +2,7 @@ import { fork } from 'node:child_process';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
 import internalIp from 'internal-ip';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 
 interface Message {
     port: string;

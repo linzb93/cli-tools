@@ -2,7 +2,7 @@
 // import axios from 'axios';
 // import { fork, ChildProcess } from 'node:child_process';
 // import { flatten, omit } from 'lodash-es';
-// import sql from '@cli-tools/shared/src/utils/sql';
+// import sql from '@cli-tools/shared/utils/sql';
 // import clipboardy from 'clipboardy';
 // // import { reactive } from "@vue/reactivity";
 // // import { watch } from "@vue/runtime-core";
@@ -12,8 +12,8 @@
 // import BaseManager from '../BaseManager';
 // // import set from "./set";
 // import { AnyObject } from '@/typings';
-// // import * as helper from "@cli-tools/shared/src/utils/helper";
-// import { root } from '@cli-tools/shared/src/utils/constant';
+// // import * as helper from "@cli-tools/shared/utils/helper";
+// import { root } from '@cli-tools/shared/utils/constant';
 
 // export interface Options {
 //     force: boolean;

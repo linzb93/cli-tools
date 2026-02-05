@@ -5,9 +5,9 @@ import axios, { AxiosResponse } from 'axios';
 import sizeOf from 'image-size';
 import through from 'through2';
 import del from 'del';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
-import { isURL, emptyWritableStream } from '@cli-tools/shared/src/utils/helper';
-import { root } from '@cli-tools/shared/src/utils/constant';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
+import { isURL, emptyWritableStream } from '@cli-tools/shared/utils/helper';
+import { root } from '@cli-tools/shared/utils/constant';
 
 export interface Options {
     /**

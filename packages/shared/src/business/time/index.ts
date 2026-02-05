@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
-import { Log } from '@cli-tools/shared/src/utils/decorators/logger';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
+import { Log } from '@cli-tools/shared/utils/decorators/logger';
 
 export class TimeService extends BaseService {
     @Log.info('TimeService main executed')

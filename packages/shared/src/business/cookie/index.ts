@@ -1,4 +1,4 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { CurlService } from '../curl';
 
 /**

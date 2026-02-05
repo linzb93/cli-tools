@@ -1,5 +1,5 @@
 import BaseModel from './base';
-import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import { readSecret } from '@cli-tools/shared/utils/secret';
 /**
  * DeepSeek模型
  */

@@ -2,10 +2,10 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import { analyseCommand } from './commands/analyse';
-// import { logger } from '@cli-tools/shared/src/utils/logger';
+// import { logger } from '@cli-tools/shared/utils/logger';
 // 创建命令行程序
 const program = new Command();
-import { generateHelpDoc } from '@cli-tools/shared/src/utils/helper';
+import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
 // 设置程序基本信息
 program.version(globalPkg.version).description('CLI工具集合');
 program.hook('preAction', (thisCommand) => {

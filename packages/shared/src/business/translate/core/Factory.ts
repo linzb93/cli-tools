@@ -2,7 +2,7 @@
  * 翻译器工厂类
  * 根据配置创建不同类型的翻译器实例
  */
-import { Factory } from '@cli-tools/shared/src/base/BaseFactory';
+import { Factory } from '@cli-tools/shared/base/BaseFactory';
 import { BaseTranslator } from './BaseTranslator';
 import { YoudaoTranslator } from '../implementations/YoudaoTranslator';
 import { AiTranslator } from '../implementations/AiTranslator';

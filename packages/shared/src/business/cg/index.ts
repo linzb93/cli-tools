@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { getPerformanceData, userForcastList, setUserForcast } from './repository';
 
 export interface Options {

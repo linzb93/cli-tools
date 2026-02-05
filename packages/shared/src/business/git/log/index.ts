@@ -1,4 +1,4 @@
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { execaCommand as execa } from 'execa';
 import { splitGitLog } from '../utils';
 import pMap from 'p-map';

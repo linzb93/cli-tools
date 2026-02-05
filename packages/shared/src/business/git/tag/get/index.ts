@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import { BaseService } from '@cli-tools/shared/src/base/BaseService';
+import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { isGitProject, getAllTags } from '../../shared/utils';
-import { executeCommands } from '@cli-tools/shared/src/utils/promise';
+import { executeCommands } from '@cli-tools/shared/utils/promise';
 import semver from 'semver';
 import { getProjectName } from '../../shared/utils/jenkins';
 import clipboardy from 'clipboardy';

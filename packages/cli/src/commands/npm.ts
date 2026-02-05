@@ -1,6 +1,6 @@
-import { HasService, type Options as HasOptions } from '@cli-tools/shared/src/business/npm/has';
-import { UninstallService, type Options as UninstallOptions } from '@cli-tools/shared/src/business/npm/uninstall';
-import { SearchService, type Options as SearchOptions } from '@cli-tools/shared/src/business/npm/search';
+import { HasService, type Options as HasOptions } from '@cli-tools/shared/business/npm/has';
+import { UninstallService, type Options as UninstallOptions } from '@cli-tools/shared/business/npm/uninstall';
+import { SearchService, type Options as SearchOptions } from '@cli-tools/shared/business/npm/search';
 interface IOption {
     help?: boolean;
     // 子模块的

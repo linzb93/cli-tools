@@ -1,6 +1,6 @@
 import Base from './AbstractApp';
-import { readSecret } from '@cli-tools/shared/src/utils/secret';
-import serviceGenerator from '@cli-tools/shared/src/utils/http';
+import { readSecret } from '@cli-tools/shared/utils/secret';
+import serviceGenerator from '@cli-tools/shared/utils/http';
 
 /**
  * 饿了么平台应用基类

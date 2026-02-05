@@ -1,4 +1,4 @@
-import { DeployService, type Options as DeployOptions } from '@cli-tools/shared/src/business/git/deploy';
+import { DeployService, type Options as DeployOptions } from '@cli-tools/shared/business/git/deploy';
 import { subCommandCompiler } from '@/utils';
 
 /**
