@@ -10,7 +10,8 @@
         "noEmit": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["*"]
+            "@/*": ["*"],
+            "@cli-tools/shared/*": ["../../shared/src/*"]
         },
         "skipLibCheck": true,
         "types": ["node"]

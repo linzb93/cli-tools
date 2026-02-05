@@ -1,4 +1,4 @@
-import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import { readSecret } from '@cli-tools/shared/utils/secret';
 import { Router } from 'express';
 import response from '../shared/response';
 const router = Router();

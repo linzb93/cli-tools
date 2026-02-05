@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import axios from 'axios';
-import sql from '@cli-tools/shared/src/utils/sql';
+import sql from '@cli-tools/shared//utils/sql';
 import dayjs from 'dayjs';
 import pMap from 'p-map';
 import Table from 'cli-table3';
-import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import { readSecret } from '@cli-tools/shared/utils/secret';
 import response from '../shared/response';
 import { log } from '../shared/log';
 import { omit, clone } from 'lodash-es';
@@ -96,7 +96,7 @@ export const bugCallback = async () => {
                 list: res.data.result.list,
             };
         },
-        { concurrency: 5 }
+        { concurrency: 5 },
     );
     const table = new Table({
         head: ['应用名称', '错误总数', '重点错误数'],
@@ -105,7 +105,7 @@ export const bugCallback = async () => {
     table.push(
         ...resList
             .filter((item) => item.errorTotal > 0)
-            .map((item) => [item.name, item.errorTotal, item.emphasizeTotal > 0 ? item.emphasizeTotal : '-'])
+            .map((item) => [item.name, item.errorTotal, item.emphasizeTotal > 0 ? item.emphasizeTotal : '-']),
     );
     log(`\n${title}\n${table.toString()}`);
     await sql((db) => {
