@@ -15,7 +15,8 @@
         "dev": "tsc && cross-env MODE=cliTest vite build --watch",
         "build": "tsc && cross-env MODE=cli vite build",
         "build:report": "cross-env MODE=report vite build",
-        "test": "vitest run"
+        "test": "vitest run",
+        "check": "tsc"
     },
     "author": "linzb93",
     "license": "ISC",

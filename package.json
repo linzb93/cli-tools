@@ -16,7 +16,8 @@
         "build:cli": "pnpm --filter \"@cli-tools/cli\" build",
         "build:web": "pnpm --filter \"@cli-tools/server\" build",
         "build:ui": "pnpm --filter \"@cli-tools/ui\" build-only",
-        "build:web-all": "npm run build:web && npm run build:ui"
+        "build:web-all": "npm run build:web && npm run build:ui",
+        "check": "pnpm --filter \"@cli-tools/cli\" check"
     },
     "keywords": [],
     "author": "",
