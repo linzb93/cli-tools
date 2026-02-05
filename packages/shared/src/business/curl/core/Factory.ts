@@ -1,5 +1,5 @@
 import { BaseCurlParser } from './BaseCurlParser';
-import { Factory } from '../../../base/BaseFactory';
+import { Factory } from '@cli-tools/shared/src/base/BaseFactory';
 import { CmdCurlParser } from '../implementations/CmdCurlParser';
 import { BashCurlParser } from '../implementations/BashCurlParser';
 import { Options } from '../types';

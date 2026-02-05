@@ -1,7 +1,7 @@
-import imageClipboard from '../../../utils/clipboard';
-import { imageBase64ToStream, tempUpload } from '../../../utils/image';
+import imageClipboard from '@cli-tools/shared/src/utils/clipboard';
+import { imageBase64ToStream, tempUpload } from '@cli-tools/shared/src/utils/image';
 import clipboardy from 'clipboardy';
-import { BaseService } from '../../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import { AiImplementation } from '../common/implementation';
 import { MessageOptions } from '../common/types';
 /**

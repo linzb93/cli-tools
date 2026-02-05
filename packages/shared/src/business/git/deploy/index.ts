@@ -1,4 +1,4 @@
-import { BaseService } from '../../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import { DeployOptions } from './core/BaseDeployCommand';
 import { DeployCommandFactory } from './core/Factory';
 

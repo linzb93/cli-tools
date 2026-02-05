@@ -1,7 +1,7 @@
 import del from 'del';
 import { globby } from 'globby';
 import pMap from 'p-map';
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 export interface IOptions {
     root?: boolean;
     help?: boolean;

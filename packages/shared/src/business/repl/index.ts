@@ -2,7 +2,7 @@ import repl from 'node:repl';
 import dayjs from 'dayjs';
 import * as lodash from 'lodash-es';
 import chalk from 'chalk';
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 
 export class ReplService extends BaseService {
     async main() {

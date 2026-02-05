@@ -1,9 +1,9 @@
 import { basename } from 'node:path';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { BaseService } from '../../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import useScan from './useScan';
-import progress from '../../../utils/progress';
+import progress from '@cli-tools/shared/src/utils/progress';
 
 export interface Options {
     /**

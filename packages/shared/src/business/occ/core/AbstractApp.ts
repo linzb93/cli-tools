@@ -1,5 +1,5 @@
 import { Options } from '../types';
-import { logger } from '../../../utils/logger';
+import { logger } from '@cli-tools/shared/src/utils/logger';
 import open from 'open';
 import chalk from 'chalk';
 import OccUtils from '../utils/occUtils';

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { readSecret } from '../../utils/secret';
-import { logger } from '../../utils/logger';
-import { HTTP_STATUS } from '../../utils/constant';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
+import { logger } from '@cli-tools/shared/src/utils/logger';
+import { HTTP_STATUS } from '@cli-tools/shared/src/utils/constant';
 export const getPerformanceData = async () => {
     const prefix = await readSecret((db) => db.oa.dkdPrefix);
     try {

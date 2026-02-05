@@ -3,7 +3,7 @@
  * 使用工厂模式管理翻译器实例
  */
 import chalk from 'chalk';
-import { BaseService } from '../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import { TranslatorFactory, TranslatorType } from './core/Factory';
 import { TranslateResultItem } from './core/BaseTranslator';
 

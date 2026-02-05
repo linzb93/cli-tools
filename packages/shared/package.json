@@ -10,6 +10,9 @@
     "scripts": {
         "test": "vitest run"
     },
+    "dependencies": {
+        "@cli-tools/shared": "workspace:*"
+    },
     "author": "linzb93",
     "license": "ISC"
 }

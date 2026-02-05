@@ -1,8 +1,8 @@
 import Base from '../core/AbstractApp';
-import serviceGenerator from '../../../utils/http';
-import { readSecret } from '../../../utils/secret';
+import serviceGenerator from '@cli-tools/shared/src/utils/http';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
 import { Options } from '../types';
-import { logger } from '../../../utils/logger';
+import { logger } from '@cli-tools/shared/src/utils/logger';
 
 const platformTypeEnum = {
     meituan: '8',
@@ -58,7 +58,7 @@ export default class DkdMiniProgram extends Base {
                     params: {
                         unionId,
                     },
-                }
+                },
             );
             if (!res3.data.result) {
                 throw new Error('未查询到用户店铺');
@@ -121,7 +121,7 @@ export default class DkdMiniProgram extends Base {
                 params: {
                     unionId: userInfo.unionId,
                 },
-            }
+            },
         );
         if (!listRes.data.result) {
             throw new Error('未查询到用户店铺');

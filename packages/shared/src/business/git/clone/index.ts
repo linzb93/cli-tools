@@ -1,6 +1,6 @@
-import { BaseService } from '../../../base/BaseService';
+import { BaseService } from '@cli-tools/shared/src/base/BaseService';
 import gitAtom from '../utils/atom';
-import { executeCommands } from '../../../utils/promise';
+import { executeCommands } from '@cli-tools/shared/src/utils/promise';
 import chalk from 'chalk';
 
 /**

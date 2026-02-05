@@ -1,7 +1,7 @@
 import qs from 'node:querystring';
 import Base from '../core/AbstractApp';
-import serviceGenerator from '../../../utils/http';
-import { readSecret } from '../../../utils/secret';
+import serviceGenerator from '@cli-tools/shared/src/utils/http';
+import { readSecret } from '@cli-tools/shared/src/utils/secret';
 
 /**
  * ZDB应用实现
