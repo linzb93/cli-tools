@@ -98,7 +98,7 @@ export class CliAnalyseService extends BaseService {
         });
         const firstItem = this.parseLine(lines[0]);
         const periodText = this.getPeriodText();
-        console.log(`${periodText}从${chalk.magenta(firstItem.time)}开始，cli共使用${chalk.hex('#ffa500')(
+        console.log(`${periodText}截至${chalk.magenta(firstItem.time)}，cli共使用${chalk.hex('#ffa500')(
             lines.length,
         )}次。各命令使用情况如下：
 ${result
@@ -146,7 +146,6 @@ ${item.children
             return null;
         }
 
-        const now = new Date();
         const start = new Date();
 
         switch (period) {

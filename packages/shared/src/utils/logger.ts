@@ -186,16 +186,11 @@ class Logger {
         const year = dayjs().format('YYYY');
         const quarter = Math.ceil(Number(dayjs().format('MM')) / 3);
         const filename = `${year}Q${quarter}.log`;
-        if (fs.existsSync(filename)) {
-            fs.appendFileSync(
-                resolve(cacheRoot, 'track', filename),
-                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`,
-            );
+        const targetFilename = resolve(cacheRoot, 'track', filename);
+        if (fs.existsSync(targetFilename)) {
+            fs.appendFileSync(targetFilename, `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
         } else {
-            fs.writeFileSync(
-                resolve(cacheRoot, 'track', filename),
-                `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`,
-            );
+            fs.writeFileSync(targetFilename, `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
         }
     }
 

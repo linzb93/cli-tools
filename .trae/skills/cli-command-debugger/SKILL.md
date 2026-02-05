@@ -1,6 +1,6 @@
 ---
 name: 'cli-command-debugger'
-description: '自动处理命令调试开发流程，当用户要求开发或调试命令时调用。'
+description: '开启CLI命令调试开发模式。当用户要求开发、调试(debug)或测试(test)某个特定的CLI命令（例如"调试analyse命令"）时调用。'
 ---
 
 # CLI 命令调试器
@@ -18,8 +18,6 @@ description: '自动处理命令调试开发流程，当用户要求开发或调
 
 -   "开发 xxx 命令"
 -   "调试 xxx 命令"
--   "测试 xxx 命令"
--   "我想开发 xxx 功能"
 
 其中 xxx 是命令名称（如 ai, git, beauty 等）。
 

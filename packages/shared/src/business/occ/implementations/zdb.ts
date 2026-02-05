@@ -22,7 +22,10 @@ export default class Zdb extends Base {
             .post(`${zdb.baseUrl}/login/directLogin`, {
                 unionId: zdb.unionId,
             })
-            .then((res) => `https://www.zdb.com/#/login?token=${res.data.result.accountShopToken}`);
+            .then((res) => {
+                console.log(`门店名称：${res.data.result.accountShop.shopName}`);
+                return `https://www.zdb.com/#/login?token=${res.data.result.accountShopToken}`;
+            });
     }
     getOpenUrl(res: any) {
         return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(
