@@ -1,4 +1,4 @@
-import { CloneService, type Options as CloneOptions } from '@cli-tools/shared/business/git/clone';
+import { cloneService, type Options as CloneOptions } from '@cli-tools/shared/business/git/clone';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -11,7 +11,7 @@ export const cloneCommand = function (): void {
             .description('克隆远程仓库')
             .option('--dir <dir>', '指定目标目录')
             .action((repo: string, options: CloneOptions) => {
-                new CloneService().main({ repo, dir: options.dir });
+                cloneService({ repo, dir: options.dir });
             });
     });
 };

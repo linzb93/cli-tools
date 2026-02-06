@@ -1,4 +1,4 @@
-import { TranslateService, Options } from '@cli-tools/shared/business/translate';
+import { translateService, Options } from '@cli-tools/shared/business/translate';
 export const engCommand = (text: string, options: Options) => {
-    new TranslateService().main(text, options);
+    translateService(text, options);
 };

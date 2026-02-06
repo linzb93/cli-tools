@@ -1,4 +1,4 @@
-import { MergeService, type Options as MergeOptions } from '@cli-tools/shared/business/git/merge';
+import { mergeService, type Options as MergeOptions } from '@cli-tools/shared/business/git/merge';
 import { subCommandCompiler } from '@/utils';
 
 /*
@@ -11,7 +11,7 @@ export const mergeCommand = () => {
             .description('合并最近的提交')
             .option('--head <number>', '合并最近的几个提交，默认合并最近3个')
             .action((options: MergeOptions) => {
-                new MergeService().main(options);
+                mergeService(options);
             });
     });
 };

@@ -1,4 +1,4 @@
-import { PushService } from '@cli-tools/shared/business/git/push';
+import { pushService } from '@cli-tools/shared/business/git/push';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -10,7 +10,7 @@ export const pushCommand = () => {
             .command('push')
             .description('将本地分支推送到远程仓库')
             .action(() => {
-                new PushService().main();
+                pushService();
             });
     });
 };

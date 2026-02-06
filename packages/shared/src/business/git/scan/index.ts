@@ -1,9 +1,9 @@
 import { basename } from 'node:path';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { BaseService } from '@cli-tools/shared/base/BaseService';
 import useScan from './useScan';
 import progress from '@cli-tools/shared/utils/progress';
+import { logger } from '@cli-tools/shared/utils/logger';
 
 export interface Options {
     /**
@@ -30,44 +30,43 @@ interface ResultItem {
     branchName: string;
 }
 
-export class ScanService extends BaseService {
-    async main(options: Options) {
-        const { full } = options;
-        this.logger.info('开始扫描');
-        const { counter$, list$, total$ } = await useScan();
-        total$.subscribe((total: number) => {
-            progress.setTotal(total);
+const getStatusMap = (status: number) => {
+    const map: Record<number, string> = {
+        1: chalk.red('未提交'),
+        2: chalk.yellow('未推送'),
+        3: chalk.green('正常'),
+        4: chalk.gray('不在主分支上'),
+    };
+    return map[status];
+};
+
+export const scanService = async (options: Options) => {
+    const { full } = options;
+    logger.info('开始扫描');
+    const { counter$, list$, total$ } = await useScan();
+    total$.subscribe((total: number) => {
+        progress.setTotal(total);
+    });
+    counter$.subscribe(() => {
+        progress.tick();
+    });
+    list$.subscribe(async (srcList: ResultItem[]) => {
+        logger.backwardConsole(2);
+        const list = srcList.filter((item) => {
+            if (full) {
+                return true;
+            }
+            return item.status !== 4;
         });
-        counter$.subscribe(() => {
-            progress.tick();
-        });
-        list$.subscribe(async (srcList: ResultItem[]) => {
-            this.logger.backwardConsole(2);
-            const list = srcList.filter((item) => {
-                if (full) {
-                    return true;
-                }
-                return item.status !== 4;
-            });
-            table.push(
-                ...list.map((item) => [
-                    basename(item.path),
-                    item.path,
-                    `${this.getStatusMap(item.status)}${
-                        item.status === 4 && !!item.branchName ? ` (${item.branchName})` : ''
-                    }`,
-                ]),
-            );
-            console.log(table.toString());
-        });
-    }
-    private getStatusMap(status: number) {
-        const map = {
-            1: chalk.red('未提交'),
-            2: chalk.yellow('未推送'),
-            3: chalk.green('正常'),
-            4: chalk.gray('不在主分支上'),
-        };
-        return map[status];
-    }
-}
+        table.push(
+            ...list.map((item) => [
+                basename(item.path),
+                item.path,
+                `${getStatusMap(item.status)}${
+                    item.status === 4 && !!item.branchName ? ` (${item.branchName})` : ''
+                }`,
+            ]),
+        );
+        console.log(table.toString());
+    });
+};

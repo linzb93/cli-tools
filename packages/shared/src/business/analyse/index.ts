@@ -1,2 +1,2 @@
-export { CliAnalyseService, type CliAnalyseOptions } from './cli/index';
-export { CodeAnalyseService } from './code/index';
+export { cliAnalyseService, type CliAnalyseOptions } from './cli/index';
+export { codeAnalyseService } from './code/index';

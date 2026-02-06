@@ -1,25 +1,15 @@
-import { BaseTranslator, TranslateResultItem } from '../core/BaseTranslator';
+import { TranslateResultItem, TranslatorStrategy } from '../core/BaseTranslator';
 import { AiImplementation } from '../../ai/common/implementation/index';
+import spinner from '../../../utils/spinner';
 
 /**
  * AI翻译器
  */
-export class AiTranslator extends BaseTranslator {
-    /**
-     * 翻译器名称
-     */
-    readonly name = 'AI翻译';
-
-    /**
-     * 执行翻译
-     * @param text - 需要翻译的文本
-     * @returns 翻译结果数组
-     */
-    async translate(text: string): Promise<TranslateResultItem[]> {
-        if (this.spinner) {
-            this.spinner.start();
-            this.spinner.text = '使用AI翻译中...';
-        }
+export const aiTranslator: TranslatorStrategy = {
+    name: 'AI翻译',
+    translate: async (text: string): Promise<TranslateResultItem[]> => {
+        spinner.start();
+        spinner.text = '使用AI翻译中...';
 
         const translateResult = await new AiImplementation().use([
             {
@@ -41,5 +31,5 @@ export class AiTranslator extends BaseTranslator {
         } catch (error) {
             return [];
         }
-    }
-}
+    },
+};

@@ -1,4 +1,4 @@
-import { DeployService, type Options as DeployOptions } from '@cli-tools/shared/business/git/deploy';
+import { deployService, type Options as DeployOptions } from '@cli-tools/shared/business/git/deploy';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -17,7 +17,7 @@ export const deployCommand = () => {
             .option('--msg', '是否复制提交消息到剪贴板')
             .option('--commit [message]', 'git commit提交信息')
             .action((options: DeployOptions) => {
-                new DeployService().main(options);
+                deployService(options);
             });
     });
 };

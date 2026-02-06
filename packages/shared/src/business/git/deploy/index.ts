@@ -1,33 +1,44 @@
-import { BaseService } from '@cli-tools/shared/base/BaseService';
-import { DeployOptions } from './core/BaseDeployCommand';
-import { DeployCommandFactory } from './core/Factory';
+import { logger } from '@cli-tools/shared/utils/logger';
+import { DeployOptions, handleUserInput, initBranchInfo, isGithubProject } from './baseDeploy';
+import { companyDeploy } from './companyDeploy';
+import { githubDeploy } from './githubDeploy';
 
-/**
- * Git Deploy命令入口类
- * 用于创建适当的部署命令实例并执行部署流程
- */
 export type { DeployOptions as Options };
 
-export class DeployService extends BaseService {
-    /**
-     * 主执行函数
-     * @param {DeployOptions} options - 命令选项
-     */
-    async main(options: DeployOptions): Promise<void> {
-        try {
-            options.commit = options.commit || 'update';
-            // 创建适当的部署命令实例
-            const deployCommand = await DeployCommandFactory.createDeployCommand(options);
-
-            // 执行部署流程
-            await deployCommand.main();
-        } catch (error) {
-            if (error instanceof Error) {
-                this.logger.error(error.message);
-            } else {
-                this.logger.error('部署过程中发生未知错误');
-            }
-            process.exit(1);
+/**
+ * Git Deploy命令主函数
+ * @param {DeployOptions} options - 命令选项
+ */
+export const deployService = async (options: DeployOptions): Promise<void> => {
+    try {
+        options.commit = options.commit || 'update';
+        
+        // 处理用户输入
+        const commitMsg = await handleUserInput(options);
+        options.commit = commitMsg;
+        
+        // 初始化分支信息
+        const { currentBranch, mainBranch } = await initBranchInfo();
+        
+        // 判断项目类型并执行相应部署
+        const isGithub = await isGithubProject();
+        
+        if (isGithub) {
+            await githubDeploy(options, currentBranch, mainBranch);
+        } else {
+            await companyDeploy(options, currentBranch, mainBranch);
         }
+        
+        logger.success('部署流程已完成');
+    } catch (error) {
+        if (error instanceof Error) {
+            // 忽略 exit 错误，这通常是 inquirer 中断或主动退出
+            if (error.message !== 'exit') {
+                 logger.error(error.message);
+            }
+        } else {
+            logger.error('部署过程中发生未知错误');
+        }
+        process.exit(1);
     }
-}
+};

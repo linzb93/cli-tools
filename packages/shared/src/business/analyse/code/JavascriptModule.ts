@@ -4,14 +4,14 @@ import Module, { IFileAnalysis } from './Module';
 /**
  * JavaScript文件分析模块
  */
-export default class JavascriptModule extends Module {
+export const javascriptModule: Module = {
     /**
      * 最大长度配置
      */
-    maxLength = {
+    maxLength: {
         warning: 300,
         danger: 500,
-    };
+    },
 
     /**
      * 检测是否应该使用该模块
@@ -19,7 +19,7 @@ export default class JavascriptModule extends Module {
      */
     async access(): Promise<boolean> {
         return true;
-    }
+    },
 
     /**
      * 获取需要分析的文件模式
@@ -28,7 +28,7 @@ export default class JavascriptModule extends Module {
      */
     filePattern(prefix: string): string {
         return `${prefix ? `${prefix}/` : ''}**/*.{js,ts}`;
-    }
+    },
 
     /**
      * 计算文件分析结果
@@ -41,12 +41,12 @@ export default class JavascriptModule extends Module {
         return {
             lines: nonEmptyLines.length,
         };
-    }
+    },
 
     /**
      * 渲染配置
      */
-    render = [
+    render: [
         {
             name: '文件地址',
             data: (row: IFileAnalysis) => chalk.cyan(row.file),
@@ -55,5 +55,5 @@ export default class JavascriptModule extends Module {
             name: '行数',
             data: (row: IFileAnalysis) => chalk.cyan(row.lines),
         },
-    ];
-}
+    ],
+};

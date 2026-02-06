@@ -1,4 +1,4 @@
-export { OCRService } from './ocr';
+export { ocrService } from './ocr';
 export type { Options as OCROptions } from './ocr';
-export { RegexService } from './regex';
+export { regexService } from './regex';
 export { AiImplementation } from './common/implementation';

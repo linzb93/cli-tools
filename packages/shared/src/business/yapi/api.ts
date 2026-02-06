@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { stringify } from 'node:querystring';
-import { yapiAuth } from './auth';
+import { getYapiCookie, manualInputCookie } from './auth';
 import { AnyObject } from '../../types';
 /**
  * Yapi接口详情
@@ -110,7 +110,7 @@ export const YAPI_ERROR_CODES = {
 async function handleTokenExpired<T>(requestFn: (cookie: string) => Promise<T>): Promise<T | null> {
     try {
         // 获取初始cookie
-        let cookie = await yapiAuth.getYapiCookie();
+        let cookie = await getYapiCookie();
 
         // 第一次请求
         const result = await requestFn(cookie);
@@ -118,7 +118,7 @@ async function handleTokenExpired<T>(requestFn: (cookie: string) => Promise<T>):
         // 如果返回null，可能是token问题
         if (result === null) {
             // 尝试获取新的token
-            const newCookie = await yapiAuth.manualInputCookie();
+            const newCookie = await manualInputCookie();
 
             if (!newCookie) {
                 return null;
@@ -238,7 +238,7 @@ export async function getYapiInterfaceList(obj: {
 export async function getYapiInterfaceDetail(
     origin: string,
     cookie: string,
-    interfaceId: string
+    interfaceId: string,
 ): Promise<YapiInterfaceDetail | null> {
     const requestFn = async (currentCookie: string) => {
         try {

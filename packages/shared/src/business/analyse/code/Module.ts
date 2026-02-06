@@ -11,13 +11,13 @@ export interface IFileAnalysis {
 }
 
 /**
- * 分析模块基类
+ * 分析模块接口
  */
-export default abstract class Module {
+export default interface Module {
     /**
      * 最大长度配置
      */
-    abstract maxLength: {
+    maxLength: {
         warning: number;
         danger: number;
     };
@@ -26,21 +26,21 @@ export default abstract class Module {
      * 检测是否应该使用该模块
      * @returns 是否应该使用该模块
      */
-    abstract access(): Promise<boolean>;
+    access(): Promise<boolean>;
 
     /**
      * 获取需要分析的文件模式
      * @param prefix 前缀
      * @returns 文件模式
      */
-    abstract filePattern(prefix: string): string;
+    filePattern(prefix: string): string;
 
     /**
      * 计算文件分析结果
      * @param lines 文件行内容
      * @returns 分析结果
      */
-    abstract calc(lines: string[]): {
+    calc(lines: string[]): {
         lines: number;
         scriptLength?: number;
         templateLength?: number;
@@ -50,7 +50,7 @@ export default abstract class Module {
     /**
      * 渲染配置
      */
-    abstract render: {
+    render: {
         name: string;
         data(row: IFileAnalysis): string;
     }[];

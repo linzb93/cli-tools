@@ -1,4 +1,4 @@
-import { PullService, type Options as PullOptions } from '@cli-tools/shared/business/git/pull';
+import { pullService, type Options as PullOptions } from '@cli-tools/shared/business/git/pull';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -10,7 +10,7 @@ export const pullCommand = () => {
             .command('pull')
             .description('从远程仓库拉取最新代码')
             .action((options: PullOptions) => {
-                new PullService().main(options);
+                pullService(options);
             });
     });
 };

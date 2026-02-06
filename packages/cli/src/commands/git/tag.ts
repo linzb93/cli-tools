@@ -1,6 +1,6 @@
-import { TagService, type Options as TagOptions } from '@cli-tools/shared/business/git/tag/get';
-import { TagSyncService } from '@cli-tools/shared/business/git/tag/sync';
-import { TagDeleteService } from '@cli-tools/shared/business/git/tag/delete';
+import { tagService, type Options as TagOptions } from '@cli-tools/shared/business/git/tag/get';
+import { tagSyncService } from '@cli-tools/shared/business/git/tag/sync';
+import { tagDeleteService } from '@cli-tools/shared/business/git/tag/delete';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -15,7 +15,7 @@ const get = () => {
             .option('--type <type>', '设置标签类型前缀，默认为v')
             .option('--msg', '是否复制提交消息到剪贴板')
             .action((options: TagOptions) => {
-                new TagService().main(options);
+                tagService(options);
             });
     });
 };
@@ -25,7 +25,7 @@ const deleteTag = () => {
             .command('delete')
             .description('删除Git分支')
             .action(() => {
-                new TagDeleteService().main();
+                tagDeleteService();
             });
     });
 };
@@ -36,7 +36,7 @@ const syncTag = () => {
             .command('sync')
             .description('同步Git标签')
             .action(() => {
-                new TagSyncService().main();
+                tagSyncService();
             });
     });
 };

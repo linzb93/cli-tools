@@ -1,5 +1,5 @@
-import { BranchService, type Options as BranchOptions } from '@cli-tools/shared/business/git/branch/get';
-import { BranchDeleteService } from '@cli-tools/shared/business/git/branch/delete';
+import { branchService, type Options as BranchOptions } from '@cli-tools/shared/business/git/branch/get';
+import { branchDeleteService } from '@cli-tools/shared/business/git/branch/delete';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -12,7 +12,7 @@ const get = () => {
             .option('--head <number>', '查看最近的几个提交，默认查看最近3个')
             .option('--path <path>', '指定查看的文件目录')
             .action((options: BranchOptions) => {
-                new BranchService().main(options);
+                branchService(options);
             });
     });
 };
@@ -23,7 +23,7 @@ const deleteBranch = () => {
             .command('delete')
             .description('删除Git分支')
             .action(() => {
-                new BranchDeleteService().main();
+                branchDeleteService();
             });
     });
 };

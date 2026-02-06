@@ -1,4 +1,4 @@
-import { CliAnalyseService, CodeAnalyseService, CliAnalyseOptions } from '@cli-tools/shared/business/analyse';
+import { cliAnalyseService, codeAnalyseService, CliAnalyseOptions } from '@cli-tools/shared/business/analyse';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -20,7 +20,7 @@ const cli = (options: Options) => {
                 const cliOptions: CliAnalyseOptions = {
                     period: cmdOptions.period || options.period || 'all',
                 };
-                new CliAnalyseService(cliOptions).main();
+                cliAnalyseService(cliOptions);
             });
     });
 };
@@ -31,7 +31,7 @@ const cli = (options: Options) => {
 const code = () => {
     subCommandCompiler((program) => {
         program.command('code').action(() => {
-            new CodeAnalyseService().main();
+            codeAnalyseService();
         });
     });
 };

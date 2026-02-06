@@ -1,28 +1,27 @@
-import { BaseTranslator, TranslateResultItem } from '../core/BaseTranslator';
+import { TranslateResultItem, TranslatorStrategy } from '../core/BaseTranslator';
 import { getHtml } from '../../../utils/http/spider';
+import spinner from '../../../utils/spinner';
+
+/**
+ * 获取有道词典的HTML内容
+ * @param text - 需要翻译的文本
+ * @returns cheerio对象
+ */
+const getYoudaoHTML = (text: string) => {
+    return getHtml('https://youdao.com/w/eng', `/${encodeURIComponent(text)}`);
+};
 
 /**
  * 有道翻译器
  */
-export class YoudaoTranslator extends BaseTranslator {
-    /**
-     * 翻译器名称
-     */
-    readonly name = '有道词典';
-
-    /**
-     * 执行翻译
-     * @param text - 需要翻译的文本
-     * @returns 翻译结果数组
-     */
-    async translate(text: string): Promise<TranslateResultItem[]> {
-        if (this.spinner) {
-            this.spinner.start();
-            this.spinner.text = '使用有道词典翻译中...';
-        }
+export const youdaoTranslator: TranslatorStrategy = {
+    name: '有道词典',
+    translate: async (text: string): Promise<TranslateResultItem[]> => {
+        spinner.start();
+        spinner.text = '使用有道词典翻译中...';
 
         try {
-            const $ = await this.getYoudaoHTML(text);
+            const $ = await getYoudaoHTML(text);
             const arr = Array.from(
                 $('.trans-container')
                     .first()
@@ -50,19 +49,8 @@ export class YoudaoTranslator extends BaseTranslator {
 
             throw new Error('没有找到翻译结果');
         } catch (error) {
-            if (this.spinner) {
-                this.spinner.text = '有道词典无结果，尝试其他翻译器...';
-            }
+            spinner.text = '有道词典无结果，尝试其他翻译器...';
             throw error;
         }
-    }
-
-    /**
-     * 获取有道词典的HTML内容
-     * @param text - 需要翻译的文本
-     * @returns cheerio对象
-     */
-    public getYoudaoHTML(text: string) {
-        return getHtml('https://youdao.com/w/eng', `/${encodeURIComponent(text)}`);
-    }
-}
+    },
+};

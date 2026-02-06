@@ -1,4 +1,4 @@
-import { LogService, type Options as LogOptions } from '@cli-tools/shared/business/git/log';
+import { logService, type Options as LogOptions } from '@cli-tools/shared/business/git/log';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -12,7 +12,7 @@ export const logCommand = () => {
             .option('--head <number>', '查看最近的几个提交，默认查看最近3个')
             .option('--path <path>', '指定查看的文件目录')
             .action((options: LogOptions) => {
-                new LogService().main(options);
+                logService(options);
             });
     });
 };

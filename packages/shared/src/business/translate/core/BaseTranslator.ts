@@ -13,52 +13,15 @@ export interface TranslateResultItem {
 }
 
 /**
- * 翻译器接口
+ * 翻译策略接口
  */
-export interface ITranslator {
-    /**
-     * 设置spinner
-     */
-    setSpinner(spinner: { start: () => void; text: string; succeed: (text: string) => void }): void;
-}
-
-/**
- * 基础翻译器类
- */
-export abstract class BaseTranslator implements ITranslator {
+export interface TranslatorStrategy {
     /**
      * 翻译器名称
      */
-    abstract readonly name: string;
-
-    /**
-     * spinner对象
-     */
-    protected spinner?: {
-        start: () => void;
-        text: string;
-        succeed: (text: string) => void;
-    };
-
-    /**
-     * 设置spinner
-     * @param spinner - spinner对象
-     */
-    setSpinner(spinner: { start: () => void; text: string; succeed: (text: string) => void }): void {
-        this.spinner = spinner;
-    }
-
-    /**
-     * 是否是中文翻译成英文
-     */
-    protected isC2E(text: string): boolean {
-        return !/[a-z]+/.test(text);
-    }
-
+    name: string;
     /**
      * 执行翻译
-     * @param text - 需要翻译的文本
-     * @returns 翻译结果数组
      */
-    abstract translate(text: string): Promise<TranslateResultItem[]>;
+    translate: (text: string) => Promise<TranslateResultItem[]>;
 }
