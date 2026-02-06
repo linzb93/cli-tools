@@ -1,9 +1,11 @@
 import { basename } from 'node:path';
 import chalk from 'chalk';
 import Table from 'cli-table3';
+import { execaCommand as execa } from 'execa';
 import useScan from './useScan';
 import progress from '@cli-tools/shared/utils/progress';
 import { logger } from '@cli-tools/shared/utils/logger';
+import { getGitLogData } from '../log';
 
 export interface Options {
     /**
@@ -14,8 +16,8 @@ export interface Options {
 }
 
 const table = new Table({
-    head: ['名称', '地址', '状态'],
-    colAligns: ['left', 'left', 'left'],
+    head: ['名称', '地址', '状态', '分支'],
+    colAligns: ['left', 'left', 'left', 'left'],
 });
 
 interface ResultItem {
@@ -59,14 +61,38 @@ export const scanService = async (options: Options) => {
             return item.status !== 4;
         });
         table.push(
-            ...list.map((item) => [
-                basename(item.path),
-                item.path,
-                `${getStatusMap(item.status)}${
-                    item.status === 4 && !!item.branchName ? ` (${item.branchName})` : ''
-                }`,
-            ]),
+            ...list.map((item) => [basename(item.path), item.path, `${getStatusMap(item.status)}`, item.branchName]),
         );
         console.log(table.toString());
+
+        const unpushedList = list.filter((item) => item.status === 2);
+        if (unpushedList.length === 0) {
+            return;
+        }
+        console.log('\n' + chalk.yellow('--- 未推送详情 ---') + '\n');
+        for (const item of unpushedList) {
+            console.log(chalk.bold.cyan(`项目: ${item.path} (${item.branchName})`));
+            try {
+                let head = 3;
+                try {
+                    const { stdout } = await execa('git rev-list --count @{u}..HEAD', { cwd: item.path });
+                    head = parseInt(stdout.trim(), 10) || 3;
+                } catch {
+                    // ignore
+                }
+                const logs = await getGitLogData({ cwd: item.path, head });
+                logs.forEach((log) => {
+                    console.log(`  ${chalk.green(`[${log.branch}分支]`)} ${chalk.yellow(log.date)} ${log.message}`);
+                    if (log.files && log.files.length) {
+                        log.files.forEach((file: string) => {
+                            console.log(`    ${chalk.gray(file)}`);
+                        });
+                    }
+                });
+            } catch (e: any) {
+                console.log(chalk.red(`  获取日志失败: ${e.message}`));
+            }
+            console.log('');
+        }
     });
 };

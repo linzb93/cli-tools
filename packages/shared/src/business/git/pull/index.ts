@@ -1,5 +1,5 @@
-import { isGitProject, getCurrentBranchName } from '../utils';
-import gitAtom from '../utils/atom';
+import { isGitProject, getCurrentBranchName } from '../shared/utils';
+import gitAtom from '../shared/utils/atom';
 import { executeCommands } from '@cli-tools/shared/utils/promise';
 import chalk from 'chalk';
 import { logger } from '@cli-tools/shared/utils/logger';

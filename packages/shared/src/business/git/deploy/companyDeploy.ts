@@ -1,4 +1,4 @@
-import { openDeployPage } from '../utils/jenkins';
+import { openDeployPage } from '../shared/utils/jenkins';
 import { tagService, Options as TagOptions } from '../tag/get';
 import { sleep } from '@linzb93/utils';
 import path from 'node:path';
@@ -10,13 +10,14 @@ import { DeployOptions, executeBaseManagers, mergeToBranch } from './baseDeploy'
 /**
  * 处理标签和输出信息
  * @param {DeployOptions} options - 命令选项
+ * @param {boolean} readFromPackage - 是否尝试从package.json读取版本号
  * @returns {Promise<void>}
  */
-const handleTagAndOutput = async (options: DeployOptions): Promise<void> => {
+const handleTagAndOutput = async (options: DeployOptions, readFromPackage: boolean = false): Promise<void> => {
     let version = options.version;
 
-    // 如果没有指定version，尝试从package.json读取
-    if (!version) {
+    // 如果没有指定version，且允许读取package.json，尝试从package.json读取
+    if (!version && readFromPackage) {
         try {
             const pkgPath = path.resolve(process.cwd(), 'package.json');
             if (await fs.pathExists(pkgPath)) {
@@ -100,7 +101,7 @@ const handleOtherBranch = async (options: DeployOptions, currentBranch: string, 
         }
         // 合并到主分支
         await mergeToBranch(mainBranch, currentBranch, false);
-        await handleTagAndOutput(options);
+        await handleTagAndOutput(options, true);
     } else if (!options.current) {
         // 合并到release分支
         await mergeToBranch('release', currentBranch, true);

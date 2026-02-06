@@ -1,6 +1,6 @@
 import { logger } from '@cli-tools/shared/utils/logger';
-import { isGitProject } from '../utils';
-import gitAtom from '../utils/atom';
+import { isGitProject } from '../shared/utils';
+import gitAtom from '../shared/utils/atom';
 import { executeCommands } from '@cli-tools/shared/utils/promise';
 
 /**

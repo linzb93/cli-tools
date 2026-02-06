@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { fork } from 'node:child_process';
 import fs from 'fs-extra';
 import sql, { type Database } from '@cli-tools/shared/utils/sql';
-import * as git from '../git/utils';
+import * as git from '../git/shared/utils';
 import { objectToCmdOptions, isOldNode } from '@cli-tools/shared/utils/helper';
 import globalConfig from '../../../../../config.json';
 import { logger } from '@cli-tools/shared/utils/logger';
@@ -189,9 +189,9 @@ const buildProject = async (config: ProjectConfig): Promise<void> => {
     // 获取当前分支
     const branchName = config.branchName || (await git.getCurrentBranchName(config.cwd));
 
-    spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(
-        `${branchName}分支`,
-    )})执行命令：${chalk.green(`npm run ${config.command}`)}，请稍后...`;
+    spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(`${branchName}分支`)})执行命令：${chalk.green(
+        `npm run ${config.command}`,
+    )}，请稍后...`;
 
     await execa(`npm run ${config.command}`, { cwd: config.cwd });
 };

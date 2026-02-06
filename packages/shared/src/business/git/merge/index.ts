@@ -1,8 +1,8 @@
 import Table from 'cli-table3';
-import { isGitProject, splitGitLog } from '../utils';
+import { isGitProject, splitGitLog } from '../shared/utils';
 import { execaCommand as execa } from 'execa';
 import chalk from 'chalk';
-import gitAtom, { fmtCommitMsg } from '../utils/atom';
+import gitAtom, { fmtCommitMsg } from '../shared/utils/atom';
 import { logger } from '../../../utils/logger';
 import inquirer from '../../../utils/inquirer';
 

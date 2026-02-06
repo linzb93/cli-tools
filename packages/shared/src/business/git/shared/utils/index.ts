@@ -302,7 +302,7 @@ export async function getMainBranchName(projectPath: string = process.cwd()): Pr
  */
 export async function getBranchFirstCommitTime(
     branchName: string,
-    projectPath: string = process.cwd()
+    projectPath: string = process.cwd(),
 ): Promise<string> {
     try {
         const { stdout } = await execa(`git log ${branchName} --format=%ci --max-count=1 --reverse`, {
@@ -328,8 +328,8 @@ export const isCurrenetBranchPushed = async () => {
 /**
  * 分割Git日志字符串，将其转换为数组，每个元素为一个提交记录。
  */
-export const splitGitLog = async (head: number) => {
-    const log = await execa(`git log -${head}`);
+export const splitGitLog = async (head: number, cwd: string = process.cwd()) => {
+    const log = await execa(`git log -${head}`, { cwd });
     const list = log.stdout.split('\n').filter(Boolean);
     let result: {
         id: string;

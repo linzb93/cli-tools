@@ -1,6 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import { executeCommands } from '@cli-tools/shared/utils/promise';
-import gitAtom from '../utils/atom';
+import gitAtom from '../shared/utils/atom';
 import {
     getCurrentBranchName,
     getMainBranchName,
@@ -8,7 +8,7 @@ import {
     getGitProjectStatus,
     GitStatusMap,
     isGitProject as checkIsGitProject,
-} from '../utils';
+} from '../shared/utils';
 import { logger } from '@cli-tools/shared/utils/logger';
 import inquirer from '@cli-tools/shared/utils/inquirer';
 

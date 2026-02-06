@@ -1,6 +1,6 @@
 import spinner from '@cli-tools/shared/utils/spinner';
 import { execaCommand as execa } from 'execa';
-import { splitGitLog } from '../utils';
+import { splitGitLog } from '../shared/utils';
 import pMap from 'p-map';
 import chalk from 'chalk';
 
@@ -8,26 +8,27 @@ import chalk from 'chalk';
  * 命令的选项接口
  */
 export interface Options {
-    head: number;
-    path: string;
+    head?: number;
+    path?: string;
+    cwd?: string;
 }
 
-export const logService = async (options: Options) => {
-    spinner.text = '正在获取Git日志';
+export const getGitLogData = async (options: Options) => {
+    const cwd = options.cwd || process.cwd();
     let head = 0;
     if (options.head) {
         head = options.head;
     } else {
         // 获取未推送的提交数量
-        const unPushed = await execa('git log --oneline --not --branches');
+        const unPushed = await execa('git log --oneline --not --branches', { cwd });
         head = unPushed.stdout.split('\n').length || 3;
     }
-    const arr = await splitGitLog(head);
+    const arr = await splitGitLog(head, cwd);
     const output = await pMap(
         arr,
         async (item) => {
-            const branch = await execa(`git branch --contains ${item.id}`);
-            const detail = await execa(`git show --name-only ${item.id}`);
+            const branch = await execa(`git branch --contains ${item.id}`, { cwd });
+            const detail = await execa(`git show --name-only ${item.id}`, { cwd });
             const detailList = detail.stdout.split('\n');
             const files = [];
             for (let i = detailList.length - 1; i >= 0; i--) {
@@ -46,6 +47,12 @@ export const logService = async (options: Options) => {
         },
         { concurrency: 3 },
     );
+    return output;
+};
+
+export const logService = async (options: Options) => {
+    spinner.text = '正在获取Git日志';
+    const output = await getGitLogData(options);
     spinner.succeed('Git日志获取成功');
     output.forEach((item) => {
         console.log(`------------------------`);

@@ -35,7 +35,7 @@ export const getProjectName = async (type?: string): Promise<JenkinsProject> => 
         const jenkins =
             type && type !== 'v'
                 ? (finded.find((item) => item.type === type) as JenkinsProject)
-                : (finded[0] as JenkinsProject);
+                : (finded.find((item) => !item.type) as JenkinsProject);
         if (!jenkins) {
             return {
                 name: '',

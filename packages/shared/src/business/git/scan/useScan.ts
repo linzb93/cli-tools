@@ -4,7 +4,7 @@ import pMap from 'p-map';
 import pReduce from 'p-reduce';
 import { Observable, last, skip, skipLast, first } from 'rxjs';
 import sql from '@cli-tools/shared/utils/sql';
-import { getGitProjectStatus, GitStatusMap } from '../utils';
+import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 /**
  * 扫描所有git仓库，返回所有需要push的仓库
  * */
