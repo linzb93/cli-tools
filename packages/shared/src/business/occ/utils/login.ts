@@ -1,7 +1,7 @@
 import inquirer from '@cli-tools/shared/utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
-import { AiImplementation } from '@cli-tools/shared/business/ai/common/implementation/index';
+import { useAI } from '@cli-tools/shared/business/ai/common/implementation/index';
 import { readSecret } from '@cli-tools/shared/utils/secret';
 import { imageBase64ToStream, tempUpload } from '@cli-tools/shared/utils/image';
 import serviceGenerator from '@cli-tools/shared/utils/http';
@@ -146,7 +146,7 @@ async function processCaptchaAndLogin(
     const { url, uuid, removeHandler } = await getLoginCaptcha();
 
     try {
-        const ocrResult = await new AiImplementation().use(
+        const ocrResult = await useAI(
             [
                 {
                     role: 'assistant',

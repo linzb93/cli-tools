@@ -1,4 +1,4 @@
-import { AiImplementation } from '../common/implementation';
+import { useAIStream } from '../common/implementation';
 import { MessageOptions } from '../common/types';
 import { printObject } from '../common/utils/index';
 
@@ -9,7 +9,6 @@ const PROMPT = '你是一个正则表达式解析工具。你需要解析用户�
  * @param input 处理后的输入
  */
 const processRegex = async (input: string): Promise<void> => {
-    const ai = new AiImplementation();
     const params: MessageOptions[] = [
         {
             role: 'assistant',
@@ -21,7 +20,7 @@ const processRegex = async (input: string): Promise<void> => {
         },
     ];
 
-    const result = await ai.useStream(params);
+    const result = await useAIStream(params);
     await printObject(result);
 };
 

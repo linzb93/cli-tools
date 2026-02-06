@@ -33,16 +33,15 @@ vi.mock('../../../utils/logger', () => ({
 }));
 
 vi.mock('../../ai/common/implementation/index', () => ({
-    AiImplementation: class {
-        async use(messages: any[]): Promise<string> {
-            return JSON.stringify({
-                items: [
-                    { type: 'n', content: 'test' },
-                    { type: 'v', content: 'testing' },
-                ],
-            });
-        }
+    useAI: async (messages: any[]): Promise<string> => {
+        return JSON.stringify({
+            items: [
+                { type: 'n', content: 'test' },
+                { type: 'v', content: 'testing' },
+            ],
+        });
     },
+    useAIStream: vi.fn(),
 }));
 
 describe('翻译模块测试', () => {
@@ -103,12 +102,8 @@ describe('翻译模块测试', () => {
 
         it('应该处理 JSON 解析错误', async () => {
             // Mock AI implementation to return invalid JSON
-            const AiImpl = vi.fn().mockImplementation(() => ({
-                use: async () => 'invalid json',
-            }));
-
             vi.doMock('../../ai/common/implementation/index', () => ({
-                AiImplementation: AiImpl,
+                useAI: async () => 'invalid json',
             }));
 
             // Re-import to apply mock
@@ -197,15 +192,11 @@ describe('翻译模块测试', () => {
 
         it('应该优先使用AI翻译器（AI模式）', async () => {
             // Mock AI translation to succeed
-            const AiImpl = vi.fn().mockImplementation(() => ({
-                use: async () =>
+            vi.doMock('../../ai/common/implementation/index', () => ({
+                useAI: async () =>
                     JSON.stringify({
                         items: [{ type: 'n', content: '测试' }],
                     }),
-            }));
-
-            vi.doMock('../../ai/common/implementation/index', () => ({
-                AiImplementation: AiImpl,
             }));
 
             // Re-import module to ensure mock is used
@@ -220,14 +211,10 @@ describe('翻译模块测试', () => {
             // Mock both translators to fail
             (getHtml as any).mockRejectedValue(new Error('Network error'));
 
-            const AiImpl = vi.fn().mockImplementation(() => ({
-                use: async () => {
+            vi.doMock('../../ai/common/implementation/index', () => ({
+                useAI: async () => {
                     throw new Error('AI error');
                 },
-            }));
-
-            vi.doMock('../../ai/common/implementation/index', () => ({
-                AiImplementation: AiImpl,
             }));
 
             // Re-import module
@@ -244,15 +231,11 @@ describe('翻译模块测试', () => {
         });
 
         it('应该正确处理 translateByAI 方法', async () => {
-            const AiImpl = vi.fn().mockImplementation(() => ({
-                use: async () =>
+            vi.doMock('../../ai/common/implementation/index', () => ({
+                useAI: async () =>
                     JSON.stringify({
                         items: [{ type: 'n', content: '测试' }],
                     }),
-            }));
-
-            vi.doMock('../../ai/common/implementation/index', () => ({
-                AiImplementation: AiImpl,
             }));
 
             const { translateByAI: reimportedTranslateByAI } = await import('../index');
@@ -263,14 +246,10 @@ describe('翻译模块测试', () => {
         });
 
         it('应该处理 translateByAI 失败的情况', async () => {
-            const AiImpl = vi.fn().mockImplementation(() => ({
-                use: async () => {
+            vi.doMock('../../ai/common/implementation/index', () => ({
+                useAI: async () => {
                     throw new Error('AI error');
                 },
-            }));
-
-            vi.doMock('../../ai/common/implementation/index', () => ({
-                AiImplementation: AiImpl,
             }));
 
             const { translateByAI: reimportedTranslateByAI } = await import('../index');

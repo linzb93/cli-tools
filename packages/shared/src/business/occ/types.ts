@@ -46,3 +46,18 @@ export interface UserInfo {
     versionPlus?: number;
     surplusDays?: number;
 }
+
+export interface App {
+    name: string;
+    serviceName: string;
+    defaultId: string;
+    testDefaultId: string;
+    isDefault?: boolean;
+    getShopUrl(keyword: string, options: Options): Promise<string>;
+    getUserInfo(token: string, isTest: boolean): Promise<any>;
+    customAction?(keyword: string, options: Options): Promise<void>;
+    openPC?(url: string, shopName: string): void;
+    getToken?(url: string): string;
+    // For compatibility with existing classes during refactor
+    run?(keyword: string, options: Options): Promise<void>;
+}

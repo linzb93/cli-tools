@@ -1,16 +1,12 @@
-import MeituanBase from '../core/MeituanBase';
+import { createMeituanApp } from '../core/MeituanBase';
+import { openPC } from '../utils/occUtils';
 
-/**
- * 装修神器-美团应用实现
- */
-export default class Mtzxsq extends MeituanBase {
-    name = 'zx';
-    appKey = '36';
-    serviceName = '装修神器-美团';
-    defaultId = '16159400501';
-    testDefaultId = '16159400501';
-    override userApi = 'decorate/home';
-    openPC(url: string, shopName: string) {
-        this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
-    }
-}
+export const mtzxsq = createMeituanApp({
+    name: 'zx',
+    appKey: '36',
+    serviceName: '装修神器-美团',
+    defaultId: '16159400501',
+    testDefaultId: '16159400501',
+    userApi: 'decorate/home',
+    openPC: (url, shopName) => openPC({ url, serviceName: '装修神器-美团', shopName }),
+});

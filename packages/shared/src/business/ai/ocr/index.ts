@@ -2,7 +2,7 @@ import imageClipboard from '@cli-tools/shared/utils/clipboard';
 import { imageBase64ToStream, tempUpload } from '@cli-tools/shared/utils/image';
 import clipboardy from 'clipboardy';
 import spinner from '@cli-tools/shared/utils/spinner';
-import { AiImplementation } from '../common/implementation';
+import { useAI } from '../common/implementation';
 import { MessageOptions } from '../common/types';
 
 /**
@@ -25,7 +25,6 @@ const PROMPT =
  * @returns 识别结果
  */
 const processImage = async (imageUrl: string): Promise<string> => {
-    const ai = new AiImplementation();
     const params: MessageOptions[] = [
         {
             role: 'assistant',
@@ -45,7 +44,7 @@ const processImage = async (imageUrl: string): Promise<string> => {
         },
     ];
 
-    return ai.use(params, { type: 'image' });
+    return useAI(params, { type: 'image' });
 };
 
 /**

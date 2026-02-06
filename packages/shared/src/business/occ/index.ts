@@ -1,84 +1,79 @@
-import { BaseService } from '@cli-tools/shared/base/BaseService';
+import { logger } from '@cli-tools/shared/utils/logger';
 import { Options } from './types';
-import { Factory as AppFactory } from './core/Factory';
+import { createApp, getDefaultAppName, getDefaultApp, hasApp } from './core/Factory';
+import { runApp } from './core/appRunner';
 
 /**
  * 常用命令
  */
-export class OccService extends BaseService {
-    private options: Options;
-    /**
-     * 从输入中获取的应用名称
-     */
-    private appName = '';
-    /**
-     * 搜索内容，支持门店ID或门店名称关键字
-     */
-    private searchKeyword = '';
+export const occService = async (input: string[], options: Options) => {
+    try {
+        const { appName, searchKeyword } = parseArgs(input, options);
+        if (!appName && !searchKeyword) return;
 
-    async main(input: string[], options: Options) {
-        try {
-            this.options = options;
-            this.parseArgs(input);
-            await this.run();
-        } catch (error) {
-            console.log(error);
-        }
+        await run(appName, searchKeyword, options);
+    } catch (error) {
+        console.log(error);
     }
+};
 
-    /**
-     * 添加app后运行
-     */
-    private async run() {
-        try {
-            const app = AppFactory.createApp(this.appName);
+const run = async (appName: string, searchKeyword: string, options: Options) => {
+    try {
+        const app = createApp(appName);
 
-            if (this.options.type) {
-                await app.customAction(this.searchKeyword, this.options);
+        if (options.type) {
+            if (app.customAction) {
+                await app.customAction(searchKeyword, options);
             } else {
-                await app.run(this.searchKeyword, this.options);
+                throw new Error('当前应用不支持 customAction');
             }
-        } catch (error) {
-            if (error instanceof Error) {
-                this.logger.error(error.message);
-            } else {
-                this.logger.error(`应用执行失败: ${this.appName}`);
-            }
+        } else {
+            await runApp(app, searchKeyword, options);
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            logger.error(error.message);
+        } else {
+            logger.error(`应用执行失败: ${appName}`);
         }
     }
+};
 
-    private parseArgs(input: string[]) {
-        const defaultAppName = AppFactory.getDefaultAppName();
+const parseArgs = (input: string[], options: Options): { appName: string; searchKeyword: string } => {
+    const defaultAppName = getDefaultAppName();
+    let appName = '';
+    let searchKeyword = '';
 
-        if (!input.length) {
-            this.appName = defaultAppName;
-            const defaultApp = AppFactory.getDefaultApp();
-            this.searchKeyword = this.options.test ? defaultApp.testDefaultId : defaultApp.defaultId;
-            return;
-        }
+    if (!input.length) {
+        appName = defaultAppName;
+        const defaultApp = getDefaultApp();
+        searchKeyword = options.test ? defaultApp.testDefaultId : defaultApp.defaultId;
+        return { appName, searchKeyword };
+    }
 
-        if (input.length === 2) {
-            this.appName = input[0];
-            this.searchKeyword = input[1];
-            return;
-        }
+    if (input.length === 2) {
+        appName = input[0];
+        searchKeyword = input[1];
+        return { appName, searchKeyword };
+    }
 
-        if (input.length === 1) {
-            if (/^[a-z]+$/.test(input[0])) {
-                this.appName = input[0];
+    if (input.length === 1) {
+        if (/^[a-z]+$/.test(input[0])) {
+            appName = input[0];
 
-                if (!AppFactory.hasApp(this.appName)) {
-                    this.logger.error(`未找到应用: ${this.appName}`);
-                    return;
-                }
-
-                const matchApp = AppFactory.createApp(this.appName);
-                this.searchKeyword = this.options.test ? matchApp.testDefaultId : matchApp.defaultId;
-                return;
+            if (!hasApp(appName)) {
+                logger.error(`未找到应用: ${appName}`);
+                return { appName: '', searchKeyword: '' };
             }
 
-            this.appName = defaultAppName;
-            this.searchKeyword = input[0];
+            const matchApp = createApp(appName);
+            searchKeyword = options.test ? matchApp.testDefaultId : matchApp.defaultId;
+            return { appName, searchKeyword };
         }
+
+        appName = defaultAppName;
+        searchKeyword = input[0];
     }
-}
+
+    return { appName, searchKeyword };
+};

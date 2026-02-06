@@ -1,22 +1,25 @@
-import MeituanBase from '../core/MeituanBase';
+import { createMeituanApp } from '../core/MeituanBase';
+import { openPC, noVersionSearch } from '../utils/occUtils';
 
-/**
- * IM神器-美团应用实现
- */
-export default class Mtimsq extends MeituanBase {
-    name = 'im';
-    appKey = '75';
-    serviceName = 'IM神器-美团';
-    defaultId = '16505256214';
-    testDefaultId = '16505256214';
-    override userApi = 'imService/home';
-    openPC(url: string, shopName: string) {
-        this.occUtils.openPC({ url, serviceName: this.serviceName, shopName });
-    }
-    protected async getByVersion() {
-        this.occUtils.noVersionSearch({
-            serviceName: this.serviceName,
+const app = createMeituanApp({
+    name: 'im',
+    appKey: '75',
+    serviceName: 'IM神器-美团',
+    defaultId: '16505256214',
+    testDefaultId: '16505256214',
+    userApi: 'imService/home',
+    openPC: (url, shopName) => openPC({ url, serviceName: 'IM神器-美团', shopName }),
+});
+
+const originalGetShopUrl = app.getShopUrl;
+app.getShopUrl = async (keyword, options) => {
+    if (options.version) {
+        noVersionSearch({
+            serviceName: app.serviceName,
         });
         return '';
     }
-}
+    return originalGetShopUrl(keyword, options);
+};
+
+export const mtimsq = app;

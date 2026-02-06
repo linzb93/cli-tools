@@ -1,8 +1,8 @@
-import Base from '../core/AbstractApp';
 import serviceGenerator from '@cli-tools/shared/utils/http';
 import { readSecret } from '@cli-tools/shared/utils/secret';
-import { Options } from '../types';
+import { Options, App } from '../types';
 import { logger } from '@cli-tools/shared/utils/logger';
+import { afterSearchApp } from '../core/appRunner';
 
 const platformTypeEnum = {
     meituan: '8',
@@ -10,86 +10,20 @@ const platformTypeEnum = {
     jingdong: '4',
 };
 
-/**
- * 小程序应用实现
- */
-export default class DkdMiniProgram extends Base {
-    name = 'minip';
-    searchKey = 'searchParam';
-    serviceName = '小程序';
-    defaultId = '18759916391';
-    testDefaultId = '18759916391';
-    service = serviceGenerator({
-        baseURL: '',
-    });
+export const createDkdMiniProgramApp = (): App => {
+    const service = serviceGenerator({ baseURL: '' });
+    const name = 'minip';
+    const serviceName = '小程序';
+    const defaultId = '18759916391';
+    const testDefaultId = '18759916391';
 
-    /**
-     * 获取店铺URL
-     * @param {string} keyword - 搜索关键词
-     * @param {boolean} isTest - 是否为测试环境
-     * @returns {Promise<string>} 店铺URL
-     */
-    async getShopUrl(keyword: string, isTest: boolean) {
-        const { prefix, unionId, shopList } = await this.getUserCommonInfo(keyword, isTest);
-        const target = shopList.find((item) => item.platform === platformTypeEnum.jingdong);
-        const shopId = target.shopId;
-        const res3 = await this.service.post(`${prefix}/miniProgram/loginShopByAdmin`, {
-            platform: target.platform,
-            shopId: target.shopId,
-            unionId,
-        });
-        const token = res3.data.result.token;
-        return `https://jysq.diankeduo.net/pages/jdjysq/#/login?code=${token}&shopId=${shopId}`;
-    }
-
-    /**
-     * 自定义操作
-     * @param {string} keyword - 关键词
-     * @param {Options} options - 选项
-     * @returns {Promise<void>}
-     */
-    override async customAction(keyword: string, options: Options): Promise<void> {
-        if (options.type === 'data') {
-            const { prefix, unionId, shopList } = await this.getUserCommonInfo(keyword, options.test);
-            const res3 = await this.service.post(
-                `${prefix}/miniProgram/getTokenByUnionId`,
-                {},
-                {
-                    params: {
-                        unionId,
-                    },
-                },
-            );
-            if (!res3.data.result) {
-                throw new Error('未查询到用户店铺');
-            }
-            const token = res3.data.result;
-            const match = this.getDataSummarizingMatchShop(shopList);
-            const url = `https://jysq.diankeduo.net/pages/jdjysq/#/loginByAccount?source=dkdMiniProgram&code=${token}&url=/data&shopId=${match.shopId}&userId=${match.venderId}&fromProject=${match.platform}`;
-            await this.afterSearch(url, keyword, options);
-            return;
-        }
-        return Promise.resolve();
-    }
-
-    /**
-     * 获取API前缀
-     * @param {boolean} isTest - 是否为测试环境
-     * @returns {Promise<string>} API前缀
-     */
-    private async getPrefix(isTest: boolean) {
+    const getPrefix = async (isTest: boolean) => {
         return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
-    }
+    };
 
-    /**
-     * 获取用户通用信息
-     * @param {string} keyword - 关键词
-     * @param {boolean} isTest - 是否为测试环境
-     * @returns {Promise<{unionId: string, shopList: any[], prefix: string}>} 用户信息对象
-     */
-    private async getUserCommonInfo(keyword: string, isTest: boolean) {
-        logger.info(`【${this.serviceName}】正在获取账号【${keyword}】详情`);
-        const prefix = await this.getPrefix(isTest);
+    const getUserCommonInfo = async (keyword: string, isTest: boolean) => {
+        logger.info(`【${serviceName}】正在获取账号【${keyword}】详情`);
+        const prefix = await getPrefix(isTest);
         let searchParams = {};
         if (!/\d+/.test(keyword)) {
             searchParams = {
@@ -102,7 +36,7 @@ export default class DkdMiniProgram extends Base {
                 searchShopKey: '',
             };
         }
-        const userRes = await this.service.post(`${prefix}/miniProgram/queryAccountList`, {
+        const userRes = await service.post(`${prefix}/miniProgram/queryAccountList`, {
             pageIndex: 1,
             pageSize: 1,
             platform: '',
@@ -112,9 +46,9 @@ export default class DkdMiniProgram extends Base {
         if (!userRes.data.result) {
             throw new Error('未查询到用户');
         }
-        logger.info(`【${this.serviceName}】正在获取账号【${keyword}】下的门店`);
+        logger.info(`【${serviceName}】正在获取账号【${keyword}】下的门店`);
         const userInfo = userRes.data.result.list[0];
-        const listRes = await this.service.post(
+        const listRes = await service.post(
             `${prefix}/miniProgram/queryAccountDetail`,
             {},
             {
@@ -131,14 +65,9 @@ export default class DkdMiniProgram extends Base {
             shopList: listRes.data.result,
             prefix,
         };
-    }
+    };
 
-    /**
-     * 获取数据汇总匹配的店铺
-     * @param {any[]} list - 店铺列表
-     * @returns {{platform: string, shopId: string, venderId: string} | null} 匹配的店铺信息
-     */
-    private getDataSummarizingMatchShop = (list: any[]) => {
+    const getDataSummarizingMatchShop = (list: any[]) => {
         for (const shop of list) {
             if (shop.platform === platformTypeEnum.meituan) {
                 return {
@@ -162,4 +91,64 @@ export default class DkdMiniProgram extends Base {
         }
         return null;
     };
-}
+
+    const getShopUrl = async (keyword: string, options: Options) => {
+        const { prefix, unionId, shopList } = await getUserCommonInfo(keyword, options.test);
+        const target = shopList.find((item: any) => item.platform === platformTypeEnum.jingdong);
+        const shopId = target.shopId;
+        const res3 = await service.post(`${prefix}/miniProgram/loginShopByAdmin`, {
+            platform: target.platform,
+            shopId: target.shopId,
+            unionId,
+        });
+        const token = res3.data.result.token;
+        return `https://jysq.diankeduo.net/pages/jdjysq/#/login?code=${token}&shopId=${shopId}`;
+    };
+
+    const customAction = async (keyword: string, options: Options) => {
+        if (options.type === 'data') {
+            const { prefix, unionId, shopList } = await getUserCommonInfo(keyword, options.test);
+            const res3 = await service.post(
+                `${prefix}/miniProgram/getTokenByUnionId`,
+                {},
+                {
+                    params: {
+                        unionId,
+                    },
+                },
+            );
+            if (!res3.data.result) {
+                throw new Error('未查询到用户店铺');
+            }
+            const token = res3.data.result;
+            const match = getDataSummarizingMatchShop(shopList);
+            if (!match) {
+                 throw new Error('未找到匹配店铺');
+            }
+            const url = `https://jysq.diankeduo.net/pages/jdjysq/#/loginByAccount?source=dkdMiniProgram&code=${token}&url=/data&shopId=${match.shopId}&userId=${match.venderId}&fromProject=${match.platform}`;
+            
+            // Need to call afterSearchApp.
+            await afterSearchApp(app, url, keyword, options);
+            return;
+        }
+        return Promise.resolve();
+    };
+
+    const getUserInfo = async (token: string, isTest: boolean) => {
+        return token;
+    };
+
+    const app: App = {
+        name,
+        serviceName,
+        defaultId,
+        testDefaultId,
+        getShopUrl,
+        getUserInfo,
+        customAction,
+    };
+
+    return app;
+};
+
+export const dkdMiniProgram = createDkdMiniProgramApp();

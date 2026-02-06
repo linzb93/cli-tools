@@ -1,60 +1,74 @@
 import qs from 'node:querystring';
-import Base from '../core/AbstractApp';
 import serviceGenerator from '@cli-tools/shared/utils/http';
 import { readSecret } from '@cli-tools/shared/utils/secret';
+import { App, Options } from '../types';
 
-/**
- * 店客多品牌连锁应用实现
- */
-export default class Chain extends Base {
-    name = 'chain';
-    searchKey = 'searchParam';
-    serviceName = '店客多品牌连锁';
-    defaultId = '13023942325';
-    testDefaultId = '13023942325';
-    prefix = '';
-    service = serviceGenerator({
-        baseURL: '',
-    });
-    async getShopUrl(keyword: string, isTest: boolean) {
-        return this.getChainList({
-            searchParam: keyword,
-        })
-            .then((res) => {
-                return this.getChainShopInfo({
-                    id: res.list[0].dkdAccountInfo.id,
-                });
-            })
-            .then((res) => {
-                return this.getOpenUrl(res);
-            });
-    }
-    getOpenUrl(res: any) {
-        return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(
-            res.createTime,
-        )}&id=${encodeURIComponent(res.id)}&phoneNumber=${encodeURIComponent(
-            res.phoneNumber,
-        )}&shopNumber=${encodeURIComponent(res.shopNumber)}&token=${encodeURIComponent(res.token)}`;
-    }
-    getToken(url: string): string {
-        const { hash } = new URL(url);
-        const obj = qs.parse(hash.replace(`#/loginByOa?`, '')) as {
-            token: string;
-        };
-        return obj.token;
-    }
-    private async getChainList(params: any) {
+export const createChainApp = (): App => {
+    const service = serviceGenerator({ baseURL: '' });
+    const name = 'chain';
+    const serviceName = '店客多品牌连锁';
+    const defaultId = '13023942325';
+    const testDefaultId = '13023942325';
+
+    const getChainList = async (params: any) => {
         const prefix = await readSecret((db) => db.oa.oldApiPrefix);
-        const res = await this.service.post(`${prefix}/chain/occ/oa/dkdAccountDetails/accountAnalysisList`, {
+        const res = await service.post(`${prefix}/chain/occ/oa/dkdAccountDetails/accountAnalysisList`, {
             ...params,
             pageSize: 1,
             pageIndex: 1,
         });
         return res.data.result;
-    }
-    private async getChainShopInfo(params: any) {
+    };
+
+    const getChainShopInfo = async (params: any) => {
         const prefix = await readSecret((db) => db.oa.oldApiPrefix);
-        const res = await this.service.post(`${prefix}/chain/occ/dkdAccount/oa/getAccountToken`, params);
+        const res = await service.post(`${prefix}/chain/occ/dkdAccount/oa/getAccountToken`, params);
         return res.data.result;
-    }
-}
+    };
+
+    const getOpenUrl = (res: any) => {
+        return `https://ka.diankeduo.net/#/loginByOa?createTime=${encodeURIComponent(
+            res.createTime,
+        )}&id=${encodeURIComponent(res.id)}&phoneNumber=${encodeURIComponent(
+            res.phoneNumber,
+        )}&shopNumber=${encodeURIComponent(res.shopNumber)}&token=${encodeURIComponent(res.token)}`;
+    };
+
+    const getToken = (url: string): string => {
+        const { hash } = new URL(url);
+        const obj = qs.parse(hash.replace(`#/loginByOa?`, '')) as {
+            token: string;
+        };
+        return obj.token;
+    };
+
+    const getShopUrl = async (keyword: string, options: Options) => {
+        return getChainList({
+            searchParam: keyword,
+        })
+            .then((res) => {
+                return getChainShopInfo({
+                    id: res.list[0].dkdAccountInfo.id,
+                });
+            })
+            .then((res) => {
+                return getOpenUrl(res);
+            });
+    };
+
+    const getUserInfo = async (token: string, isTest: boolean) => {
+        return token;
+    };
+
+    return {
+        name,
+        serviceName,
+        defaultId,
+        testDefaultId,
+        getShopUrl,
+        getUserInfo,
+        getToken,
+    };
+};
+
+export const chain = createChainApp();

@@ -1,90 +1,50 @@
-import Base from './AbstractApp';
 import serviceGenerator from '@cli-tools/shared/utils/http';
 import { readSecret } from '@cli-tools/shared/utils/secret';
 import { login } from '../utils/login';
 import chalk from 'chalk';
-import { Options, UserInfo } from '../types';
+import { App, Options, UserInfo } from '../types';
+import { getToken } from './appRunner';
 
-/**
- * 美团平台应用基类
- */
-export default abstract class MeituanBase extends Base {
-    /**
-     * appKey，各应用不一样
-     */
-    abstract appKey: string;
-    /**
-     * 平台值
-     */
-    platform = 8;
-    searchKey = 'param';
-    service = serviceGenerator({
-        baseURL: '',
-    });
-    userApi = 'home';
-    /**
-     * 根据版本号获取店铺地址
-     * @param {number} version 版本号
-     * @param {string} shopName 店铺名称
-     * @returns {Promise<string>} 店铺地址
-     */
-    protected async getByVersion(version: number, shopName: string, serviceName: string): Promise<string> {
-        try {
-            let { token } = await readSecret((db) => db.oa);
-            if (!token) {
-                await login();
-                return this.getByVersion(version, shopName, serviceName);
-            }
-            const res = await this.queryBusinessInfoList({ version, pageIndex: 1, pageSize: 1 });
-            if (res.data.code !== 200) {
-                await login();
-                return this.getByVersion(version, shopName, serviceName);
-            }
-            const shopUrl = await this.filterShops({ version });
-            return shopUrl;
-        } catch (error) {
-            console.error(chalk.red('获取版本信息时发生错误:'), error.message);
-            process.exit(1);
-        }
-    }
-    /**
-     * 在token为空或者token失效时，触发登录
-     * @returns {Promise<void>}
-     */
+interface MeituanAppConfig {
+    name: string;
+    appKey: string;
+    serviceName: string;
+    defaultId: string;
+    testDefaultId: string;
+    userApi?: string;
+    openPC?: (url: string, shopName: string) => void;
+}
 
-    /**
-     * 搜索店铺
-     * @param {string} keyword 搜索关键词
-     * @param {Options} options 搜索选项
-     */
-    // override async search(keyword: string, options: Options) {
-    //     if (options.version) {
-    //         return await this.getByVersion(options.version, keyword, this.serviceName);
-    //     }
-    //     return await this.getShopUrl(keyword, options.test);
-    // }
-    /**
-     * 查询店铺列表，只在按版本查询时使用
-     * @param {Object} obj - 查询参数
-     * @param {number} obj.version - 版本号。0为初级版，1为高级版，2为豪华版，3为体验版。
-     * @param {number} obj.pageIndex - 页码
-     * @param {number} obj.pageSize - 每页条数
-     * @returns 店铺列表
-     */
-    private async queryBusinessInfoList(obj: {
+export const createMeituanApp = (config: MeituanAppConfig): App => {
+    const { name, appKey, serviceName, defaultId, testDefaultId, userApi = 'home', openPC } = config;
+    const platform = 8;
+    const service = serviceGenerator({ baseURL: '' });
+
+    const getPrefix = async (isTest: boolean) => {
+        return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
+    };
+
+    const getMeituanShopUrl = async (params: any, isTest: boolean) => {
+        const prefix = await getPrefix(isTest);
+        const res = await service.post(`${prefix}/occ/order/replaceUserLogin`, params);
+        return res.data.result;
+    };
+
+    const queryBusinessInfoList = async (obj: {
         version: number;
         pageIndex: number;
         pageSize?: number;
         minPrice?: number;
-    }) {
+    }) => {
         const { version, pageIndex, pageSize = 10 } = obj;
         const prefix = await readSecret((db) => db.oa.apiPrefix);
         const token = await readSecret((db) => db.oa.token);
-        return this.service.post<{
+        return service.post<{
             result: {
                 list: {
                     shopId: string;
                     shopName: string;
+                    memberId: string;
                 }[];
             };
             code: number;
@@ -103,7 +63,7 @@ export default abstract class MeituanBase extends Base {
                 maxOrderTimes: '',
                 param: '',
                 remarks: '',
-                appKey: this.appKey,
+                appKey: appKey,
                 type: '0',
                 customerType: 0,
                 customerClassify: 0,
@@ -120,88 +80,14 @@ export default abstract class MeituanBase extends Base {
                 },
             },
         );
-    }
-    private async findMatchShop(
-        obj: { version: number; pageIndex: number; pageSize?: number; minPrice?: number },
-        condition: (shop: UserInfo) => boolean,
-    ) {
-        let { version, pageIndex, pageSize = 10, minPrice = 0 } = obj;
-        let resultURL = '';
-        while (resultURL === '') {
-            const res = await this.queryBusinessInfoList({
-                version,
-                pageIndex,
-                pageSize,
-                minPrice,
-            });
-            const { list } = res.data.result as { list: any[] };
-            for (const shop of list) {
-                const { memberId } = shop;
-                const shopUrl = await this.getMeituanShopUrl(
-                    {
-                        appKey: this.appKey,
-                        memberId,
-                        platform: this.platform,
-                    },
-                    false,
-                );
-                const token = this.getToken(shopUrl);
-                const userInfo = await this.getUserInfo(token, false);
-                if (condition(userInfo)) {
-                    resultURL = shopUrl;
-                    return shopUrl;
-                }
-            }
-            pageIndex++;
-        }
-        return '';
-    }
-    /**
-     * 过滤店铺
-     * @param options 过滤选项
-     * @param options.version 版本号。0为初级版，1为高级版，2为豪华版，3为体验版。
-     * @returns 店铺地址
-     */
-    private async filterShops(options: { version: number }): Promise<string> {
-        const { version } = options;
-        let pageIndex = 1;
-        let resultURL = '';
-        if (version === 0) {
-            resultURL = await this.findMatchShop({ version, pageIndex, pageSize: 10 }, (userInfo) => {
-                return !userInfo.version && !userInfo.versionPlus && !(userInfo.surplusDays > 0);
-            });
-            return resultURL;
-        } else if (version === 1) {
-            resultURL = await this.findMatchShop({ version, pageIndex, pageSize: 10 }, (userInfo) => {
-                return userInfo.version === 1 && !userInfo.versionPlus;
-            });
-            return resultURL;
-        } else if (version === 2) {
-            resultURL = await this.findMatchShop({ version, pageIndex, pageSize: 10 }, (userInfo) => {
-                return userInfo.versionPlus === 1;
-            });
-            return resultURL;
-        } else if (version === 3) {
-            return '';
-        }
-        return '';
-    }
-    async getShopUrl(keyword: string, isTest: boolean): Promise<string> {
-        return this.getMeituanShopUrl(
-            {
-                appKey: this.appKey,
-                memberId: keyword,
-                platform: this.platform,
-            },
-            isTest,
-        );
-    }
-    async getUserInfo(token: string, isTest: boolean): Promise<UserInfo> {
-        const prefix = await this.getPrefix(isTest);
-        const res = await this.service.post<{
+    };
+
+    const getUserInfo = async (token: string, isTest: boolean): Promise<UserInfo> => {
+        const prefix = await getPrefix(isTest);
+        const res = await service.post<{
             result: UserInfo;
         }>(
-            `${prefix}/meituan/${this.userApi}`,
+            `${prefix}/meituan/${userApi}`,
             {},
             {
                 headers: {
@@ -210,26 +96,110 @@ export default abstract class MeituanBase extends Base {
             },
         );
         return res.data.result;
-    }
+    };
 
-    /**
-     * 获取美团店铺URL
-     * @param {any} params - 请求参数
-     * @param {boolean} isTest - 是否为测试环境
-     * @returns {Promise<any>} 结果
-     */
-    private async getMeituanShopUrl(params: any, isTest: boolean) {
-        const prefix = await this.getPrefix(isTest);
-        const res = await this.service.post(`${prefix}/occ/order/replaceUserLogin`, params);
-        return res.data.result;
-    }
+    const findMatchShop = async (
+        obj: { version: number; pageIndex: number; pageSize?: number; minPrice?: number },
+        condition: (shop: UserInfo) => boolean,
+    ) => {
+        let { version, pageIndex, pageSize = 10, minPrice = 0 } = obj;
+        let resultURL = '';
+        while (resultURL === '') {
+            const res = await queryBusinessInfoList({
+                version,
+                pageIndex,
+                pageSize,
+                minPrice,
+            });
+            const { list } = res.data.result;
+            for (const shop of list) {
+                const { memberId } = shop;
+                const shopUrl = await getMeituanShopUrl(
+                    {
+                        appKey: appKey,
+                        memberId,
+                        platform: platform,
+                    },
+                    false,
+                );
+                const token = getToken(shopUrl);
+                const userInfo = await getUserInfo(token, false);
+                if (condition(userInfo)) {
+                    resultURL = shopUrl;
+                    return shopUrl;
+                }
+            }
+            pageIndex++;
+        }
+        return '';
+    };
 
-    /**
-     * 获取API前缀
-     * @param {boolean} isTest - 是否为测试环境
-     * @returns {Promise<string>} API前缀
-     */
-    private async getPrefix(isTest: boolean) {
-        return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
-    }
-}
+    const filterShops = async (options: { version: number }): Promise<string> => {
+        const { version } = options;
+        let pageIndex = 1;
+        let resultURL = '';
+        if (version === 0) {
+            resultURL = await findMatchShop({ version, pageIndex, pageSize: 10 }, (userInfo) => {
+                return !userInfo.version && !userInfo.versionPlus && !(userInfo.surplusDays > 0);
+            });
+            return resultURL;
+        } else if (version === 1) {
+            resultURL = await findMatchShop({ version, pageIndex, pageSize: 10 }, (userInfo) => {
+                return userInfo.version === 1 && !userInfo.versionPlus;
+            });
+            return resultURL;
+        } else if (version === 2) {
+            resultURL = await findMatchShop({ version, pageIndex, pageSize: 10 }, (userInfo) => {
+                return userInfo.versionPlus === 1;
+            });
+            return resultURL;
+        } else if (version === 3) {
+            return '';
+        }
+        return '';
+    };
+
+    const getByVersion = async (version: number, shopName: string): Promise<string> => {
+        try {
+            let { token } = await readSecret((db) => db.oa);
+            if (!token) {
+                await login();
+                return getByVersion(version, shopName);
+            }
+            const res = await queryBusinessInfoList({ version, pageIndex: 1, pageSize: 1 });
+            if (res.data.code !== 200) {
+                await login();
+                return getByVersion(version, shopName);
+            }
+            const shopUrl = await filterShops({ version });
+            return shopUrl;
+        } catch (error) {
+            console.error(chalk.red('获取版本信息时发生错误:'), error.message);
+            process.exit(1);
+        }
+    };
+
+    const getShopUrl = async (keyword: string, options: Options): Promise<string> => {
+        if (options.version) {
+            return await getByVersion(options.version, keyword);
+        }
+        return getMeituanShopUrl(
+            {
+                appKey: appKey,
+                memberId: keyword,
+                platform: platform,
+            },
+            options.test,
+        );
+    };
+
+    return {
+        name,
+        serviceName,
+        defaultId,
+        testDefaultId,
+        getShopUrl,
+        getUserInfo,
+        openPC,
+    };
+};
