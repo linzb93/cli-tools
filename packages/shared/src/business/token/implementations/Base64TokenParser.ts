@@ -3,14 +3,15 @@ import { TokenParser } from '../core/TokenParser';
 /**
  * Base64 Token解析器
  */
-export class Base64TokenParser extends TokenParser {
+export const base64TokenParser: TokenParser = {
+    name: 'base64',
     /**
      * 解析Base64格式token
      * @param token Base64编码的token字符串
      * @param options 解析选项
      * @returns 解析后的数据
      */
-    parse(token: string): string {
+    parse: (token: string): string => {
         const str = Buffer.from(token, 'base64');
         const resultStr = str.toString();
         try {
@@ -23,13 +24,5 @@ export class Base64TokenParser extends TokenParser {
             }
             return resultStr;
         }
-    }
-
-    /**
-     * 获取解析器名称
-     * @returns 解析器名称
-     */
-    getName(): string {
-        return 'base64';
-    }
-}
+    },
+};
