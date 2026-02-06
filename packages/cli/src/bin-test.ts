@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { gitCommand } from './commands/git';
+import { colorCommand } from './commands/color';
 import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
 
 const program = new Command();
@@ -25,10 +25,10 @@ program.hook('preAction', (thisCommand) => {
 
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand) => {
-        gitCommand(subCommand);
+    .command('color [text]')
+    .option('--get', '用指定颜色显示文字')
+    .action((data, options) => {
+        colorCommand(data, options);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
