@@ -1,7 +1,7 @@
-import { ServerService, Options } from '@cli-tools/shared/business/server';
+import { server, Options } from '@cli-tools/shared/business/server';
 
 export const serverCommand = (command: string, options: Options) => {
-    new ServerService().main(command, {
+    server(command, {
         ...options,
         exit: true,
     });
