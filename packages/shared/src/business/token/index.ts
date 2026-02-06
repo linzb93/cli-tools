@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { TimeService } from '../time';
+import { getTime } from '../time';
 import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { AnyObject } from '@cli-tools/shared/types';
 import type { TokenParser } from './core/TokenParser';
@@ -74,7 +74,7 @@ export class TokenService extends BaseService {
                 // 可能是时间戳
                 return {
                     ...obj,
-                    [key]: new TimeService().get(data[key]),
+                    [key]: getTime(data[key]),
                 };
             }
             return {

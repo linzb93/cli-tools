@@ -1,5 +1,5 @@
-import { KillService, Params } from '@cli-tools/shared/business/kill';
+import { killService, Params } from '@cli-tools/shared/business/kill';
 
-export const killCommand = (args: Params) => {
-    new KillService().main(...args);
+export const killCommand = async (args: Params) => {
+    await killService(...args);
 };

@@ -1,5 +1,5 @@
-import { ReplService } from '@cli-tools/shared/business/repl';
+import { replService } from '@cli-tools/shared/business/repl';
 
 export const replCommand = () => {
-    return new ReplService().main();
+    return replService();
 };

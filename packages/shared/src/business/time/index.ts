@@ -1,19 +1,17 @@
 import dayjs from 'dayjs';
-import { BaseService } from '@cli-tools/shared/base/BaseService';
-import { Log } from '@cli-tools/shared/utils/decorators/logger';
+import { logger } from '@cli-tools/shared/utils/logger';
 
-export class TimeService extends BaseService {
-    @Log.info('TimeService main executed')
-    main(timeParam: string): void {
-        const time = this.get(timeParam);
-        console.log(time);
+export const timeService = (timeParam: string): void => {
+    logger.info('TimeService main executed');
+    const time = getTime(timeParam);
+    console.log(time);
+};
+
+export const getTime = (timeParam: string | number) => {
+    const time = timeParam.toString();
+    if ((time.length !== 10 && time.length !== 13) || !/^\d+$/.test(time)) {
+        logger.error('请输入正确的时间戳格式，支持10位数字（秒）或13位数字（毫秒）', true);
+        return '';
     }
-    get(timeParam: string | number) {
-        const time = timeParam.toString();
-        if ((time.length !== 10 && time.length !== 13) || !/^\d+$/.test(time)) {
-            this.logger.error('请输入正确的时间戳格式，支持10位数字（秒）或13位数字（毫秒）', true);
-            return '';
-        }
-        return dayjs(Number(time) * (time.length === 10 ? 1000 : 1)).format('YYYY-MM-DD HH:mm:ss');
-    }
-}
+    return dayjs(Number(time) * (time.length === 10 ? 1000 : 1)).format('YYYY-MM-DD HH:mm:ss');
+};

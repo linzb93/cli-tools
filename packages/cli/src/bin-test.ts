@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { analyseCommand } from './commands/analyse';
-// import { logger } from '@cli-tools/shared/utils/logger';
-// 创建命令行程序
-const program = new Command();
+import { treeCommand } from './commands/tree';
 import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
-// 设置程序基本信息
+
+const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
+
 program.hook('preAction', (thisCommand) => {
     return new Promise<void>((resolve) => {
         setTimeout(async () => {
@@ -18,23 +17,26 @@ program.hook('preAction', (thisCommand) => {
                     process.exit(0);
                 })();
             } else {
-                // logger.cli(thisCommand.args.join(' '));
                 resolve();
             }
         }, 100);
     });
 });
+
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('analyse [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        analyseCommand(subCommand, rest, options);
+    .command('tree [dir]')
+    .option('--level <level>', '层级')
+    .option('--ignore <dirs>', '添加忽略的文件夹')
+    .option('-c, --copy', '复制')
+    .option('--comment', '显示注释')
+    .option('--help', '显示帮助文档')
+    .action((dir, option) => {
+        treeCommand(dir, option);
     });
-// 解析命令行参数
+
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
 
-// 如果没有提供任何命令参数，显示帮助信息
 if (!process.argv.slice(2).length) {
     program.outputHelp();
 }

@@ -6,7 +6,7 @@ import detectPort from 'detect-port';
 import chalk from 'chalk';
 import { BaseService } from '@cli-tools/shared/base/BaseService';
 import { root } from '../../utils/constant';
-import { KillService } from '../kill';
+import { killService } from '../kill';
 import inquirer from '../../utils/inquirer';
 import globalConfig from '../../../../../config.json';
 
@@ -33,7 +33,7 @@ export class ServerService extends BaseService {
     async main(command?: string, options?: Options) {
         const port = globalConfig.port.production;
         if (command === 'stop') {
-            new KillService().main('port', port, {
+            killService('port', port, {
                 log: true,
             });
             return;

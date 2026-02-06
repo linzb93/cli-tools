@@ -16,3 +16,10 @@ export interface Options {
      */
     comment: boolean;
 }
+
+export interface TreeContext {
+    outputList: string[];
+    ignoreDirs: string[];
+    options: Options;
+    maxLineLength: number;
+}

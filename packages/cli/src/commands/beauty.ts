@@ -1,5 +1,5 @@
-import { BeautyService } from '@cli-tools/shared/business/beauty';
+import { beautyService } from '@cli-tools/shared/business/beauty';
 
 export const beautyCommand = () => {
-    return new BeautyService().main();
+    return beautyService();
 };

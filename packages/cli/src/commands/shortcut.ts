@@ -1,5 +1,5 @@
-import { ShortcutService } from '@cli-tools/shared/business/shortcut';
+import { shortcut } from '@cli-tools/shared/business/shortcut';
 
 export const shortcutCommand = (name: string) => {
-    new ShortcutService().main(name);
+    shortcut(name);
 };

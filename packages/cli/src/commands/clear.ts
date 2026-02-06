@@ -1,5 +1,5 @@
-import { ClearService, IOptions } from '@cli-tools/shared/business/clear';
+import { clearService, IOptions } from '@cli-tools/shared/business/clear';
 
 export const clearCommand = (filename: string, options?: IOptions) => {
-    return new ClearService().main(filename, options);
+    return clearService(filename, options);
 };
