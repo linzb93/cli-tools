@@ -83,25 +83,30 @@ export const executeBaseManagers = async (commitMessage: string, currentBranch: 
 
     try {
         const gitStatus = await getGitProjectStatus();
-        const commands =
-            gitStatus.status === GitStatusMap.Uncommitted ? ['git add .', gitAtom.commit(commitMessage)] : [];
+
+        if (gitStatus.status === GitStatusMap.Uncommitted) {
+            await executeCommands(['git add .', gitAtom.commit(commitMessage)]);
+        }
 
         // 检查当前分支是否已推送到远端
         let isBranchPushed = await isCurrenetBranchPushed();
 
         // 根据分支推送状态决定是否添加 pull 命令
         if (isBranchPushed) {
-            commands.push(gitAtom.pull());
+            await executeCommands([gitAtom.pull()], { silentStart: true });
+
+            // 检查Pull后是否有未提交的更改（如合并产生的未提交更改）
+            if (await hasChanges()) {
+                await executeCommands(['git add .', gitAtom.commit('合并代码')], { silentStart: true });
+            }
         }
 
         // 根据分支是否已推送到远端决定push方式
         if (isBranchPushed) {
-            commands.push(gitAtom.push());
+            await executeCommands([gitAtom.push()], { silentStart: true });
         } else {
-            commands.push(gitAtom.push(true, currentBranch));
+            await executeCommands([gitAtom.push(true, currentBranch)], { silentStart: true });
         }
-
-        await executeCommands(commands);
 
         logger.success('基础Git命令执行完成');
     } catch (error) {

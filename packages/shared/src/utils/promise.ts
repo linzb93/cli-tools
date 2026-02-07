@@ -18,7 +18,7 @@ interface RetryOptions {
      */
     onFail?: (
         attempt: number,
-        error: Error
+        error: Error,
     ) => {
         /**
          * 是否停止执行后续命令
@@ -121,8 +121,8 @@ async function executeCommand(config: CommandConfig): Promise<void> {
                 if (!shouldStop) {
                     console.log(
                         `第${chalk.yellow.bold(attempt.toString())}次重复${chalk.magenta(
-                            `[${dayjs().format('HH:mm:ss')}]`
-                        )}`
+                            `[${dayjs().format('HH:mm:ss')}]`,
+                        )}`,
                     );
                     console.log(formatError(error.message));
                 }
@@ -130,7 +130,7 @@ async function executeCommand(config: CommandConfig): Promise<void> {
                     shouldStop,
                 };
             },
-        }
+        },
     );
 }
 
@@ -170,11 +170,14 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
 /**
  * 执行命令行命令列表
  * @param {Command[]} commands - 命令列表
+ * @param {{ silentStart?: boolean }} [options] - 配置选项
  * @returns {Promise<void>}
  */
-export async function executeCommands(commands: Command[]): Promise<void> {
+export async function executeCommands(commands: Command[], options?: { silentStart?: boolean }): Promise<void> {
     const startTime = dayjs();
-    console.log(`${startTime.format('YYYY-MM-DD HH:mm:ss')} 开始执行命令`);
+    if (!options?.silentStart) {
+        console.log(`${startTime.format('HH:mm:ss')} 开始执行命令`);
+    }
 
     for (const cmd of commands) {
         const config: CommandConfig = typeof cmd === 'string' ? { message: cmd } : cmd;
@@ -198,7 +201,7 @@ export async function executeCommands(commands: Command[]): Promise<void> {
 
     const endTime = dayjs();
     const duration = endTime.diff(startTime, 'second');
-    console.log(`任务执行完成，用时${chalk.blue(duration.toString())}秒`);
+    console.log(`${endTime.format('HH:mm:ss')}任务执行完成，用时${chalk.blue(duration.toString())}秒`);
 }
 
 /**

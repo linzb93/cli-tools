@@ -87,4 +87,4 @@ tag 的版本号。
 
 类型：`boolean`。
 
-默认值：`false`。
+默认值：`true`。
