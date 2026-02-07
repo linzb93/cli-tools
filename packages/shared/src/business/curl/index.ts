@@ -7,13 +7,15 @@ import { logger } from '../../utils/logger';
 export type { Options };
 
 export const isCurl = (curl: string): boolean => {
-    return curl.trim().startsWith('curl');
+    const trimmed = curl.trim();
+    return trimmed.startsWith('curl') || trimmed.includes('Invoke-WebRequest') || trimmed.includes('New-Object Microsoft.PowerShell');
 };
 
 export const getCookieFromCurl = (curl: string, options?: Options): string => {
     const lines = curl.split('\n');
     const urlLine = lines.find((line) => {
-        return line.trim().startsWith('curl');
+        const trimmed = line.trim();
+        return trimmed.startsWith('curl') || trimmed.startsWith('Invoke-WebRequest');
     });
     if (!urlLine) {
         logger.error('可能剪贴板里的不是curl代码，退出进程');
@@ -38,7 +40,8 @@ export const getBodyFromCurl = (curl: string, options?: Options): string => {
 
     const lines = curl.split('\n');
     const urlLine = lines.find((line) => {
-        return line.trim().startsWith('curl');
+        const trimmed = line.trim();
+        return trimmed.startsWith('curl') || trimmed.startsWith('Invoke-WebRequest');
     });
 
     if (!urlLine) {
@@ -65,7 +68,8 @@ export const curlService = (options: Options): void => {
     }
     const lines = curl.split('\n');
     const urlLine = lines.find((line) => {
-        return line.trim().startsWith('curl');
+        const trimmed = line.trim();
+        return trimmed.startsWith('curl') || trimmed.startsWith('Invoke-WebRequest');
     });
     if (!urlLine) {
         logger.error('可能剪贴板里的不是curl代码，退出进程');
