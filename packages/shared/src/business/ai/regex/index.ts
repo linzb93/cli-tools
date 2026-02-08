@@ -20,8 +20,8 @@ const processRegex = async (input: string): Promise<void> => {
         },
     ];
 
-    const result = await useAIStream(params);
-    await printObject(result);
+    const { stream } = await useAIStream(params);
+    await printObject(stream);
 };
 
 const handleError = (error: any): void => {

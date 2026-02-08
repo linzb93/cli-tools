@@ -44,7 +44,8 @@ const processImage = async (imageUrl: string): Promise<string> => {
         },
     ];
 
-    return useAI(params, { type: 'image' });
+    const result = await useAI(params, { type: 'image' });
+    return result.contents;
 };
 
 /**

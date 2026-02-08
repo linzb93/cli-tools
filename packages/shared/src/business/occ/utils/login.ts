@@ -190,7 +190,7 @@ async function processCaptchaAndLogin(
             username,
             password,
             uuid,
-            code: ocrResult,
+            code: ocrResult.contents,
         });
         return res.data;
     } catch (error) {
