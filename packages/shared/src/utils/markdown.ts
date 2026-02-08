@@ -21,10 +21,10 @@ interface Options {
  */
 export const findContent = (options: Options): Transform => {
     const { moduleName, title } = options;
-    const fileDirStr = join(fileURLToPath(import.meta.url), '../../src/core', moduleName);
+    const fileDirStr = join(fileURLToPath(import.meta.url), '../../../shared/src/business', moduleName);
     let filePathStr = '';
     if (!title.startsWith('--')) {
-        filePathStr = join(fileDirStr, title, `docs/help.md`);
+        filePathStr = join(fileDirStr, title.replace(' ', '/'), `docs/help.md`);
     } else {
         filePathStr = join(fileDirStr, 'docs/help.md');
     }

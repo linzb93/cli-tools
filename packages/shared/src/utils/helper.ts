@@ -59,7 +59,7 @@ export const generateHelpDoc = (commands: string[]) => {
         try {
             const stream = findContent({
                 moduleName: commands[0],
-                title: commands[1],
+                title: commands[2] ? `${commands[1]} ${commands[2]}` : commands[1],
             });
             fromStream(stream)
                 .pipe(
@@ -69,11 +69,11 @@ export const generateHelpDoc = (commands: string[]) => {
                             concatMap((char) =>
                                 interval(100).pipe(
                                     first(),
-                                    map(() => char)
-                                )
-                            )
-                        )
-                    )
+                                    map(() => char),
+                                ),
+                            ),
+                        ),
+                    ),
                 )
                 .subscribe({
                     next(data) {
