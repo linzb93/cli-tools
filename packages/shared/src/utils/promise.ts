@@ -199,9 +199,11 @@ export async function executeCommands(commands: Command[], options?: { silentSta
         }
     }
 
-    const endTime = dayjs();
-    const duration = endTime.diff(startTime, 'second');
-    console.log(`${endTime.format('HH:mm:ss')}任务执行完成，用时${chalk.blue(duration.toString())}秒`);
+    if (!options?.silentStart) {
+        const endTime = dayjs();
+        const duration = endTime.diff(startTime, 'second');
+        console.log(`${endTime.format('HH:mm:ss')}任务执行完成，用时${chalk.blue(duration.toString())}秒`);
+    }
 }
 
 /**
