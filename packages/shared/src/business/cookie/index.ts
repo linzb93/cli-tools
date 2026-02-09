@@ -1,4 +1,4 @@
-import { CurlService } from '../curl';
+import { isCurl, getCookieFromCurl } from '../curl';
 
 /**
  * Cookie 解析选项接口
@@ -37,12 +37,11 @@ export const parseCookie = (cookies: string) => {
 };
 
 export const cookieService = async (data: string, options: Options): Promise<void> => {
-    const curlUtil = new CurlService();
     let realData = data;
 
     // 检查输入数据是否是curl命令
-    if (typeof data === 'string' && curlUtil.isCurl(data)) {
-        realData = curlUtil.getCookieFromCurl(data);
+    if (typeof data === 'string' && isCurl(data)) {
+        realData = getCookieFromCurl(data);
     }
 
     const objs = parseCookie(realData);

@@ -10,6 +10,10 @@ export interface TranslateResultItem {
      * 翻译内容
      */
     content: string;
+    /**
+     * 使用的模型
+     */
+    model?: string;
 }
 
 /**

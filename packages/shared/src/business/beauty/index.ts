@@ -1,15 +1,14 @@
 import clipboardy from 'clipboardy';
 import * as prettier from 'prettier';
-import { CurlService } from '../curl';
+import { isCurl, getBodyFromCurl } from '../curl';
 import { logger } from '../../utils/logger';
 
 export const beautyService = async () => {
-    const curlService = new CurlService();
     // 目前只支持格式化剪贴板中的JSON内容
     const clipboardContent = clipboardy.readSync();
     let content = clipboardContent;
-    if (curlService.isCurl(clipboardContent)) {
-        content = curlService.getBodyFromCurl(clipboardContent);
+    if (isCurl(clipboardContent)) {
+        content = getBodyFromCurl(clipboardContent);
     }
     try {
         JSON.parse(content);

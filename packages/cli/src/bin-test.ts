@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { gitCommand } from './commands/git';
+import { gitCommand } from './commands/git/index';
 import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
 
 const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
 
-program.hook('preAction', (thisCommand) => {
+program.hook('preAction', () => {
     return new Promise<void>((resolve) => {
         setTimeout(async () => {
             if (process.argv.includes('--help')) {
                 (async () => {
                     const mainCommand = process.argv[2];
-                    await generateHelpDoc([mainCommand, process.argv[3]]);
+                    await generateHelpDoc([mainCommand, process.argv[3], process.argv[4]]);
                     process.exit(0);
                 })();
             } else {

@@ -1,7 +1,7 @@
 import convert from 'color-convert';
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
-import Logger from '../../utils/logger';
+import { logger } from '../../utils/logger';
 
 export interface Options {
     /**
@@ -13,8 +13,6 @@ export interface Options {
      */
     help?: boolean;
 }
-
-const logger = new Logger();
 
 /**
  * 颜色映射表

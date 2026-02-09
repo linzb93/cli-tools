@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import { logger } from '@cli-tools/shared/utils/logger';
 import { Command } from 'commander';
-import { ServerService } from '@cli-tools/shared/business/server';
+import { server } from '@cli-tools/shared/business/server';
 import dayjs from 'dayjs';
 import sql from '@cli-tools/shared/utils/sql';
 import { isWin, tempPath } from '@cli-tools/shared/utils/constant';
@@ -27,8 +27,7 @@ export default async (command: Command) => {
 
         // 启动服务器
         console.log('今日首次运行命令，正在启动服务器...');
-        const serverInstance = new ServerService();
-        await serverInstance.main('start', {
+        await server('start', {
             exit: false,
         });
 

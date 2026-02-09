@@ -1,20 +1,16 @@
 import { TokenParser } from './TokenParser';
-import { JwtTokenParser } from '../implementations/JwtTokenParser';
-import { Base64TokenParser } from '../implementations/Base64TokenParser';
-// 创建解析器工厂
-export class TokenParserFactory {
-    private static parsers: Map<string, TokenParser> = new Map();
+import { jwtTokenParser } from '../implementations/JwtTokenParser';
+import { base64TokenParser } from '../implementations/Base64TokenParser';
 
-    static {
-        this.parsers.set('jwt', new JwtTokenParser());
-        this.parsers.set('base64', new Base64TokenParser());
-    }
+const parsers: Map<string, TokenParser> = new Map();
 
-    static getAllParsers(): TokenParser[] {
-        return Array.from(this.parsers.values());
-    }
+parsers.set('jwt', jwtTokenParser);
+parsers.set('base64', base64TokenParser);
 
-    static registerParser(name: string, parser: TokenParser): void {
-        this.parsers.set(name, parser);
-    }
-}
+export const getAllParsers = (): TokenParser[] => {
+    return Array.from(parsers.values());
+};
+
+export const registerParser = (name: string, parser: TokenParser): void => {
+    parsers.set(name, parser);
+};

@@ -4,6 +4,8 @@ import { type Transform } from 'node:stream';
 import fs from 'fs-extra';
 import binarySplit from 'binary-split';
 import through from 'through2';
+import chalk from 'chalk';
+import features from './_internal/features.json';
 
 interface Options {
     moduleName: string;
@@ -21,17 +23,34 @@ interface Options {
  */
 export const findContent = (options: Options): Transform => {
     const { moduleName, title } = options;
-    const fileDirStr = join(fileURLToPath(import.meta.url), '../../src/core', moduleName);
+    const fileDirStr = join(fileURLToPath(import.meta.url), '../../../shared/src/business', moduleName); // AI不要修改这个路径，这是经过调试正确的。
     let filePathStr = '';
     if (!title.startsWith('--')) {
-        filePathStr = join(fileDirStr, title, `docs/help.md`);
+        filePathStr = join(fileDirStr, title.replace(' ', '/'), `docs/help.md`);
     } else {
         filePathStr = join(fileDirStr, 'docs/help.md');
     }
+
+    const sortedFeatures = [...features].sort((a, b) => b.length - a.length);
+    const featurePattern = new RegExp(`\\b(${sortedFeatures.join('|')})\\b`, 'g');
+    let inBashBlock = false;
+
     const stream = fs.createReadStream(filePathStr);
     return stream.pipe(binarySplit('\n')).pipe(
         through(function (chunk: Buffer, enc, next) {
-            const line = chunk.toString();
+            let line = chunk.toString();
+
+            if (line.trim().match(/^```bash/i)) {
+                inBashBlock = true;
+            } else if (inBashBlock && line.trim().match(/^```/)) {
+                inBashBlock = false;
+            }
+
+            if (inBashBlock) {
+                line = line.replace(/mycli/g, chalk.yellow('mycli'));
+                line = line.replace(featurePattern, (match) => chalk.blue(match));
+            }
+
             this.push(line);
             next();
         }),

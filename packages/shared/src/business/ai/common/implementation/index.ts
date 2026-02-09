@@ -5,7 +5,7 @@ import { MessageOptions } from '../types';
  * 使用AI接口，返回流式响应
  * @param messages 消息数组
  * @param options 选项
- * @returns 流式响应
+ * @returns 包含流式响应和模型名称的对象
  */
 export const useAIStream = async (
     messages: MessageOptions[],
@@ -26,11 +26,15 @@ export const useAIStream = async (
         apiKey: modelItem.apiKey,
     });
     try {
-        return await openai.chat.completions.create({
+        const stream = await openai.chat.completions.create({
             model: modelItem.model,
             messages: messages as any, // OpenAI types mismatch with MessageOptions sometimes
             stream: true,
         });
+        return {
+            stream,
+            model: modelItem.title,
+        };
     } catch (error: any) {
         throw new Error(`${modelItem.title}服务使用失败：${modelItem.errorHandler(error.message)}`);
     }
@@ -50,12 +54,12 @@ export const useAI = async (
         type: 'text',
     },
 ) => {
-    const stream = await useAIStream(messages, options);
+    const { stream, model } = await useAIStream(messages, options);
     let contents = '';
     // 打印回答内容
     for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content || '';
         contents += content;
     }
-    return contents;
+    return { contents, model };
 };

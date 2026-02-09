@@ -1,20 +1,19 @@
 import { Options } from '../types';
 
 /**
- * Token解析器基类
+ * Token解析器接口
  */
-export abstract class TokenParser {
+export interface TokenParser {
     /**
-     * 解析token的方法，子类必须实现
+     * 解析token的方法
      * @param token 待解析的token字符串
      * @param options 解析选项
      * @returns 解析后的数据
      */
-    abstract parse(token: string, options: Options): any;
+    parse: (token: string, options: Options) => any;
 
     /**
-     * 获取解析器名称
-     * @returns 解析器名称
+     * 解析器名称
      */
-    abstract getName(): string;
+    name: string;
 }

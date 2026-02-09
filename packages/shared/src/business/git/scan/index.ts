@@ -6,6 +6,7 @@ import useScan from './useScan';
 import progress from '@cli-tools/shared/utils/progress';
 import { logger } from '@cli-tools/shared/utils/logger';
 import { getGitLogData } from '../log';
+import inquirer from '@cli-tools/shared/utils/inquirer';
 
 export interface Options {
     /**
@@ -67,6 +68,14 @@ export const scanService = async (options: Options) => {
 
         const unpushedList = list.filter((item) => item.status === 2);
         if (unpushedList.length === 0) {
+            return;
+        }
+        const { getUnpushedDetail } = await inquirer.prompt({
+            message: '是否显示未推送详情？',
+            name: 'getUnpushedDetail',
+            type: 'confirm',
+        });
+        if (!getUnpushedDetail) {
             return;
         }
         console.log('\n' + chalk.yellow('--- 未推送详情 ---') + '\n');

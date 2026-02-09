@@ -61,7 +61,7 @@ export const translateService = async (text: string, options: Options): Promise<
             const data = await translator.translate(text);
             if (data && data.length) {
                 match = {
-                    tool: translator.name,
+                    tool: translator.name === 'AI翻译' ? `${data[0].model}翻译` : translator.name,
                     result: data,
                 };
                 break; // 翻译成功则跳出循环
@@ -94,9 +94,12 @@ export const translateByAI = async (originText: string) => {
     if (!result.length) {
         spinner.text = 'AI翻译器无法翻译该内容';
         spinner.succeed('翻译完成');
-        logTranslateResult(originText, aiTranslator.name, [
-            { type: '', content: '无法翻译，请检查输入内容或网络连接' },
-        ], !/[a-z]+/.test(originText));
+        logTranslateResult(
+            originText,
+            aiTranslator.name,
+            [{ type: '', content: '无法翻译，请检查输入内容或网络连接' }],
+            !/[a-z]+/.test(originText),
+        );
         return '';
     }
 

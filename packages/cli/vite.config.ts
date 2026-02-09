@@ -26,10 +26,14 @@ export default defineConfig({
             '@': resolve(process.cwd(), 'src'),
         },
     },
+    esbuild: {
+        drop: ['debugger'],
+        legalComments: 'none',
+    },
     build: {
         target: 'node14',
         outDir: 'dist',
-        minify: false,
+        minify: 'esbuild',
         emptyOutDir: !process.env.MODE,
         rollupOptions: {
             input,

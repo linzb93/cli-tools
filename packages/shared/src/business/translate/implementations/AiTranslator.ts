@@ -26,8 +26,13 @@ export const aiTranslator: TranslatorStrategy = {
         ]);
 
         try {
-            const newText = translateResult.replace('```json', '').replace('```', '').trim();
-            return JSON.parse(newText).items as TranslateResultItem[];
+            const { contents, model } = translateResult;
+            const newText = contents.replace('```json', '').replace('```', '').trim();
+            const resultItem = JSON.parse(newText).items as TranslateResultItem[];
+            return resultItem.map((item) => ({
+                ...item,
+                model,
+            }));
         } catch (error) {
             return [];
         }
