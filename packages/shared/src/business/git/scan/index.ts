@@ -61,6 +61,12 @@ export const scanService = async (options: Options) => {
             }
             return item.status !== 4;
         });
+
+        if (list.length === 0) {
+            logger.success('恭喜！没有项目需要提交或推送。');
+            return;
+        }
+
         table.push(
             ...list.map((item) => [basename(item.path), item.path, `${getStatusMap(item.status)}`, item.branchName]),
         );
