@@ -147,19 +147,46 @@ const box = (options: BoxOptions): void => {
 };
 
 /**
- * 记录CLI日志到文件
- * @param content - 日志内容
+ * 记录CLI日志到文件（JSON格式）
+ * @param content - 日志内容（命令）
  */
 const cli = (content: string): void => {
     // 获取当前时间的年份和季度
     const year = dayjs().format('YYYY');
     const quarter = Math.ceil(Number(dayjs().format('MM')) / 3);
-    const filename = `${year}Q${quarter}.log`;
+    const filename = `${year}Q${quarter}.json`;
     const targetFilename = resolve(cacheRoot, 'track', filename);
+
+    // 构建新的记录
+    const newRecord = {
+        time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        nodejsVersion: process.version,
+        command: content.trim(),
+    };
+
+    let records: Array<{ time: string; nodejsVersion: string; command: string }> = [];
+
+    // 如果文件已存在，读取现有记录
     if (fs.existsSync(targetFilename)) {
-        fs.appendFileSync(targetFilename, `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
-    } else {
-        fs.writeFileSync(targetFilename, `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
+        try {
+            const fileContent = fs.readFileSync(targetFilename, 'utf8');
+            if (fileContent.trim()) {
+                records = JSON.parse(fileContent);
+            }
+        } catch (error) {
+            // 如果解析失败，从空数组开始
+            console.warn('读取现有日志文件失败，创建新文件:', error);
+        }
+    }
+
+    // 添加新记录
+    records.push(newRecord);
+
+    // 写回文件
+    try {
+        fs.writeFileSync(targetFilename, JSON.stringify(records, null, 2), 'utf8');
+    } catch (error) {
+        console.error('写入日志文件失败:', error);
     }
 };
 

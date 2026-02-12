@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { cacheRoot, levelCharacters } from '@cli-tools/shared/utils/constant';
-import { splitByLine } from '@cli-tools/shared/utils/helper';
+import { logger } from '@cli-tools/shared/utils/logger';
 
 export type TimePeriod = 'day' | 'week' | 'month' | 'all';
 
@@ -54,6 +54,9 @@ const getTimeFilterRange = (period: TimePeriod): { start: Date; end: Date } | nu
             start.setDate(1);
             start.setHours(0, 0, 0, 0);
             break;
+        default:
+            logger.error(`未知时间周期: ${period},请输入 day | week | month | all`);
+            break;
     }
 
     // 对于日和周查看，限制在最近一个月内
@@ -72,20 +75,19 @@ const getTimeFilterRange = (period: TimePeriod): { start: Date; end: Date } | nu
 };
 
 /**
- * 解析行内容
- * @param line 行内容
+ * 解析JSON记录内容
+ * @param record 记录对象
  * @returns 解析结果
  */
-const parseLine = (line: string) => {
-    const timeMatch = line.match(/\[(.+)\]/);
-    const time = timeMatch ? timeMatch[1] : '';
-    const cmdMatch = line.match(/\s([a-z]+)\s([a-z]*)/);
+const parseRecord = (record: { time: string; nodejsVersion: null; command: string }) => {
+    const command = record.command;
+    const cmdMatch = command.match(/^([a-z]+)\s*([a-z]*)/);
     const cmd = cmdMatch ? cmdMatch[1] : '';
     const subCmd = ['git', 'npm', 'ai'].includes(cmd) && cmdMatch ? cmdMatch[2] : '';
     return {
-        time,
+        time: record.time,
         cmd,
-        message: !cmd ? line : '',
+        message: !cmd ? command : '',
         subCmd,
     };
 };
@@ -96,36 +98,41 @@ const parseLine = (line: string) => {
 export const cliAnalyseService = async (options: CliAnalyseOptions = {}) => {
     const period = options.period || 'all';
     const trackDir = join(cacheRoot, 'track');
-    const files = (await fs.readdir(trackDir)).sort();
-    const lines: string[] = [];
+    const files = (await fs.readdir(trackDir)).filter((file) => file.endsWith('.json')).sort();
+    const records: Array<{ time: string; nodejsVersion: null; command: string }> = [];
 
     // 获取时间过滤范围
     const filterRange = getTimeFilterRange(period);
 
     for (const file of files) {
         const content = await fs.readFile(join(trackDir, file), 'utf8');
-        const fileLines = splitByLine(content);
+        let fileRecords: Array<{ time: string; nodejsVersion: null; command: string }> = [];
 
-        // 如果时间过滤启用，只保留在指定时间范围内的行
+        try {
+            fileRecords = JSON.parse(content);
+        } catch (error) {
+            console.warn(`解析文件 ${file} 失败:`, error);
+            continue;
+        }
+
+        // 如果时间过滤启用，只保留在指定时间范围内的记录
         if (filterRange) {
-            const filteredLines = fileLines.filter((line) => {
-                const parsed = parseLine(line);
-                if (!parsed.time) return false;
-
-                const lineDate = new Date(parsed.time);
+            const filteredRecords = fileRecords.filter((record) => {
+                const lineDate = new Date(record.time);
                 return lineDate >= filterRange.start && lineDate <= filterRange.end;
             });
-            lines.push(...filteredLines);
+            records.push(...filteredRecords);
         } else {
-            lines.push(...fileLines);
+            records.push(...fileRecords);
         }
     }
-    const errorLines = [];
-    const result = lines.reduce<{ cmd: string; count: number; children: { cmd: string; count: number }[] }[]>(
-        (acc, line) => {
-            const ret = parseLine(line);
+
+    const errorMessages = [];
+    const result = records.reduce<{ cmd: string; count: number; children: { cmd: string; count: number }[] }[]>(
+        (acc, record) => {
+            const ret = parseRecord(record);
             if (!ret.cmd) {
-                errorLines.push(ret.message);
+                errorMessages.push(ret.message);
                 return acc;
             }
             const match = acc.find((item) => item.cmd === ret.cmd);
@@ -165,11 +172,11 @@ export const cliAnalyseService = async (options: CliAnalyseOptions = {}) => {
         }
         item.children.sort((prev, next) => (prev.count > next.count ? -1 : 1));
     });
-    const firstItem = parseLine(lines[0]);
+    const firstRecord = records[0];
     const periodText = getPeriodText(period);
-    console.log(`${periodText}截至${chalk.magenta(firstItem.time)}，cli共使用${chalk.hex('#ffa500')(
-        lines.length,
-    )}次。各命令使用情况如下：
+    console.log(`${periodText}从${chalk.magenta(firstRecord ? firstRecord.time : 'N/A')}至现在，cli共使用${chalk.hex(
+        '#ffa500',
+    )(records.length)}次。各命令使用情况如下：
 ${result
     .map((item) => {
         const title = `${chalk.yellow(item.cmd)}命令，使用过${chalk.cyan(item.count)}次`;
