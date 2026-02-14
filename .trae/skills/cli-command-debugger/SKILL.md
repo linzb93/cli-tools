@@ -10,7 +10,7 @@ description: '开启CLI命令调试开发模式。当用户要求开发、调试
 1. 从项目根目录下的`./packages/cli/src/bin.ts` 中提取指定的命令代码（包括 import 语句）
 2. 将提取的代码复制到项目根目录下的 `./packages/cli/src/bin-test.ts`
 3. 清除 bin-test.ts 中之前其他命令的代码
-4. 运行 `npm run dev` 启动调试模式，之后结束对话。
+4. 运行 `npm run dev` 启动调试模式，**之后结束对话，不需要再完成任何事**。
 
 ## 使用方法
 
@@ -26,7 +26,7 @@ description: '开启CLI命令调试开发模式。当用户要求开发、调试
 1. 解析用户请求中的命令名称
 2. 在 bin.ts 中搜索对应的命令定义和 import 语句
 3. 更新 bin-test.ts 文件，只保留目标命令的代码
-4. 执行 npm run dev 启动调试
+4. 执行 npm run dev 启动调试，**之后结束对话，不需要再完成任何事**。
 
 ## 注意事项
 

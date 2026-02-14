@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { gitCommand } from './commands/git/index';
+import { awesomeCommand } from './commands/awesome';
 import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
 
 const program = new Command();
@@ -25,10 +25,12 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand) => {
-        gitCommand(subCommand);
+    .command('awesome [command]')
+    .description('Search in awesome list')
+    .option('--name <keyword>', 'Search keyword')
+    .option('--tag <tag>', 'Filter by tag')
+    .action((command, options) => {
+        awesomeCommand(command, options);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

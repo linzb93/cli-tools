@@ -1,32 +1,20 @@
-import path from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { cacheRoot } from '../../constant/path';
-
-interface AwesomeItem {
-    title: string;
-    description: string;
-    url: string;
-    tag: string;
-}
-
-export interface AwesomeOptions {
-    name?: string;
-    tag?: string;
-}
+import { filePath } from '../shared/constant';
+import type { AwesomeOptions, AwesomeItem } from '../shared/types';
+export type { AwesomeOptions, AwesomeItem };
 
 export const awesomeService = async (options?: AwesomeOptions) => {
     const keyword = options?.name || '';
-    const jsonPath = path.resolve(cacheRoot, 'awesome.json');
 
-    if (!fs.existsSync(jsonPath)) {
-        console.log(chalk.red(`Error: File not found at ${jsonPath}`));
+    if (!fs.existsSync(filePath)) {
+        console.log(chalk.red(`Error: File not found at ${filePath}`));
         return;
     }
 
     try {
-        const data: AwesomeItem[] = await fs.readJSON(jsonPath);
+        const data: AwesomeItem[] = await fs.readJSON(filePath);
         let results = data;
 
         // Filter by keyword (title)
