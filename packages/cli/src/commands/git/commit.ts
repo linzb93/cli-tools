@@ -1,4 +1,4 @@
-import { commitService, type Options as CommitOptions } from '@cli-tools/shared/business/git/commit';
+import { commitService, type Options as CommitOptions } from '@/business/git/commit';
 import { subCommandCompiler } from '@/utils';
 
 /**

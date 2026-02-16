@@ -1,4 +1,4 @@
-import { token, Options } from '@cli-tools/shared/business/token';
+import { token, Options } from '@/business/token';
 
 export const tokenCommand = (data: string, options: Options) => {
     return token(data, options);

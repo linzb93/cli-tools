@@ -1,4 +1,4 @@
-import { beautyService } from '@cli-tools/shared/business/beauty';
+import { beautyService } from '@/business/beauty';
 
 export const beautyCommand = () => {
     return beautyService();

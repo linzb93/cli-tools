@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { log } from '../shared/log';
-import sql from '@cli-tools/shared/utils/sql';
+import { sql } from '@cli-tools/shared/utils/sql';
 import express, { type Application } from 'express';
 
 export const mountVueProjects = async (app: Application) => {

@@ -1,4 +1,4 @@
-import { curlService, Options } from '@cli-tools/shared/business/curl';
+import { curlService, Options } from '@/business/curl';
 
 export const curlCommand = (options: Options) => {
     return curlService(options);

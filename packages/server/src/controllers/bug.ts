@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
-import sql from '@cli-tools/shared//utils/sql';
+import { sql } from '@cli-tools/shared/utils/sql';
 import dayjs from 'dayjs';
 import pMap from 'p-map';
 import Table from 'cli-table3';

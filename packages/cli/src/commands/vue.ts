@@ -1,4 +1,4 @@
-import { vueService, Options } from '@cli-tools/shared/business/vue';
+import { vueService, Options } from '@/business/vue';
 
 export const vueCommand = (options: Options) => {
     vueService(options);

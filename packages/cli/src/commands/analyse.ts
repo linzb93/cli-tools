@@ -1,4 +1,4 @@
-import { cliAnalyseService, codeAnalyseService, CliAnalyseOptions } from '@cli-tools/shared/business/analyse';
+import { cliAnalyseService, codeAnalyseService, CliAnalyseOptions } from '@/business/analyse';
 import { subCommandCompiler } from '@/utils';
 
 /**

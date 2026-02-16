@@ -1,6 +1,6 @@
-import { awesomeService, AwesomeOptions } from '@cli-tools/shared/business/awesome/get/index';
-import { awesomeEditService } from '@cli-tools/shared/business/awesome/edit/index';
-import { awesomeDeleteService } from '@cli-tools/shared/business/awesome/delete/index';
+import { awesomeService, AwesomeOptions } from '@/business/awesome/get/index';
+import { awesomeEditService } from '@/business/awesome/edit/index';
+import { awesomeDeleteService } from '@/business/awesome/delete/index';
 const getAwesome = async (options?: AwesomeOptions) => {
     await awesomeService(options);
 };

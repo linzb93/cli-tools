@@ -1,4 +1,4 @@
-import { yapiService } from '@cli-tools/shared/business/yapi';
+import { yapiService } from '@/business/yapi';
 
 /**
  * Yapi接口文档获取命令

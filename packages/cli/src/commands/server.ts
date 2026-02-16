@@ -1,4 +1,4 @@
-import { server, Options } from '@cli-tools/shared/business/server';
+import { server, Options } from '@/business/server';
 
 export const serverCommand = (command: string, options: Options) => {
     server(command, {

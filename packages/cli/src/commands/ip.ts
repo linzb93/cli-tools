@@ -1,4 +1,4 @@
-import { ipService } from '@cli-tools/shared/business/ip';
+import { ipService } from '@/business/ip';
 
 export const ipCommand = (data: string[]) => {
     ipService(data);

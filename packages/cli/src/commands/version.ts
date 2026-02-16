@@ -1,4 +1,4 @@
-import { version } from '@cli-tools/shared/business/version';
+import { version } from '@/business/version';
 
 export const versionCommand = (text: string) => {
     version(text);

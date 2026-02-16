@@ -1,5 +1,5 @@
-import { branchService, type Options as BranchOptions } from '@cli-tools/shared/business/git/branch/get';
-import { branchDeleteService } from '@cli-tools/shared/business/git/branch/delete';
+import { branchService, type Options as BranchOptions } from '@/business/git/branch/get';
+import { branchDeleteService } from '@/business/git/branch/delete';
 import { subCommandCompiler } from '@/utils';
 
 /**

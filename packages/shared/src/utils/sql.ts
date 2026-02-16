@@ -100,6 +100,6 @@ export interface Database {
  * @param callback 回调函数
  * @returns 回调函数返回值
  */
-export default async function sql<T>(callback: (data: Database, db?: Low<unknown>) => T): Promise<T> {
+export async function sql<T>(callback: (data: Database, db?: Low<unknown>) => T): Promise<T> {
     return operateJsonDatabase<Database, T>('app.json', callback);
 }

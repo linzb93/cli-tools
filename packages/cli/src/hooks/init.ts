@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
-import { logger } from '@cli-tools/shared/utils/logger';
+import { logger } from '@/utils/logger';
 import { Command } from 'commander';
-import { server } from '@cli-tools/shared/business/server';
+import { server } from '@/business/server';
 import dayjs from 'dayjs';
-import sql from '@cli-tools/shared/utils/sql';
-import { isWin, tempPath } from '@cli-tools/shared/utils/constant';
+import { sql } from '@cli-tools/shared/utils/sql';
+import { isWin, tempPath } from '@/utils/constant';
 import { sleep } from '@linzb93/utils';
 
 export default async (command: Command) => {

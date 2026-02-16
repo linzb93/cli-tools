@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import { awesomeCommand } from './commands/awesome';
-import { generateHelpDoc } from '@cli-tools/shared/utils/helper';
+import { generateHelpDoc } from '@/utils/helper';
 
 const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
