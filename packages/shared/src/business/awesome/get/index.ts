@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { filePath } from '../shared/constant';
+import { logger } from '@cli-tools/shared/utils/logger';
 import type { AwesomeOptions, AwesomeItem } from '../shared/types';
 export type { AwesomeOptions, AwesomeItem };
 
@@ -9,7 +10,7 @@ export const awesomeService = async (options?: AwesomeOptions) => {
     const keyword = options?.name || '';
 
     if (!fs.existsSync(filePath)) {
-        console.log(chalk.red(`Error: File not found at ${filePath}`));
+        logger.error(`Error: File not found at ${filePath}`);
         return;
     }
 
@@ -30,11 +31,11 @@ export const awesomeService = async (options?: AwesomeOptions) => {
         }
 
         if (results.length === 0) {
-            console.log(chalk.yellow('No matching items found.'));
+            logger.warn('No matching items found.');
             return;
         }
 
-        console.log(chalk.green(`Found ${results.length} items:`));
+        logger.info(`Found ${results.length} items:`);
 
         const table = new Table({
             head: ['Title', 'Description', 'Tag', 'URL'],
@@ -43,16 +44,11 @@ export const awesomeService = async (options?: AwesomeOptions) => {
         });
 
         results.forEach((item) => {
-            table.push([
-                chalk.cyan(item.title),
-                item.description || '',
-                chalk.magenta(item.tag || ''),
-                chalk.blue(item.url || ''),
-            ]);
+            table.push([item.title, item.description || '', item.tag || '', chalk.blue(item.url || '')]);
         });
 
         console.log(table.toString());
     } catch (error) {
-        console.error(chalk.red('Error reading or parsing awesome.json'), error);
+        logger.error(`Error reading or parsing awesome.json: ${error}`);
     }
 };

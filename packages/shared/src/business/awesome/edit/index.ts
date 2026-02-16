@@ -1,6 +1,8 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import readline from 'node:readline';
+import { logger } from '@cli-tools/shared/utils/logger';
+
 import { filePath } from '../shared/constant';
 import type { AwesomeOptions, AwesomeItem } from '../shared/types';
 
@@ -14,7 +16,7 @@ export const awesomeEditService = async (command: string, options?: AwesomeOptio
             await fs.writeJson(filePath, [], { spaces: 2 });
         }
     } catch {
-        console.log(chalk.red(`Error: 初始化文件失败 ${filePath}`));
+        logger.error(`Error: 初始化文件失败 ${filePath}`);
         return;
     }
 
@@ -28,13 +30,13 @@ export const awesomeEditService = async (command: string, options?: AwesomeOptio
     if (command === 'edit') {
         const name = (options?.name || '').trim();
         if (!name) {
-            console.log(chalk.red('编辑模式需要传入选项 --name'));
+            logger.error('编辑模式需要传入选项 --name');
             return;
         }
         const list: AwesomeItem[] = await fs.readJSON(filePath).catch(() => []);
         const idx = list.findIndex((item) => item.title.trim().toLowerCase() === name.toLowerCase());
         if (idx < 0) {
-            console.log(chalk.yellow(`未找到名称为 "${name}" 的项`));
+            logger.warn(`未找到名称为 "${name}" 的项`);
             return;
         }
         await runEditFlow(list, idx, fields);
@@ -89,7 +91,7 @@ async function runAddFlow(fields: Array<{ key: keyof AwesomeItem; label: string;
                 movePrevLine(rl, fields[index].prompt, String(prev));
                 return;
             } else {
-                console.log(chalk.cyan('当前为第一项，无法回退'));
+                logger.info('当前为第一项，无法回退');
                 setNextPrompt();
             }
             return;
@@ -97,20 +99,20 @@ async function runAddFlow(fields: Array<{ key: keyof AwesomeItem; label: string;
 
         const current = fields[index];
         if (current.key !== 'tag' && current.key !== 'url' && !input) {
-            console.log(chalk.red(`${current.label} 不能为空，请重新输入`));
+            logger.error(`${current.label} 不能为空，请重新输入`);
             setNextPrompt();
             return;
         }
         if (current.key === 'url') {
             const urlReg = /^(https?:\/\/)[^\s]+$/i;
             if (!urlReg.test(input)) {
-                console.log(chalk.red('地址格式不合法，需要以 http/https 开头'));
+                logger.error('地址格式不合法，需要以 http/https 开头');
                 setNextPrompt();
                 return;
             }
         }
         (record as any)[current.key] = input;
-        console.log(chalk.gray(`已输入 ${current.label}: ${input}`));
+        logger.info(`已输入 ${current.label}: ${input}`);
         index += 1;
 
         if (index < fields.length) {
@@ -132,9 +134,9 @@ async function runAddFlow(fields: Array<{ key: keyof AwesomeItem; label: string;
             const list: AwesomeItem[] = Array.isArray(data) ? data : [];
             list.push(item);
             await fs.writeJson(filePath, list, { spaces: 2 });
-            console.log(chalk.green('保存成功'));
+            logger.info(chalk.green('保存成功'));
         } catch (error) {
-            console.error(chalk.red('写入失败'), error);
+            logger.error(`写入失败: ${error}`);
         } finally {
             rl.close();
         }
@@ -171,16 +173,16 @@ async function runEditFlow(
             (item as any)[f.key] = newVal;
             console.log(chalk.gray(`已修改 ${f.label}: ${newVal}`));
         } else {
-            console.log(chalk.gray(`保持不变 ${f.label}`));
+            logger.info(chalk.gray(`保持不变 ${f.label}`));
         }
     }
 
     list[idx] = item;
     try {
         await fs.writeJson(filePath, list, { spaces: 2 });
-        console.log(chalk.green('保存成功'));
+        logger.info(chalk.green('保存成功'));
     } catch (error) {
-        console.error(chalk.red('写入失败'), error);
+        logger.error(chalk.red('写入失败'), error);
     } finally {
         rl.close();
     }
