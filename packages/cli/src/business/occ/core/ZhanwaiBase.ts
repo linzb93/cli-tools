@@ -2,7 +2,7 @@ import qs from 'node:querystring';
 import serviceGenerator from '@/utils/http';
 import encryptPassword from '../utils/encryptPassword';
 import { readSecret } from '@cli-tools/shared/utils/secret';
-import { HTTP_STATUS } from '@/utils/constant';
+import { HTTP_STATUS } from '@cli-tools/shared/constant/http';
 import { logger } from '@/utils/logger';
 import { App, Options } from '../types';
 

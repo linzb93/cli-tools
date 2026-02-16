@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { isWin } from '../constant';
+import { isWin } from '@cli-tools/shared/constant';
 
 export const cmdName = isWin ? 'python' : 'python3';
 

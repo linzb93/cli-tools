@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const businessDir = path.resolve(__dirname, '../packages/shared/src/business');
-const targetFile = path.resolve(__dirname, '../packages/shared/src/utils/_internal/features.json');
+const businessDir = path.resolve(__dirname, '../packages/cli/src/business');
+const targetFile = path.resolve(__dirname, '../packages/cli/src/utils/_internal/features.json');
 
 const excludes = [
     'docs',

@@ -7,7 +7,7 @@ import through from 'through2';
 import del from 'del';
 import { logger } from '@/utils/logger';
 import { isURL, emptyWritableStream } from '@/utils/helper';
-import { root } from '@/utils/constant';
+import { root } from '@cli-tools/shared/constant/path';
 
 export interface Options {
     /**

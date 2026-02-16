@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
 import { logger } from '@/utils/logger';
-import { levelCharacters } from '@/utils/constant';
+import { levelCharacters } from '@/constant';
 import { Options, TreeContext } from './types';
 
 const defaultIgnoreDirs = ['node_modules', '.git', '.DS_Store'];

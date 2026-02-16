@@ -4,7 +4,8 @@ import { Command } from 'commander';
 import { server } from '@/business/server';
 import dayjs from 'dayjs';
 import { sql } from '@cli-tools/shared/utils/sql';
-import { isWin, tempPath } from '@/utils/constant';
+import { isWin } from '@cli-tools/shared/constant';
+import { tempPath } from '@cli-tools/shared/constant/path';
 import { sleep } from '@linzb93/utils';
 
 export default async (command: Command) => {

@@ -7,7 +7,7 @@ import logSymbols from 'log-symbols';
 import terminalSize from 'terminal-size';
 import stringWidth from 'string-width';
 import spinner from './spinner';
-import { cacheRoot } from './constant';
+import { cacheRoot } from '@cli-tools/shared/constant/path';
 
 interface BoxOptions {
     title?: string;

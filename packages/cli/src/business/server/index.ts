@@ -4,7 +4,7 @@ import open from 'open';
 import dayjs from 'dayjs';
 import detectPort from 'detect-port';
 import chalk from 'chalk';
-import { root } from '@/utils/constant';
+import { root } from '@cli-tools/shared/constant/path';
 import { killService } from '../kill';
 import inquirer from '@/utils/inquirer';
 import globalConfig from '../../../../../config.json';

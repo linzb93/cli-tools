@@ -1,7 +1,8 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { cacheRoot, levelCharacters } from '@/utils/constant';
+import { cacheRoot } from '@cli-tools/shared/constant/path';
+import { levelCharacters } from '@/constant';
 import { logger } from '@/utils/logger';
 
 export type TimePeriod = 'day' | 'week' | 'month' | 'all';
