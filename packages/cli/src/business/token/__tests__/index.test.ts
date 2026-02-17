@@ -1,24 +1,26 @@
 import { describe, it, expect } from "vitest";
-import Token from "..";
+import { tokenService } from "..";
 
 describe("token", () => {
-  const tokenStr =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBLZXkiOiI0IiwiZXhwIjoxNzE2MzY5OTQ4LCJpYXQiOjE3MTYyODM1NDgsInBsYXRmb3JtIjo4LCJtZW1iZXJJZCI6IjE2NDYyODMyMzcyIn0.KOOF8Yl6E5nQsK2nYKbxXTYMllMF8Eh76XsGvqH2O8Y";
-  const token = new Token().main;
-  it("时间解析过的", () => {
-    const output = token(tokenStr, {}) as any;
-    expect(output.iat).toBe("2024-05-21 17:25:48");
-  });
-  it("时间未解析过的", () => {
-    const output = token(tokenStr, {
-      origin: true,
-    }) as any;
-    expect(output.iat).toBe(1716283548);
-  });
-  it("完整的解析", () => {
-    const output = token(tokenStr, {
-      complete: true,
-    }) as any;
-    expect(output.header.alg).toBe("HS256");
-  });
+    const tokenStr =
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBLZXkiOiI0IiwiZXhwIjoxNzE2MzY5OTQ4LCJpYXQiOjE3MTYyODM1NDgsInBsYXRmb3JtIjo4LCJtZW1iZXJJZCI6IjE2NDYyODMyMzcyIn0.KOOF8Yl6E5nQsK2nYKbxXTYMllMF8Eh76XsGvqH2O8Y";
+
+    it("时间解析过的", async () => {
+        const output = await tokenService(tokenStr, {}) as any;
+        expect(output.iat).toBe("2024-05-21 17:25:48");
+    });
+
+    it("时间未解析过的", async () => {
+        const output = await tokenService(tokenStr, {
+            origin: true,
+        }) as any;
+        expect(output.iat).toBe(1716283548);
+    });
+
+    it("完整的解析", async () => {
+        const output = await tokenService(tokenStr, {
+            complete: true,
+        }) as any;
+        expect(output.header.alg).toBe("HS256");
+    });
 });
