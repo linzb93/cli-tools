@@ -1,0 +1,1 @@
+export type { GetOptions as Options } from '../types';

@@ -1,5 +1,5 @@
-import { version } from '@/business/version';
+import { versionService } from '@/business/version';
 
 export const versionCommand = (text: string) => {
-    version(text);
+    versionService({ versionArg: text });
 };

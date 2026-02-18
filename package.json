@@ -17,7 +17,8 @@
         "build:web": "pnpm --filter \"@cli-tools/server\" build",
         "build:ui": "pnpm --filter \"@cli-tools/ui\" build-only",
         "build:web-all": "npm run build:web && npm run build:ui",
-        "check": "pnpm --filter \"@cli-tools/cli\" check"
+        "check": "pnpm --filter \"@cli-tools/cli\" check",
+        "release": "standard-version"
     },
     "keywords": [],
     "author": "",
@@ -104,6 +105,7 @@
         "cross-env": "^7.0.3",
         "husky": "^9.0.11",
         "rollup-plugin-visualizer": "^6.0.5",
+        "standard-version": "^9.5.0",
         "typescript": "~5.4.0",
         "vite": "^7.3.1",
         "vite-tsconfig-paths": "^4.3.2",
