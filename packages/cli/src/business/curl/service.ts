@@ -3,6 +3,7 @@ import * as prettier from 'prettier';
 import { createParser, detectCurlMode } from './core/Factory';
 import type { Options } from './types';
 import { logger } from '@/utils/logger';
+import { parseCookie } from '../cookie';
 
 export type { Options };
 
@@ -94,6 +95,38 @@ export const curlService = (options: Options): void => {
     const contentType = headers['content-type'] || headers['Content-Type'] || '';
     const data = parser.parseData(lines, contentType);
 
+    // 处理 Cookie
+    let cookieFunctionCode = '';
+    let cookieObjCode = '';
+    let hasCookie = false;
+
+    const cookieKey = Object.keys(headers).find((k) => k.toLowerCase() === 'cookie');
+    if (cookieKey) {
+        hasCookie = true;
+        const cookieStr = headers[cookieKey];
+        const cookieObj = parseCookie(cookieStr);
+        delete headers[cookieKey];
+
+        cookieFunctionCode = `
+/**
+ * 将对象转换为 cookie 字符串
+ */
+const stringifyCookie = (obj) => {
+    return Object.entries(obj)
+        .map(([key, value]) => {
+            if (value === undefined) {
+                return key;
+            }
+            return \`\${key}=\${value}\`;
+        })
+        .join('; ');
+};
+`;
+        cookieObjCode = `
+    const cookieObj = ${JSON.stringify(cookieObj, null, 4)};
+`;
+    }
+
     if (!url) {
         logger.error('无法解析URL');
         return;
@@ -101,6 +134,7 @@ export const curlService = (options: Options): void => {
 
     // 生成JavaScript代码
     let result = `import axios from 'axios';
+${cookieFunctionCode}
 `;
 
     // 如果是form-urlencoded，需要导入URLSearchParams
@@ -123,14 +157,18 @@ export const curlService = (options: Options): void => {
         `
             : ''
     }
+    ${hasCookie ? cookieObjCode : ''}
     try {
         const res = await axios({
             method: '${method}',
             url: '${url}',`;
 
-    if (Object.keys(headers).length > 0) {
+    if (hasCookie || Object.keys(headers).length > 0) {
         result += `
-            headers: ${JSON.stringify(headers)},`;
+            headers: {
+                ${Object.keys(headers).length > 0 ? `...${JSON.stringify(headers)},` : ''}
+                ${hasCookie ? 'Cookie: stringifyCookie(cookieObj)' : ''}
+            },`;
     }
 
     if (data) {

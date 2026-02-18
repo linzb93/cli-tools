@@ -1,2 +1,2 @@
 export type { Options } from './types';
-export { cookieService, parseCookie } from './service';
+export { cookieService, parseCookie, stringifyCookie } from './service';

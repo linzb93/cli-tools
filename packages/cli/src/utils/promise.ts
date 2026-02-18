@@ -201,8 +201,8 @@ export async function executeCommands(commands: Command[], options?: { silentSta
 
     if (!options?.silentStart) {
         const endTime = dayjs();
-        const duration = endTime.diff(startTime, 'millisecond').toFixed(2);
-        console.log(`${endTime.format('HH:mm:ss')} 任务执行完成，用时${chalk.blue(duration.toString())}毫秒`);
+        const duration = endTime.diff(startTime, 'millisecond') / 1000;
+        console.log(`${endTime.format('HH:mm:ss')} 任务执行完成，用时${chalk.blue(duration.toFixed(2))}秒`);
     }
 }
 

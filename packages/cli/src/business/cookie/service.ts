@@ -19,6 +19,22 @@ export const parseCookie = (cookies: string) => {
     return objs;
 };
 
+/**
+ * 将对象转换为 cookie 字符串
+ * @param cookieObj Cookie 对象
+ * @returns Cookie 字符串
+ */
+export const stringifyCookie = (cookieObj: Record<string, string | undefined>): string => {
+    return Object.entries(cookieObj)
+        .map(([key, value]) => {
+            if (value === undefined) {
+                return key;
+            }
+            return `${key}=${value}`;
+        })
+        .join('; ');
+};
+
 export const cookieService = async (data: string, options: Options): Promise<void> => {
     let realData = data;
 
