@@ -1,6 +1,34 @@
 import fs from 'fs-extra';
 import { execaCommand as execa } from 'execa';
+import { WebSocket } from 'ws';
 import { logger } from './logger';
+
+/**
+ * 发送消息到VSCode插件
+ * @param path 路由路径
+ * @param query参数
+ */
+export const sendToVSCode = (path: string, query: any = {}) => {
+    return new Promise((resolve, reject) => {
+        const ws = new WebSocket('ws://localhost:9528');
+        ws.on('open', () => {
+            ws.send(JSON.stringify({ path, query }));
+        });
+        ws.on('message', (data) => {
+            try {
+                const res = JSON.parse(data.toString());
+                ws.close();
+                resolve(res);
+            } catch (e) {
+                ws.close();
+                reject(e);
+            }
+        });
+        ws.on('error', (e) => {
+            reject(e);
+        });
+    });
+};
 
 /**
  * 仅支持vscode,trae和cursor
