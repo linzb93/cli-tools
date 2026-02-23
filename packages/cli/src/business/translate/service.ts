@@ -1,9 +1,11 @@
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
+import inquirer from '@/utils/inquirer';
 import { createDefaultTranslators, getTranslator, TranslatorType } from './core/Factory';
 import { TranslateResultItem } from './core/BaseTranslator';
 import { Options } from './types';
+import { getClipboardContent, isUrl } from './utils';
 
 /**
  * 显示翻译结果
@@ -95,4 +97,73 @@ export const translateByAI = async (originText: string) => {
     spinner.succeed('翻译完成');
     logTranslateResult(originText, aiTranslator.name, result, !/[a-z]+/.test(originText));
     return result[0]?.content || '';
+};
+
+/**
+ * Eng命令服务
+ * @param text - 输入文本
+ * @param options - 选项
+ */
+export const engService = async (text: string | undefined, options: Options) => {
+    // 1. 处理剪贴板选项 (-c/--clipboard)
+    if (options.clipboard) {
+        const content = getClipboardContent();
+        if (!content || !content.trim()) {
+            console.log(chalk.yellow('剪贴板为空'));
+            return;
+        }
+        console.log(chalk.gray(`从剪贴板读取: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`));
+        // 直接调用 AI 翻译
+        await translateByAI(content);
+        return;
+    }
+
+    // 2. 处理无参情况
+    if (!text) {
+        const { useClipboard } = await inquirer.prompt([
+            {
+                type: 'confirm',
+                name: 'useClipboard',
+                message: '检测到未输入内容，是否读取剪贴板？',
+                default: true,
+            },
+        ]);
+
+        if (useClipboard) {
+            const content = getClipboardContent();
+            if (!content || !content.trim()) {
+                console.log(chalk.yellow('剪贴板为空'));
+                return;
+            }
+
+            // 显示预览
+            console.log(chalk.cyan(`内容预览: "${content.substring(0, 100)}${content.length > 100 ? '...' : ''}"`));
+
+            const { confirmTranslate } = await inquirer.prompt([
+                {
+                    type: 'confirm',
+                    name: 'confirmTranslate',
+                    message: '是否翻译？',
+                    default: true,
+                },
+            ]);
+
+            if (confirmTranslate) {
+                // 剪贴板内容默认使用 AI 翻译
+                await translateByAI(content);
+            }
+        }
+        return;
+    }
+
+    // 3. 处理 URL
+    if (isUrl(text)) {
+        console.log(chalk.blue('识别到URL，正在请求AI进行翻译...'));
+        // 用户要求直接将 URL 发给 AI
+        await translateByAI(text);
+        return;
+    }
+
+    // 4. 普通翻译
+    await translateService(text, options);
 };

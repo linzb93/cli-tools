@@ -1,4 +1,5 @@
-import { translateService, Options } from '@/business/translate';
-export const engCommand = (text: string, options: Options) => {
-    translateService(text, options);
+import { engService, Options } from '@/business/translate';
+
+export const engCommand = async (text: string | undefined, options: Options) => {
+    await engService(text, options);
 };

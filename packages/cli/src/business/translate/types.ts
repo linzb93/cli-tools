@@ -8,4 +8,9 @@ export interface Options {
      * @default false
      */
     ai: boolean;
+    /**
+     * 是否读取剪贴板
+     * @default false
+     */
+    clipboard?: boolean;
 }

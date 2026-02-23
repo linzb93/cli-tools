@@ -132,6 +132,7 @@ program
 program
     .command('eng [text]')
     .option('-e,--example', '显示范例')
+    .option('-c, --clipboard', '读取剪贴板内容')
     .action((text, options) => {
         engCommand(text, options);
     });
