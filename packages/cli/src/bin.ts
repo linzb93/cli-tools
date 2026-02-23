@@ -25,6 +25,7 @@ import { tokenCommand } from './commands/token';
 import { treeCommand } from './commands/tree';
 // import {testCommand} from './commands/test';
 import { gitCommand } from './commands/git/index';
+import { ideaCommand } from './commands/idea';
 // import npm from './commands/npm';
 import { analyseCommand } from './commands/analyse';
 import { awesomeCommand } from './commands/awesome';
@@ -144,6 +145,13 @@ program
     .allowUnknownOption()
     .action((subCommand) => {
         gitCommand(subCommand);
+    });
+
+program
+    .command('idea [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest, options) => {
+        ideaCommand(subCommand, rest);
     });
 
 program.command('ip [rest...]').action((data) => {
