@@ -1,0 +1,946 @@
+[
+    {
+        "title": "node-sass",
+        "description": "将sass编译成css",
+        "url": "https://github.com/sass/node-sass",
+        "tag": "css"
+    },
+    {
+        "title": "autoprefixer",
+        "description": "为css语句添加前缀",
+        "url": "https://github.com/postcss/autoprefixer",
+        "tag": "css"
+    },
+    {
+        "title": "debug",
+        "description": "调试工具，在调试模式下可以只针对某些功能进行调试",
+        "url": "https://github.com/visionmedia/debug",
+        "tag": "debug"
+    },
+    {
+        "title": "depd",
+        "description": "提醒用户正在调用废弃的接口",
+        "url": "https://github.com/dougwilson/nodejs-depd",
+        "tag": "debug"
+    },
+    {
+        "title": "callsite-record",
+        "description": "美化错误提示，可以定位到文件具体的行",
+        "url": "https://github.com/inikulin/callsite-record",
+        "tag": "debug"
+    },
+    {
+        "title": "body-parser",
+        "description": "解析body",
+        "url": "https://github.com/expressjs/body-parser",
+        "tag": "express"
+    },
+    {
+        "title": "multer",
+        "description": "解析上传的文件",
+        "url": "https://github.com/expressjs/multer",
+        "tag": "express"
+    },
+    { "title": "cors", "description": "处理跨域", "url": "https://github.com/expressjs/cors", "tag": "express" },
+    {
+        "title": "express-http-proxy",
+        "description": "处理代理",
+        "url": "https://github.com/villadora/express-http-proxy",
+        "tag": "express"
+    },
+    {
+        "title": "helmet",
+        "description": "安全处理HTTP请求",
+        "url": "https://github.com/helmetjs/helmet",
+        "tag": "express"
+    },
+    {
+        "title": "sftp-sync-deploy",
+        "description": "FTP文件上传工具",
+        "url": "https://github.com/dobbydog/sftp-sync-deploy",
+        "tag": "ftp"
+    },
+    {
+        "title": "download-git-repo",
+        "description": "从Github、Gitlab等下载git仓库",
+        "url": "https://github.com/flipxfx/download-git-repo",
+        "tag": "git"
+    },
+    {
+        "title": "husky",
+        "description": "pre git commit 和 pre git push 的钩子",
+        "url": "https://github.com/typicode/husky",
+        "tag": "git"
+    },
+    { "title": "simple-git", "description": "git API", "url": "https://github.com/steveukx/git-js", "tag": "git" },
+    {
+        "title": "minimal-html-parser",
+        "description": "一个轻量的HTML解析器",
+        "url": "https://www.npmjs.com/package/minimal-html-parser",
+        "tag": "html"
+    },
+    { "title": "axios", "description": "常用的http请求工具", "url": "https://github.com/axios/axios", "tag": "http" },
+    { "title": "mockjs", "description": "伪造数据，http请求", "url": "https://github.com/nuysoft/Mock", "tag": "http" },
+    {
+        "title": "ua-parser-js",
+        "description": "解析User-Agent",
+        "url": "https://github.com/faisalman/ua-parser-js",
+        "tag": "http"
+    },
+    {
+        "title": "detect-port",
+        "description": "检测端口是否被占用，并推荐没有被占用的端口号",
+        "url": "https://github.com/node-modules/detect-port",
+        "tag": "http"
+    },
+    {
+        "title": "port-pid",
+        "description": "获取端口所属的进程号（搭配`process.kill(pid)`强制退出）",
+        "url": "https://github.com/radiovisual/port-pid",
+        "tag": "http"
+    },
+    {
+        "title": "on-finished",
+        "description": "http服务器关闭时的回调函数",
+        "url": "https://github.com/jshttp/on-finished",
+        "tag": "http"
+    },
+    {
+        "title": "jsonwebtoken",
+        "description": "创建与验证web token",
+        "url": "https://github.com/auth0/node-jsonwebtoken",
+        "tag": "http"
+    },
+    {
+        "title": "markdown-it",
+        "description": "解析markdown的",
+        "url": "https://github.com/markdown-it/markdown-it",
+        "tag": "markdown"
+    },
+    {
+        "title": "doctoc",
+        "description": "markdown目录生成工具",
+        "url": "https://github.com/thlorenz/doctoc",
+        "tag": "markdown"
+    },
+    {
+        "title": "cross-env",
+        "description": "设置Node环境变量",
+        "url": "https://github.com/kentcdodds/cross-env",
+        "tag": "Node"
+    },
+    {
+        "title": "nodemon",
+        "description": "Node代码更新后，服务器自动重启",
+        "url": "https://github.com/remy/nodemon",
+        "tag": "Node"
+    },
+    {
+        "title": "builtin-modules",
+        "description": "Node内置module",
+        "url": "https://github.com/sindresorhus/builtin-modules",
+        "tag": "Node"
+    },
+    {
+        "title": "events",
+        "description": "可以在浏览器使用Node的event模块",
+        "url": "https://github.com/browserify/events",
+        "tag": "Node"
+    },
+    {
+        "title": "npm-try-cli",
+        "description": "在命令行里就可以简单使用npm模块，无需在编辑器里编辑",
+        "url": "https://github.com/luin/npm-try",
+        "tag": "npm"
+    },
+    {
+        "title": "npm-check",
+        "description": "检查可更新的、错误的(有引用却没在package.json里出现)、无用的(在package.json里出现却没有用到) npm包",
+        "url": "https://github.com/dylang/npm-check",
+        "tag": "npm"
+    },
+    { "title": "semver", "description": "版本验证库", "url": "https://github.com/npm/node-semver", "tag": "npm" },
+    {
+        "title": "pkg-conf",
+        "description": "获取项目package.json信息",
+        "url": "https://github.com/sindresorhus/pkg-conf",
+        "tag": "npm"
+    },
+    {
+        "title": "p-each-series",
+        "description": "所有异步代码可以在队列中按顺序执行",
+        "url": "https://github.com/sindresorhus/p-each-series",
+        "tag": "Promise"
+    },
+    {
+        "title": "pify",
+        "description": "函数Promise化",
+        "url": "https://github.com/sindresorhus/pify",
+        "tag": "Promise"
+    },
+    {
+        "title": "is-promise",
+        "description": "判断是否是Promise实例",
+        "url": "https://github.com/then/is-promise",
+        "tag": "Promise"
+    },
+    {
+        "title": "p-waterfall",
+        "description": "所有异步代码可以在队列中按顺序执行，上一个函数的返回值作为下一个函数的参数",
+        "url": "https://github.com/sindresorhus/p-waterfall",
+        "tag": "Promise"
+    },
+    {
+        "title": "throat",
+        "description": "不借助async/await，以同步的方式执行异步代码",
+        "url": "https://github.com/ForbesLindesay/throat",
+        "tag": "Promise"
+    },
+    {
+        "title": "redux",
+        "description": "react的状态管理工具",
+        "url": "https://github.com/reduxjs/redux",
+        "tag": "react"
+    },
+    {
+        "title": "redux-saga",
+        "description": "redux的异步行为中间件",
+        "url": "https://github.com/redux-saga/redux-saga",
+        "tag": "react"
+    },
+    {
+        "title": "redux-logger",
+        "description": "redux查看state的中间件",
+        "url": "https://github.com/LogRocket/redux-logger",
+        "tag": "react"
+    },
+    {
+        "title": "react-router",
+        "description": "react的路由管理",
+        "url": "https://github.com/ReactTraining/react-router",
+        "tag": "react"
+    },
+    {
+        "title": "reselect",
+        "description": "缓存redux state派生的数据，减少中间的计算量",
+        "url": "https://github.com/reduxjs/reselect",
+        "tag": "react"
+    },
+    {
+        "title": "classnames",
+        "description": "用来控制类名的工具，代码可读性高",
+        "url": "https://github.com/JedWatson/classnames",
+        "tag": "react"
+    },
+    { "title": "immer", "description": "生成不可变数据", "url": "https://github.com/immerjs/immer", "tag": "react" },
+    {
+        "title": "ant-design",
+        "description": "react的UI库",
+        "url": "https://github.com/ant-design/ant-design",
+        "tag": "react"
+    },
+    {
+        "title": "ant-design-pro",
+        "description": "react后台管理系统解决方案, UI选用ant design",
+        "url": "https://github.com/ant-design/ant-design-pro",
+        "tag": "react"
+    },
+    { "title": "umi", "description": "react脚手架", "url": "https://github.com/umijs/umi", "tag": "react" },
+    { "title": "next", "description": "react服务端渲染", "url": "https://github.com/zeit/next.js", "tag": "react" },
+    {
+        "title": "prop-types",
+        "description": "react props验证",
+        "url": "https://www.npmjs.com/package/prop-types",
+        "tag": "react"
+    },
+    {
+        "title": "react-html-table-to-excel",
+        "description": "将react table导出为excel",
+        "url": "https://github.com/zsusac/ReactHTMLTableToExcel",
+        "tag": "react"
+    },
+    {
+        "title": "react-image-crop",
+        "description": "图片裁切",
+        "url": "https://github.com/DominicTobias/react-image-crop",
+        "tag": "react"
+    },
+    {
+        "title": "react-computed-props",
+        "description": "提供类似于vue的计算属性功能",
+        "url": "https://github.com/pbeshai/react-computed-props",
+        "tag": "react"
+    },
+    {
+        "title": "braft-editor",
+        "description": "react富文本编辑器",
+        "url": "https://github.com/margox/braft-editor",
+        "tag": "react"
+    },
+    {
+        "title": "react-ace",
+        "description": "react代码编辑器",
+        "url": "https://github.com/securingsincity/react-ace",
+        "tag": "react"
+    },
+    {
+        "title": "react-use",
+        "description": "react hooks的集合",
+        "url": "https://github.com/streamich/react-use",
+        "tag": "react"
+    },
+    {
+        "title": "react-motion",
+        "description": "react动画库",
+        "url": "https://github.com/chenglou/react-motion",
+        "tag": "react"
+    },
+    {
+        "title": "ws",
+        "description": "Websocket，可用于客户端和服务端",
+        "url": "https://github.com/websockets/ws",
+        "tag": "socket"
+    },
+    {
+        "title": "socket.io",
+        "description": "Node实时通讯框架",
+        "url": "https://github.com/socketio/socket.io",
+        "tag": "socket"
+    },
+    {
+        "title": "through2",
+        "description": "直观的处理流数据，不需要在on('data')里面处理",
+        "url": "https://github.com/rvagg/through2",
+        "tag": "stream"
+    },
+    {
+        "title": "pump",
+        "description": "结合读写stream，在其中一个stream被销毁时自动销毁其他stream，无需手动处理",
+        "url": "https://github.com/mafintosh/pump",
+        "tag": "stream"
+    },
+    {
+        "title": "into-stream",
+        "description": "将string或buffer类型的转成stream",
+        "url": "https://github.com/sindresorhus/into-stream",
+        "tag": "stream"
+    },
+    {
+        "title": "get-stream",
+        "description": "将stream转换成string或buffer类型的",
+        "url": "https://github.com/sindresorhus/get-stream",
+        "tag": "stream"
+    },
+    {
+        "title": "binary-split",
+        "description": "分割stream，按行分割需要传参'\\n'",
+        "url": "https://github.com/maxogden/binary-split",
+        "tag": "stream"
+    },
+    {
+        "title": "event-stream",
+        "description": "提供类似数组的方法操作stream",
+        "url": "https://github.com/dominictarr/event-stream",
+        "tag": "stream"
+    },
+    {
+        "title": "file-save",
+        "description": "轻量的纯文本文件写入工具",
+        "url": "https://www.npmjs.com/package/file-save",
+        "tag": "stream"
+    },
+    {
+        "title": "normalize-url",
+        "description": "url规范化",
+        "url": "https://github.com/sindresorhus/normalize-url",
+        "tag": "url"
+    },
+    { "title": "qs", "description": "querystring库", "url": "https://github.com/ljharb/qs", "tag": "url" },
+    { "title": "vuex", "description": "vue的状态管理工具", "url": "https://github.com/vuejs/vuex", "tag": "vue" },
+    {
+        "title": "vue-router",
+        "description": "vue的路由管理",
+        "url": "https://github.com/vuejs/vue-router",
+        "tag": "vue"
+    },
+    { "title": "element", "description": "vue的UI库", "url": "https://github.com/ElemeFE/element", "tag": "vue" },
+    {
+        "title": "vue-drag-resize",
+        "description": "vue的拖拽位移尺寸变化插件",
+        "url": "https://github.com/kirillmurashov/vue-drag-resize",
+        "tag": "vue"
+    },
+    {
+        "title": "vue-simplemde",
+        "description": "vue的富文本编辑器，支持markdown",
+        "url": "https://github.com/F-loat/vue-simplemde",
+        "tag": "vue"
+    },
+    {
+        "title": "webpack-merge",
+        "description": "用来合并webpack的配置项",
+        "url": "https://github.com/survivejs/webpack-merge",
+        "tag": "webpack"
+    },
+    {
+        "title": "webpack-dev-middleware",
+        "description": "webpack搭建开发环境的中间件",
+        "url": "https://github.com/webpack/webpack-dev-middleware",
+        "tag": "webpack"
+    },
+    {
+        "title": "webpack-hot-middleware",
+        "description": "webpack热更新的中间件",
+        "url": "https://github.com/webpack-contrib/webpack-hot-middleware",
+        "tag": "webpack"
+    },
+    {
+        "title": "webpack-bundle-analyzer",
+        "description": "webpack分析依赖包的大小",
+        "url": "https://github.com/webpack-contrib/webpack-bundle-analyzer",
+        "tag": "webpack"
+    },
+    {
+        "title": "launch-editor",
+        "description": "在编辑器里打开文件的具体位置",
+        "url": "https://github.com/yyx990803/launch-editor",
+        "tag": "编辑器"
+    },
+    { "title": "mocha", "description": "测试框架", "url": "https://github.com/mochajs/mocha", "tag": "测试" },
+    {
+        "title": "chai",
+        "description": "断言库，支持多种风格的断言(例如assert、should、expect)",
+        "url": "https://github.com/chaijs/chai",
+        "tag": "测试"
+    },
+    { "title": "chalk", "description": "命令行着色美化库", "url": "https://github.com/chalk/chalk", "tag": "打印" },
+    {
+        "title": "boxen",
+        "description": "在命令行里用边框包裹输出内容",
+        "url": "https://github.com/sindresorhus/boxen",
+        "tag": "打印"
+    },
+    {
+        "title": "figures",
+        "description": "在命令行里输入图标",
+        "url": "https://github.com/sindresorhus/figures",
+        "tag": "打印"
+    },
+    {
+        "title": "progress",
+        "description": "在命令行显示进度条",
+        "url": "https://github.com/visionmedia/node-progress",
+        "tag": "打印"
+    },
+    {
+        "title": "ora",
+        "description": "可以在命令行里输出spinner",
+        "url": "https://github.com/sindresorhus/ora",
+        "tag": "打印"
+    },
+    {
+        "title": "cliui",
+        "description": "用类似css的方式控制命令行显示",
+        "url": "https://github.com/yargs/cliui",
+        "tag": "打印"
+    },
+    {
+        "title": "cli-cursor",
+        "description": "控制命令行光标显示隐藏，搭配progress这类命令行界面更新时光标不会隐藏的库",
+        "url": "https://github.com/sindresorhus/cli-cursor",
+        "tag": "打印"
+    },
+    {
+        "title": "log-update",
+        "description": "在命令行输出帧动画",
+        "url": "https://github.com/sindresorhus/log-update",
+        "tag": "打印"
+    },
+    {
+        "title": "word-wrap",
+        "description": "输出内容分行显示",
+        "url": "https://github.com/substack/node-wordwrap",
+        "tag": "打印"
+    },
+    {
+        "title": "terminal-link",
+        "description": "在命令行输出链接",
+        "url": "https://github.com/sindresorhus/terminal-link",
+        "tag": "打印"
+    },
+    {
+        "title": "cli-columns",
+        "description": "输出内容等宽纵向按顺序显示",
+        "url": "https://github.com/shannonmoeller/cli-columns",
+        "tag": "打印"
+    },
+    {
+        "title": "cli-truncate",
+        "description": "将部分输出内容转换为省略号",
+        "url": "https://github.com/sindresorhus/cli-truncate",
+        "tag": "打印"
+    },
+    {
+        "title": "multispinner",
+        "description": "同时生成多个spinner，适合并发的任务",
+        "url": "https://github.com/codekirei/node-multispinner",
+        "tag": "打印"
+    },
+    {
+        "title": "gradient-string",
+        "description": "渐变的字符串",
+        "url": "https://github.com/bokub/gradient-string",
+        "tag": "打印"
+    },
+    {
+        "title": "wide-align",
+        "description": "内容居中显示",
+        "url": "https://github.com/iarna/wide-align",
+        "tag": "打印"
+    },
+    {
+        "title": "figlet.js",
+        "description": "（英文、数字）空心化",
+        "url": "https://github.com/patorjk/figlet.js",
+        "tag": "打印"
+    },
+    {
+        "title": "cfont",
+        "description": "可以在控制台打印出很有意思的文字样式，例如立体的",
+        "url": "https://www.npmjs.com/package/cfonts",
+        "tag": "打印"
+    },
+    {
+        "title": "prettier",
+        "description": "代码格式化工具",
+        "url": "https://github.com/prettier/prettier",
+        "tag": "代码"
+    },
+    {
+        "title": "WOW",
+        "description": "页面滚动时触发css动画",
+        "url": "https://github.com/matthieua/WOW",
+        "tag": "动画"
+    },
+    {
+        "title": "lodash",
+        "description": "含有多个工具函数，包含数组，字符串，函数等类型",
+        "url": "https://github.com/lodash/lodash",
+        "tag": "工具"
+    },
+    {
+        "title": "dot-prop",
+        "description": "函数检索深对象属性没有时不会报错，只会返回undefined",
+        "url": "https://github.com/sindresorhus/dot-prop",
+        "tag": "工具"
+    },
+    {
+        "title": "lru-cache",
+        "description": "限时存储数据，存储数据的store大小可设置",
+        "url": "https://github.com/isaacs/node-lru-cache",
+        "tag": "工具"
+    },
+    {
+        "title": "signal-exit",
+        "description": "进程结束的回调函数",
+        "url": "https://github.com/tapjs/signal-exit",
+        "tag": "进程"
+    },
+    {
+        "title": "fkill",
+        "description": "根据进程号（端口号）关闭进程",
+        "url": "https://github.com/sindresorhus/fkill",
+        "tag": "进程"
+    },
+    {
+        "title": "NestJS",
+        "description": "服务端框架，使用Typescript开发",
+        "url": "https://github.com/nestjs/nest",
+        "tag": "框架"
+    },
+    { "title": "egg", "description": "基于Koa的服务端框架", "url": "https://github.com/eggjs/egg/", "tag": "框架" },
+    {
+        "title": "browser-sync",
+        "description": "浏览器热更新，文件监听等",
+        "url": "https://github.com/BrowserSync/browser-sync",
+        "tag": "浏览器"
+    },
+    {
+        "title": "open",
+        "description": "打开文件，网址等",
+        "url": "https://github.com/sindresorhus/open",
+        "tag": "浏览器"
+    },
+    {
+        "title": "store",
+        "description": "操作浏览器的localStorage",
+        "url": "https://github.com/marcuswestin/store.js",
+        "tag": "浏览器"
+    },
+    {
+        "title": "html2canvas",
+        "description": "HTML转换为canvas图片",
+        "url": "https://github.com/niklasvh/html2canvas",
+        "tag": "浏览器"
+    },
+    {
+        "title": "path-to-regexp",
+        "description": "路径解析成正则表达式，例如'detail/:id'",
+        "url": "https://github.com/pillarjs/path-to-regexp",
+        "tag": "路径"
+    },
+    {
+        "title": "minimatch",
+        "description": "判断一个文件路径是否匹配glob方式的路径",
+        "url": "https://github.com/isaacs/minimatch",
+        "tag": "路径"
+    },
+    {
+        "title": "relateurl",
+        "description": "将路径最简化，包括简化成相对路径",
+        "url": "https://github.com/stevenvachon/relateurl",
+        "tag": "路径"
+    },
+    {
+        "title": "slash",
+        "description": "统一Windows和Linux平台的路径格式",
+        "url": "https://github.com/sindresorhus/slash",
+        "tag": "路径"
+    },
+    {
+        "title": "glob-parent",
+        "description": "获取文件所在文件夹的路径",
+        "url": "https://github.com/es128/glob-parent",
+        "tag": "路径"
+    },
+    {
+        "title": "execa",
+        "description": "在js代码中运行shell语句",
+        "url": "https://github.com/sindresorhus/execa",
+        "tag": "命令行"
+    },
+    { "title": "yargs", "description": "解析命令行参数", "url": "https://github.com/yargs/yargs", "tag": "命令行" },
+    {
+        "title": "inquirer",
+        "description": "在命令行里发起问答",
+        "url": "https://github.com/SBoudrias/Inquirer.js",
+        "tag": "命令行"
+    },
+    {
+        "title": "listr",
+        "description": "任务列表管理",
+        "url": "https://github.com/SamVerschueren/listr",
+        "tag": "命令行"
+    },
+    {
+        "title": "term-size",
+        "description": "获取命令行的尺寸",
+        "url": "https://github.com/sindresorhus/term-size",
+        "tag": "命令行"
+    },
+    {
+        "title": "string-width",
+        "description": "获取字符串在命令行里面的长度",
+        "url": "https://github.com/sindresorhus/string-width",
+        "tag": "命令行"
+    },
+    {
+        "title": "shtml2html",
+        "description": "编译shtml文件，转换成html",
+        "url": "https://github.com/librajt/shtml2html",
+        "tag": "模板"
+    },
+    { "title": "ejs", "description": "Node模板引擎", "url": "https://github.com/mde/ejs", "tag": "模板" },
+    {
+        "title": "puppeteer",
+        "description": "功能最强大的爬虫工具，使用headless浏览器，支持模拟点击等功能抓取页面",
+        "url": "https://github.com/GoogleChrome/puppeteer",
+        "tag": "爬虫"
+    },
+    {
+        "title": "cheerio",
+        "description": "用jQuery api的方式读取html模板里的内容",
+        "url": "https://github.com/cheerio/cheerio",
+        "tag": "爬虫"
+    },
+    {
+        "title": "iconv-lite",
+        "description": "改变返回页面的encoding，如果页面charset是gbk的可以使用这个",
+        "url": "https://github.com/ashtuchkin/iconv-lite",
+        "tag": "爬虫"
+    },
+    {
+        "title": "winston",
+        "description": "功能最齐全的日志库",
+        "url": "https://github.com/winstonjs/winston",
+        "tag": "日志"
+    },
+    {
+        "title": "log4js",
+        "description": "Node标准日志库",
+        "url": "https://github.com/log4js-node/log4js-node",
+        "tag": "日志"
+    },
+    {
+        "title": "bunyan",
+        "description": "Node日志库，包含主机名称，进程号等信息",
+        "url": "https://github.com/trentm/node-bunyan",
+        "tag": "日志"
+    },
+    {
+        "title": "signale",
+        "description": "一个 Node 的命令行输出，自带 16 个级别，可以定制颜色和 Emoji",
+        "url": "https://github.com/klaussinani/signale",
+        "tag": "日志"
+    },
+    { "title": "ms", "description": "把毫秒转化成标准时间格式", "url": "https://github.com/zeit/ms", "tag": "时间" },
+    { "title": "dayjs", "description": "功能丰富的日期库", "url": "https://github.com/iamkun/dayjs", "tag": "时间" },
+    {
+        "title": "timeago.js",
+        "description": "将时间格式化成\"**时间之前\"的",
+        "url": "https://github.com/hustcc/timeago.js",
+        "tag": "时间"
+    },
+    {
+        "title": "flv.js",
+        "description": "HTML5 flv视频播放器",
+        "url": "https://github.com/bilibili/flv.js",
+        "tag": "视频"
+    },
+    {
+        "title": "chance",
+        "description": "生成随机数据的库",
+        "url": "https://github.com/chancejs/chancejs",
+        "tag": "数字"
+    },
+    {
+        "title": "qrcode",
+        "description": "二维码生成工具",
+        "url": "https://github.com/soldair/node-qrcode",
+        "tag": "图片"
+    },
+    { "title": "sharp", "description": "node处理图片的库", "url": "https://github.com/lovell/sharp", "tag": "图片" },
+    {
+        "title": "imagemin",
+        "description": "压缩图片的库（避坑！低质量下压缩的图片失真明显，有条件用浏览器的还是用canvas的好）",
+        "url": "https://github.com/imagemin/imagemin",
+        "tag": "图片"
+    },
+    {
+        "title": "echarts",
+        "description": "可视化库",
+        "url": "https://github.com/apache/incubator-echarts",
+        "tag": "图形界面"
+    },
+    {
+        "title": "echarts-map-data",
+        "description": "基于echarts的地图，包含世界各国，中国各省",
+        "url": "https://github.com/taozhiw/echarts-map-data",
+        "tag": "图形界面"
+    },
+    {
+        "title": "area-data",
+        "description": "中国各省市县地区6位数编码",
+        "url": "https://github.com/linzb93/area-data",
+        "tag": "图形界面"
+    },
+    { "title": "del", "description": "删除文件和文件夹", "url": "https://github.com/sindresorhus/del", "tag": "文件" },
+    {
+        "title": "glob",
+        "description": "文件查找，类似shell匹配文件的格式",
+        "url": "https://github.com/isaacs/node-glob",
+        "tag": "文件"
+    },
+    {
+        "title": "mkdirp",
+        "description": "提供递归的文件夹创建。在node V10.12.0后由fs.mkdir提供",
+        "url": "https://github.com/substack/node-mkdirp",
+        "tag": "文件"
+    },
+    {
+        "title": "bytes",
+        "description": "把比特值转换成其他单位的",
+        "url": "https://github.com/visionmedia/bytes.js",
+        "tag": "文件"
+    },
+    {
+        "title": "fs-extra",
+        "description": "node的fs模块的拓展，支持Promise",
+        "url": "https://github.com/jprichardson/node-fs-extra",
+        "tag": "文件"
+    },
+    { "title": "rimraf", "description": "深层次的删除文件", "url": "https://github.com/isaacs/rimraf", "tag": "文件" },
+    {
+        "title": "recursive-readdir",
+        "description": "递归获取文件列表",
+        "url": "https://github.com/jergason/recursive-readdir",
+        "tag": "文件"
+    },
+    {
+        "title": "treer",
+        "description": "在命令行或者纯文本文件输出文件夹的文件树",
+        "url": "https://github.com/derycktse/treer",
+        "tag": "文件"
+    },
+    {
+        "title": "chokidar",
+        "description": "监听文件变化的库",
+        "url": "https://github.com/paulmillr/chokidar",
+        "tag": "文件"
+    },
+    {
+        "title": "mime",
+        "description": "获取一个文件的mime type",
+        "url": "https://github.com/broofa/node-mime",
+        "tag": "文件"
+    },
+    {
+        "title": "find-up",
+        "description": "深度查找一个文件",
+        "url": "https://github.com/sindresorhus/find-up",
+        "tag": "文件"
+    },
+    {
+        "title": "file-type",
+        "description": "检测一个Buffer的文件类型",
+        "url": "https://github.com/sindresorhus/file-type",
+        "tag": "文件"
+    },
+    { "title": "xlsx", "description": "处理Excel文件", "url": "https://github.com/SheetJS/sheetjs", "tag": "文件" },
+    {
+        "title": "node-notifier",
+        "description": "发出系统通知，兼容MacOs、Windows、Linux",
+        "url": "https://github.com/mikaelbr/node-notifier",
+        "tag": "系统"
+    },
+    {
+        "title": "address",
+        "description": "检测本机IP, mac等",
+        "url": "https://github.com/node-modules/address",
+        "tag": "系统"
+    },
+    {
+        "title": "clipboardy",
+        "description": "剪贴板，用于Node.js，仅支持复制文本",
+        "url": "https://github.com/sindresorhus/clipboardy",
+        "tag": "系统"
+    },
+    {
+        "title": "clipboard",
+        "description": "剪贴板，用于浏览器，仅支持复制文本",
+        "url": "https://github.com/zenorocha/clipboard.js",
+        "tag": "系统"
+    },
+    {
+        "title": "wallpaper",
+        "description": "设置/获取桌面壁纸",
+        "url": "https://github.com/sindresorhus/wallpaper",
+        "tag": "系统"
+    },
+    {
+        "title": "systeminformation",
+        "description": "获取系统详细参数",
+        "url": "https://github.com/sebhildebrandt/systeminformation",
+        "tag": "系统"
+    },
+    {
+        "title": "macos-open-file-dialog",
+        "description": "在macOS使用系统弹窗选择文件和文件夹",
+        "url": "https://www.npmjs.com/package/macos-open-file-dialog",
+        "tag": "系统底层调用"
+    },
+    {
+        "title": "node-file-dialog",
+        "description": "在Windows和Linux使用系统弹窗选择文件和文件夹",
+        "url": "https://www.npmjs.com/package/node-file-dialog",
+        "tag": "系统底层调用"
+    },
+    {
+        "title": "zip-local",
+        "description": "文件压缩与解压（不再推荐 archiver 是因为 archiver 路径识别有 bug）",
+        "url": "https://github.com/Mostafa-Samir/zip-local",
+        "tag": "压缩"
+    },
+    { "title": "unzip", "description": "解压", "url": "https://github.com/EvanOxfeld/node-unzip", "tag": "压缩" },
+    {
+        "title": "color-convert",
+        "description": "颜色格式转换",
+        "url": "https://github.com/Qix-/color-convert",
+        "tag": "颜色"
+    },
+    {
+        "title": "color-string",
+        "description": "颜色生成与解析",
+        "url": "https://github.com/Qix-/color-string",
+        "tag": "颜色"
+    },
+    { "title": "color", "description": "颜色值转换与计算的库", "url": "https://github.com/Qix-/color", "tag": "颜色" },
+    {
+        "title": "async-validator",
+        "description": "为表单提供验证，支持异步",
+        "url": "https://github.com/yiminghe/async-validator",
+        "tag": "验证"
+    },
+    {
+        "title": "dropload",
+        "description": "移动端下拉刷新、上拉加载更多插件",
+        "url": "https://github.com/ximan/dropload",
+        "tag": "移动端"
+    },
+    {
+        "title": "better-scroll",
+        "description": "移动端滚动插件，现已支持PC端",
+        "url": "https://github.com/ustbhuangyi/better-scroll",
+        "tag": "移动端"
+    },
+    {
+        "title": "diff",
+        "description": "字符串比较",
+        "url": "https://github.com/kpdecker/jsdiff#readme",
+        "tag": "字符串"
+    },
+    { "title": "uuid", "description": "生成唯一的id", "url": "https://github.com/kelektiv/node-uuid", "tag": "字符串" },
+    {
+        "title": "balanced-match",
+        "description": "匹配括号对，包括\"{}, (), <>\"等",
+        "url": "https://github.com/juliangruber/balanced-match",
+        "tag": "字符串"
+    },
+    {
+        "title": "fill-range",
+        "description": "补齐一段距离中间的数字、字母",
+        "url": "https://github.com/jonschlinkert/fill-range",
+        "tag": "字符串"
+    },
+    {
+        "title": "matcher",
+        "description": "判断字符串是否匹配规则",
+        "url": "https://github.com/sindresorhus/matcher",
+        "tag": "字符串"
+    },
+    {
+        "title": "leven",
+        "description": "判断字符串和给定字符串列表哪个最接近，常用来做模糊判断",
+        "url": "https://github.com/sindresorhus/leven",
+        "tag": "字符串"
+    },
+    {
+        "title": "字蛛（font-spider）",
+        "description": "摘取只需要的文字，大幅优化字体体积。",
+        "url": "https://github.com/aui/font-spider",
+        "tag": "字体"
+    },
+    { "title": "pinyin", "description": "汉字拼音转换工具", "url": "https://github.com/hotoo/pinyin", "tag": "中国" },
+    {
+        "title": "lunar-calendar",
+        "description": "农历（阴历）万年历类库",
+        "url": "https://github.com/zzyss86/LunarCalendar",
+        "tag": "中国"
+    },
+    {
+        "title": "Wavewindow",
+        "description": "类似政府网站的飘窗",
+        "url": "https://github.com/linzb93/Wavewindow",
+        "tag": "中国"
+    }
+]

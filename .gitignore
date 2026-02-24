@@ -3,8 +3,8 @@ dist
 packages/server/data
 packages/server/config.secret.json
 pnpm-lock.yaml
-cache/
 !cache/awesome.json
+cache/
 package-lock.json
 .trae/documents
 **/*/stats.html
