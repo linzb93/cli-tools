@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import Table from 'cli-table3';
+import open from 'open';
+import inquirer from '@/utils/inquirer';
 import { filePath } from '../shared/constant';
 import { logger } from '@/utils/logger';
 import type { AwesomeOptions, AwesomeItem } from '../shared/types';
@@ -25,8 +26,15 @@ export const awesomeService = async (options?: AwesomeOptions) => {
 
         // Filter by tag
         if (options?.tag) {
-            const lowerTag = options.tag.toLowerCase();
-            results = results.filter((item) => (item.tag || '').toLowerCase().includes(lowerTag));
+            const searchTags = options.tag
+                .toLowerCase()
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean);
+            results = results.filter((item) => {
+                const itemTags = (item.tag || '').toLowerCase().split(',');
+                return searchTags.some((tag) => itemTags.some((t) => t.trim() === tag));
+            });
         }
 
         if (results.length === 0) {
@@ -36,17 +44,37 @@ export const awesomeService = async (options?: AwesomeOptions) => {
 
         logger.info(`Found ${results.length} items:`);
 
-        const table = new Table({
-            head: ['Title', 'Description', 'Tag', 'URL'],
-            colWidths: [20, 50, 15, 50],
-            wordWrap: true,
-        });
+        if (results.length === 1) {
+            const item = results[0];
+            logger.info(chalk.green(`Opening: ${item.title} - ${item.description || ''}`));
+            if (item.url) {
+                await open(item.url);
+            }
+            return;
+        }
 
-        results.forEach((item) => {
-            table.push([item.title, item.description || '', item.tag || '', chalk.blue(item.url || '')]);
-        });
+        const choices = results.map((item) => ({
+            name: `${chalk.blue(item.title)} - ${item.description || ''}`,
+            value: item.url,
+            disabled: !item.url ? 'No URL' : false,
+        }));
 
-        console.log(table.toString());
+        choices.push({ name: 'Exit', value: '', disabled: false });
+
+        const { url } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'url',
+                message: '请选择要打开的项:',
+                choices,
+                pageSize: 15,
+            },
+        ]);
+
+        if (url) {
+            logger.info(`Opening: ${url}`);
+            await open(url);
+        }
     } catch (error) {
         logger.error(`Error reading or parsing awesome.json: ${error}`);
     }

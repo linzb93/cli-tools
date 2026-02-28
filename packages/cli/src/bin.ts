@@ -78,12 +78,12 @@ program
     });
 
 program
-    .command('awesome')
+    .command('awesome [command]')
     .description('Search in awesome list')
     .option('--name <keyword>', 'Search keyword')
     .option('-t, --tag <tag>', 'Filter by tag')
-    .action((options) => {
-        awesomeCommand(options);
+    .action((command, options) => {
+        awesomeCommand(command, options);
     });
 
 program

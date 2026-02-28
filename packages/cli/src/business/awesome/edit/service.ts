@@ -68,7 +68,7 @@ async function runAddFlow(fields: Array<{ key: keyof AwesomeItem; label: string;
     setNextPrompt();
 
     rl.on('line', async (inputRaw) => {
-        const input = inputRaw.trim();
+        let input = inputRaw.trim();
 
         if (input === '.exit') {
             console.log(chalk.cyan('退出进程'));
@@ -103,12 +103,39 @@ async function runAddFlow(fields: Array<{ key: keyof AwesomeItem; label: string;
             setNextPrompt();
             return;
         }
-        if (current.key === 'url') {
-            const urlReg = /^(https?:\/\/)[^\s]+$/i;
-            if (!urlReg.test(input)) {
-                logger.error('地址格式不合法，需要以 http/https 开头');
+
+        // 检查标题是否已存在
+        if (current.key === 'title') {
+            try {
+                const data = await fs.readJSON(filePath).catch(() => []);
+                const list: AwesomeItem[] = Array.isArray(data) ? data : [];
+                const exists = list.some((item) => item.title.trim().toLowerCase() === input.toLowerCase());
+                if (exists) {
+                    logger.error(`标题 "${input}" 已存在，请使用其他标题`);
+                    setNextPrompt();
+                    return;
+                }
+            } catch (error) {
+                logger.error(`检查标题时出错: ${error}`);
                 setNextPrompt();
                 return;
+            }
+        }
+
+        if (current.key === 'url') {
+            if (!input) {
+                const title = (record.title as string) || '';
+                if (title) {
+                    input = `https://www.npmjs.com/package/${title}`;
+                    logger.info(`自动生成地址: ${input}`);
+                }
+            } else {
+                const urlReg = /^(https?:\/\/)[^\s]+$/i;
+                if (!urlReg.test(input)) {
+                    logger.error('地址格式不合法，需要以 http/https 开头');
+                    setNextPrompt();
+                    return;
+                }
             }
         }
         (record as any)[current.key] = input;
