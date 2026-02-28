@@ -6,8 +6,8 @@ import dayjs from 'dayjs';
 import chalk from 'chalk';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Resolve to cli-tools project root: packages/cli/src/business/idea -> ../../../../../
-const PROJECT_ROOT = path.resolve(__dirname, '../../../../../');
+
+const PROJECT_ROOT = path.resolve(__dirname, '../../../');
 const DOCS_DIR = path.join(PROJECT_ROOT, 'docs');
 const IDEAS_FILE = path.join(DOCS_DIR, 'ideas.md');
 

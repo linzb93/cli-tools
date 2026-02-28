@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import init from './hooks/init';
+import init from './bootstrap';
 import { generateHelpDoc } from '@/utils/helper';
 import { beautyCommand } from './commands/beauty';
 import { ipCommand } from './commands/ip';

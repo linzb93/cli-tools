@@ -1084,5 +1084,11 @@
     "description": "更好用的path，统一不同平台路径差异",
     "url": "https://www.npmjs.com/package/pathe",
     "tag": "node"
+  },
+  {
+    "title": "zod",
+    "description": "object参数类型验证",
+    "url": "https://www.npmjs.com/package/zod",
+    "tag": "validate"
   }
 ]

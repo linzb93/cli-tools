@@ -1,0 +1,1 @@
+export { awesomeListTagsService } from './service';
