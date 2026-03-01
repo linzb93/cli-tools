@@ -1,5 +1,3 @@
-import { WebSocket } from 'ws';
-
 interface AnyObject {
     [key: string]: any;
 }
@@ -14,7 +12,6 @@ interface Route<T = AnyObject> {
 const database: Route[] = [];
 
 const register = async (
-    ws: WebSocket,
     data: {
         path: string;
         query: AnyObject;
@@ -23,13 +20,9 @@ const register = async (
     const match = database.find((item) => item.path === data.path);
     if (match) {
         const response = await match.callback(data.query || {});
-        if (response) {
-            ws.send(JSON.stringify(response));
-        }
-        return true;
+        return response;
     }
-    ws.send(JSON.stringify({ status: 'error', message: `Unknown path: ${data.path}` }));
-    return false;
+    return { status: 'error', message: `Unknown path: ${data.path}` };
 };
 
 const add = <T = AnyObject>(path: string, callback: Callback<T>) => {
