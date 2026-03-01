@@ -16,6 +16,7 @@
         "build:report": "pnpm --filter \"@cli-tools/cli\" build:report",
         "build:web": "pnpm --filter \"@cli-tools/server\" build",
         "build:ui": "pnpm --filter \"@cli-tools/ui\" build-only",
+        "build:vscode": "cd packages/vscode-extension && npx @vscode/vsce package --allow-missing-repository --skip-license --no-dependencies --out dist/",
         "build:web-all": "npm run build:web && npm run build:ui",
         "check": "pnpm --filter \"@cli-tools/cli\" check",
         "release": "standard-version"

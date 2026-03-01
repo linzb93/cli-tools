@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import router from '../lib/socket-router';
+import router from '../infra/router';
 
 interface NvmSwitchQuery {
     version: string;
