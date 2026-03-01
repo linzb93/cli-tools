@@ -18,33 +18,37 @@ const get = () => {
 };
 
 const deleteBranch = () => {
-    subCommandCompiler((program) => {
-        program
-            .command('delete')
-            .description('删除Git分支')
-            .action(() => {
-                branchDeleteService();
-            });
-    });
+    subCommandCompiler(
+        (program) => {
+            program
+                .command('delete')
+                .description('删除Git分支')
+                .action(() => {
+                    console.log(12);
+                    branchDeleteService();
+                });
+        },
+        { level: 3 },
+    );
 };
 
 /**
  * git 命令入口函数
- * @param {string} subCommand - 子命令名称
+ * @param {string[]} restCommand - 子命令名称
  */
-export const branchCommand = function (subCommand: string): void {
+export const branchCommand = function (restCommand: string[]): void {
     // 子命令映射表
     const commandMap: Record<string, () => void> = {
         delete: deleteBranch,
     };
 
     // 执行对应的子命令
-    if (!subCommand) {
+    if (!restCommand.length) {
         get();
-    } else if (commandMap[subCommand]) {
-        commandMap[subCommand]();
+    } else if (commandMap[restCommand[0]]) {
+        commandMap[restCommand[0]]();
     } else {
-        console.log(`未知的 git branch 子命令: ${subCommand}`);
+        console.log(`未知的 git branch 子命令: ${restCommand[0]}`);
         console.log('可用的子命令: ' + Object.keys(commandMap).join(', '));
     }
 };

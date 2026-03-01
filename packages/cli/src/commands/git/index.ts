@@ -15,9 +15,9 @@ import { tagCommand } from './tag';
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  */
-export const gitCommand = function (subCommand: string): void {
+export const gitCommand = function (subCommand: string, nextCommand?: string): void {
     // 子命令映射表
-    const commandMap: Record<string, (nextCommand?: string) => void> = {
+    const commandMap: Record<string, (cmd?: string | string[]) => void> = {
         push: pushCommand,
         pull: pullCommand,
         commit: commitCommand,
@@ -30,10 +30,9 @@ export const gitCommand = function (subCommand: string): void {
         version: versionCommand,
         clone: cloneCommand,
     };
-
     // 执行对应的子命令
     if (commandMap[subCommand]) {
-        commandMap[subCommand]();
+        commandMap[subCommand](nextCommand);
     } else {
         console.log(`未知的 git 子命令: ${subCommand}`);
         console.log('可用的子命令: ' + Object.keys(commandMap).join(', '));

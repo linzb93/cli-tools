@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 import chalk from 'chalk';
-import readline from 'readline';
+import readline from 'node:readline';
 import type { TagMapping } from './service';
 
 export const getBatchEditInput = async (): Promise<TagMapping[]> => {
