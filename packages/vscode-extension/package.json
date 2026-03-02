@@ -4,7 +4,7 @@
     "publisher": "my-publisher",
     "displayName": "cli-vscode-extension",
     "description": "cli use",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "engines": {
         "vscode": "^1.107.0"
     },
@@ -14,26 +14,16 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./dist/extension.js",
+    "main": "./dist/index.js",
     "scripts": {
         "vscode:prepublish": "pnpm run compile",
         "compile": "vite build",
         "lint": "eslint src"
     },
     "devDependencies": {
-        "@types/mocha": "^10.0.10",
-        "@types/node": "22.x",
         "@types/vscode": "^1.107.0",
-        "@types/ws": "^8.18.1",
         "@vscode/test-cli": "^0.0.12",
         "@vscode/test-electron": "^2.5.2",
-        "axios": "1.6.8",
-        "eslint": "^9.39.1",
-        "ts-loader": "^9.5.4",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "^8.48.1"
-    },
-    "dependencies": {
-        "ws": "^8.18.3"
+        "@vscode/vsce": "^3.7.1"
     }
 }

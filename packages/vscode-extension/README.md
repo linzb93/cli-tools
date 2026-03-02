@@ -1,3 +1,3 @@
 # vscode-extension
 
-websocket端口号：7001
+http 端口号：7001

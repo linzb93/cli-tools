@@ -38,7 +38,7 @@ router.add('nvm-switch', async (query: NvmSwitchQuery) => {
         // 运行命令并退出
         // 使用 setTimeout 稍作延迟确保终端 shell 准备就绪
         setTimeout(() => {
-            terminal && terminal.sendText(`nvm use ${version} && echo "nvm use ${version}"`);
+            terminal && terminal.sendText(`nvm use ${version}`);
         }, 200);
 
         // await closePromise;

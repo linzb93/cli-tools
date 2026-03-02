@@ -3,16 +3,15 @@ import { builtinModules } from 'module';
 
 export default defineConfig({
     resolve: {
-        // 关键配置：强制使用 node 入口，忽略 browser 字段，避免 ws 被打包成浏览器垫片
         mainFields: ['module', 'main'],
         conditions: ['node'],
     },
     build: {
         target: 'node14',
         lib: {
-            entry: 'src/extension.ts',
+            entry: 'src/index.ts',
             formats: ['es'],
-            fileName: () => 'extension.js',
+            fileName: () => 'index.js',
         },
         rollupOptions: {
             external: ['vscode', ...builtinModules, ...builtinModules.map((m) => `node:${m}`)],

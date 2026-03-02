@@ -1,8 +1,6 @@
 .vscode/**
 .vscode-test/**
 out/**
-node_modules/**
-!node_modules/ws/**
 src/**
 .gitignore
 .yarnrc
@@ -14,4 +12,5 @@ vsc-extension-quickstart.md
 **/*.ts
 **/.vscode-test.*
 *.vsix
+node_modules/**
 dist/*.vsix
