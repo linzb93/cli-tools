@@ -25,12 +25,12 @@ const register = async (
     return { status: 'error', message: `Unknown path: ${data.path}` };
 };
 
-const add = <T = AnyObject>(path: string, callback: Callback<T>) => {
+const post = <T = AnyObject>(path: string, callback: Callback<T>) => {
     database.push({ path, callback } as Route);
 };
 
 const router = {
     register,
-    add,
+    post,
 };
 export default router;

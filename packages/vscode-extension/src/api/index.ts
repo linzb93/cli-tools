@@ -5,7 +5,7 @@ interface NvmSwitchQuery {
     version: string;
 }
 
-router.add('nvm-switch', async (query: NvmSwitchQuery) => {
+router.post('nvm-switch', async (query: NvmSwitchQuery) => {
     const { version } = query;
     if (version) {
         let terminal = vscode.window.activeTerminal;
