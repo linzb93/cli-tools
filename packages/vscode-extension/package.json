@@ -4,7 +4,7 @@
     "publisher": "my-publisher",
     "displayName": "cli-vscode-extension",
     "description": "cli use",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "engines": {
         "vscode": "^1.107.0"
     },

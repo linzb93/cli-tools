@@ -26,15 +26,17 @@ const init = (context: ExtensionContext) => {
             }
 
             let body = '';
-            req.on('data', chunk => {
+            req.on('data', (chunk) => {
                 body += chunk.toString();
             });
 
             req.on('end', async () => {
                 try {
                     const payload = JSON.parse(body);
-                    const result = await router.register(payload);
-                    
+                    // Extract path from URL (remove leading slash)
+                    const path = (req.url || '').split('?')[0].replace(/^\//, '');
+                    const result = await router.register(path, payload);
+
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify(result || { status: 'success' }));
                 } catch (error) {
@@ -50,7 +52,7 @@ const init = (context: ExtensionContext) => {
         });
 
         server.on('error', (e: any) => {
-             if (e.code === 'EADDRINUSE') {
+            if (e.code === 'EADDRINUSE') {
                 console.log(`Port ${port} is already in use.`);
             } else {
                 console.error('HTTP server error:', e);
@@ -60,9 +62,8 @@ const init = (context: ExtensionContext) => {
         context.subscriptions.push({
             dispose: () => {
                 close();
-            }
+            },
         });
-
     } catch (error) {
         console.error('Failed to create HTTP server:', error);
     }
@@ -76,5 +77,5 @@ const close = () => {
 
 export const httpManager = {
     init,
-    close
+    close,
 };

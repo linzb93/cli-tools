@@ -11,18 +11,13 @@ interface Route<T = AnyObject> {
 
 const database: Route[] = [];
 
-const register = async (
-    data: {
-        path: string;
-        query: AnyObject;
-    }
-) => {
-    const match = database.find((item) => item.path === data.path);
+const register = async (path: string, query: AnyObject = {}) => {
+    const match = database.find((item) => item.path === path);
     if (match) {
-        const response = await match.callback(data.query || {});
+        const response = await match.callback(query);
         return response;
     }
-    return { status: 'error', message: `Unknown path: ${data.path}` };
+    return { status: 'error', message: `Unknown path: ${path}` };
 };
 
 const post = <T = AnyObject>(path: string, callback: Callback<T>) => {

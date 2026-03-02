@@ -2,11 +2,8 @@
 import axios from 'axios';
 if (Number(process.version.split('.')[0].replace('v', '')) < 20) {
     axios
-        .post('http://localhost:7001', {
-            path: 'nvm-switch',
-            query: {
-                version: '20',
-            },
+        .post('http://localhost:7001/nvm-switch', {
+            version: '20',
         })
         .then(() => {
             import('./cli.js');
