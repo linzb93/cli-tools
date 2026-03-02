@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
-import del from 'del';
+import { deleteAsync as del } from 'del';
 import globalNpm from 'global-modules';
-import readPkg, { NormalizedPackageJson } from 'read-pkg';
+import { readPackage as readPkg, NormalizedPackageJson } from 'read-pkg';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
 import npm from '../shared';

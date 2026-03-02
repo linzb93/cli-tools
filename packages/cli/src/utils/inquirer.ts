@@ -1,8 +1,8 @@
-import inquirer, { QuestionCollection } from 'inquirer';
+import inquirer, { Answers } from 'inquirer';
 import spinner from './spinner';
 
 export default {
-    async prompt(options: QuestionCollection) {
+    async prompt(options: Answers) {
         if (spinner.isSpinning) {
             spinner.stop();
         }

@@ -4,7 +4,7 @@ import bytes from 'bytes';
 import axios, { AxiosResponse } from 'axios';
 import sizeOf from 'image-size';
 import through from 'through2';
-import del from 'del';
+import { deleteAsync as del } from 'del';
 import { logger } from '@/utils/logger';
 import { isURL, emptyWritableStream } from '@/utils/helper';
 import { root } from '@cli-tools/shared/constant/path';

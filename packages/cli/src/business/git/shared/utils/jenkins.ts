@@ -1,5 +1,5 @@
 import open from 'open';
-import readPkg from 'read-pkg';
+import { readPackage as readPkg } from 'read-pkg';
 import { readSecret } from '@cli-tools/shared/utils/secret';
 
 interface JenkinsProject {

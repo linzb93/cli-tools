@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { Low, JSONFile } from 'lowdb';
+import { JSONFilePreset } from 'lowdb/node';
 import { cacheRoot } from '../../constant/path';
 
 /**
@@ -12,12 +12,9 @@ import { cacheRoot } from '../../constant/path';
  * @param callback 操作数据库的回调函数
  * @returns 回调函数的返回值
  */
-export async function operateJsonDatabase<T, R>(
-    filename: string,
-    callback: (data: T, db?: Low<unknown>) => R,
-): Promise<R> {
+export async function operateJsonDatabase<T, R>(filename: string, callback: (data: T, db2?: any) => R): Promise<R> {
     const dbPath = join(cacheRoot, filename);
-    const db = new Low(new JSONFile(dbPath));
+    const db = await JSONFilePreset(dbPath, {});
     await db.read();
     const data = db.data as unknown as T;
 

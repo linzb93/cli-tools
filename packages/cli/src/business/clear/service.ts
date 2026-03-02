@@ -1,4 +1,4 @@
-import del from 'del';
+import { deleteAsync as del } from 'del';
 import { globby } from 'globby';
 import pMap from 'p-map';
 import { logger } from '@/utils/logger';

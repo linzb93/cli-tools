@@ -2,7 +2,7 @@ import { get } from 'lodash-es';
 import { load, CheerioAPI } from 'cheerio';
 import axios from 'axios';
 import fs from 'fs-extra';
-import readPkg from 'read-pkg';
+import { readPackage as readPkg } from 'read-pkg';
 import inquirer from '@/utils/inquirer';
 
 /**
