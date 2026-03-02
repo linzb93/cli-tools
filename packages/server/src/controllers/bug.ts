@@ -3,10 +3,10 @@ import axios from 'axios';
 import { sql } from '@cli-tools/shared/utils/sql';
 import dayjs from 'dayjs';
 import pMap from 'p-map';
-import Table from 'cli-table3';
+// import Table from 'cli-table3';
 import { readSecret } from '@cli-tools/shared/utils/secret';
 import response from '../shared/response';
-import { log } from '../shared/log';
+// import { log } from '../shared/log';
 import { omit, clone } from 'lodash-es';
 const router = Router();
 
@@ -67,13 +67,22 @@ router.post('/saveApps', (req, res) => {
 export default router;
 
 export const bugCallback = async () => {
+    const lastServerStartDate = await sql((db) => db.lastServerStartDate);
+    const today = dayjs().format('YYYY-MM-DD');
+    if (lastServerStartDate === today) {
+        return;
+    }
     const list = await sql((db) => db.monitor);
     if (!list || !list.length) {
         return;
     }
+    // 更新最后启动日期
+    await sql((db) => {
+        db.lastServerStartDate = today;
+    });
     const prefix = await readSecret((db) => db.oa.apiPrefix);
     let lastDate = getLastDate();
-    const title = `${lastDate.split(' ')[0]} 至 ${dayjs().format('YYYY-MM-DD')} 错误统计`;
+    // const title = `${lastDate.split(' ')[0]} 至 ${dayjs().format('YYYY-MM-DD')} 错误统计`;
     const resList = await pMap(
         list,
         async (item) => {
@@ -98,16 +107,16 @@ export const bugCallback = async () => {
         },
         { concurrency: 5 },
     );
-    const table = new Table({
-        head: ['应用名称', '错误总数', '重点错误数'],
-        colAligns: ['center', 'center', 'center'],
-    });
-    table.push(
-        ...resList
-            .filter((item) => item.errorTotal > 0)
-            .map((item) => [item.name, item.errorTotal, item.emphasizeTotal > 0 ? item.emphasizeTotal : '-']),
-    );
-    log(`\n${title}\n${table.toString()}`);
+    // const table = new Table({
+    //     head: ['应用名称', '错误总数', '重点错误数'],
+    //     colAligns: ['center', 'center', 'center'],
+    // });
+    // table.push(
+    //     ...resList
+    //         .filter((item) => item.errorTotal > 0)
+    //         .map((item) => [item.name, item.errorTotal, item.emphasizeTotal > 0 ? item.emphasizeTotal : '-']),
+    // );
+    // log(`\n${title}\n${table.toString()}`);
     await sql((db) => {
         db.monitorResultCache = resList
             .filter((item) => item.errorTotal > 0)
