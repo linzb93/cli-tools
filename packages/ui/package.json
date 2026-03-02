@@ -35,8 +35,6 @@
     "eslint-plugin-vue": "^9.23.0",
     "jsdom": "^24.1.0",
     "npm-run-all2": "^6.2.0",
-    "prettier": "^3.2.5",
-    "typescript": "~5.4.0",
     "vite-plugin-cdn-import": "^1.0.1",
     "vue-tsc": "^2.2.4"
   }

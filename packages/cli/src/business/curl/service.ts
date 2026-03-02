@@ -64,7 +64,7 @@ export const getBodyFromCurl = (curl: string, options?: Options): string => {
     return parser.parseData(lines, contentType);
 };
 
-export const curlService = (options: Options): void => {
+export const curlService = async (options: Options): Promise<void> => {
     // 读取剪贴板
     const curl = clipboardy.readSync();
     if (!curl) {
@@ -183,7 +183,7 @@ ${cookieFunctionCode}
         console.log(e.message);
     }
 })()`;
-    const output = prettier.format(result, { parser: 'typescript' });
+    const output = await prettier.format(result, { parser: 'typescript' });
     clipboardy.writeSync(output);
     logger.success('生成成功');
 };

@@ -16,7 +16,7 @@ export const beautyService = async () => {
         logger.error('JSON 格式化失败');
         return;
     }
-    const formatted = prettier.format(content, {
+    const formatted = await prettier.format(content, {
         parser: 'json',
     });
     clipboardy.writeSync(formatted);
