@@ -17,9 +17,10 @@ const input: {
     [key: string]: string;
 } = {};
 if (process.env.MODE === 'cliTest') {
-    input['cli-test'] = 'src/bin-test.ts';
+    input['cli-test'] = 'src/cli-test.ts';
 } else if (['cli', 'report'].includes(process.env.MODE as string)) {
-    input.cli = 'src/bin.ts';
+    input.entry = 'src/entry.ts';
+    input.cli = 'src/cli.ts';
 }
 
 export default defineConfig({

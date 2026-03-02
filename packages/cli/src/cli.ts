@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import init from './bootstrap';
