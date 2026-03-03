@@ -5,7 +5,6 @@ import { useAI } from '@/business/ai/common/implementation/index';
 import { readSecret } from '@cli-tools/shared/utils/secret';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import serviceGenerator from '@/utils/http';
-import { isOldNode } from '@/utils/helper';
 
 const service = serviceGenerator({
     baseURL: '',
@@ -65,39 +64,28 @@ export async function login(): Promise<void> {
             token: string;
         };
 
-        // 检查NodeJS版本，如果版本过低则直接使用手动输入方式
-        if (isOldNode) {
-            console.log(
-                chalk.yellow('检测到您使用的是旧版本NodeJS，AI识别功能可能无法正常工作，将使用手动输入验证码方式'),
-            );
-            console.log(chalk.yellow('建议升级到NodeJS 18+版本以获得更好的体验'));
-
-            loginResult = await manualCaptchaLogin(username, password, prefix);
-            loginSuccess = true;
-        } else {
-            // 正常流程：先尝试AI识别，失败后使用手动输入
-            while (!loginSuccess && retryCount < maxRetries) {
-                try {
-                    // 获取验证码并登录
-                    loginResult = await processCaptchaAndLogin(username, password, prefix);
-                    console.log(loginResult);
-                    if (loginResult && loginResult.token) {
-                        loginSuccess = true;
-                    } else {
-                        retryCount++;
-                        console.log(chalk.yellow(`登录失败，正在重试 (${retryCount}/${maxRetries})...`));
-                    }
-                } catch (error) {
+        // 正常流程：先尝试AI识别，失败后使用手动输入
+        while (!loginSuccess && retryCount < maxRetries) {
+            try {
+                // 获取验证码并登录
+                loginResult = await processCaptchaAndLogin(username, password, prefix);
+                console.log(loginResult);
+                if (loginResult && loginResult.token) {
+                    loginSuccess = true;
+                } else {
                     retryCount++;
-                    console.log(chalk.yellow(`验证码识别失败，正在重试 (${retryCount}/${maxRetries})...`));
+                    console.log(chalk.yellow(`登录失败，正在重试 (${retryCount}/${maxRetries})...`));
                 }
+            } catch (error) {
+                retryCount++;
+                console.log(chalk.yellow(`验证码识别失败，正在重试 (${retryCount}/${maxRetries})...`));
             }
+        }
 
-            // 如果AI识别失败5次，则让用户手动输入
-            if (!loginSuccess) {
-                console.log(chalk.red('验证码自动识别失败，请手动输入验证码'));
-                loginResult = await manualCaptchaLogin(username, password, prefix);
-            }
+        // 如果AI识别失败5次，则让用户手动输入
+        if (!loginSuccess) {
+            console.log(chalk.red('验证码自动识别失败，请手动输入验证码'));
+            loginResult = await manualCaptchaLogin(username, password, prefix);
         }
 
         // 保存token

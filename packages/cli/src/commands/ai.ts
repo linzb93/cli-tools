@@ -1,4 +1,3 @@
-import { isOldNode } from '@/utils/helper';
 import { logger } from '@/utils/logger';
 import { subCommandCompiler } from '@/utils';
 import { ocrService, OCROptions, regexService } from '@/business/ai/index';
@@ -12,10 +11,6 @@ const ocr = () => {
             .description('图像识别工具')
             .option('--url <url>', '图片线上地址')
             .action((options: OCROptions) => {
-                if (isOldNode) {
-                    logger.error('请使用node18+版本');
-                    return;
-                }
                 ocrService(options);
             });
     });
@@ -30,10 +25,6 @@ const regex = () => {
             .command('regex <pattern>')
             .description('正则表达式解析工具')
             .action((pattern: string) => {
-                if (isOldNode) {
-                    logger.error('请使用node18+版本');
-                    return;
-                }
                 regexService(pattern);
             });
     });

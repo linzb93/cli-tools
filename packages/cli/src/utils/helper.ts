@@ -48,10 +48,6 @@ export const objectToCmdOptions = (obj: Record<string, any>) => {
         .filter(Boolean);
 };
 /**
- * 旧版本NodeJS，这里指的是NodeJS 14.
- */
-export const isOldNode = lt(process.version, '18.0.0');
-/**
  * 生成命令帮助文档
  */
 export const generateHelpDoc = (commands: string[]) => {

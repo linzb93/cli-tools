@@ -1,12 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import {
-    splitByLine,
-    isURL,
-    objectToCmdOptions,
-    isOldNode,
-    defaultBrowserHeaders,
-    emptyWritableStream,
-} from '../helper';
+import { splitByLine, isURL, objectToCmdOptions, defaultBrowserHeaders, emptyWritableStream } from '../helper';
 
 describe('splitByLine', () => {
     it('应该正确分割Unix换行符', () => {
@@ -118,41 +111,6 @@ describe('objectToCmdOptions', () => {
         expect(result).toEqual([]);
     });
 });
-
-// describe('isOldNode', () => {
-//     it('应该正确识别Node.js版本', () => {
-//         const originalVersion = process.version;
-
-//         Object.defineProperty(process, 'version', {
-//             value: 'v14.0.0',
-//             configurable: true,
-//         });
-//         expect(isOldNode).toBe(true);
-
-//         Object.defineProperty(process, 'version', {
-//             value: 'v16.0.0',
-//             configurable: true,
-//         });
-//         expect(isOldNode).toBe(true);
-
-//         Object.defineProperty(process, 'version', {
-//             value: 'v18.0.0',
-//             configurable: true,
-//         });
-//         expect(isOldNode).toBe(false);
-
-//         Object.defineProperty(process, 'version', {
-//             value: 'v20.0.0',
-//             configurable: true,
-//         });
-//         expect(isOldNode).toBe(false);
-
-//         Object.defineProperty(process, 'version', {
-//             value: originalVersion,
-//             configurable: true,
-//         });
-//     });
-// });
 
 describe('defaultBrowserHeaders', () => {
     it('应该包含所有必需的请求头', () => {

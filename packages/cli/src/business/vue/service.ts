@@ -9,7 +9,7 @@ import { fork } from 'node:child_process';
 import fs from 'fs-extra';
 import { sql, type Database } from '@cli-tools/shared/utils/sql';
 import * as git from '../git/shared/utils';
-import { objectToCmdOptions, isOldNode } from '@/utils/helper';
+import { objectToCmdOptions } from '@/utils/helper';
 import globalConfig from '../../../../../config.json';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
@@ -21,10 +21,6 @@ import type { Options, ProjectConfig } from './types';
  * @param options 命令选项
  */
 export const vueService = async (options: Options) => {
-    if (!isOldNode) {
-        logger.error('请使用node14版本');
-        return;
-    }
     if (options.checkout) {
         await checkoutBranchAndStartServer(options);
         return;
