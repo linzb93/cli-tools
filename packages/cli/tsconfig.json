@@ -8,6 +8,7 @@
         "outDir": "./dist/",
         "baseUrl": "./src",
         "noEmit": true,
+        "jsx": "react-jsx",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
