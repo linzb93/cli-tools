@@ -1,3 +1,9 @@
 {
-    "name": "@cli-tools/window-context"
+    "name": "@cli-tools/windows-context",
+    "private": true,
+    "type": "module",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "node scripts/build"
+    }
 }
