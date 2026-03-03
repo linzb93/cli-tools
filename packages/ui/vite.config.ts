@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
-// import cdn from 'vite-plugin-cdn-import'
+import cdn from 'vite-plugin-cdn-import';
 import vue from '@vitejs/plugin-vue';
 import globalConfig from '../../config.json';
 import move from './vite-plugins/move';
@@ -16,20 +16,20 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    // cdn({
-    //   modules: [
-    //     {
-    //       name: 'vue',
-    //       var: 'Vue',
-    //       path: 'https://unpkg.com/vue@{version}/dist/vue.global.js'
-    //     },
-    //     {
-    //       name: 'element-plus',
-    //       var: 'ElementPlus',
-    //       path: 'https://unpkg.com/element-plus@{version}/dist/index.full.min.js'
-    //     }
-    //   ]
-    // }),
+    cdn({
+      modules: [
+        {
+          name: 'vue',
+          var: 'Vue',
+          path: 'https://cdn.staticfile.org/vue/3.5.6/vue.global.min.js'
+        },
+        {
+          name: 'element-plus',
+          var: 'ElementPlus',
+          path: 'https://cdn.staticfile.org/element-plus/2.11.4/index.full.min.js'
+        }
+      ]
+    }),
     move(`../server/dist/${globalConfig.prefix.static}`)
   ],
   resolve: {
