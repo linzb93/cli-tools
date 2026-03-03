@@ -19,6 +19,7 @@ export const openDeployPage = async (type?: string, isOnline?: boolean) => {
         const origin = await readSecret((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
         await open(
             `http://${origin}/view/${isOnline ? onlineName || name : name}/job/${isOnline ? onlineId || id : id}/`,
+            { wait: true },
         );
     }
 };

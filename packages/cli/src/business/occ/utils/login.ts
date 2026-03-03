@@ -27,7 +27,7 @@ async function manualCaptchaLogin(
 }> {
     const { url, uuid, removeHandler } = await getLoginCaptcha();
     console.log(chalk.green('请在浏览器中打开以下地址查看验证码：'));
-    await open(url);
+    await open(url, { wait: true });
 
     const { code } = await inquirer.prompt([
         {

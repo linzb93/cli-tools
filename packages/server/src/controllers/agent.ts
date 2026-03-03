@@ -75,7 +75,7 @@ router.post('/debug', (req, res) => {
 export default router;
 
 export const agentCallback = (app: Application) => {
-    app.all('/agent/**', (req: Request, res: Response) => {
+    app.all(/\/agent\/.*/, (req: Request, res: Response) => {
         // 1. 获取原始URL路径
         const originalPath = req.originalUrl;
 

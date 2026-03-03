@@ -55,7 +55,7 @@ export const afterSearchApp = async (app: App, url: string, shopName: string, op
         return;
     }
     logger.success(`店铺【${shopName}】打开成功!`);
-    await open(url);
+    await open(url, { wait: true });
 };
 
 export const getToken = (url: string): string => {

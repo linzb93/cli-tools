@@ -65,7 +65,7 @@ export const printUserInfo = async (
  */
 export const openPC = (obj: { url: string; serviceName: string; shopName: string }) => {
     logger.success(`店铺【${obj.shopName}】打开成功!`);
-    open(obj.url.replace('app', ''));
+    open(obj.url.replace('app', ''), { wait: true });
 };
 
 /**

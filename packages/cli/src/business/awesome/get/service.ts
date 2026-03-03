@@ -48,7 +48,7 @@ export const awesomeService = async (options?: AwesomeOptions) => {
             const item = results[0];
             logger.info(chalk.green(`Opening: ${item.title} - ${item.description || ''}`));
             if (item.url) {
-                await open(item.url);
+                await open(item.url, { wait: true });
             }
             return;
         }
@@ -73,7 +73,7 @@ export const awesomeService = async (options?: AwesomeOptions) => {
 
         if (url) {
             logger.info(`Opening: ${url}`);
-            await open(url);
+            await open(url, { wait: true });
         }
     } catch (error) {
         logger.error(`Error reading or parsing awesome.json: ${error}`);

@@ -33,11 +33,7 @@ const lineFeed = (str: string, perLineLength = 30): string => {
     return lines.join('\n');
 };
 
-const fetchNpmPackage = async (
-    packageName: string,
-    isMultiple: boolean,
-    options: Options = {},
-) => {
+const fetchNpmPackage = async (packageName: string, isMultiple: boolean, options: Options = {}) => {
     if (!isMultiple) {
         spinner.text = `正在查找${chalk.cyan(packageName)}模块`;
     }
@@ -60,7 +56,7 @@ const fetchNpmPackage = async (
       上次更新：${chalk.green(data.lastPb)}
       最新版本：${chalk.green(data.version)}`);
     if (options.open) {
-        await open(`https://npmjs.com/package/${packageName}`);
+        await open(`https://npmjs.com/package/${packageName}`, { wait: true });
     }
     return data;
 };
@@ -117,4 +113,3 @@ export const searchService = async (packages: string[], options: Options) => {
         logger.error('未检测到依赖名称。');
     }
 };
-
