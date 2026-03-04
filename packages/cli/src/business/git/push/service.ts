@@ -29,13 +29,11 @@ export const pushService = async (options: Options = {}): Promise<void> => {
 
         // 显示进度提示
         logger.info('正在推送代码...');
-
-        // 根据 force 参数确定是否设置上游分支
         if (await isCurrenetBranchPushed()) {
             await executeCommands([gitAtom.push()]);
             logger.success(`成功将分支 ${chalk.green(currentBranch)} 推送到远程`);
         } else {
-            await executeCommands([gitAtom.push(false, currentBranch)]);
+            await executeCommands([gitAtom.push(true, currentBranch)]);
             logger.success(`成功将分支 ${chalk.green(currentBranch)} 推送到远程并设置上游分支`);
         }
     } catch (error: any) {
