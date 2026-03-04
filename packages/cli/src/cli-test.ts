@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import { generateHelpDoc } from '@/utils/helper';
-import testFn from './commands/test';
+import { gitCommand } from './commands/git/index';
 
 const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
@@ -25,10 +25,10 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('test')
-    .option('--name <name>', '名字')
-    .action((option) => {
-        testFn(option);
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand) => {
+        gitCommand(subCommand);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
