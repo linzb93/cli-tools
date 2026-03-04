@@ -45,14 +45,14 @@
   </el-dialog>
 </template>
 
-<script setup>
-import doRequest from '@/helpers/request'
-import { ref } from 'vue'
+<script setup lang="ts">
+import doRequest from '@/helpers/request';
+import { ref } from 'vue';
 
 const visible = defineModel('visible', {
   type: Boolean,
   default: false
-})
+});
 const props = defineProps({
   rules: {
     type: Array,
@@ -62,8 +62,8 @@ const props = defineProps({
     type: Number,
     default: 0
   }
-})
-const formRef = ref()
+});
+const formRef = ref();
 
 const form = ref({
   prefix: '',
@@ -71,7 +71,7 @@ const form = ref({
   method: 'POST',
   body: '',
   headers: ''
-})
+});
 
 const rules = ref({
   prefix: [{ required: true, message: '请选择接口', trigger: 'blur' }],
@@ -81,14 +81,14 @@ const rules = ref({
     {
       validator: (rule, value, callback) => {
         if (value === '') {
-          callback()
-          return
+          callback();
+          return;
         }
         try {
-          JSON.parse(JSON.stringify(value))
-          callback()
+          JSON.parse(JSON.stringify(value));
+          callback();
         } catch (error) {
-          callback(new Error('请求体格式错误，请输入正确的JSON字符串'))
+          callback(new Error('请求体格式错误，请输入正确的JSON字符串'));
         }
       },
       trigger: 'blur'
@@ -98,53 +98,53 @@ const rules = ref({
     {
       validator: (rule, value, callback) => {
         if (value === '') {
-          callback()
-          return
+          callback();
+          return;
         }
         try {
-          JSON.parse(JSON.stringify(value))
-          callback()
+          JSON.parse(JSON.stringify(value));
+          callback();
         } catch (error) {
-          callback(new Error('请求头格式错误，请输入正确的JSON字符串'))
+          callback(new Error('请求头格式错误，请输入正确的JSON字符串'));
         }
       },
       trigger: 'blur'
     }
   ]
-})
+});
 
-const loaded = ref(false)
-const responseData = ref('')
+const loaded = ref(false);
+const responseData = ref('');
 
 const submit = async () => {
-  const isValid = await formRef.value.validate()
+  const isValid = await formRef.value.validate();
   if (!isValid) {
-    return
+    return;
   }
   const res = await doRequest('/agent/debug', {
     ...form.value,
     id: props.itemId
-  })
-  responseData.value = JSON.stringify(res, null, 2)
-  loaded.value = true
-}
+  });
+  responseData.value = JSON.stringify(res, null, 2);
+  loaded.value = true;
+};
 
 const close = () => {
-  visible.value = false
-}
+  visible.value = false;
+};
 
 const closed = () => {
-  responseData.value = ''
+  responseData.value = '';
   form.value = {
     prefix: '',
     url: '',
     method: 'POST',
     body: '',
     headers: ''
-  }
-  formRef.value.resetFields()
-  loaded.value = false
-}
+  };
+  formRef.value.resetFields();
+  loaded.value = false;
+};
 </script>
 <style lang="scss" scoped>
 .response-panel {
