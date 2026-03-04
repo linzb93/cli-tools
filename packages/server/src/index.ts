@@ -9,6 +9,7 @@ import common from './controllers/common';
 import setting from './controllers/setting';
 import { run } from './shared/log';
 import agent, { agentCallback } from './controllers/agent';
+import awesome from './controllers/awesome';
 import { mountVueProjects } from './controllers/vue';
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(`/${config.prefix.static}`, express.static(join(fileURLToPath(import.met
 router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
+router.use('/awesome', awesome);
 router.use('/common', common);
 
 app.use('/api', router);
