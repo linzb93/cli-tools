@@ -24,6 +24,9 @@ if (process.env.MODE === 'cliTest') {
 }
 
 export default defineConfig({
+    define: {
+        'process.env.MODE': JSON.stringify(process.env.MODE),
+    },
     resolve: {
         alias: {
             '@': resolve(process.cwd(), 'src'),
