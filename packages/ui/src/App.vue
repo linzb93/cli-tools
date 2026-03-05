@@ -1,13 +1,9 @@
 <template>
-  <div class="container full-height flexalign-start">
-    <menus />
-    <div class="flexitem-1 cont full-height">
-      <router-view />
-    </div>
+  <div class="cont full-height flexalign-start">
+    <router-view />
   </div>
 </template>
 <script setup lang="ts">
-import Menus from './components/Menus.vue';
 import { useGlobalStore } from '@/store';
 
 const globalStore = useGlobalStore();
