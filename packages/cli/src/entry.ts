@@ -1,17 +1,6 @@
 #!/usr/bin/env node
-import axios from 'axios';
 if (Number(process.version.split('.')[0].replace('v', '')) < 20) {
-    axios
-        .post('http://localhost:7001/nvm-switch', {
-            version: '20',
-        })
-        .then(() => {
-            import('./cli.js');
-        })
-        .catch(() => {
-            console.error('请升级 Node.js 到 20 以上版本');
-            process.exit(1);
-        });
+    console.log(`当前 Node.js 版本为 ${process.version}，低于 20，请切换到 20`);
 } else {
     import('./cli.js');
 }
