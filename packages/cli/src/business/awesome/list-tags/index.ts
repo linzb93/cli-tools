@@ -1,1 +1,0 @@
-export { awesomeListTagsService } from './service';

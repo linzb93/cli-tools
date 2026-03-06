@@ -26,7 +26,6 @@ import { gitCommand } from './commands/git/index';
 import { ideaCommand } from './commands/idea';
 // import npm from './commands/npm';
 import { analyseCommand } from './commands/analyse';
-import { awesomeCommand } from './commands/awesome';
 import { timeCommand } from './commands/time';
 import { replCommand } from './commands/repl';
 import { vueCommand } from './commands/vue';
@@ -73,15 +72,6 @@ program
     .allowUnknownOption()
     .action((subCommand, rest, options) => {
         analyseCommand(subCommand, rest, options);
-    });
-
-program
-    .command('awesome [command]')
-    .description('Search in awesome list')
-    .option('--name <keyword>', 'Search keyword')
-    .option('-t, --tag <tag>', 'Filter by tag')
-    .action((command, options) => {
-        awesomeCommand(command, options);
     });
 
 program

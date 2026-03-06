@@ -1,8 +1,15 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
+import fs from 'fs-extra';
 import cdn from 'vite-plugin-cdn-import';
 import vue from '@vitejs/plugin-vue';
 import globalConfig from '../../config.json';
+
+const file = fs.readJSONSync('../../cache/secret.json');
+const cdnObject = file.cdn;
+if (!cdnObject) {
+  throw new Error('cdnObject is empty');
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,12 +27,12 @@ export default defineConfig({
         {
           name: 'vue',
           var: 'Vue',
-          path: 'https://cdn.staticfile.org/vue/3.5.6/vue.global.min.js'
+          path: cdnObject.vue
         },
         {
           name: 'element-plus',
           var: 'ElementPlus',
-          path: 'https://cdn.staticfile.org/element-plus/2.11.4/index.full.min.js'
+          path: cdnObject['element-plus']
         }
       ]
     })
