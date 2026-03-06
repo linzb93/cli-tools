@@ -85,7 +85,7 @@ export const executeBaseManagers = async (commitMessage: string, currentBranch: 
         const gitStatus = await getGitProjectStatus();
 
         if (gitStatus.status === GitStatusMap.Uncommitted) {
-            await executeCommands(['git add .', gitAtom.commit(commitMessage)]);
+            await executeCommands(['git add .', gitAtom.commit(commitMessage)], { silentStart: true });
         }
 
         // 检查当前分支是否已推送到远端

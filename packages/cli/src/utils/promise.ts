@@ -167,13 +167,21 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
     throw new Error('Maximum retry attempts reached');
 }
 
+interface ExecuateOptions {
+    /**
+     * 是否静默开始，不打印开始时间
+     * @default false
+     */
+    silentStart?: boolean;
+}
+
 /**
  * 执行命令行命令列表
  * @param {Command[]} commands - 命令列表
- * @param {{ silentStart?: boolean }} [options] - 配置选项
+ * @param {ExecuateOptions} [options] - 配置选项
  * @returns {Promise<void>}
  */
-export async function executeCommands(commands: Command[], options?: { silentStart?: boolean }): Promise<void> {
+export async function executeCommands(commands: Command[], options?: ExecuateOptions): Promise<void> {
     const startTime = dayjs();
     if (!options?.silentStart) {
         console.log(`${startTime.format('HH:mm:ss')} 开始执行命令`);
