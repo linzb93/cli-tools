@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 import cdn from 'vite-plugin-cdn-import';
 import vue from '@vitejs/plugin-vue';
 import globalConfig from '../../config.json';
-import move from './vite-plugins/move';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -29,8 +28,7 @@ export default defineConfig({
           path: 'https://cdn.staticfile.org/element-plus/2.11.4/index.full.min.js'
         }
       ]
-    }),
-    move(`../server/dist/${globalConfig.prefix.static}`)
+    })
   ],
   resolve: {
     alias: {

@@ -13,18 +13,18 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { View, Clock } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router';
+import { View, Clock, Star } from '@element-plus/icons-vue';
 
-const router = useRouter()
+const router = useRouter();
 
 /**
  * 菜单项接口定义
  */
 interface Menu {
-  title: string
-  to: string
-  icon: any
+  title: string;
+  to: string;
+  icon: any;
 }
 
 /**
@@ -40,22 +40,29 @@ const menuList: Menu[] = [
     title: '代理',
     to: '/agent',
     icon: Clock
+  },
+  {
+    title: 'Awesome',
+    to: '/awesome',
+    icon: Star
   }
-]
+];
 
 /**
  * 跳转到指定菜单
  * @param item 菜单项
  */
 const jump = (item: Menu) => {
-  router.push(item.to)
-}
+  router.push(item.to);
+};
 </script>
 
 <style scoped lang="scss">
 .home {
   text-align: center;
   padding-top: 100px;
+  width: 1200px;
+  margin: 0 auto;
   h1 {
     margin-bottom: 60px;
     font-size: 36px;
@@ -88,12 +95,12 @@ const jump = (item: Menu) => {
     transform: translateY(-8px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
     border-color: #409eff;
-    
+
     .menu-icon {
       color: #409eff;
       transform: scale(1.1);
     }
-    
+
     .menu-title {
       color: #409eff;
       font-weight: 600;
