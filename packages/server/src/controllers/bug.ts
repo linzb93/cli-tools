@@ -17,52 +17,52 @@ const getLastDate = () => {
     return dayjs().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
 };
 
-router.post('/getApps', (_, res) => {
-    sql((db) => db.monitor)
-        .then((result) => {
-            response(res, {
-                list: result,
-            });
-        })
-        .catch((err) => {
-            res.status(500).send(err);
+router.post('/getApps', async (_, res) => {
+    try {
+        const result = await sql((db) => db.monitor);
+        response(res, {
+            list: result,
         });
+    } catch (err) {
+        res.status(500).send(err);
+    }
 });
-router.post('/getCached', (_, res) => {
-    sql((data, db) => {
-        const list = clone(data.monitorResultCache);
-        data.monitorResultCache = [];
-        db.write();
-        return list;
-    })
-        .then((result) => {
-            response(res, {
-                list: result,
-                lastDate: getLastDate(),
-            });
-        })
-        .catch((err) => {
-            res.status(500).send(err);
+router.post('/getCached', async (_, res) => {
+    try {
+        const result = await sql((data, db) => {
+            const list = clone(data.monitorResultCache);
+            data.monitorResultCache = [];
+            db.write();
+            return list;
         });
-});
-router.post('/init', (_, res) => {
-    sql((db) => db.monitorResultCache)
-        .then((result) => {
-            response(res, {
-                inited: result && !!result.length,
-            });
-        })
-        .catch((err) => {
-            res.status(500).send(err);
+        response(res, {
+            list: result,
+            lastDate: getLastDate(),
         });
+    } catch (err) {
+        res.status(500).send(err);
+    }
 });
-router.post('/saveApps', (req, res) => {
+router.post('/init', async (_, res) => {
+    try {
+        const result = await sql((db) => db.monitorResultCache);
+        response(res, {
+            inited: result && !!result.length,
+        });
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+router.post('/saveApps', async (req, res) => {
     const list = req.body;
-    sql((db) => {
-        db.monitor = list;
-    }).then(() => {
+    try {
+        await sql((db) => {
+            db.monitor = list;
+        });
         response(res, null);
-    });
+    } catch (error) {
+        response(res, { message: error.message });
+    }
 });
 export default router;
 

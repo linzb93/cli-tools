@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const router = Router();
-app.use(`/${config.prefix.static}`, express.static(join(fileURLToPath(import.meta.url), `../${config.prefix.static}`)));
+app.use(`/${config.prefix.static}`, express.static(join(fileURLToPath(import.meta.url), `../../../ui/dist`)));
 router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
