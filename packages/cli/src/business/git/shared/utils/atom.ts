@@ -115,8 +115,13 @@ function pull(): CommandConfig {
                     shouldStop: true,
                 };
             }
+            if (errMsg.toLowerCase().includes('timeout')) {
+                return {
+                    shouldStop: false,
+                };
+            }
             return {
-                shouldStop: false,
+                shouldStop: true,
             };
         },
     };
@@ -146,15 +151,19 @@ function merge(branch: string): CommandConfig {
  * @returns {CommandConfig} Git 推送代码命令配置对象
  */
 function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConfig {
-    if (isLocalBranch) {
-        return {
-            message: `git push --set-upstream origin ${currenetBranchName}`,
-            retryTimes: 100,
-        };
-    }
     return {
-        message: 'git push',
+        message: isLocalBranch ? `git push --set-upstream origin ${currenetBranchName}` : 'git push',
         retryTimes: 100,
+        onError: async (errMsg) => {
+            if (errMsg.toLowerCase().includes('timeout')) {
+                return {
+                    shouldStop: false,
+                };
+            }
+            return {
+                shouldStop: true,
+            };
+        },
     };
 }
 
