@@ -17,28 +17,49 @@ export function fmtCommitMsg(rawCommit: string): string {
         replaceFunction?: (commit: string) => string;
     }[] = [
         {
-            value: 'feat',
-        },
-        {
-            value: 'fix',
-            key: ['修复', 'bug'],
+            value: 'revert',
+            key: ['回滚', '撤销', 'revert', 'undo'],
         },
         {
             value: 'docs',
-            key: '文档',
+            key: ['文档', '注释', 'doc', 'docs', 'document', 'comment', 'readme'],
         },
         {
             value: 'style',
-            key: '样式',
+            key: ['样式', '格式', 'format', 'lint', 'style', 'code style', 'prettier', 'eslint'],
         },
         {
-            value: 'refactor',
-            key: '重构',
-            replaceFunction: (commit) => commit.replace(/^重构[,|，]/, ''),
+            value: 'perf',
+            key: ['性能', '速度', 'perf', 'performance', 'speed'],
         },
         {
             value: 'test',
-            key: '用例',
+            key: ['测试', '用例', 'test', 'case', 'spec', 'e2e', 'unit', 'coverage'],
+        },
+        {
+            value: 'build',
+            key: ['构建', '依赖', 'build', 'dependencies', 'npm', 'yarn', 'pnpm', 'webpack', 'vite', 'rollup', 'cargo'],
+        },
+        {
+            value: 'ci',
+            key: ['ci', 'workflow', 'pipeline', 'action', 'jenkins', 'travis', 'circle', 'github actions'],
+        },
+        {
+            value: 'chore',
+            key: ['杂项', '工具', '配置', 'chore', 'tool', 'config', 'settings', '.gitignore', 'package.json'],
+        },
+        {
+            value: 'refactor',
+            key: ['重构', '优化', 'refactor', 'improve', 'optimize'],
+            replaceFunction: (commit) => commit.replace(/^(重构|优化)[,|，|\s|:|：|-]/, ''),
+        },
+        {
+            value: 'fix',
+            key: ['修复', 'bug', 'fix', '解决', '问题', 'issue'],
+        },
+        {
+            value: 'feat',
+            key: ['新增', '功能', 'feature', 'new', 'feat', '添加', 'implement'],
         },
     ];
     const match = prefixes.find((item) => commit.startsWith(`${item.value}:`));
