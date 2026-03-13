@@ -78,7 +78,8 @@ const isEdit = computed(() => !!props.data);
 
 const rules = reactive<FormRules>({
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  url: [{ required: true, message: '请输入URL', trigger: 'blur' }],
+  // url: [{ required: true, message: '请输入URL', trigger: 'blur' }],
+  description: [{ required: true, message: '请输入描述', trigger: 'blur' }],
 });
 
 watch(
@@ -113,7 +114,7 @@ const handleSubmit = async () => {
       try {
         const payload = {
           title: form.title,
-          url: form.url,
+          url: form.url || `https://www.npmjs.com/package/${form.title}`, // 默认使用 npm 链接
           description: form.description,
           tag: form.tags.join(','),
           oldTitle: isEdit.value ? props.data?.title : undefined,

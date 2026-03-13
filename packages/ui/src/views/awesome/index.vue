@@ -168,7 +168,7 @@ const handleDelete = async (row: AwesomeItem) => {
 };
 
 onMounted(() => {
-  fetchList();
+  // fetchList(); // 初始不加载列表，搜索后才加载
   fetchTags();
 });
 </script>
