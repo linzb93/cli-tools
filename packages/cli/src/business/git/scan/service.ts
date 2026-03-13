@@ -11,6 +11,8 @@ import progress from '@/utils/progress';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import { getGitLogData } from '../log';
 import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
+import gitAtom from '../shared/utils/atom';
+import { executeCommands } from '@/utils/promise';
 import type { Options, ResultItem } from './types';
 
 /**
@@ -276,7 +278,7 @@ export const scanService = async (options: Options) => {
                         console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
                         return;
                     }
-                    await pushItem(item);
+                    await executeCommands([gitAtom.push()]);
                 } else {
                     const unpushed = list.filter((i) => i.status === GitStatusMap.Unpushed);
                     if (unpushed.length === 0) {
