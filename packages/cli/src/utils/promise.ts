@@ -10,7 +10,7 @@ interface RetryOptions {
      * 最大重试次数
      * @default 10
      */
-    times?: number;
+    maxAttempts?: number;
     /**
      * 失败回调函数
      * @param {number} attempt - 当前重试次数
@@ -40,7 +40,7 @@ export interface CommandConfig {
      * 最大重试次数
      * @default 10
      */
-    retryTimes?: number;
+    maxAttempts?: number;
     /**
      * 错误回调函数
      * @param {string} error - 错误信息
@@ -115,7 +115,7 @@ async function executeCommand(config: CommandConfig): Promise<void> {
             }
         },
         {
-            times: config.retryTimes || 10,
+            maxAttempts: config.maxAttempts || 10,
             onFail: (attempt, error) => {
                 const shouldStop = error instanceof StopExecutionError;
                 if (!shouldStop) {
@@ -141,10 +141,10 @@ async function executeCommand(config: CommandConfig): Promise<void> {
  * @returns {Promise<T>} 异步函数的返回值
  */
 export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
-    const { times = 10, onFail } = options;
+    const { maxAttempts = 10, onFail } = options;
     let attempt = 1;
 
-    while (attempt <= times) {
+    while (attempt <= maxAttempts) {
         try {
             return await fn();
         } catch (error) {
@@ -156,7 +156,7 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
                 }
             }
 
-            if (attempt === times) {
+            if (attempt === maxAttempts) {
                 throw error;
             }
 

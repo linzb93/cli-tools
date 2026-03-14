@@ -128,7 +128,7 @@ function commit(message: string): CommandConfig {
 function pull(): CommandConfig {
     return {
         message: 'git pull',
-        retryTimes: 100,
+        maxAttempts: 100,
         onError: async (errMsg) => {
             if (errMsg.includes('You have unstaged changes')) {
                 await executeCommands(['git add .', 'git commit -m feat:update', this.pull()]);
@@ -174,7 +174,7 @@ function merge(branch: string): CommandConfig {
 function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConfig {
     return {
         message: isLocalBranch ? `git push --set-upstream origin ${currenetBranchName}` : 'git push',
-        retryTimes: 100,
+        maxAttempts: 100,
         onError: async (errMsg) => {
             if (errMsg.toLowerCase().includes('timeout')) {
                 return {
@@ -198,7 +198,7 @@ function clone(repo: string, dir?: string): CommandConfig {
     const cmd = dir ? `git clone ${repo} ${dir}` : `git clone ${repo}`;
     return {
         message: cmd,
-        retryTimes: 100,
+        maxAttempts: 100,
     };
 }
 
