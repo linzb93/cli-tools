@@ -4,7 +4,10 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';
 import chalk from 'chalk';
+import { execaCommand } from 'execa';
+import inquirer from '@/utils/inquirer';
 import type { VersionOptions } from './types';
+import gitAtom from '../git/shared/utils/atom';
 
 /**
  * version 命令的业务实现
@@ -31,6 +34,37 @@ export const versionService = async (options: VersionOptions): Promise<void> => 
                 return;
             }
             newVersion = semver.inc(currentVersion, 'patch') as string;
+
+            // 检测是否存在 dev-${newVersion} 分支
+            let isBranchExist = false;
+            try {
+                await execaCommand(`git show-ref --verify --quiet refs/heads/dev-${newVersion}`);
+                isBranchExist = true;
+            } catch (e) {
+                isBranchExist = false;
+            }
+
+            // 如果存在该分支，使用 inquirer 让用户输入新版本
+            if (isBranchExist) {
+                const answer = await inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'version',
+                        message: `分支 dev-${newVersion} 已存在，请输入新的版本号:`,
+                        validate: async (input: string) => {
+                            if (!input) return '版本号不能为空';
+                            if (!semver.valid(input)) return '版本号无效';
+                            try {
+                                await execaCommand(`git show-ref --verify --quiet refs/heads/dev-${input}`);
+                                return `分支 dev-${input} 依然存在，请重新输入`;
+                            } catch (e) {
+                                return true;
+                            }
+                        },
+                    },
+                ]);
+                newVersion = answer.version;
+            }
         }
 
         // 验证新版本号
@@ -47,7 +81,12 @@ export const versionService = async (options: VersionOptions): Promise<void> => 
         // 2. 拉取最新代码
         // 3. 创建新分支 dev-{newVersion}
         logger.info('正在执行 Git 操作...');
-        await executeCommands(['git checkout master', 'git pull', `git checkout -b dev-${newVersion}`]);
+        await executeCommands([
+            'git checkout master',
+            'git pull',
+            `git checkout -b dev-${newVersion}`,
+            gitAtom.push(true, `dev-${newVersion}`),
+        ]);
 
         // 修改 package.json
         pkg.version = newVersion;
