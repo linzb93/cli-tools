@@ -154,37 +154,16 @@ const cli = (content: string): void => {
     // 获取当前时间的年份和季度
     const year = dayjs().format('YYYY');
     const quarter = Math.ceil(Number(dayjs().format('MM')) / 3);
-    const filename = `${year}Q${quarter}.json`;
+    const filename = `${year}Q${quarter}.log`;
     const targetFilename = resolve(cacheRoot, 'track', filename);
 
-    // 构建新的记录
-    const newRecord = {
-        time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        nodejsVersion: process.version,
-        command: content.trim(),
-    };
+    const time = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const command = content.trim();
+    const logLine = `[${time}] ${command}\n`;
 
-    let records: Array<{ time: string; nodejsVersion: string; command: string }> = [];
-
-    // 如果文件已存在，读取现有记录
-    if (fs.existsSync(targetFilename)) {
-        try {
-            const fileContent = fs.readFileSync(targetFilename, 'utf8');
-            if (fileContent.trim()) {
-                records = JSON.parse(fileContent);
-            }
-        } catch (error) {
-            // 如果解析失败，从空数组开始
-            console.warn('读取现有日志文件失败，创建新文件:', error);
-        }
-    }
-
-    // 添加新记录
-    records.push(newRecord);
-
-    // 写回文件
+    // 追加到文件
     try {
-        fs.writeFileSync(targetFilename, JSON.stringify(records, null, 2), 'utf8');
+        fs.appendFileSync(targetFilename, logLine, 'utf8');
     } catch (error) {
         console.error('写入日志文件失败:', error);
     }

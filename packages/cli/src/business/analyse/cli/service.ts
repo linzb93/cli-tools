@@ -75,7 +75,7 @@ const getTimeFilterRange = (period: TimePeriod): { start: Date; end: Date } | nu
  * @param record 记录对象
  * @returns 解析结果
  */
-const parseRecord = (record: { time: string; nodejsVersion: null; command: string }) => {
+const parseRecord = (record: { time: string; command: string }) => {
     const command = record.command;
     const cmdMatch = command.match(/^([a-z]+)\s*([a-z]*)/);
     const cmd = cmdMatch ? cmdMatch[1] : '';
@@ -94,21 +94,27 @@ const parseRecord = (record: { time: string; nodejsVersion: null; command: strin
 export const cliAnalyseService = async (options: CliAnalyseOptions = {}) => {
     const period = options.period || 'all';
     const trackDir = join(cacheRoot, 'track');
-    const files = (await fs.readdir(trackDir)).filter((file) => file.endsWith('.json')).sort();
-    const records: Array<{ time: string; nodejsVersion: null; command: string }> = [];
+    const files = (await fs.readdir(trackDir)).filter((file) => file.endsWith('.log')).sort();
+    const records: Array<{ time: string; command: string }> = [];
 
     // 获取时间过滤范围
     const filterRange = getTimeFilterRange(period);
 
     for (const file of files) {
         const content = await fs.readFile(join(trackDir, file), 'utf8');
-        let fileRecords: Array<{ time: string; nodejsVersion: null; command: string }> = [];
+        const fileRecords: Array<{ time: string; command: string }> = [];
 
-        try {
-            fileRecords = JSON.parse(content);
-        } catch (error) {
-            console.warn(`解析文件 ${file} 失败:`, error);
-            continue;
+        const lines = content.split('\n').filter((line) => line.trim() !== '');
+        for (const line of lines) {
+            const match = line.match(/^\[(.*?)\]\s+(.*)$/);
+            if (match) {
+                fileRecords.push({
+                    time: match[1],
+                    command: match[2],
+                });
+            } else {
+                console.warn(`解析文件 ${file} 中的行失败:`, line);
+            }
         }
 
         // 如果时间过滤启用，只保留在指定时间范围内的记录
