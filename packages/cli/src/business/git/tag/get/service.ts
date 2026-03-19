@@ -33,15 +33,23 @@ const parseVersion = (tag: string, type: string): VersionInfo | null => {
 
 const findMaxVersion = (versions: VersionInfo[]): VersionInfo => {
     return versions.reduce((max, current) => {
-        if (current.major > max.major) return current;
+        if (current.major > max.major) {
+            return current;
+        }
         if (current.major === max.major) {
-            if (current.minor > max.minor) return current;
+            if (current.minor > max.minor) {
+                return current;
+            }
             if (current.minor === max.minor) {
-                if (current.patch > max.patch) return current;
+                if (current.patch > max.patch) {
+                    return current;
+                }
                 if (current.patch === max.patch) {
                     const currentBuild = current.build || 0;
                     const maxBuild = max.build || 0;
-                    if (currentBuild > maxBuild) return current;
+                    if (currentBuild > maxBuild) {
+                        return current;
+                    }
                 }
             }
         }
@@ -112,6 +120,11 @@ export const tagService = async (options: Options): Promise<void> => {
         await executeCommands([
             {
                 message: `git tag ${newTag}`,
+                onError: async () => {
+                    return {
+                        shouldStop: true,
+                    };
+                },
             },
             {
                 message: `git push origin ${newTag}`,

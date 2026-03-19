@@ -115,7 +115,7 @@ async function executeCommand(config: CommandConfig): Promise<void> {
             }
         },
         {
-            maxAttempts: config.maxAttempts || 10,
+            maxAttempts: config.maxAttempts || 1,
             onFail: (attempt, error) => {
                 const shouldStop = error instanceof StopExecutionError;
                 if (!shouldStop) {
