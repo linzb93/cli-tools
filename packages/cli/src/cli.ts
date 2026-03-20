@@ -183,8 +183,8 @@ program
     .option('--test', '测试环境')
     .option('--user', '根据token获取用户信息')
     .option('--full', '先获取登录账号的店铺信息')
+    .option('--platform <platformName>', '指定平台名称')
     .option('--fix <url>', '补齐完整的登录地址')
-    .option('--pt <platformName>', '指定平台名称')
     .option('--version <version>', '指定版本')
     .option('--type <type>', '指定类型')
     .action((data, options) => {

@@ -34,7 +34,7 @@ export interface Options {
     /**
      * 平台名称
      * */
-    pt: string;
+    platform: string;
     /**
      * 类型，各应用根据需要自定义
      */

@@ -55,30 +55,9 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
     };
 
     const getShopUrl = async (keyword: string, options: Options): Promise<string> => {
-        const isTest = options.test;
-        const platform = options.pt || 'meituan'; // Default or from options? Base used `platform` arg.
-
-        // Note: appRunner passes options.pt if options is passed.
-        // But appRunner calls app.getShopUrl(keyword, options).
-        // I need to extract platform from options.
-        // Wait, appRunner signature:
-        // const resultUrl = await app.getShopUrl(keyword, options);
-        // ZhanwaiBase.getShopUrl(keyword, isTest, platform)
-        // So I should use options.pt.
-
-        const pt = options.pt;
+        const pt = options.platform;
         if (!pt) {
-            // Logic in ZhanwaiBase didn't handle undefined platform well,
-            // but AbstractApp called getShopUrl(keyword, options.test, options.pt).
-            // So pt can be undefined.
-            // ZhanwaiBase expects platform string.
-            // If undefined, it might fail.
-            // But existing code assumes it's provided or handled?
-            // Actually, `occ` command probably requires `pt` or defaults it.
-            // Let's assume options.pt is string. If not, maybe throw error or default.
-            // ZhanwaiBase code:
-            // if (this.name === 'kdb' && platform === 'jingdong') ...
-            // It compares platform.
+            logger.error('平台名称不能为空, 请指定--platform参数', true);
         }
 
         if (name === 'kdb' && pt === 'jingdong') {
@@ -126,7 +105,6 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
             logger.error('该账号下店铺信息为空');
             process.exit(0);
         }
-
         const { shopId } = shopRes.data.result.userDetailVoPageInfo.list.find((item: { platForm: string }) => {
             if (pt === 'meituan') {
                 return item.platForm === '美团';
