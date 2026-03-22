@@ -54,6 +54,8 @@ if (!commitMap.map((cmt) => `${cmt.name}:`).find((cmt) => commitMessage.startsWi
     commitMap.forEach((cmt) => {
         console.log(`${chalk.cyan(`[${cmt.name}]`)}${cmt.description}`);
     });
+    console.log(`example:`);
+    console.log(`feat: 新增一个功能`);
     process.exit(1);
 } else {
     process.exit(0);
