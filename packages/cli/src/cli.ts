@@ -31,7 +31,7 @@ import { replCommand } from './commands/repl';
 import { vueCommand } from './commands/vue';
 import { serverCommand } from './commands/server';
 import { sassCommand } from './commands/sass';
-import { versionCommand } from './commands/version';
+import { iterationCommand } from './commands/iteration';
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -258,10 +258,12 @@ program
         vueCommand(option);
     });
 program
-    .command('version [newVersion]')
-    .description('创建新版本分支并更新版本号')
-    .action((newVersion: string) => {
-        versionCommand(newVersion);
+    .command('iteration')
+    .description('版本迭代：更新版本号并处理Git工作流')
+    .option('--fix', '三级修复版本')
+    .option('--version <version>', '指定版本号')
+    .action((options) => {
+        iterationCommand(options);
     });
 // program
 //     .command('yapi <url>')

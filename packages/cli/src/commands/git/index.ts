@@ -4,7 +4,6 @@ import { pullCommand } from './pull';
 import { deployCommand } from './deploy';
 import { branchCommand } from './branch';
 import { commitCommand } from './commit';
-import { versionCommand } from '../version';
 import { cloneCommand } from './clone';
 import { scanCommand } from './scan';
 import { mergeCommand } from './merge';
@@ -27,7 +26,6 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): v
         scan: scanCommand,
         merge: mergeCommand,
         log: logCommand,
-        version: versionCommand,
         clone: cloneCommand,
     };
     // 执行对应的子命令
