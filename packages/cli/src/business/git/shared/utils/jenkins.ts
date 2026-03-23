@@ -1,12 +1,16 @@
 import open from 'open';
 import { readPackage as readPkg } from 'read-pkg';
 import { readSecret } from '@cli-tools/shared/utils/secret';
+import fs from 'fs';
+import path from 'path';
 
 interface JenkinsProject {
     name: string;
     id: string;
     onlineId?: string;
     onlineName?: string;
+    lastTag?: string;
+    type?: string;
 }
 
 /**
@@ -63,4 +67,29 @@ export const getProjectName = async (type?: string): Promise<JenkinsProject> => 
         ...jenkins,
         onlineId: jenkins.onlineId || jenkins.id.replace(/[-_]test$/, ''),
     };
+};
+
+/**
+ * 更新 package.json 中的 lastTag
+ */
+export const updateLastTag = async (type: string | undefined, newTag: string): Promise<void> => {
+    const pkgPath = path.resolve(process.cwd(), 'package.json');
+    if (fs.existsSync(pkgPath)) {
+        const pkgContent = await fs.promises.readFile(pkgPath, 'utf-8');
+        const pkg = JSON.parse(pkgContent);
+        if (pkg.jenkins) {
+            if (Array.isArray(pkg.jenkins)) {
+                const targetType = type && type !== 'v' ? type : undefined;
+                const jenkinsItem = pkg.jenkins.find(
+                    (item: JenkinsProject) => item.type === targetType || (!targetType && !item.type),
+                );
+                if (jenkinsItem) {
+                    jenkinsItem.lastTag = newTag;
+                }
+            } else {
+                pkg.jenkins.lastTag = newTag;
+            }
+            await fs.promises.writeFile(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+        }
+    }
 };
