@@ -91,6 +91,19 @@ export interface Database {
             to: string;
         }[];
     }[];
+    /**
+     * 目录跳转历史记录，按使用频率存储
+     */
+    cdHistory?: {
+        /**
+         * 目标路径
+         */
+        path: string;
+        /**
+         * 访问频次
+         */
+        count: number;
+    }[];
 }
 
 /**

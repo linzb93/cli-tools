@@ -32,6 +32,7 @@ import { vueCommand } from './commands/vue';
 import { serverCommand } from './commands/server';
 import { sassCommand } from './commands/sass';
 import { iterationCommand } from './commands/iteration';
+import { cdCommand } from './commands/cd';
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -94,6 +95,13 @@ program
     .option('-r, --root', '清理根目录下的')
     .action((filename, options) => {
         clearCommand(filename, options);
+    });
+
+program
+    .command('cd [path]')
+    .description('记录并跳转目录')
+    .action((targetPath) => {
+        cdCommand(targetPath);
     });
 
 program

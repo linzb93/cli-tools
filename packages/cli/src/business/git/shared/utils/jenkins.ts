@@ -1,8 +1,8 @@
 import open from 'open';
 import { readPackage as readPkg } from 'read-pkg';
 import { readSecret } from '@cli-tools/shared';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 interface JenkinsProject {
     name: string;

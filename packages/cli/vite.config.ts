@@ -44,7 +44,7 @@ export default defineConfig({
                 entryFileNames: '[name].js',
             },
             external: [
-                ...Object.keys(allDependencies),
+                ...Object.keys(allDependencies).filter((dep) => dep !== '@cli-tools/shared'),
                 /^node:.*/,
                 'assert',
                 'events', // 这两个是因为listr模块添加的
