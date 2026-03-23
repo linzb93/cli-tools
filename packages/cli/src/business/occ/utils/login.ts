@@ -2,7 +2,7 @@ import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
 import open from 'open';
 import { useAI } from '@/business/ai/common/implementation/index';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import serviceGenerator from '@/utils/http';
 

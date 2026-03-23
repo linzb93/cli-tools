@@ -1,6 +1,6 @@
 import open from 'open';
 import { readPackage as readPkg } from 'read-pkg';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import fs from 'fs';
 import path from 'path';
 

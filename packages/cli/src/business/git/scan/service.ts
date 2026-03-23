@@ -5,7 +5,7 @@ import Table from 'cli-table3';
 import { execa, execaCommand } from 'execa';
 import pMap from 'p-map';
 import pReduce from 'p-reduce';
-import { sql } from '@cli-tools/shared/utils/sql';
+import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import progress from '@/utils/progress';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';

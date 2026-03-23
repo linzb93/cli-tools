@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { isWin } from '@cli-tools/shared/constant';
+import { isWin } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import { groupBy } from 'lodash-es';
 import type { IShortcutItem } from './types';

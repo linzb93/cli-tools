@@ -7,7 +7,7 @@ import { resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fork } from 'node:child_process';
 import fs from 'fs-extra';
-import { sql, type Database } from '@cli-tools/shared/utils/sql';
+import { sql, type Database } from '@cli-tools/shared';
 import * as git from '../git/shared/utils';
 import { objectToCmdOptions } from '@/utils/helper';
 import globalConfig from '../../../../../config.json';

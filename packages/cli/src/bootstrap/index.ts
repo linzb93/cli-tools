@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
 import { logger } from '@/utils/logger';
 import { Command } from 'commander';
-import { isWin } from '@cli-tools/shared/constant';
-import { tempPath } from '@cli-tools/shared/constant/path';
+import { isWin } from '@cli-tools/shared';
+import { tempPath } from '@cli-tools/shared';
 
 export default async (command: Command) => {
     if (!isWin) {

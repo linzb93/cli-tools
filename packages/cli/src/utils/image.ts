@@ -1,6 +1,6 @@
 import intoStream from 'into-stream';
 import OSS from 'ali-oss';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import { join } from 'node:path';
 import slash from 'slash';
 import { type Readable } from 'node:stream';
