@@ -10,7 +10,7 @@ import setting from './controllers/setting';
 import { run } from './shared/log';
 import agent, { agentCallback } from './controllers/agent';
 import awesome from './controllers/awesome';
-import { mountVueProjects } from './controllers/vue';
+import { mountVueProjects, vueRouter } from './controllers/vue';
 
 const app = express();
 
@@ -25,6 +25,7 @@ router.use('/setting', setting);
 router.use('/agent', agent);
 router.use('/awesome', awesome);
 router.use('/common', common);
+router.use('/vue', vueRouter);
 
 app.use('/api', router);
 agentCallback(app);

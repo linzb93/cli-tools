@@ -1,8 +1,7 @@
 import qs from 'node:querystring';
 import serviceGenerator from '@/utils/http';
 import encryptPassword from '../utils/encryptPassword';
-import { readSecret } from '@cli-tools/shared';
-import { HTTP_STATUS } from '@cli-tools/shared';
+import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import { App, Options } from '../types';
 

@@ -18,7 +18,7 @@ export function registerStartVueBuildedProjectCommand(context: vscode.ExtensionC
             const path = uri.fsPath;
 
             try {
-                const response = await fetch('http://localhost:9527/vue/start', {
+                const response = await fetch('http://localhost:9527/api/vue/start', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

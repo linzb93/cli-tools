@@ -13,12 +13,9 @@ export interface Database {
      * vue项目服务器启动配置
      */
     vue: {
-        name: string;
         path: string;
         id: number;
-        command: string;
-        publicPath: string;
-        defaultPort?: number;
+        publicPath?: string;
     }[];
     /**
      * 前端页面导航菜单

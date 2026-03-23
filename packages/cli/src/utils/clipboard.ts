@@ -1,6 +1,5 @@
 import { execaCommand as execa } from 'execa';
-import { isWin } from '@cli-tools/shared';
-import { cmdName, parseJSON, getExecutePath } from '@cli-tools/shared';
+import { isWin, cmdName, parseJSON, getExecutePath } from '@cli-tools/shared';
 
 const pythonExecutePath = getExecutePath(`image-clipboard-${isWin ? 'win' : 'mac'}`);
 const imageClipboard = {

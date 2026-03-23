@@ -2,48 +2,122 @@ import { showOpenDialog } from '@/utils/dialog';
 import { execaCommand as execa } from 'execa';
 import clipboardy from 'clipboardy';
 import chalk from 'chalk';
-import internalIp from 'internal-ip';
-import { resolve, join, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { fork } from 'node:child_process';
+import { join } from 'node:path';
 import fs from 'fs-extra';
 import { sql, type Database } from '@cli-tools/shared';
 import * as git from '../git/shared/utils';
-import { objectToCmdOptions } from '@/utils/helper';
-import globalConfig from '../../../../../config.json';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
 import inquirer from '@/utils/inquirer';
 import type { Options, ProjectConfig } from './types';
+import { startStaticServer } from './staticServer';
 
 /**
  * 命令主入口
  * @param options 命令选项
  */
 export const vueService = async (options: Options) => {
-    if (options.checkout) {
-        await checkoutBranchAndStartServer(options);
-        return;
-    }
-
     // 获取项目配置
     const projectConfig = await getProjectConfig(options);
     if (!projectConfig) {
         return;
     }
 
-    // 执行构建命令
-    if (!options.server) {
-        await buildProject(projectConfig);
+    // 智能打包：检查 node版本和构建脚本
+    if (!options.skip) {
+        await smartBuildProject(projectConfig);
     }
 
     // 保存项目信息到数据库
-    if (!options.list) {
+    if (!options.select) {
         await saveProjectToDatabase(projectConfig);
     }
 
     // 启动服务器
-    await startServer(projectConfig.cwd, projectConfig.publicPath, projectConfig.port);
+    spinner.text = '正在启动静态服务...';
+    try {
+        const { url } = await startStaticServer({ cwd: projectConfig.cwd });
+        spinner.succeed(`服务已启动\n${chalk.magenta(url)}`);
+        clipboardy.writeSync(url);
+    } catch (err) {
+        spinner.fail('启动服务失败');
+        logger.error(String(err));
+    }
+    process.exit(0);
+};
+
+/**
+ * 智能打包流程
+ * @param config 项目配置
+ */
+const smartBuildProject = async (config: ProjectConfig): Promise<void> => {
+    logger.backwardConsole();
+
+    const packageJsonPath = join(config.cwd, 'package.json');
+    if (!(await fs.pathExists(packageJsonPath))) {
+        logger.error('找不到 package.json，无法执行打包');
+        return;
+    }
+
+    const pkg = await fs.readJSON(packageJsonPath);
+    const scripts = pkg.scripts || {};
+
+    // 找出所有 build 相关的命令
+    const buildScripts = Object.keys(scripts).filter(
+        (key) =>
+            key.startsWith('build') ||
+            scripts[key].includes('vue-cli-service build') ||
+            scripts[key].includes('vite build'),
+    );
+
+    let targetCommand = 'build';
+
+    if (buildScripts.length === 0) {
+        logger.warn('未找到明显的构建脚本，将尝试执行 npm run build');
+    } else if (buildScripts.length === 1) {
+        targetCommand = buildScripts[0];
+    } else {
+        // 如果有多个，提示用户选择
+        const { selectedScript } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'selectedScript',
+                message: '检测到多个构建命令，请选择一个执行',
+                choices: buildScripts,
+            },
+        ]);
+        targetCommand = selectedScript;
+    }
+
+    // 判断 Node.js 版本
+    // 简单判断：如果包含 vue-cli-service 且可能是旧版本，尝试使用 v14
+    let needsNode14 = false;
+    if (await fs.pathExists(join(config.cwd, 'vue.config.js'))) {
+        needsNode14 = true;
+    }
+
+    const branchName = await git.getCurrentBranchName(config.cwd);
+    spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(`${branchName}分支`)})执行命令：${chalk.green(`npm run ${targetCommand}`)}，请稍后...`;
+
+    if (needsNode14) {
+        spinner.text += chalk.gray(' (检测到旧版 Vue 项目，将通过服务端切换 Node.js v14 执行)');
+        try {
+            // 调用服务端接口切换 NVM 并打包
+            const response = await fetch(`http://127.0.0.1:7001/api/nvm-switch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cwd: config.cwd, command: `npm run ${targetCommand}` }),
+            });
+            if (!response.ok) {
+                throw new Error(`服务端构建失败: ${response.statusText}`);
+            }
+        } catch (e) {
+            logger.error(`调用 nvm-switch 失败，降级为本地构建: ${e}`);
+            await execa(`npm run ${targetCommand}`, { cwd: config.cwd });
+        }
+    } else {
+        await execa(`npm run ${targetCommand}`, { cwd: config.cwd });
+    }
 };
 
 /**
@@ -52,10 +126,8 @@ export const vueService = async (options: Options) => {
  * @returns 项目配置信息
  */
 const getProjectConfig = async (options: Options): Promise<ProjectConfig | null> => {
-    if (options.list) {
+    if (options.select) {
         return await getProjectConfigFromList();
-    } else if (options.current) {
-        return getProjectConfigFromCurrent(options);
     } else {
         return await getProjectConfigFromDialog(options);
     }
@@ -66,12 +138,7 @@ const getProjectConfig = async (options: Options): Promise<ProjectConfig | null>
  * @returns 项目配置信息
  */
 const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
-    const list = (await sql((db) => db.vue)) as (Database['vue'][number] & { branchName: string })[];
-
-    // 获取每个项目的当前分支
-    for (const item of list) {
-        item.branchName = await git.getCurrentBranchName(item.path);
-    }
+    const list = (await sql((db) => db.vue)) as Database['vue'][number][];
 
     const { selectedId } = await inquirer.prompt([
         {
@@ -79,9 +146,7 @@ const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
             name: 'selectedId',
             message: '请选择运行的项目及命令',
             choices: list.map((item) => ({
-                name: `${chalk.yellow(item.name)}(${chalk.blue(item.path)}) 命令: ${chalk.green(
-                    item.command,
-                )} 分支: ${chalk.blue(item.branchName)}`,
+                name: item.path,
                 value: item.id,
             })),
         },
@@ -94,10 +159,7 @@ const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
 
     return {
         cwd: match.path,
-        command: match.command,
-        port: match.defaultPort,
         publicPath: match.publicPath,
-        branchName: match.branchName,
     };
 };
 
@@ -109,9 +171,6 @@ const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
 const getProjectConfigFromCurrent = (options: Options): ProjectConfig => {
     return {
         cwd: process.cwd(),
-        command: options.command || 'build',
-        port: options.port,
-        publicPath: options.publicPath,
     };
 };
 
@@ -129,9 +188,6 @@ const getProjectConfigFromDialog = async (options: Options): Promise<ProjectConf
 
     return {
         cwd,
-        command: options.command || 'build',
-        port: options.port,
-        publicPath: options.publicPath,
     };
 };
 
@@ -143,13 +199,13 @@ const buildProject = async (config: ProjectConfig): Promise<void> => {
     logger.backwardConsole();
 
     // 获取当前分支
-    const branchName = config.branchName || (await git.getCurrentBranchName(config.cwd));
+    const branchName = await git.getCurrentBranchName(config.cwd);
 
-    spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(`${branchName}分支`)})执行命令：${chalk.green(
-        `npm run ${config.command}`,
-    )}，请稍后...`;
+    // spinner.text = `正在项目${chalk.yellow(config.cwd)}(${chalk.blue(`${branchName}分支`)})执行命令：${chalk.green(
+    //     `npm run ${config.command}`,
+    // )}，请稍后...`;
 
-    await execa(`npm run ${config.command}`, { cwd: config.cwd });
+    // await execa(`npm run ${config.command}`, { cwd: config.cwd });
 };
 
 /**
@@ -186,10 +242,7 @@ const saveProjectToDatabase = async (config: ProjectConfig): Promise<void> => {
         db.vue.push({
             id: db.vue.length + 1,
             path: config.cwd,
-            command: config.command,
-            name: basename(config.cwd),
             publicPath: config.publicPath,
-            defaultPort: config.port,
         });
     });
 };
@@ -250,7 +303,6 @@ const checkoutBranchAndStartServer = async (options: Options) => {
     }
 
     // 4. 打包项目
-    projectConfig.branchName = selectedBranch;
     await buildProject(projectConfig);
 
     // 5. 确保有 publicPath
@@ -263,7 +315,16 @@ const checkoutBranchAndStartServer = async (options: Options) => {
     }
 
     // 6. 启动服务器
-    await startServer(selectedPath, projectConfig.publicPath, projectConfig.port);
+    spinner.text = '正在启动静态服务...';
+    try {
+        const { url } = await startStaticServer({ cwd: selectedPath });
+        spinner.succeed(`服务已启动\n${chalk.magenta(url)}`);
+        clipboardy.writeSync(url);
+    } catch (err) {
+        spinner.fail('启动服务失败');
+        logger.error(String(err));
+    }
+    process.exit(0);
 };
 
 /**
@@ -283,42 +344,5 @@ const getProjectConfigFromPath = async (path: string, options: Options): Promise
 
     return {
         cwd: path,
-        command: project.command || 'build',
-        port: options.port || project.defaultPort,
-        publicPath: options.publicPath || project.publicPath,
     };
-};
-
-/**
- * 启动服务器
- * @param cwd 项目路径
- * @param publicPath 公共路径
- * @param port 端口号
- */
-const startServer = async (cwd: string, publicPath: string, port: number): Promise<void> => {
-    const child = fork(
-        resolve(fileURLToPath(import.meta.url), '../vueServer.js'),
-        objectToCmdOptions({
-            cwd,
-            publicPath,
-            port: globalConfig.port.production,
-        }),
-        {
-            detached: true,
-            stdio: [null, null, null, 'ipc'],
-        },
-    );
-
-    return new Promise((resolve) => {
-        child.on('message', async (message: any) => {
-            const ip = await internalIp.v4();
-            const url = `http://${ip}:${message.port}${publicPath}`;
-            spinner.succeed(`服务已启动\n${chalk.magenta(url)}`);
-            clipboardy.writeSync(url);
-            child.unref();
-            child.disconnect();
-            resolve();
-            process.exit(0);
-        });
-    });
 };
