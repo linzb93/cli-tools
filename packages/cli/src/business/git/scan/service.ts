@@ -278,7 +278,7 @@ export const scanService = async (options: Options) => {
                         console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
                         return;
                     }
-                    await executeCommands([gitAtom.push()]);
+                    await executeCommands([gitAtom.push()], { cwd: item.path });
                 } else {
                     const unpushed = list.filter((i) => i.status === GitStatusMap.Unpushed);
                     if (unpushed.length === 0) {
