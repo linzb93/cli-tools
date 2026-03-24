@@ -176,7 +176,7 @@ function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConf
         message: isLocalBranch ? `git push --set-upstream origin ${currenetBranchName}` : 'git push',
         maxAttempts: 100,
         onError: async (errMsg) => {
-            if (errMsg.toLowerCase().includes('timeout')) {
+            if (errMsg.toLowerCase().includes('timeout') || errMsg.includes("Couldn't connect to server")) {
                 return {
                     shouldStop: false,
                 };
