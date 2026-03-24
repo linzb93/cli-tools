@@ -1,5 +1,5 @@
 import { TranslateResultItem, TranslatorStrategy } from '../core/BaseTranslator';
-import { useAI } from '../../ai/common/implementation/index';
+import { useAI } from '@/utils/ai/implementation';
 import spinner from '../../../utils/spinner';
 
 /**

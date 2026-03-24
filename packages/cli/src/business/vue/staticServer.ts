@@ -5,7 +5,7 @@ import { fork } from 'node:child_process';
 import internalIp from 'internal-ip';
 import type { Application } from 'express';
 import express from 'express';
-import { useAI } from '../ai/common/implementation';
+import { useAI } from '@/utils/ai/implementation';
 import { logger } from '@/utils/logger';
 import globalConfig from '../../../../../config.json';
 import { objectToCmdOptions } from '@/utils/helper';

@@ -1,6 +1,4 @@
 [
-    "ai ocr",
-    "ai regex",
     "analyse cli",
     "analyse code",
     "cd",
@@ -30,6 +28,7 @@
     "npm search",
     "npm uninstall",
     "occ",
+    "ocr",
     "repl",
     "sass",
     "server",

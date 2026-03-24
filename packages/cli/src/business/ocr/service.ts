@@ -2,9 +2,9 @@ import imageClipboard from '@/utils/clipboard';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import clipboardy from 'clipboardy';
 import spinner from '@/utils/spinner';
-import { useAI } from '../common/implementation';
-import { MessageOptions } from '../common/types';
-import { OCROptions } from '../types';
+import { useAI } from '@/utils/ai/implementation';
+import { MessageOptions } from '@/utils/ai/types';
+import type { OCROptions } from './types';
 
 const PROMPT =
     '你是一个图像识别工具。你需要识别用户上传的图像中的文字。如果图像内容是纯文本，就正常输出纯文本；如果图片里的内容是一张表格，请按照markdown格式直接输出表格。如果有识别到文本换行，请添加markdown的换行符。';

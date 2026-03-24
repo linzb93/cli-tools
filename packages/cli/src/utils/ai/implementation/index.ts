@@ -1,5 +1,5 @@
 import getModels from './models';
-import { MessageOptions } from '../types';
+import type { MessageOptions } from '../types';
 
 /**
  * 使用AI接口，返回流式响应

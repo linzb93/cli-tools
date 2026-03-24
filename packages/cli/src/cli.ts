@@ -4,6 +4,7 @@ import init from './bootstrap';
 import { generateHelpDoc } from '@/utils/helper';
 import { ipCommand } from './commands/ip';
 import { aiCommand } from './commands/ai';
+import { ocrCommand } from './commands/ocr';
 import { engCommand } from './commands/eng';
 import { occCommand } from './commands/occ';
 import { cgCommand } from './commands/cg';
@@ -186,6 +187,13 @@ program
     .option('--type <type>', '指定类型')
     .action((data, options) => {
         occCommand(data, options);
+    });
+
+program
+    .command('ocr')
+    .option('--url <url>', '图片线上地址')
+    .action((options) => {
+        ocrCommand(options);
     });
 
 program.command('repl').action(() => {
