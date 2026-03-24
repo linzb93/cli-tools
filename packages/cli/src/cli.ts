@@ -2,7 +2,6 @@ import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import init from './bootstrap';
 import { generateHelpDoc } from '@/utils/helper';
-import { beautyCommand } from './commands/beauty';
 import { ipCommand } from './commands/ip';
 import { aiCommand } from './commands/ai';
 import { engCommand } from './commands/eng';
@@ -75,12 +74,6 @@ program
         analyseCommand(subCommand, rest, options);
     });
 
-program
-    .command('beauty')
-    .description('格式化剪贴板中的内容')
-    .action(() => {
-        beautyCommand();
-    });
 program
     .command('cg [action] [...rest]')
     .option('--realtime', '实时更新')
