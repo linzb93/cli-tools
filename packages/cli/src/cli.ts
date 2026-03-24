@@ -12,7 +12,6 @@ import { clearCommand } from './commands/clear';
 import { colorCommand } from './commands/color';
 import { forkCommand } from './commands/fork';
 import { killCommand } from './commands/kill';
-import { lixiCommand } from './commands/lixi';
 // import { yapiCommand } from './commands/yapi';
 // import mock from "./commands/mock";
 import { curlCommand } from './commands/curl';
@@ -152,9 +151,6 @@ program.command('kill [data...]').action((data) => {
     killCommand(data);
 });
 
-program.command('lixi').action(() => {
-    lixiCommand();
-});
 
 // program
 //   .command("mock [action]")
