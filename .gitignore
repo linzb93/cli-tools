@@ -1,5 +1,6 @@
 node_modules
 dist
+dist-test
 packages/server/data
 packages/server/config.secret.json
 pnpm-lock.yaml

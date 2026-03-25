@@ -34,13 +34,12 @@ export default defineConfig({
     },
     build: {
         target: 'node14',
-        outDir: 'dist',
+        outDir: process.env.MODE === 'cliTest' ? 'dist-test' : 'dist',
         minify: false,
-        emptyOutDir: process.env.MODE !== 'cliTest',
+        emptyOutDir: true,
         rollupOptions: {
             input,
             output: {
-                dir: 'dist',
                 entryFileNames: '[name].js',
             },
             external: [

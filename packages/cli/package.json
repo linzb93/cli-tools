@@ -9,7 +9,7 @@
     ],
     "bin": {
         "mycli": "./dist/entry.js",
-        "myclit": "./dist/cli-test.js"
+        "myclit": "./dist-test/cli-test.js"
     },
     "scripts": {
         "dev": "tsc && cross-env MODE=cliTest vite build --watch",
