@@ -32,14 +32,6 @@ program.hook('preAction', (thisCommand) => {
 
 // 动态 import 懒加载方式注册所有命令
 function registerCommands() {
-    // ai 子命令
-    program
-        .command('ai [sub-command] [rest...]')
-        .allowUnknownOption()
-        .action((subCommand, rest, options) => {
-            import('./commands/ai').then((m) => m.aiCommand(subCommand, rest, options));
-        });
-
     // analyse 子命令
     program
         .command('analyse [sub-command] [rest...]')
