@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import { generateHelpDoc } from '@/utils/helper';
-import { forkCommand } from './commands/fork';
+import { gitCommand } from './commands/git';
 
 const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
@@ -25,10 +25,10 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 program
-    .command('fork [filename]')
-    .option('--duration <duration>', '服务等待断联时间（秒）')
-    .action((file, options) => {
-        forkCommand(file, options);
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest) => {
+        gitCommand(subCommand, rest);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
