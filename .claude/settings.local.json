@@ -6,7 +6,9 @@
       "Bash(npm run:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(pnpm --filter \"@cli-tools/cli\" check)"
+      "Bash(pnpm --filter \"@cli-tools/cli\" check)",
+      "Bash(pnpm up:*)",
+      "Bash(pnpm view:*)"
     ]
   }
 }
