@@ -1,5 +1,6 @@
 import { TranslateResultItem, TranslatorStrategy } from '../core/BaseTranslator';
 import { useAI } from '@/utils/ai/implementation';
+import { extractJSONFromMarkdown } from '@/utils/ai/utils';
 import spinner from '../../../utils/spinner';
 
 /**
@@ -27,8 +28,9 @@ export const aiTranslator: TranslatorStrategy = {
 
         try {
             const { contents, model } = translateResult;
-            const newText = contents.replace('```json', '').replace('```', '').trim();
-            const resultItem = JSON.parse(newText).items as TranslateResultItem[];
+            const parsedJSON = extractJSONFromMarkdown(contents) as { items: TranslateResultItem[] };
+            if (!parsedJSON) return [];
+            const resultItem = parsedJSON.items;
             return resultItem.map((item) => ({
                 ...item,
                 model,
