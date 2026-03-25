@@ -110,8 +110,8 @@ function registerCommands() {
     program
         .command('git [sub-command] [rest...]')
         .allowUnknownOption()
-        .action((subCommand) => {
-            import('./commands/git/index').then((m) => m.gitCommand(subCommand));
+        .action((subCommand, rest) => {
+            import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
         });
 
     // idea 子命令

@@ -27,8 +27,8 @@ program.hook('preAction', () => {
 program
     .command('git [sub-command] [rest...]')
     .allowUnknownOption()
-    .action((subCommand) => {
-        gitCommand(subCommand);
+    .action((subCommand, rest) => {
+        gitCommand(subCommand, rest);
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
