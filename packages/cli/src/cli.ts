@@ -102,9 +102,12 @@ function registerCommands() {
         });
 
     // fork 命令
-    program.command('fork [filename]').action((file) => {
-        import('./commands/fork').then((m) => m.forkCommand(file));
-    });
+    program
+        .command('fork [filename]')
+        .option('--duration <duration>', '服务等待断联时间（秒）')
+        .action((file, options) => {
+            import('./commands/fork').then((m) => m.forkCommand(file, options));
+        });
 
     // git 子命令
     program
