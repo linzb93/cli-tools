@@ -36,7 +36,7 @@ export default defineConfig({
         target: 'node14',
         outDir: 'dist',
         minify: false,
-        emptyOutDir: true,
+        emptyOutDir: process.env.MODE !== 'cliTest',
         rollupOptions: {
             input,
             output: {

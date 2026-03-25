@@ -8,6 +8,7 @@ import { subCommandCompiler } from '@/utils';
 const get = () => {
     subCommandCompiler((program) => {
         program
+            .command('branch')
             .description('查看Git分支')
             .option('--head <number>', '查看最近的几个提交，默认查看最近3个')
             .option('--path <path>', '指定查看的文件目录')
@@ -24,7 +25,6 @@ const deleteBranch = () => {
                 .command('delete')
                 .description('删除Git分支')
                 .action(() => {
-                    console.log(12);
                     branchDeleteService();
                 });
         },
@@ -43,7 +43,7 @@ export const branchCommand = function (restCommand: string[]): void {
     };
 
     // 执行对应的子命令
-    if (!restCommand.length) {
+    if (!restCommand || !restCommand.length) {
         get();
     } else if (commandMap[restCommand[0]]) {
         commandMap[restCommand[0]]();
