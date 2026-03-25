@@ -4,7 +4,7 @@
     "publisher": "my-publisher",
     "displayName": "cli-vscode-extension",
     "description": "cli use",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "engines": {
         "vscode": "^1.107.0"
     },
@@ -15,6 +15,50 @@
         "onStartupFinished"
     ],
     "main": "./dist/index.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "mycli.copyFilePathAndLine",
+                "title": "复制文件地址和行号"
+            },
+            {
+                "command": "mycli.startVueBuildedProject",
+                "title": "启动已打包的项目"
+            }
+        ],
+        "submenus": [
+            {
+                "id": "mycli.submenu",
+                "label": "mycli"
+            }
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "submenu": "mycli.submenu",
+                    "group": "navigation",
+                    "when": "editorHasSelection"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "submenu": "mycli.submenu",
+                    "group": "navigation",
+                    "when": "explorerResourceIsFolder"
+                }
+            ],
+            "mycli.submenu": [
+                {
+                    "command": "mycli.copyFilePathAndLine",
+                    "when": "editorHasSelection"
+                },
+                {
+                    "command": "mycli.startVueBuildedProject",
+                    "when": "explorerResourceIsFolder"
+                }
+            ]
+        }
+    },
     "scripts": {
         "vscode:prepublish": "pnpm run compile",
         "compile": "vite build",

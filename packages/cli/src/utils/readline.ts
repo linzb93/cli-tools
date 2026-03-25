@@ -1,7 +1,7 @@
 import readline from 'node:readline';
 import chalk from 'chalk';
 
-export interface ReadlineCommandContext {
+interface ReadlineCommandContext {
     rl: readline.Interface;
     line: string;
 }
@@ -13,7 +13,7 @@ export interface ReadlineCommand {
     handler: (args: string[], ctx: ReadlineCommandContext) => void | Promise<void>;
 }
 
-export interface CommandReadlineOptions {
+interface CommandReadlineOptions {
     prompt?: string;
     input?: NodeJS.ReadableStream;
     output?: NodeJS.WritableStream;
@@ -21,7 +21,7 @@ export interface CommandReadlineOptions {
     exitCommand?: string;
 }
 
-export interface ParsedSlashCommand {
+interface ParsedSlashCommand {
     command: string;
     args: string[];
 }
@@ -35,7 +35,7 @@ export interface ParsedSlashCommand {
  * // out?.command === 'diff'
  * // out?.args[0] === '1'
  */
-export function parseSlashCommand(line: string): ParsedSlashCommand | null {
+function parseSlashCommand(line: string): ParsedSlashCommand | null {
     const trimmed = line.trim();
     if (!trimmed.startsWith('/')) {
         return null;

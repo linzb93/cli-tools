@@ -141,13 +141,13 @@ description: "在docs/designs/目录下用markdown文件记录计划开发的功
 
 示例：
 
--   `20240218-user-authentication.md`
--   `20240218-api-rate-limiting.md`
--   `20240218-dashboard-analytics.md`
+-   `2024-02-18-user-authentication.md`
+-   `2025-02-18-api-rate-limiting.md`
+-   `2026-02-18-dashboard-analytics.md`
 
 ## 业务代码位置说明
 
-如果是为某个命令添加功能，业务代码位于：`/Users/linzhibin/Documents/coding/cli-tools/packages/cli/src/business` 目录下
+如果是为某个命令添加功能，业务代码位于：`packages/cli/src/business` 目录下
 
 **命令与目录对应关系：**
 

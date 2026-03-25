@@ -1,5 +1,5 @@
 import serviceGenerator from '@/utils/http';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import { Options, App } from '../types';
 import { logger } from '@/utils/logger';
 import { afterSearchApp } from '../core/appRunner';

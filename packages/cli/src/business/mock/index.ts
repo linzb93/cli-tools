@@ -2,7 +2,7 @@
 // import axios from 'axios';
 // import { fork, ChildProcess } from 'node:child_process';
 // import { flatten, omit } from 'lodash-es';
-// import { sql } from '@cli-tools/shared/utils/sql';
+// import { sql } from '@cli-tools/shared';
 // import clipboardy from 'clipboardy';
 // // import { reactive } from "@vue/reactivity";
 // // import { watch } from "@vue/runtime-core";

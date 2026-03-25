@@ -34,17 +34,16 @@ export default defineConfig({
     },
     build: {
         target: 'node14',
-        outDir: 'dist',
+        outDir: process.env.MODE === 'cliTest' ? 'dist-test' : 'dist',
         minify: false,
-        emptyOutDir: !process.env.MODE,
+        emptyOutDir: true,
         rollupOptions: {
             input,
             output: {
-                dir: 'dist',
                 entryFileNames: '[name].js',
             },
             external: [
-                ...Object.keys(allDependencies),
+                ...Object.keys(allDependencies).filter((dep) => dep !== '@cli-tools/shared'),
                 /^node:.*/,
                 'assert',
                 'events', // 这两个是因为listr模块添加的

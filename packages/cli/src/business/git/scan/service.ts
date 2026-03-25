@@ -5,7 +5,7 @@ import Table from 'cli-table3';
 import { execa, execaCommand } from 'execa';
 import pMap from 'p-map';
 import pReduce from 'p-reduce';
-import { sql } from '@cli-tools/shared/utils/sql';
+import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import progress from '@/utils/progress';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
@@ -87,10 +87,27 @@ const printProjectLog = async (item: ResultItem) => {
 };
 
 /**
- * 扫描Git项目服务
- * @param options - 扫描选项
+ * 过滤需要处理的项目
+ * @param items - 项目列表
+ * @param full - 是否显示所有项目
+ * @returns 过滤后的项目列表
  */
-export const scanService = async (options: Options) => {
+const filterProjects = (items: ResultItem[], full: boolean) => {
+    const srcList = items.filter((item) =>
+        [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(item.status),
+    );
+    return srcList.filter((item) => {
+        if (full) return true;
+        return item.status !== 4;
+    });
+};
+
+/**
+ * 执行扫描并返回项目列表
+ * @param options - 扫描选项
+ * @returns 项目列表
+ */
+const doScan = async (options: Options): Promise<ResultItem[]> => {
     const { full } = options;
     logger.info('开始扫描');
 
@@ -146,17 +163,16 @@ export const scanService = async (options: Options) => {
         { concurrency: 4 },
     );
 
-    const srcList = scannedList.filter((item) =>
-        [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(item.status),
-    );
-
     logger.backwardConsole(2);
-    const list = srcList.filter((item) => {
-        if (full) {
-            return true;
-        }
-        return item.status !== 4;
-    });
+    return filterProjects(scannedList, full);
+};
+
+/**
+ * 扫描Git项目服务
+ * @param options - 扫描选项
+ */
+export const scanService = async (options: Options) => {
+    let list = await doScan(options);
 
     if (list.length === 0) {
         logger.success('恭喜！没有项目需要提交或推送。');
@@ -179,6 +195,34 @@ export const scanService = async (options: Options) => {
     };
 
     const commands: ReadlineCommand[] = [
+        {
+            name: 'restart',
+            description: '重新扫描已列出的项目',
+            handler: async () => {
+                console.log(chalk.blue('正在重新扫描...'));
+                const newList = await pMap(
+                    list,
+                    async (item): Promise<ResultItem> => {
+                        try {
+                            const { status, branchName } = await getGitProjectStatus(item.path);
+                            return { ...item, status, branchName };
+                        } catch {
+                            return item;
+                        }
+                    },
+                    { concurrency: 4 },
+                );
+
+                list.length = 0;
+                list.push(...filterProjects(newList, options.full));
+
+                if (list.length === 0) {
+                    console.log(chalk.yellow('没有项目需要提交或推送。'));
+                } else {
+                    printProjectTable(list);
+                }
+            },
+        },
         {
             name: 'diff',
             usage: '<x>',
@@ -230,8 +274,7 @@ export const scanService = async (options: Options) => {
                 const message = args.slice(1).join(' ');
 
                 try {
-                    await execaCommand('git add .', { cwd: item.path });
-                    await execa('git', ['commit', '-m', message], { cwd: item.path });
+                    await executeCommands(['git add .', gitAtom.commit(message)], { cwd: item.path });
                     console.log(chalk.green(`提交成功: ${message}`));
                 } catch (e: any) {
                     console.log(chalk.red(`提交失败: ${e.message}`));
@@ -265,7 +308,7 @@ export const scanService = async (options: Options) => {
                 const pushItem = async (item: ResultItem) => {
                     try {
                         console.log(chalk.blue(`正在推送: ${basename(item.path)} ...`));
-                        await execaCommand('git push', { cwd: item.path });
+                        await executeCommands([gitAtom.push()], { cwd: item.path });
                         console.log(chalk.green(`推送成功: ${basename(item.path)}`));
                     } catch (e: any) {
                         console.log(chalk.red(`推送失败 (${basename(item.path)}): ${e.message}`));
@@ -278,7 +321,7 @@ export const scanService = async (options: Options) => {
                         console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
                         return;
                     }
-                    await executeCommands([gitAtom.push()]);
+                    await executeCommands([gitAtom.push()], { cwd: item.path });
                 } else {
                     const unpushed = list.filter((i) => i.status === GitStatusMap.Unpushed);
                     if (unpushed.length === 0) {

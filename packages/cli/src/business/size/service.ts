@@ -7,7 +7,7 @@ import through from 'through2';
 import { deleteAsync as del } from 'del';
 import { logger } from '@/utils/logger';
 import { isURL, emptyWritableStream } from '@/utils/helper';
-import { root } from '@cli-tools/shared/constant/path';
+import { root } from '@cli-tools/shared';
 import { Options, Dimensions } from './types';
 
 /**

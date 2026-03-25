@@ -1,6 +1,6 @@
 import qs from 'node:querystring';
 import serviceGenerator from '@/utils/http';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import { App, Options } from '../types';
 
 export const createSpbjApp = (): App => {

@@ -1,5 +1,5 @@
 import serviceGenerator from '@/utils/http';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import { login } from '../utils/login';
 import chalk from 'chalk';
 import { App, Options, UserInfo } from '../types';

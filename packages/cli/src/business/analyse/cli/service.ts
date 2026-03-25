@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { cacheRoot } from '@cli-tools/shared/constant/path';
+import { cacheRoot } from '@cli-tools/shared';
 import { levelCharacters } from '@/constant';
 import { logger } from '@/utils/logger';
 import type { TimePeriod, CliAnalyseOptions } from './types';

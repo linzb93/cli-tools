@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { stringify } from 'node:querystring';
 import { getYapiCookie, manualInputCookie } from './auth';
-import { AnyObject } from '@cli-tools/shared/types';
+import { AnyObject } from '@cli-tools/shared';
 /**
  * Yapi接口详情
  */

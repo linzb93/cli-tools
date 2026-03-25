@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
-import { sql, type Database } from '@cli-tools/shared/utils/sql';
+import { sql, type Database } from '@cli-tools/shared';
 
 /**
  * 手动输入Yapi的token和uid
@@ -14,7 +14,7 @@ export const manualInputCookie = async (): Promise<string | null> => {
                 type: 'input',
                 name: 'token',
                 message: '请输入Yapi的_yapi_token:',
-                validate: (input) => !!input || 'token不能为空',
+                validate: (input: string) => !!input || 'token不能为空',
             },
             {
                 type: 'input',

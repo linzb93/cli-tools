@@ -91,13 +91,16 @@ export const formatError = (error: string): string => {
 /**
  * 执行单个命令
  * @param {CommandConfig} config - 命令配置
+ * @param {object} options - 配置选项
+ * @param {string} [options.cwd] - 运行当前命令的目录，默认是 process.cwd()
  * @throws {StopExecutionError} 当用户通过onError回调要求停止执行时抛出
  */
-async function executeCommand(config: CommandConfig): Promise<void> {
+async function executeCommand(config: CommandConfig, options: { cwd?: string } = {}): Promise<void> {
+    const cwd = options.cwd || process.cwd();
     await retryAsync(
         async () => {
             try {
-                const { stdout } = await execa(config.message);
+                const { stdout } = await execa(config.message, { cwd });
                 if (stdout) {
                     console.log(stdout);
                 }
@@ -173,6 +176,11 @@ interface ExecuateOptions {
      * @default false
      */
     silentStart?: boolean;
+    /**
+     * 运行当前命令的目录
+     * @default process.cwd()
+     */
+    cwd?: string;
 }
 
 /**
@@ -198,7 +206,7 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
         }
 
         try {
-            await executeCommand(config);
+            await executeCommand(config, { cwd: options?.cwd });
         } catch (error) {
             if (error instanceof StopExecutionError) {
                 console.log(chalk.red('命令执行已停止'));

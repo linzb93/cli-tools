@@ -4,11 +4,10 @@ import open from 'open';
 import dayjs from 'dayjs';
 import detectPort from 'detect-port';
 import chalk from 'chalk';
-import { root } from '@cli-tools/shared/constant/path';
+import { root, sql } from '@cli-tools/shared';
 import { killService } from '../kill';
 import inquirer from '@/utils/inquirer';
 import globalConfig from '../../../../../config.json';
-import { sql } from '@cli-tools/shared/utils/sql';
 import type { Options } from './types';
 
 const openPage = async (options?: Options) => {

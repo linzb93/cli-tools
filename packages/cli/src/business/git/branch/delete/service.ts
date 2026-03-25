@@ -30,12 +30,18 @@ export const branchDeleteService = async () => {
     }, []);
 
     let selected: string[] = [];
-    const answer = await inquirer.prompt({
-        message: '请选择要删除的分支',
-        type: 'checkbox',
-        choices: branches,
-        name: 'selected',
-    });
+    let answer: any = {};
+    try {
+        answer = await inquirer.prompt({
+            message: '请选择要删除的分支',
+            type: 'checkbox',
+            choices: branches,
+            name: 'selected',
+        });
+    } catch (error) {
+        logger.error('退出删除分支操作', true);
+        return;
+    }
     selected = answer.selected;
 
     if (!selected.length) {

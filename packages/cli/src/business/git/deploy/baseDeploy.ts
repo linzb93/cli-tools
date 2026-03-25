@@ -8,6 +8,7 @@ import {
     getGitProjectStatus,
     GitStatusMap,
     isGitProject as checkIsGitProject,
+    isGithubProject,
 } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
@@ -44,19 +45,6 @@ export interface DeployOptions {
      */
     current?: boolean;
 }
-
-/**
- * 检查是否为Github项目
- * @returns {Promise<boolean>} 是否为Github项目
- */
-export const isGithubProject = async (): Promise<boolean> => {
-    try {
-        const { stdout } = await execa('git remote -v');
-        return stdout.includes('github.com');
-    } catch (error) {
-        return false;
-    }
-};
 
 /**
  * 检查是否有未提交的更改

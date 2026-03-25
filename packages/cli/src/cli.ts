@@ -2,36 +2,6 @@ import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import init from './bootstrap';
 import { generateHelpDoc } from '@/utils/helper';
-import { beautyCommand } from './commands/beauty';
-import { ipCommand } from './commands/ip';
-import { aiCommand } from './commands/ai';
-import { engCommand } from './commands/eng';
-import { occCommand } from './commands/occ';
-import { cgCommand } from './commands/cg';
-import { cookieCommand } from './commands/cookie';
-import { clearCommand } from './commands/clear';
-import { colorCommand } from './commands/color';
-import { forkCommand } from './commands/fork';
-import { killCommand } from './commands/kill';
-import { lixiCommand } from './commands/lixi';
-// import { yapiCommand } from './commands/yapi';
-// import mock from "./commands/mock";
-import { curlCommand } from './commands/curl';
-import { shortcutCommand } from './commands/shortcut';
-import { sizeCommand } from './commands/size';
-import { tokenCommand } from './commands/token';
-import { treeCommand } from './commands/tree';
-// import {testCommand} from './commands/test';
-import { gitCommand } from './commands/git/index';
-import { ideaCommand } from './commands/idea';
-// import npm from './commands/npm';
-import { analyseCommand } from './commands/analyse';
-import { timeCommand } from './commands/time';
-import { replCommand } from './commands/repl';
-import { vueCommand } from './commands/vue';
-import { serverCommand } from './commands/server';
-import { sassCommand } from './commands/sass';
-import { versionCommand } from './commands/version';
 
 const program = new Command();
 program.version(globalPkg.version);
@@ -60,214 +30,215 @@ program.hook('preAction', (thisCommand) => {
     });
 });
 
-program
-    .command('ai [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        aiCommand(subCommand, rest, options);
+// 动态 import 懒加载方式注册所有命令
+function registerCommands() {
+    // analyse 子命令
+    program
+        .command('analyse [sub-command] [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest, options) => {
+            import('./commands/analyse').then((m) => m.analyseCommand(subCommand, rest, options));
+        });
+
+    // cg 命令
+    program
+        .command('cg [action] [...rest]')
+        .option('--realtime', '实时更新')
+        .option('-f, --full', '全部')
+        .option('--help', '显示帮助文档')
+        .action((action, rest, options) => {
+            import('./commands/cg').then((m) => m.cgCommand(action, rest, options));
+        });
+
+    // clear 命令
+    program
+        .command('clear [filename]')
+        .option('-r, --root', '清理根目录下的')
+        .action((filename, options) => {
+            import('./commands/clear').then((m) => m.clearCommand(filename, options));
+        });
+
+    // cd 命令
+    program
+        .command('cd [path]')
+        .description('记录并跳转目录')
+        .action((targetPath) => {
+            import('./commands/cd').then((m) => m.cdCommand(targetPath));
+        });
+
+    // color 命令
+    program
+        .command('color [text]')
+        .option('--get', '用指定颜色显示文字')
+        .action((data, options) => {
+            import('./commands/color').then((m) => m.colorCommand(data, options));
+        });
+
+    // cookie 命令
+    program
+        .command('cookie [text]')
+        .option('--type <type>', '转换的类型')
+        .option('--copy', '复制结果')
+        .action((data, options) => {
+            import('./commands/cookie').then((m) => m.cookieCommand(data, options));
+        });
+
+    // curl 命令
+    program
+        .command('curl')
+        .option('--extra <extra>', '额外的参数')
+        .option('--full', '显示全部header')
+        .action((options) => {
+            import('./commands/curl').then((m) => m.curlCommand(options));
+        });
+
+    // eng 命令
+    program
+        .command('eng [text]')
+        .option('-e,--example', '显示范例')
+        .option('-c, --clipboard', '读取剪贴板内容')
+        .action((text, options) => {
+            import('./commands/eng').then((m) => m.engCommand(text, options));
+        });
+
+    // fork 命令
+    program
+        .command('fork [filename]')
+        .option('--duration <duration>', '服务等待断联时间（秒）')
+        .action((file, options) => {
+            import('./commands/fork').then((m) => m.forkCommand(file, options));
+        });
+
+    // git 子命令
+    program
+        .command('git [sub-command] [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest) => {
+            import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
+        });
+
+    // idea 子命令
+    program
+        .command('idea [sub-command] [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest) => {
+            import('./commands/idea').then((m) => m.ideaCommand(subCommand, rest));
+        });
+
+    // ip 命令
+    program.command('ip [rest...]').action((data) => {
+        import('./commands/ip').then((m) => m.ipCommand(data));
     });
 
-program
-    .command('analyse [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        analyseCommand(subCommand, rest, options);
+    // kill 命令
+    program.command('kill [data...]').action((data) => {
+        import('./commands/kill').then((m) => m.killCommand(data));
     });
 
-program
-    .command('beauty')
-    .description('格式化剪贴板中的内容')
-    .action(() => {
-        beautyCommand();
-    });
-program
-    .command('cg [action] [...rest]')
-    .option('--realtime', '实时更新')
-    .option('-f, --full', '全部')
-    .option('--help', '显示帮助文档')
-    .action((action, rest, options) => {
-        cgCommand(action, rest, options);
-    });
+    // occ 命令
+    program
+        .command('occ [data...]')
+        .option('--token', '获取token')
+        .option('--pc', '打开PC端')
+        .option('--copy', '复制地址')
+        .option('--test', '测试环境')
+        .option('--user', '根据token获取用户信息')
+        .option('--full', '先获取登录账号的店铺信息')
+        .option('--platform <platformName>', '指定平台名称')
+        .option('--fix <url>', '补齐完整的登录地址')
+        .option('--version <version>', '指定版本号')
+        .option('--type <type>', '指定类型')
+        .action((data, options) => {
+            import('./commands/occ').then((m) => m.occCommand(data, options));
+        });
 
-program
-    .command('clear [filename]')
-    .option('-r, --root', '清理根目录下的')
-    .action((filename, options) => {
-        clearCommand(filename, options);
-    });
+    // ocr 命令
+    program
+        .command('ocr')
+        .option('--url <url>', '图片线上地址')
+        .action((options) => {
+            import('./commands/ocr').then((m) => m.ocrCommand(options));
+        });
 
-program
-    .command('color [text]')
-    .option('--get', '用指定颜色显示文字')
-    .action((data, options) => {
-        colorCommand(data, options);
-    });
-program
-    .command('cookie [text]')
-    .option('--type <type>', '转换的类型')
-    .option('--copy', '复制结果')
-    .action((data, options) => {
-        cookieCommand(data, options);
-    });
-program
-    .command('curl')
-    .option('--extra <extra>', '额外的参数')
-    .option('--full', '显示全部header')
-    .action((options) => {
-        curlCommand(options);
+    // repl 命令
+    program.command('repl').action(() => {
+        import('./commands/repl').then((m) => m.replCommand());
     });
 
-program
-    .command('eng [text]')
-    .option('-e,--example', '显示范例')
-    .option('-c, --clipboard', '读取剪贴板内容')
-    .action((text, options) => {
-        engCommand(text, options);
+    // sass 命令
+    program.command('sass').action(() => {
+        import('./commands/sass').then((m) => m.sassCommand());
     });
 
-program.command('fork [filename]').action((file) => {
-    forkCommand(file);
-});
+    // server 命令
+    program
+        .command('server [command]')
+        .option('--menu [name]', '菜单名称')
+        .option('-o, --open', '打开浏览器')
+        .action((command, option) => {
+            import('./commands/server').then((m) => m.serverCommand(command, option));
+        });
 
-program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand) => {
-        gitCommand(subCommand);
+    // shortcut 命令
+    program.command('shortcut [name]').action((name) => {
+        import('./commands/shortcut').then((m) => m.shortcutCommand(name));
     });
 
-program
-    .command('idea [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest, options) => {
-        ideaCommand(subCommand, rest);
+    // size 命令
+    program
+        .command('size [url]')
+        .option('--rect', '获取宽高')
+        .action((filename, options) => {
+            import('./commands/size').then((m) => m.sizeCommand(filename, options));
+        });
+
+    // time 命令
+    program.command('time [time]').action((data) => {
+        import('./commands/time').then((m) => m.timeCommand(data));
     });
 
-program.command('ip [rest...]').action((data) => {
-    ipCommand(data);
-});
+    // token 命令
+    program
+        .command('token [data]')
+        .option('-o --origin', '原始数据')
+        .option('-c --complete', '完整数据')
+        .action((data, options) => {
+            import('./commands/token').then((m) => m.tokenCommand(data, options));
+        });
 
-program.command('kill [data...]').action((data) => {
-    killCommand(data);
-});
+    // tree 命令
+    program
+        .command('tree [dir]')
+        .option('--level <level>', '层级')
+        .option('--ignore <dirs>', '添加忽略的文件夹')
+        .option('-c, --copy', '复制')
+        .option('--comment', '显示注释')
+        .option('--help', '显示帮助文档')
+        .action((dir, option) => {
+            import('./commands/tree').then((m) => m.treeCommand(dir, option));
+        });
 
-program.command('lixi').action(() => {
-    lixiCommand();
-});
+    // vue 命令
+    program
+        .command('vue')
+        .option('--select', '显示历史列表供选择')
+        .option('--skip', '跳过打包阶段，直接启动服务器')
+        .action((option) => {
+            import('./commands/vue').then((m) => m.vueCommand(option));
+        });
 
-// program
-//   .command("mock [action]")
-//   .option("--force", "强制更新所有接口并启动服务器")
-//   .option("--single [path]", "更新单一接口")
-//   .option("--update", "只更新接口")
-//   .action((action, options) => {
-//     mock(action, options);
-//   });
+    // iteration 命令
+    program
+        .command('iteration')
+        .description('版本迭代：更新版本号并处理Git工作流')
+        .option('--fix', '三级修复版本')
+        .option('--version <version>', '指定版本号')
+        .action((options) => {
+            import('./commands/iteration').then((m) => m.iterationCommand(options));
+        });
+}
 
-// program
-//     .command('npm [sub-command] [rest...]')
-//     .option('-D, --dev', '安装到devDependencies')
-//     .option('-g, --global', '全局操作')
-//     .option('-f, --full', '完整版')
-//     .option('--open', '打开页面')
-//     .option('--cjs', '安装commonjs类型的')
-//     .action((subCommand: string, rest, cmd) => {
-//         npm(subCommand, rest, cmd);
-//     });
-
-program
-    .command('occ [data...]')
-    .option('--token', '获取token')
-    .option('--pc', '打开PC端')
-    .option('--copy', '复制地址')
-    .option('--test', '测试环境')
-    .option('--user', '根据token获取用户信息')
-    .option('--full', '先获取登录账号的店铺信息')
-    .option('--fix <url>', '补齐完整的登录地址')
-    .option('--pt <platformName>', '指定平台名称')
-    .option('--version <version>', '指定版本')
-    .option('--type <type>', '指定类型')
-    .action((data, options) => {
-        occCommand(data, options);
-    });
-
-program.command('repl').action(() => {
-    replCommand();
-});
-
-program.command('sass').action(() => {
-    sassCommand();
-});
-
-program
-    .command('server [command]')
-    .option('--menu [name]', '菜单名称')
-    .option('-o, --open', '打开浏览器')
-    .action((command, option) => {
-        serverCommand(command, option);
-    });
-
-program.command('shortcut [name]').action((name) => {
-    shortcutCommand(name);
-});
-
-program
-    .command('size [url]')
-    .option('--rect', '获取宽高')
-    .action((filename, options) => {
-        sizeCommand(filename, options);
-    });
-
-program.command('time [time]').action((data) => {
-    timeCommand(data);
-});
-
-program
-    .command('token [data]')
-    .option('-o --origin', '原始数据')
-    .option('-c --complete', '完整数据')
-    .action((data, options) => {
-        tokenCommand(data, options);
-    });
-
-program
-    .command('tree [dir]')
-    .option('--level <level>', '层级')
-    .option('--ignore <dirs>', '添加忽略的文件夹')
-    .option('-c, --copy', '复制')
-    .option('--comment', '显示注释')
-    .option('--help', '显示帮助文档')
-    .action((dir, option) => {
-        treeCommand(dir, option);
-    });
-// program.command('test').action((options) => {
-//     test(options);
-// });
-
-program
-    .command('vue')
-    .option('--command, <command>', '命令')
-    .option('-l, --list', '显示列表')
-    .option('-s,--server', '直接启动服务器，不打包')
-    .option('-c, --checkoutAndBuild', '切换分支并打包')
-    .option('--checkout', '切换分支，打包并启动服务器')
-    .option('--current', '在本项目启动服务器')
-    .option('--port <port>', '启动的端口号')
-    .option('--publicPath <path>', '设置publicPath')
-    .action((option) => {
-        vueCommand(option);
-    });
-program
-    .command('version [newVersion]')
-    .description('创建新版本分支并更新版本号')
-    .action((newVersion: string) => {
-        versionCommand(newVersion);
-    });
-// program
-//     .command('yapi <url>')
-//     .description('获取yapi接口文档')
-//     .action((url) => {
-//         yapiCommand(url);
-//     });
+// 注册所有命令
+registerCommands();
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));

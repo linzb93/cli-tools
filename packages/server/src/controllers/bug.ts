@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { sql } from '@cli-tools/shared/utils/sql';
+import { sql } from '@cli-tools/shared';
 import dayjs from 'dayjs';
 import pMap from 'p-map';
 // import Table from 'cli-table3';
-import { readSecret } from '@cli-tools/shared/utils/secret';
+import { readSecret } from '@cli-tools/shared';
 import response from '../shared/response';
 // import { log } from '../shared/log';
 import { omit, clone } from 'lodash-es';

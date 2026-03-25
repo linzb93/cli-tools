@@ -1,2 +1,2 @@
-export type { Message } from './types';
+export type { Message, Options } from './types';
 export { forkService } from './service';

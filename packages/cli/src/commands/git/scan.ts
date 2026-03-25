@@ -1,4 +1,5 @@
-import { scanService, type Options as ScanOptions } from '@/business/git/scan';
+import { scanService } from '@/business/git/scan';
+import type { Options as ScanOptions } from '@/business/git/scan';
 import { subCommandCompiler } from '@/utils';
 
 /**

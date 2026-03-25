@@ -1,5 +1,6 @@
 node_modules
 dist
+dist-test
 packages/server/data
 packages/server/config.secret.json
 pnpm-lock.yaml
@@ -8,3 +9,4 @@ cache/
 package-lock.json
 .trae/documents
 **/*/stats.html
+.claude/setting.local.json

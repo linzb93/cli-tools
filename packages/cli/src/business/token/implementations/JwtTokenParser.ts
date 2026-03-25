@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { TokenParser } from '../core/TokenParser';
 import { Options } from '../types';
-import { AnyObject } from '@cli-tools/shared/types';
+import { AnyObject } from '@cli-tools/shared';
 
 /**
  * JWT Token解析器
