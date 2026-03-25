@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
-import { httpManager } from './infra/http';
+// import { httpManager } from './infra/http';
 import './api';
 import { registerAllCommands } from './commands';
 
@@ -11,7 +11,7 @@ import { registerAllCommands } from './commands';
  * @param {vscode.ExtensionContext} context - The context of the extension
  */
 export function activate(context: vscode.ExtensionContext) {
-    httpManager.init(context);
+    // httpManager.init(context);
 
     // 统一注册所有命令
     registerAllCommands(context);

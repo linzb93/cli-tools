@@ -14,19 +14,18 @@ export function fmtCommitMsg(rawCommit: string): string {
     const prefixes: {
         value: string;
         key?: string | string[];
-        replaceFunction?: (commit: string) => string;
     }[] = [
         {
             value: 'revert',
-            key: ['回滚', '撤销', 'revert', 'undo'],
+            key: ['回滚', '撤销'],
         },
         {
             value: 'docs',
-            key: ['文档', '注释', 'doc', 'docs', 'document', 'comment', 'readme'],
+            key: ['文档', '注释', 'readme'],
         },
         {
             value: 'style',
-            key: ['样式', '格式', 'format', 'lint', 'style', 'code style', 'prettier', 'eslint'],
+            key: ['样式', '格式', 'prettier', 'eslint'],
         },
         {
             value: 'perf',
@@ -38,7 +37,7 @@ export function fmtCommitMsg(rawCommit: string): string {
         },
         {
             value: 'build',
-            key: ['构建', '依赖', 'build', 'dependencies', 'npm', 'yarn', 'pnpm', 'webpack', 'vite', 'rollup', 'cargo'],
+            key: ['构建', '依赖', 'build', 'dependencies', 'npm', 'pnpm', 'webpack', 'vite', 'rollup'],
         },
         {
             value: 'ci',
@@ -51,7 +50,6 @@ export function fmtCommitMsg(rawCommit: string): string {
         {
             value: 'refactor',
             key: ['重构', '优化', 'refactor', 'improve', 'optimize'],
-            replaceFunction: (commit) => commit.replace(/^(重构|优化)[,|，|\s|:|：|-]/, ''),
         },
         {
             value: 'fix',
@@ -62,11 +60,14 @@ export function fmtCommitMsg(rawCommit: string): string {
             key: ['新增', '功能', 'feature', 'new', 'feat', '添加', 'implement'],
         },
     ];
-    const match = prefixes.find((item) => commit.startsWith(`${item.value}:`));
-    if (match) {
+    // 1. 检查是否已有标准前缀 (如 feat:、fix: 等)
+    const hasStandardPrefix = prefixes.find((item) => commit.startsWith(`${item.value}:`));
+    if (hasStandardPrefix) {
         return commit;
     }
-    const match2 = prefixes.find((item) => {
+
+    // 2. 通过关键字匹配推断应使用的前缀
+    const inferredPrefix = prefixes.find((item) => {
         if (!item.key) {
             return false;
         }
@@ -75,13 +76,12 @@ export function fmtCommitMsg(rawCommit: string): string {
         }
         return commit.includes(item.key);
     });
-    if (!match2) {
+
+    // 3. 无匹配时默认使用 feat
+    if (!inferredPrefix) {
         return `feat:${commit}`;
     }
-    if (match2.replaceFunction) {
-        commit = `${match2.replaceFunction(commit)}`;
-    }
-    return `${match2.value}:${commit}`;
+    return `${inferredPrefix.value}:${commit}`;
 }
 
 /**
@@ -103,7 +103,14 @@ async function handleConflict() {
     }
     await executeCommands(['git add .', 'git commit -m fix:conflict']);
 }
-
+/**
+ * 判断是否超时错误
+ * @param {string} errMsg - 错误信息
+ * @returns 是否超时错误
+ */
+function isTimeout(errMsg: string): boolean {
+    return errMsg.toLowerCase().includes('timeout') || errMsg.includes("Couldn't connect to server");
+}
 /**
  * 生成 Git 提交命令配置
  * @param {string} message - 提交信息
@@ -113,7 +120,6 @@ function commit(message: string): CommandConfig {
     return {
         message: `git commit -m ${fmtCommitMsg(message)}`,
         onError: async () => {
-            // await handleConflict();
             return {
                 shouldStop: true,
             };
@@ -136,7 +142,7 @@ function pull(): CommandConfig {
                     shouldStop: true,
                 };
             }
-            if (errMsg.toLowerCase().includes('timeout')) {
+            if (isTimeout(errMsg)) {
                 return {
                     shouldStop: false,
                 };
@@ -176,7 +182,7 @@ function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConf
         message: isLocalBranch ? `git push --set-upstream origin ${currenetBranchName}` : 'git push',
         maxAttempts: 100,
         onError: async (errMsg) => {
-            if (errMsg.toLowerCase().includes('timeout') || errMsg.includes("Couldn't connect to server")) {
+            if (isTimeout(errMsg)) {
                 return {
                     shouldStop: false,
                 };
@@ -199,6 +205,16 @@ function clone(repo: string, dir?: string): CommandConfig {
     return {
         message: cmd,
         maxAttempts: 100,
+        onError: async (errMsg) => {
+            if (isTimeout(errMsg)) {
+                return {
+                    shouldStop: false,
+                };
+            }
+            return {
+                shouldStop: true,
+            };
+        },
     };
 }
 
