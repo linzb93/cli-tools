@@ -109,7 +109,14 @@ async function handleConflict() {
  * @returns 是否超时错误
  */
 function isTimeout(errMsg: string): boolean {
-    return errMsg.toLowerCase().includes('timeout') || errMsg.includes("Couldn't connect to server");
+    return (
+        errMsg.toLowerCase().includes('timeout') ||
+        errMsg.includes("Couldn't connect to server") ||
+        errMsg.includes('Failed to connect to') ||
+        errMsg.includes('Connection reset by peer') ||
+        errMsg.includes('Connection was reset, errno') ||
+        errMsg.includes('before end of the underlying stream')
+    );
 }
 /**
  * 生成 Git 提交命令配置
