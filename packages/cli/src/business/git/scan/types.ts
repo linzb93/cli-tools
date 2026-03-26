@@ -1,31 +1,19 @@
-export interface Options {
-    /**
-     * 是否全量扫描
-     * @default false
-     * */
-    full: boolean;
+/**
+ * 待扫描的Git项目
+ */
+export interface InputItem {
+    /** 项目路径 */
+    fullPath: string;
 }
-
-export interface ResultItem {
-    path: string;
+export interface ResultItem extends InputItem {
     /**
+     * Git项目状态
      * 1. 未提交
      * 2. 未推送
      * 3. 正常
      * 4. 不在主分支上
      * */
     status: number;
+    /** 当前分支名称 */
     branchName: string;
-}
-
-/**
- * 扫描进度回调接口
- */
-export interface ScanCallbacks {
-    /** 总数确定时调用 */
-    onTotal?: (total: number) => void;
-    /** 每扫描完成一个项目时调用 */
-    onProgress?: (current: number, total: number) => void;
-    /** 扫描完成时调用 */
-    onComplete?: (list: ResultItem[]) => void;
 }
