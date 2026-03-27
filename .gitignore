@@ -10,4 +10,5 @@ package-lock.json
 .trae/documents
 **/*/stats.html
 .claude/setting.local.json
+.claude/settings.local.json
 packages/cli/test/
