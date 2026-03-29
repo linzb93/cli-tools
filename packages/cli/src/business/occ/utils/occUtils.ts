@@ -1,6 +1,6 @@
 import clipboard from 'clipboardy';
 import { logger } from '@/utils/logger';
-import open from 'open';
+import { open } from '@/utils/helper';
 import { UserInfo } from '../types';
 
 /**
@@ -65,7 +65,7 @@ export const printUserInfo = async (
  */
 export const openPC = (obj: { url: string; serviceName: string; shopName: string }) => {
     logger.success(`店铺【${obj.shopName}】打开成功!`);
-    open(obj.url.replace('app', ''), { wait: true });
+    open(obj.url.replace('app', ''));
 };
 
 /**

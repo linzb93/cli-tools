@@ -1,6 +1,6 @@
 import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
-import open from 'open';
+import { open } from '@/utils/helper';
 import { useAI } from '@/utils/ai/implementation';
 import { readSecret } from '@cli-tools/shared';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
@@ -26,7 +26,7 @@ async function manualCaptchaLogin(
 }> {
     const { url, uuid, removeHandler } = await getLoginCaptcha();
     console.log(chalk.green('请在浏览器中打开以下地址查看验证码：'));
-    await open(url, { wait: true });
+    await open(url);
 
     const { code } = await inquirer.prompt([
         {

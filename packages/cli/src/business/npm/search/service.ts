@@ -1,4 +1,4 @@
-import open from 'open';
+import { open } from '@/utils/helper';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { AxiosError } from 'axios';
@@ -56,7 +56,7 @@ const fetchNpmPackage = async (packageName: string, isMultiple: boolean, options
       上次更新：${chalk.green(data.lastPb)}
       最新版本：${chalk.green(data.version)}`);
     if (options.open) {
-        await open(`https://npmjs.com/package/${packageName}`, { wait: true });
+        await open(`https://npmjs.com/package/${packageName}`);
     }
     return data;
 };

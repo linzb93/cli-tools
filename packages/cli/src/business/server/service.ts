@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { fork } from 'node:child_process';
-import open from 'open';
+import { open } from '@/utils/helper';
 import dayjs from 'dayjs';
 import detectPort from 'detect-port';
 import chalk from 'chalk';

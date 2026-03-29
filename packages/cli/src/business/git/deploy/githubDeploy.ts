@@ -1,4 +1,3 @@
-import { execaCommand as execa } from 'execa';
 import { executeCommands } from '@/utils/promise';
 import gitAtom from '../shared/utils/atom';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../shared/utils';
