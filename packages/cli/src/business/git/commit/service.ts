@@ -1,6 +1,7 @@
 import { logger } from '@/utils/logger';
+import { execaCommand } from 'execa';
 import { isGitProject } from '../shared/utils';
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import type { Options } from './types';
 
@@ -17,12 +18,22 @@ export const commitService = async (message: string, options: Options): Promise<
         return;
     }
 
+    // 既没有输入提交信息，也没有 --merge 选项
+    if (!message && !options.merge) {
+        logger.error('请输入提交信息或使用 --merge 选项');
+        process.exit(1);
+    }
+
     try {
-        // 执行 git commit 命令
-        await executeCommands([
-            `git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`,
-            gitAtom.commit(message),
-        ]);
+        // 执行 git add 命令
+        await executeCommands([`git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`]);
+
+        // 如果是 --merge 选项，使用上一条提交信息 amend
+        if (options.merge && !message) {
+            await execaCommand('git commit --amend --no-edit');
+        } else {
+            await executeCommands([gitActions.commit(message)]);
+        }
         logger.success('提交成功');
     } catch (error) {
         logger.error(`提交失败: ${error.message || error}`);

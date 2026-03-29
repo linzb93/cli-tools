@@ -1,6 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import { executeCommands } from '@/utils/promise';
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import {
     getCurrentBranchName,
     getMainBranchName,
@@ -73,7 +73,7 @@ export const executeBaseManagers = async (commitMessage: string, currentBranch: 
         const gitStatus = await getGitProjectStatus();
 
         if (gitStatus.status === GitStatusMap.Uncommitted) {
-            await executeCommands(['git add .', gitAtom.commit(commitMessage)], { silentStart: true });
+            await executeCommands(['git add .', gitActions.commit(commitMessage)], { silentStart: true });
         }
 
         // 检查当前分支是否已推送到远端
@@ -81,19 +81,19 @@ export const executeBaseManagers = async (commitMessage: string, currentBranch: 
 
         // 根据分支推送状态决定是否添加 pull 命令
         if (isBranchPushed) {
-            await executeCommands([gitAtom.pull()], { silentStart: true });
+            await executeCommands([gitActions.pull()], { silentStart: true });
 
             // 检查Pull后是否有未提交的更改（如合并产生的未提交更改）
             if (await hasChanges()) {
-                await executeCommands(['git add .', gitAtom.commit('合并代码')], { silentStart: true });
+                await executeCommands(['git add .', gitActions.commit('合并代码')], { silentStart: true });
             }
         }
 
         // 根据分支是否已推送到远端决定push方式
         if (isBranchPushed) {
-            await executeCommands([gitAtom.push()], { silentStart: true });
+            await executeCommands([gitActions.push()], { silentStart: true });
         } else {
-            await executeCommands([gitAtom.push(true, currentBranch)], { silentStart: true });
+            await executeCommands([gitActions.push(true, currentBranch)], { silentStart: true });
         }
 
         logger.success('基础Git命令执行完成');
@@ -120,7 +120,7 @@ export const mergeToBranch = async (
     try {
         // 保存当前分支
         await execa(`git checkout ${targetBranch}`);
-        await executeCommands([gitAtom.pull(), gitAtom.merge(currentBranch), gitAtom.push()]);
+        await executeCommands([gitActions.pull(), gitActions.merge(currentBranch), gitActions.push()]);
 
         // 根据参数决定是否切回原分支
         if (switchBackToBranch) {

@@ -1,4 +1,4 @@
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
@@ -19,7 +19,7 @@ export const cloneService = async (options: Options): Promise<void> => {
         }
 
         // 执行 git clone 命令
-        await executeCommands([gitAtom.clone(repo, dir)]);
+        await executeCommands([gitActions.clone(repo, dir)]);
 
         logger.success('仓库克隆成功');
     } catch (error: any) {

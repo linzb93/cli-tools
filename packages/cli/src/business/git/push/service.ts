@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 import { isGitProject, getCurrentBranchName, isCurrenetBranchPushed } from '../shared/utils';
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import chalk from 'chalk';
 import type { Options } from './types';
@@ -30,10 +30,10 @@ export const pushService = async (options: Options = {}): Promise<void> => {
         // 显示进度提示
         logger.info('正在推送代码...');
         if (await isCurrenetBranchPushed()) {
-            await executeCommands([gitAtom.push()]);
+            await executeCommands([gitActions.push()]);
             logger.success(`成功将分支 ${chalk.green(currentBranch)} 推送到远程`);
         } else {
-            await executeCommands([gitAtom.push(true, currentBranch)]);
+            await executeCommands([gitActions.push(true, currentBranch)]);
             logger.success(`成功将分支 ${chalk.green(currentBranch)} 推送到远程并设置上游分支`);
         }
     } catch (error: any) {

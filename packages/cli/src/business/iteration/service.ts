@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import inquirer from '@/utils/inquirer';
 import type { IterationOptions } from './types';
-import gitAtom from '../git/shared/utils/atom';
+import gitActions from '../git/shared/utils/actions';
 import {
     isGithubProject,
     getGitProjectStatus,
@@ -87,7 +87,7 @@ const prepareMainBranch = async (
     if (currentBranch !== mainBranch) {
         if (gitStatus.status === GitStatusMap.Uncommitted) {
             logger.info('当前分支有未提交的代码，正在自动提交...');
-            await runGitCommands(['git add .', gitAtom.commit('chore: save uncommitted changes before iteration')]);
+            await runGitCommands(['git add .', gitActions.commit('chore: save uncommitted changes before iteration')]);
         }
         logger.info(`切换到主干分支 ${mainBranch} 并拉取最新代码...`);
         await runGitCommands([`git checkout ${mainBranch}`, 'git pull']);
@@ -241,27 +241,27 @@ const commitAndPushChanges = async (
     isDebug: boolean,
 ): Promise<void> => {
     logger.info('提交版本变更并推送到远端...');
-    await runGitCommands(['git add .', gitAtom.commit(`chore: bump version to ${newVersion}`)]);
+    await runGitCommands(['git add .', gitActions.commit(`chore: bump version to ${newVersion}`)]);
 
     if (isDebug) {
-        await runGitCommands([gitAtom.push(true, targetBranch)]);
+        await runGitCommands([gitActions.push(true, targetBranch)]);
         logger.info('预计将执行上述 Git 命令。');
         return;
     }
 
     if (!isGithub) {
         if (await isCurrenetBranchPushed()) {
-            await runGitCommands([gitAtom.push()]);
+            await runGitCommands([gitActions.push()]);
             logger.success(`成功推送到远程`);
         } else {
-            await runGitCommands([gitAtom.push(true, targetBranch)]);
+            await runGitCommands([gitActions.push(true, targetBranch)]);
             logger.success(`成功推送到远程并设置上游分支`);
         }
     } else {
         if (await isCurrenetBranchPushed()) {
-            await runGitCommands([gitAtom.push()]);
+            await runGitCommands([gitActions.push()]);
         } else {
-            await runGitCommands([gitAtom.push(true, targetBranch)]);
+            await runGitCommands([gitActions.push(true, targetBranch)]);
         }
     }
 };

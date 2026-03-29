@@ -2,7 +2,7 @@ import Table from 'cli-table3';
 import { isGitProject, splitGitLog } from '../shared/utils';
 import { execaCommand as execa } from 'execa';
 import chalk from 'chalk';
-import gitAtom, { fmtCommitMsg } from '../shared/utils/atom';
+import gitActions, { fmtCommitMsg } from '../shared/utils/actions';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
 import type { Options } from './types';
@@ -40,6 +40,6 @@ export const mergeService = async (options: Options): Promise<void> => {
     );
     await execa(`git reset --soft HEAD~${head}`);
     await execa('git add .');
-    await execa(gitAtom.commit(commitMessage).message);
+    await execa(gitActions.commit(commitMessage).message);
     console.log(chalk.green('合并完成'));
 };

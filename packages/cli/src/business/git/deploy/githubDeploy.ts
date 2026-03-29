@@ -1,5 +1,5 @@
 import { executeCommands } from '@/utils/promise';
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import { DeployOptions, mergeToBranch, hasChanges } from './baseDeploy';
@@ -17,7 +17,7 @@ export const executeGithubGitFlow = async (commitMessage: string, currentBranch:
         const gitStatus = await getGitProjectStatus();
 
         if (gitStatus.status === GitStatusMap.Uncommitted) {
-            await executeCommands(['git add .', gitAtom.commit(commitMessage)], { silentStart: true });
+            await executeCommands(['git add .', gitActions.commit(commitMessage)], { silentStart: true });
         }
 
         // 检查当前分支是否已推送到远端
@@ -25,7 +25,7 @@ export const executeGithubGitFlow = async (commitMessage: string, currentBranch:
 
         if (!isBranchPushed) {
             // 如果是新分支，直接 push -u
-            await executeCommands([gitAtom.push(true, currentBranch)], { silentStart: true });
+            await executeCommands([gitActions.push(true, currentBranch)], { silentStart: true });
         } else {
             // 如果已关联远程分支，尝试优先 push
             await executeCommands(
@@ -42,13 +42,16 @@ export const executeGithubGitFlow = async (commitMessage: string, currentBranch:
                             ) {
                                 logger.info('检测到远程分支有更新，正在拉取代码...');
                                 try {
-                                    await executeCommands([gitAtom.pull()], { silentStart: true });
+                                    await executeCommands([gitActions.pull()], { silentStart: true });
 
                                     // 检查合并后是否有未提交的更改
                                     if (await hasChanges()) {
-                                        await executeCommands(['git add .', gitAtom.commit('Merge remote changes')], {
-                                            silentStart: true,
-                                        });
+                                        await executeCommands(
+                                            ['git add .', gitActions.commit('Merge remote changes')],
+                                            {
+                                                silentStart: true,
+                                            },
+                                        );
                                     }
 
                                     // Pull 成功后，返回 false 让 executeCommands 重试 git push
