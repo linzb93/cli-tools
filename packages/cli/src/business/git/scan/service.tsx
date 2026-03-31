@@ -1,16 +1,26 @@
 import { join } from 'node:path';
 import fsp from 'node:fs/promises';
 import React, { useState, useEffect } from 'react';
-import { Box, render, Text, useApp } from 'ink';
+import { Box, render, Text, useApp, Newline } from 'ink';
 // import SelectInput from 'ink-select-input';
 // import TextInput from 'ink-text-input';
-import Table, { Header, Skeleton, Cell } from '@/lib/Table';
+import Table, { Skeleton, Cell } from '@/lib/Table';
 import pMap from 'p-map';
 import pReduce from 'p-reduce';
+import chalk from 'chalk';
 import { sql } from '@cli-tools/shared';
 import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import type { InputItem, ResultItem } from './types';
 import ProgressBar from '@/lib/ProgressBar';
+
+/** 中文状态名，带颜色 */
+const StatusName: Record<number, string> = {
+    [GitStatusMap.Unknown]: '未知',
+    [GitStatusMap.Uncommitted]: chalk.red('未提交'),
+    [GitStatusMap.Unpushed]: chalk.yellow('未推送'),
+    [GitStatusMap.Pushed]: '已推送',
+    [GitStatusMap.NotOnMainBranch]: '不在主分支',
+};
 
 const App = ({ list }: { list: InputItem[] }) => {
     const [progress, setProgress] = useState(0);
@@ -24,54 +34,58 @@ const App = ({ list }: { list: InputItem[] }) => {
      * @returns {Promise<void>} 无返回值
      */
     const doScan = async (): Promise<void> => {
-        for (const item of list) {
-            try {
-                const { status, branchName } = await getGitProjectStatus(item.fullPath);
-                setResultList((prev) =>
-                    prev.concat({
-                        ...item,
-                        status,
-                        branchName,
-                    }),
-                );
-            } catch (error) {
-                // 如果获取状态失败，返回一个默认状态或者忽略
-                setResultList((prev) =>
-                    prev.concat({
-                        ...item,
-                        status: 3, // 默认为正常，避免中断流程
-                        branchName: '',
-                    }),
-                );
-            } finally {
-                // 扫描完成后，进度增加1，使用函数式更新避免闭包问题
-                setProgress((prev) => prev + 1);
-            }
-        }
+        const results: ResultItem[] = [];
+        const data = await pMap(
+            list,
+            async (item) => {
+                try {
+                    const { status, branchName } = await getGitProjectStatus(item.fullPath);
+                    setProgress((data) => data + 1);
+                    return { ...item, status, branchName } as ResultItem;
+                } catch (error) {
+                    // 如果获取状态失败，返回一个默认状态或者忽略
+                    return { ...item, status: 3, branchName: '' } as ResultItem;
+                }
+            },
+            {
+                concurrency: 4,
+            },
+        );
+        setResultList(data.filter((item) => [1, 2].includes(item.status)));
         setLoading(false);
     };
     return (
         <Box>
             {loading ? (
                 <Box>
-                    <Text>
-                        {progress}/{list.length}
-                    </Text>
+                    <Box>
+                        <Text>
+                            {progress}/{list.length}
+                        </Text>
+                    </Box>
                     <ProgressBar columns={14} percent={progress / list.length} left={1} />
                 </Box>
             ) : (
-                <Table
-                    data={resultList.map((item, i) => ({
-                        ...item,
-                        index: i + 1,
-                        statusName: GitStatusMap[item.status],
-                    }))}
-                    columns={['index', 'fullPath', 'statusName', 'branchName']}
-                    padding={1}
-                    header={Header}
-                    cell={Cell}
-                    skeleton={Skeleton}
-                />
+                <Box>
+                    <Box marginBottom={4}>
+                        <Text>已扫描{list.length}个项目</Text>
+                    </Box>
+                    <Newline />
+                    <Box>
+                        <Newline />
+                        <Table
+                            data={resultList.map((item, i) => ({
+                                fullPath: item.fullPath,
+                                index: i + 1,
+                                statusName: StatusName[item.status],
+                            }))}
+                            columns={['index', 'fullPath', 'statusName']}
+                            padding={1}
+                            cell={Cell}
+                            skeleton={Skeleton}
+                        />
+                    </Box>
+                </Box>
             )}
         </Box>
     );
