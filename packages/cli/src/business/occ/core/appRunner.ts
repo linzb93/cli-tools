@@ -1,6 +1,6 @@
 import { Options, App } from '../types';
 import { logger } from '@/utils/logger';
-import open from 'open';
+import { open } from '@/utils/helper';
 import chalk from 'chalk';
 import { copyToken, fixURL, copyURL, printUserInfo } from '../utils/occUtils';
 
@@ -55,7 +55,7 @@ export const afterSearchApp = async (app: App, url: string, shopName: string, op
         return;
     }
     logger.success(`店铺【${shopName}】打开成功!`);
-    await open(url, { wait: true });
+    await open(url);
 };
 
 export const getToken = (url: string): string => {

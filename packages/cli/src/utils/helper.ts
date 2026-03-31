@@ -1,9 +1,10 @@
 import { map, first, from, concatMap, interval } from 'rxjs';
 import { Writable } from 'node:stream';
+import rawOpen from 'open';
 import { logger } from '../utils/logger';
 import { findContent } from './markdown';
 import { fromStream } from './rxjs';
-import { lt } from 'semver';
+import { sleep } from '@linzb93/utils';
 
 /**
  * 按行分割文件。
@@ -84,6 +85,14 @@ export const generateHelpDoc = (commands: string[]) => {
             resolve();
         }
     });
+};
+/**
+ * 打开URL
+ * @param url 要打开的URL
+ * @returns {Promise<void>}
+ */
+export const open = async (url: string): Promise<void> => {
+    await Promise.race([rawOpen(url, { wait: true }), sleep(5000)]);
 };
 
 /**

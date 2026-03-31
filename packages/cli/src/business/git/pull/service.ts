@@ -1,5 +1,5 @@
 import { isGitProject, getCurrentBranchName } from '../shared/utils';
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
@@ -31,7 +31,7 @@ export const pullService = async (options: Options): Promise<void> => {
         logger.info('正在拉取代码...');
 
         // 执行 git pull 命令
-        await executeCommands([gitAtom.pull()]);
+        await executeCommands([gitActions.pull()]);
 
         logger.success(`成功拉取分支 ${chalk.green(currentBranch)} 的最新代码`);
     } catch (error) {

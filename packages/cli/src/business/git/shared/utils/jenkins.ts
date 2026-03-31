@@ -1,4 +1,4 @@
-import open from 'open';
+import { open } from '@/utils/helper';
 import { readPackage as readPkg } from 'read-pkg';
 import { readSecret } from '@cli-tools/shared';
 import fs from 'node:fs';
@@ -23,7 +23,6 @@ export const openDeployPage = async (type?: string, isOnline?: boolean) => {
         const origin = await readSecret((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
         await open(
             `http://${origin}/view/${isOnline ? onlineName || name : name}/job/${isOnline ? onlineId || id : id}/`,
-            { wait: true },
         );
     }
 };

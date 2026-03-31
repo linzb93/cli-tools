@@ -30,7 +30,16 @@ export function registerCopyFilePathAndLineCommand(context: vscode.ExtensionCont
 
             // 写入剪贴板
             await vscode.env.clipboard.writeText(result);
-            vscode.window.showInformationMessage('文件地址和行号已复制到剪贴板！');
+            const closeMessageHandler = vscode.window.showInformationMessage('文件地址和行号已复制到剪贴板！');
+
+            // 3秒后自动关闭提示
+            setTimeout(() => {
+                if (closeMessageHandler) {
+                    closeMessageHandler.then(() => {
+                        // 提示已关闭
+                    });
+                }
+            }, 3000);
         }
     });
 

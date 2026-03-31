@@ -3,4 +3,5 @@
  */
 export interface Options {
     path: string;
+    merge?: boolean;
 }

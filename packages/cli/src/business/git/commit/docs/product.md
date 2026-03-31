@@ -29,14 +29,15 @@
 
 该命令作为 `git` 业务模块的子命令运行。
 
-| 参数 | 类型 | 必填 | 默认值 | 描述 |
-| :--- | :--- | :--- | :--- | :--- |
-| `message` | string | 是 | - | 提交信息描述。 |
-| `--path` | string | 否 | `.` | 指定要提交的文件路径。 |
+| 参数      | 类型   | 必填 | 默认值 | 描述                   |
+| :-------- | :----- | :--- | :----- | :--------------------- |
+| `message` | string | 是   | -      | 提交信息描述。         |
+| `--path`  | string | 否   | `.`    | 指定要提交的文件路径。 |
 
 ## 交互设计 (User Experience)
 
 用户在终端输入命令后，工具将按以下步骤执行：
+
 1.  **检查环境**：验证当前目录是否为 Git 仓库。
 2.  **执行提交**：
     -   执行 `git add` 将变更加入暂存区。
@@ -48,7 +49,7 @@
 
 ## 技术实现 (Technical Implementation)
 
-该模块主要由 `commitService` 服务和 `gitAtom` 工具类组成。核心逻辑在于提交信息的格式化和 Git 命令的链式执行。
+该模块主要由 `commitService` 服务和 `gitActions` 工具类组成。核心逻辑在于提交信息的格式化和 Git 命令的链式执行。
 
 ```mermaid
 flowchart TD
@@ -60,7 +61,7 @@ flowchart TD
     GitAdd --> CallFormat["调用 fmtCommitMsg"]
     CallFormat --> GitCommit["构建 git commit 命令"]
     GitCommit --> Execute["执行命令序列 executeCommands"]
-    
+
     Execute --> Success{"执行成功?"}
     Success -- 是 --> LogSuccess["记录成功: 提交成功"] --> End
     Success -- 否 --> CatchError["捕获异常"]

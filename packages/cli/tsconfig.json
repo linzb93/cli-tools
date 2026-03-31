@@ -5,6 +5,7 @@
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
+        "skipLibCheck": true,
         "outDir": "./dist/",
         "baseUrl": "./src",
         "noEmit": true,
