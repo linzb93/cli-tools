@@ -17,13 +17,15 @@ import {
 } from '../git/shared/utils';
 import { isMonorepo } from './utils';
 
+/** 模块级变量 */
+let isDebug = false;
+let commandsToRun: any[] = [];
+
 /**
- * 创建 Git 命令运行器
- * @param {boolean} isDebug - 是否处于 Debug 模式
- * @param {any[]} commandsToRun - 用于记录执行的命令的数组
+ * 创建 Git 命令运行器（不可变，内部判断 debug 模式）
  * @returns {Function} Git 命令执行函数
  */
-const createGitCommandRunner = (isDebug: boolean, commandsToRun: any[]): Function => {
+const createGitCommandRunner = (): Function => {
     return async (cmds: any[], ignoreError = false) => {
         if (isDebug) {
             commandsToRun.push(...cmds);
@@ -37,20 +39,24 @@ const createGitCommandRunner = (isDebug: boolean, commandsToRun: any[]): Functio
     };
 };
 
+interface CalculateNewVersionParams {
+    /** 当前版本号 */
+    currentVersion: string;
+    /** 传入的目标版本参数 */
+    versionArg: string | undefined;
+    /** 是否为公司业务项目 */
+    isCompanyBusiness: boolean;
+    /** 是否为修复模式 */
+    fix: boolean;
+}
+
 /**
  * 计算新版本号
- * @param {string} currentVersion - 当前版本
- * @param {string | undefined} versionArg - 传入的目标版本参数
- * @param {boolean} isCompanyBusiness - 是否为公司业务项目
- * @param {boolean} fix - 是否为修复模式
+ * @param {CalculateNewVersionParams} params - 参数对象
  * @returns {string} 计算出的新版本号
  */
-const calculateNewVersion = (
-    currentVersion: string,
-    versionArg: string | undefined,
-    isCompanyBusiness: boolean,
-    fix: boolean,
-): string => {
+const calculateNewVersion = (params: CalculateNewVersionParams): string => {
+    const { currentVersion, versionArg, isCompanyBusiness, fix } = params;
     if (versionArg) return versionArg;
 
     if (!semver.valid(currentVersion)) {
@@ -70,16 +76,21 @@ const calculateNewVersion = (
     return newVersion;
 };
 
+interface PrepareMainBranchParams {
+    /** 项目路径 */
+    projectPath: string;
+}
+
 /**
  * 检查当前分支并切换到主分支拉取最新代码
- * @param {string} projectPath - 项目路径
- * @param {Function} runGitCommands - Git 执行器
+ * @param {PrepareMainBranchParams} params - 参数对象
  * @returns {Promise<{ mainBranch: string; currentBranch: string }>} 返回主分支名和当前分支名
  */
 const prepareMainBranch = async (
-    projectPath: string,
-    runGitCommands: Function,
+    params: PrepareMainBranchParams,
 ): Promise<{ mainBranch: string; currentBranch: string }> => {
+    const { projectPath } = params;
+    const runGitCommands = createGitCommandRunner();
     const gitStatus = await getGitProjectStatus(projectPath);
     const mainBranch = (await getMainBranchName(projectPath)) || 'master';
     const currentBranch = gitStatus.branchName;
@@ -99,24 +110,27 @@ const prepareMainBranch = async (
     return { mainBranch, currentBranch };
 };
 
+interface HandleTargetBranchParams {
+    /** 是否为修复模式 */
+    fix: boolean;
+    /** 是否为公司业务项目 */
+    isCompanyBusiness: boolean;
+    /** 主分支名 */
+    mainBranch: string;
+    /** 新版本号 */
+    newVersion: string;
+}
+
 /**
  * 处理目标开发分支（创建或切换）
- * @param {boolean} fix - 是否为修复模式
- * @param {boolean} isCompanyBusiness - 是否为公司业务项目
- * @param {string} mainBranch - 主分支名
- * @param {string} newVersion - 新版本号
- * @param {Function} runGitCommands - Git 执行器
- * @param {boolean} isDebug - 是否为 Debug 模式
+ * @param {HandleTargetBranchParams} params - 参数对象
  * @returns {Promise<{ targetBranch: string; finalVersion: string }>} 最终使用的分支和版本号
  */
 const handleTargetBranch = async (
-    fix: boolean,
-    isCompanyBusiness: boolean,
-    mainBranch: string,
-    newVersion: string,
-    runGitCommands: Function,
-    isDebug: boolean,
+    params: HandleTargetBranchParams,
 ): Promise<{ targetBranch: string; finalVersion: string }> => {
+    const { fix, isCompanyBusiness, mainBranch, newVersion } = params;
+    const runGitCommands = createGitCommandRunner();
     let targetBranch = '';
     let finalVersion = newVersion;
 
@@ -178,22 +192,24 @@ const handleTargetBranch = async (
     return { targetBranch, finalVersion };
 };
 
+interface UpdatePackageVersionsParams {
+    /** 项目路径 */
+    projectPath: string;
+    /** 根目录 package.json 路径 */
+    pkgPath: string;
+    /** 新版本号 */
+    newVersion: string;
+    /** 是否为 Monorepo 项目 */
+    isMono: boolean;
+}
+
 /**
  * 更新项目的 package.json 中的版本号
- * @param {string} projectPath - 项目路径
- * @param {string} pkgPath - 根目录 package.json 路径
- * @param {string} newVersion - 新版本号
- * @param {boolean} isMono - 是否为 Monorepo 项目
- * @param {boolean} isDebug - 是否为 Debug 模式
+ * @param {UpdatePackageVersionsParams} params - 参数对象
  * @returns {Promise<void>}
  */
-const updatePackageVersions = async (
-    projectPath: string,
-    pkgPath: string,
-    newVersion: string,
-    isMono: boolean,
-    isDebug: boolean,
-): Promise<void> => {
+const updatePackageVersions = async (params: UpdatePackageVersionsParams): Promise<void> => {
+    const { projectPath, pkgPath, newVersion, isMono } = params;
     logger.info('正在更新 package.json 版本号...');
     const updatePackageJson = async (pPath: string, version: string) => {
         if (isDebug) {
@@ -224,22 +240,23 @@ const updatePackageVersions = async (
     }
 };
 
+interface CommitAndPushChangesParams {
+    /** 新版本号 */
+    newVersion: string;
+    /** 目标分支名 */
+    targetBranch: string;
+    /** 是否为 GitHub 项目 */
+    isGithub: boolean;
+}
+
 /**
  * 提交并推送代码到远端
- * @param {string} newVersion - 新版本号
- * @param {string} targetBranch - 目标分支名
- * @param {boolean} isGithub - 是否为 GitHub 项目
- * @param {Function} runGitCommands - Git 执行器
- * @param {boolean} isDebug - 是否为 Debug 模式
+ * @param {CommitAndPushChangesParams} params - 参数对象
  * @returns {Promise<void>}
  */
-const commitAndPushChanges = async (
-    newVersion: string,
-    targetBranch: string,
-    isGithub: boolean,
-    runGitCommands: Function,
-    isDebug: boolean,
-): Promise<void> => {
+const commitAndPushChanges = async (params: CommitAndPushChangesParams): Promise<void> => {
+    const { newVersion, targetBranch, isGithub } = params;
+    const runGitCommands = createGitCommandRunner();
     logger.info('提交版本变更并推送到远端...');
     await runGitCommands(['git add .', gitActions.commit(`chore: bump version to ${newVersion}`)]);
 
@@ -266,22 +283,24 @@ const commitAndPushChanges = async (
     }
 };
 
+interface PrintDryRunResultParams {
+    /** 当前分支名 */
+    currentBranch: string;
+    /** 目标分支名 */
+    targetBranch: string;
+    /** 原版本号 */
+    currentVersion: string;
+    /** 新版本号 */
+    newVersion: string;
+}
+
 /**
  * 打印 Dry Run 结果
- * @param {string} currentBranch - 当前分支名
- * @param {string} targetBranch - 目标分支名
- * @param {string} currentVersion - 原版本号
- * @param {string} newVersion - 新版本号
- * @param {any[]} commandsToRun - 计划执行的命令数组
+ * @param {PrintDryRunResultParams} params - 参数对象
  * @returns {void}
  */
-const printDryRunResult = (
-    currentBranch: string,
-    targetBranch: string,
-    currentVersion: string,
-    newVersion: string,
-    commandsToRun: any[],
-): void => {
+const printDryRunResult = (params: PrintDryRunResultParams): void => {
+    const { currentBranch, targetBranch, currentVersion, newVersion } = params;
     logger.info(chalk.cyan('\n=== Dry Run 执行结果 ==='));
     logger.info(`当前分支: ${currentBranch}`);
     logger.info(`目标分支: ${targetBranch}`);
@@ -304,10 +323,10 @@ export const iterationService = async (options: IterationOptions): Promise<void>
     const { fix = false, version: versionArg } = options;
     const projectPath = process.cwd();
     const pkgPath = path.resolve(projectPath, 'package.json');
-    const isDebug = process.argv.includes('--debug') || !!process.env.DEBUG;
 
-    const commandsToRun: (string | any)[] = [];
-    const runGitCommands = createGitCommandRunner(isDebug, commandsToRun);
+    // 初始化模块级变量
+    isDebug = process.argv.includes('--debug') || !!process.env.DEBUG;
+    commandsToRun = [];
 
     if (isDebug) {
         logger.info(chalk.bgBlue.white(' === DEBUG 模式 (Dry Run) === '));
@@ -323,37 +342,35 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         const isMono = await isMonorepo(projectPath);
         const isCompanyBusiness = !isGithub && !isMono;
 
-        const pkg = await fs.readJson(pkgPath);
+        const pkg = await fs.readJSON(pkgPath);
         const currentVersion = pkg.version;
 
-        const newVersion = calculateNewVersion(currentVersion, versionArg, isCompanyBusiness, fix);
+        const newVersion = calculateNewVersion({ currentVersion, versionArg, isCompanyBusiness, fix });
 
         logger.info(`项目类型: ${isGithub ? 'GitHub' : '公司'}${isMono ? ' Monorepo' : ' 普通项目'}`);
         logger.info(`当前版本: ${chalk.green(currentVersion)}`);
         logger.info(`新版本: ${chalk.green(newVersion)}`);
 
         // 1. 前置检查与主干切换
-        const { mainBranch, currentBranch } = await prepareMainBranch(projectPath, runGitCommands);
+        const { mainBranch, currentBranch } = await prepareMainBranch({ projectPath });
 
         // 2. 开发分支策略
-        const { targetBranch, finalVersion } = await handleTargetBranch(
+        const { targetBranch, finalVersion } = await handleTargetBranch({
             fix,
             isCompanyBusiness,
             mainBranch,
             newVersion,
-            runGitCommands,
-            isDebug,
-        );
+        });
 
         // 3. 更新版本号
-        await updatePackageVersions(projectPath, pkgPath, finalVersion, isMono, isDebug);
+        await updatePackageVersions({ projectPath, pkgPath, newVersion: finalVersion, isMono });
 
         // 4. 提交并推送
-        await commitAndPushChanges(finalVersion, targetBranch, isGithub, runGitCommands, isDebug);
+        await commitAndPushChanges({ newVersion: finalVersion, targetBranch, isGithub });
 
         // 5. Debug 输出
         if (isDebug) {
-            printDryRunResult(currentBranch, targetBranch, currentVersion, finalVersion, commandsToRun);
+            printDryRunResult({ currentBranch, targetBranch, currentVersion, newVersion: finalVersion });
             return;
         }
 
