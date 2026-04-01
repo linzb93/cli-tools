@@ -4,7 +4,7 @@ import clipboardy from 'clipboardy';
 import { logger } from '@/utils/logger';
 import { executeCommands } from '@/utils/promise';
 import { isGitProject, getAllTags } from '../../shared/utils';
-import { getProjectName, updateLastTag } from '../../shared/utils/jenkins';
+import { getProjectName } from '../../shared/utils/jenkins';
 import type { TagGetOptions as Options, VersionInfo } from '../types';
 
 /**
@@ -117,45 +117,16 @@ const createSpecifiedVersion = (type: string, version: string, maxVersion: Versi
 };
 
 /**
- * 判断版本 v1 是否大于或等于 v2
- * @param {VersionInfo} v1 - 第一个版本信息
- * @param {VersionInfo} v2 - 第二个版本信息
- * @returns {boolean} 如果 v1 大于等于 v2 返回 true，否则返回 false
- * @example
- * const v1 = { prefix: 'v', major: 1, minor: 1, patch: 0 };
- * const v2 = { prefix: 'v', major: 1, minor: 0, patch: 0 };
- * const res = isVersionGreaterOrEqual(v1, v2);
- * // res === true
- */
-const isVersionGreaterOrEqual = (v1: VersionInfo, v2: VersionInfo): boolean => {
-    if (v1.major !== v2.major) return v1.major > v2.major;
-    if (v1.minor !== v2.minor) return v1.minor > v2.minor;
-    if (v1.patch !== v2.patch) return v1.patch > v2.patch;
-    const b1 = v1.build || 0;
-    const b2 = v2.build || 0;
-    return b1 >= b2;
-};
-
-/**
  * 创建递增的四级版本号
  * @param {string} type - 标签前缀类型
  * @param {VersionInfo} maxVersion - 当前最大版本信息
- * @param {VersionInfo | null} lastTagVersion - 上次打标的版本信息
  * @returns {string} 递增后的版本号字符串
  * @example
  * const max = { prefix: 'v', major: 1, minor: 0, patch: 0 };
- * const last = { prefix: 'v', major: 1, minor: 0, patch: 0, build: 1 };
- * const v = createIncrementedVersion('v', max, last);
- * // v === 'v1.0.0.2'
+ * const v = createIncrementedVersion('v', max);
+ * // v === 'v1.0.0.1'
  */
-const createIncrementedVersion = (
-    type: string,
-    maxVersion: VersionInfo,
-    lastTagVersion: VersionInfo | null,
-): string => {
-    if (lastTagVersion && lastTagVersion.build !== undefined && isVersionGreaterOrEqual(lastTagVersion, maxVersion)) {
-        return `${type}${lastTagVersion.major}.${lastTagVersion.minor}.${lastTagVersion.patch}.${lastTagVersion.build + 1}`;
-    }
+const createIncrementedVersion = (type: string, maxVersion: VersionInfo): string => {
     if (maxVersion.build !== undefined) {
         return `${type}${maxVersion.major}.${maxVersion.minor}.${maxVersion.patch}.${maxVersion.build + 1}`;
     } else {
@@ -168,28 +139,22 @@ const createIncrementedVersion = (
  * @param {string[]} tags - 现有标签字符串数组
  * @param {string} [type='v'] - 标签前缀类型
  * @param {string} [version] - 可选的指定版本号
- * @returns {Promise<{ newTag: string; shouldUpdateLastTag: boolean }>} 包含新标签和是否需要更新 lastTag 标志的对象
+ * @returns {Promise<string>} 生成的标签字符串
  */
-const generateNewTag = async (
-    tags: string[],
-    type: string = 'v',
-    version?: string,
-): Promise<{ newTag: string; shouldUpdateLastTag: boolean }> => {
+const generateNewTag = async (tags: string[], type: string = 'v', version?: string): Promise<string> => {
     const prefixedTags = tags.filter((tag) => tag.startsWith(type));
     if (prefixedTags.length === 0) {
-        return { newTag: createInitialVersion(type, version), shouldUpdateLastTag: false };
+        return createInitialVersion(type, version);
     }
     const versions = prefixedTags.map((tag) => parseVersion(tag, type)).filter((v) => v !== null) as VersionInfo[];
     if (versions.length === 0) {
-        return { newTag: createInitialVersion(type, version), shouldUpdateLastTag: false };
+        return createInitialVersion(type, version);
     }
     const maxVersion = findMaxVersion(versions);
     if (version) {
-        return { newTag: createSpecifiedVersion(type, version, maxVersion), shouldUpdateLastTag: false };
+        return createSpecifiedVersion(type, version, maxVersion);
     } else {
-        const jenkinsConfig = await getProjectName(type);
-        const lastTagVersion = jenkinsConfig.lastTag ? parseVersion(jenkinsConfig.lastTag, type) : null;
-        return { newTag: createIncrementedVersion(type, maxVersion, lastTagVersion), shouldUpdateLastTag: true };
+        return createIncrementedVersion(type, maxVersion);
     }
 };
 
@@ -214,7 +179,7 @@ export const tagService = async (options: Options): Promise<void> => {
             return;
         }
 
-        const { newTag, shouldUpdateLastTag } = await generateNewTag(tags, type, version);
+        const newTag = await generateNewTag(tags, type, version);
 
         logger.info(`正在创建标签: ${chalk.green(newTag)}`);
 
@@ -239,10 +204,6 @@ export const tagService = async (options: Options): Promise<void> => {
                 },
             },
         ]);
-
-        if (shouldUpdateLastTag) {
-            await updateLastTag(type, newTag);
-        }
 
         const { onlineId } = await getProjectName(type);
         const copyText = `${onlineId}, tag:${newTag}${options.msg ? `，更新内容：${options.msg}。` : '。'}`;
