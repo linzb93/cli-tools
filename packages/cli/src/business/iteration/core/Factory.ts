@@ -5,6 +5,7 @@ import { isGithubProject } from '../../git/shared/utils';
 import { isMonorepo } from '../utils';
 import { BaseStrategy } from './BaseStrategy';
 import { githubStrategy } from '../implementations/GithubStrategy';
+import { githubMonorepoStrategy } from '../implementations/GithubMonorepoStrategy';
 import { companyMonorepoStrategy } from '../implementations/CompanyMonorepoStrategy';
 import { companyBusinessStrategy } from '../implementations/CompanyBusinessStrategy';
 
@@ -17,6 +18,9 @@ export const createIterationStrategy = async (projectPath: string): Promise<Base
     const isGithub = await isGithubProject();
     const isMono = await isMonorepo(projectPath);
 
+    if (isGithub && isMono) {
+        return githubMonorepoStrategy;
+    }
     if (isGithub) {
         return githubStrategy;
     }

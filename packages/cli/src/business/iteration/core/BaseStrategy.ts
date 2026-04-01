@@ -22,6 +22,7 @@ export abstract class BaseStrategy {
  */
 export enum StrategyType {
     GITHUB = 'github',
+    GITHUB_MONOREPO = 'github-monorepo',
     COMPANY_MONOREPO = 'company-monorepo',
     COMPANY_BUSINESS = 'company-business',
 }
