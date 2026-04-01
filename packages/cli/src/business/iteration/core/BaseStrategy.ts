@@ -16,13 +16,3 @@ export abstract class BaseStrategy {
     /** 策略特定的初始化或检查 */
     validate?(ctx: IterationContext): Promise<void>;
 }
-
-/**
- * 策略名称枚举
- */
-export enum StrategyType {
-    GITHUB = 'github',
-    GITHUB_MONOREPO = 'github-monorepo',
-    COMPANY_MONOREPO = 'company-monorepo',
-    COMPANY_BUSINESS = 'company-business',
-}

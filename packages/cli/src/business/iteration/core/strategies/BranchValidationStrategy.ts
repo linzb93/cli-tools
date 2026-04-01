@@ -1,25 +1,46 @@
 import { execaCommand } from 'execa';
 import inquirer from '@/utils/inquirer';
 import semver from 'semver';
-import type { IterationContext } from '../types';
-import { BaseStrategy } from '../core/BaseStrategy';
+import type { IterationContext } from '../../types';
 import { logger } from '@/utils/logger';
 
 /**
- * GitHub Monorepo 项目迭代策略
+ * 分支验证策略接口
  */
-export class GithubMonorepoStrategy extends BaseStrategy {
-    readonly name = 'GitHub Monorepo';
+export interface BranchValidationStrategy {
+    /**
+     * 验证并处理分支相关逻辑
+     * @param ctx 迭代上下文
+     */
+    validate(ctx: IterationContext): Promise<void>;
+}
 
-    getReleaseType(): 'minor' {
-        return 'minor';
+/**
+ * 分支不存在时创建分支的验证策略（用于 GitHub 非 Monorepo 项目）
+ */
+export class CreateBranchIfNotExistsStrategy implements BranchValidationStrategy {
+    async validate(ctx: IterationContext): Promise<void> {
+        const targetBranch = ctx.targetBranch;
+        let isBranchExist = false;
+        try {
+            await execaCommand(`git show-ref --verify --quiet refs/heads/${targetBranch}`);
+            isBranchExist = true;
+        } catch {
+            isBranchExist = false;
+        }
+
+        if (!isBranchExist) {
+            logger.info(`本地不存在 ${targetBranch} 分支，将新建...`);
+            (ctx as any).shouldCreateBranch = true;
+        }
     }
+}
 
-    getTargetBranch() {
-        return 'dev';
-    }
-
-    async validate(ctx: IterationContext) {
+/**
+ * 分支存在时提示用户输入新版本的验证策略（用于公司项目和 GitHub Monorepo 项目）
+ */
+export class PromptVersionIfExistsStrategy implements BranchValidationStrategy {
+    async validate(ctx: IterationContext): Promise<void> {
         const { targetBranch } = ctx;
         let isBranchExist = false;
         try {
@@ -53,5 +74,3 @@ export class GithubMonorepoStrategy extends BaseStrategy {
         }
     }
 }
-
-export const githubMonorepoStrategy = new GithubMonorepoStrategy();

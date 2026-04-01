@@ -4,10 +4,32 @@
 import { isGithubProject } from '../../git/shared/utils';
 import { isMonorepo } from '../utils';
 import { BaseStrategy } from './BaseStrategy';
-import { githubStrategy } from '../implementations/GithubStrategy';
-import { githubMonorepoStrategy } from '../implementations/GithubMonorepoStrategy';
-import { companyMonorepoStrategy } from '../implementations/CompanyMonorepoStrategy';
-import { companyBusinessStrategy } from '../implementations/CompanyBusinessStrategy';
+import {
+    MinorReleaseStrategy,
+    PatchReleaseStrategy,
+    FixedBranchNamingStrategy,
+    VersionedBranchNamingStrategy,
+    CreateBranchIfNotExistsStrategy,
+    PromptVersionIfExistsStrategy,
+    CompositeIterationStrategy,
+} from './strategies';
+
+/** 预创建的策略单例 */
+const releaseStrategies = {
+    github: new MinorReleaseStrategy(),
+    company: new PatchReleaseStrategy(),
+};
+
+const branchNamingStrategies = {
+    github: new FixedBranchNamingStrategy(),
+    company: new VersionedBranchNamingStrategy(),
+};
+
+const branchValidationStrategies = {
+    github: new CreateBranchIfNotExistsStrategy(),
+    company: new PromptVersionIfExistsStrategy(),
+    companyMono: new PromptVersionIfExistsStrategy(),
+};
 
 /**
  * 根据项目信息创建迭代策略
@@ -18,14 +40,21 @@ export const createIterationStrategy = async (projectPath: string): Promise<Base
     const isGithub = await isGithubProject();
     const isMono = await isMonorepo(projectPath);
 
-    if (isGithub && isMono) {
-        return githubMonorepoStrategy;
-    }
-    if (isGithub) {
-        return githubStrategy;
-    }
-    if (isMono) {
-        return companyMonorepoStrategy;
-    }
-    return companyBusinessStrategy;
+    const releaseType = isGithub ? releaseStrategies.github : releaseStrategies.company;
+    const branchNaming = isGithub ? branchNamingStrategies.github : branchNamingStrategies.company;
+    const validation = isMono
+        ? branchValidationStrategies.companyMono
+        : isGithub
+            ? branchValidationStrategies.github
+            : branchValidationStrategies.company;
+
+    const name = isGithub
+        ? isMono
+            ? 'GitHub Monorepo'
+            : 'GitHub'
+        : isMono
+            ? 'Company Monorepo'
+            : 'Company Business';
+
+    return new CompositeIterationStrategy(releaseType, branchNaming, validation, name);
 };
