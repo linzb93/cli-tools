@@ -45,16 +45,16 @@ export const createIterationStrategy = async (projectPath: string): Promise<Base
     const validation = isMono
         ? branchValidationStrategies.companyMono
         : isGithub
-            ? branchValidationStrategies.github
-            : branchValidationStrategies.company;
+          ? branchValidationStrategies.github
+          : branchValidationStrategies.company;
 
     const name = isGithub
         ? isMono
-            ? 'GitHub Monorepo'
-            : 'GitHub'
+            ? 'GitHub Monorepo项目'
+            : 'GitHub项目'
         : isMono
-            ? 'Company Monorepo'
-            : 'Company Business';
+          ? '公司Monorepo项目'
+          : '公司业务项目';
 
     return new CompositeIterationStrategy(releaseType, branchNaming, validation, name);
 };
