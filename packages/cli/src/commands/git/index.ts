@@ -1,38 +1,52 @@
-import { pushCommand } from './push';
-import { pullCommand } from './pull';
-
-import { deployCommand } from './deploy';
-import { branchCommand } from './branch';
-import { commitCommand } from './commit';
-import { cloneCommand } from './clone';
-import { scanCommand } from './scan';
-import { mergeCommand } from './merge';
-import { logCommand } from './log';
-import { tagCommand } from './tag';
-
 /**
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  */
-export const gitCommand = function (subCommand: string, nextCommand?: string): void {
+export const gitCommand = function (subCommand: string, nextCommand?: string): Promise<void> {
     // 子命令映射表
-    const commandMap: Record<string, (cmd?: string | string[]) => void> = {
-        push: pushCommand,
-        pull: pullCommand,
-        commit: commitCommand,
-        tag: tagCommand,
-        deploy: deployCommand,
-        branch: branchCommand,
-        scan: scanCommand,
-        merge: mergeCommand,
-        log: logCommand,
-        clone: cloneCommand,
-    };
-    // 执行对应的子命令
-    if (commandMap[subCommand]) {
-        commandMap[subCommand](nextCommand);
-    } else {
-        console.log(`未知的 git 子命令: ${subCommand}`);
-        console.log('可用的子命令: ' + Object.keys(commandMap).join(', '));
+    if (subCommand === 'push') {
+        import('./push').then((module) => module.pushCommand());
+        return;
     }
+    if (subCommand === 'pull') {
+        import('./pull').then((module) => module.pullCommand());
+        return;
+    }
+    if (subCommand === 'commit') {
+        import('./commit').then((module) => module.commitCommand());
+        return;
+    }
+    if (subCommand === 'tag') {
+        import('./tag').then((module) => module.tagCommand(nextCommand));
+        return;
+    }
+    if (subCommand === 'deploy') {
+        import('./deploy').then((module) => module.deployCommand());
+        return;
+    }
+    if (subCommand === 'branch') {
+        import('./branch').then((module) => module.branchCommand([nextCommand]));
+        return;
+    }
+    if (subCommand === 'scan') {
+        import('./scan').then((module) => module.scanCommand());
+        return;
+    }
+    if (subCommand === 'merge') {
+        import('./merge').then((module) => module.mergeCommand());
+        return;
+    }
+    if (subCommand === 'log') {
+        import('./log').then((module) => module.logCommand());
+        return;
+    }
+    if (subCommand === 'clone') {
+        import('./clone').then((module) => module.cloneCommand());
+        return;
+    }
+
+    console.log(`未知的 git 子命令: ${subCommand}`);
+    console.log(
+        `可用的子命令: ${['push', 'pull', 'commit', 'tag', 'deploy', 'branch', 'scan', 'merge', 'log', 'clone'].join(', ')}`,
+    );
 };
