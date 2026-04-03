@@ -210,6 +210,6 @@ export const tagService = async (options: Options): Promise<void> => {
         logger.success(`创建成功，复制项目信息 ${chalk.green(copyText)}`);
         clipboardy.writeSync(copyText);
     } catch (error) {
-        logger.error(`创建标签失败: ${error.message || error}`);
+        logger.error(`创建标签失败: ${(error as Error).message}`);
     }
 };

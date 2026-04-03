@@ -68,7 +68,7 @@ const printProjectLog = async (item: ResultItem) => {
         // 如果没有未推送的 commit，head 可能是 0，但这里我们想看最近的 log
         if (head === 0) head = 3;
 
-        const logs = await getGitLogData({ cwd: item.fullPath, head });
+        const logs = await getGitLogData({ cwd: item.fullPath, head, path: '' });
         if (logs.length === 0) {
             console.log(chalk.gray('  没有未推送的提交记录'));
             return;

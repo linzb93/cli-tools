@@ -53,9 +53,10 @@ export async function login(): Promise<void> {
         if (!username) {
             await getOCCUserInfo();
         }
-        username = await readSecret((db) => db.oa.username);
-        const password = await readSecret((db) => db.oa.password);
-        const prefix = await readSecret((db) => db.oa.apiPrefix);
+        const oa = await readSecret((db) => db.oa);
+        username = oa.username;
+        const password = oa.password;
+        const prefix = oa.apiPrefix;
 
         let loginSuccess = false;
         let retryCount = 0;
@@ -93,7 +94,7 @@ export async function login(): Promise<void> {
             db.oa.token = loginResult.token;
         });
     } catch (error) {
-        console.error(chalk.red('登录过程中发生错误:'), error.message);
+        console.error(chalk.red('登录过程中发生错误:'), (error as Error).message);
         process.exit(0);
     }
 }
@@ -184,7 +185,7 @@ async function processCaptchaAndLogin(
     } catch (error) {
         removeHandler();
         if (process.env.DEBUG) {
-            console.log(error.message);
+            console.log((error as Error).message);
         }
         throw error;
     }

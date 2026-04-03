@@ -35,6 +35,6 @@ export const pullService = async (options: Options): Promise<void> => {
 
         logger.success(`成功拉取分支 ${chalk.green(currentBranch)} 的最新代码`);
     } catch (error) {
-        logger.error(`拉取失败: ${error.message || error}`);
+        logger.error(`拉取失败: ${(error as Error).message}`);
     }
 };

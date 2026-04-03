@@ -8,7 +8,9 @@ export class Spinner {
     private spinner = ora({
         interval: 100,
     });
-    private setting: Setting;
+    private setting: Setting = {
+        showTime: true,
+    };
     get text() {
         return this.spinner.text;
     }

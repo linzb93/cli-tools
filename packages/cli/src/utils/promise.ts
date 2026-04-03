@@ -152,10 +152,10 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
             return await fn();
         } catch (error) {
             if (typeof onFail === 'function') {
-                const { shouldStop } = onFail(attempt, error);
+                const { shouldStop } = onFail(attempt, error as Error);
                 if (shouldStop) {
                     // 抛出和变量error一样的Error类型
-                    throw error instanceof Error ? error : new Error(error);
+                    throw error instanceof Error ? error : new Error(String(error));
                 }
             }
 

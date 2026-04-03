@@ -185,7 +185,7 @@ export const handleUserInput = async (options: DeployOptions): Promise<string> =
                 type: 'input',
                 name: 'commitMessage',
                 message: '请输入commit信息:',
-                validate: (input) => !!input || '提交信息不能为空',
+                validate: (input: string) => !!input || '提交信息不能为空',
             },
         ]);
 

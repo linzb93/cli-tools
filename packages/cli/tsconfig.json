@@ -7,13 +7,12 @@
         "isolatedModules": true,
         "skipLibCheck": true,
         "outDir": "./dist/",
-        "baseUrl": "./src",
         "noEmit": true,
         "jsx": "react-jsx",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["*"],
+            "@/*": ["./src/*"],
             "@cli-tools/shared/*": ["../../shared/src/*"]
         }
     },

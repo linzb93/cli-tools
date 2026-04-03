@@ -6,11 +6,10 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "outDir": "./dist/",
-        "baseUrl": "./src",
         "noEmit": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["*"],
+            "@/*": ["./src/*"],
             "@cli-tools/shared/*": ["../../shared/src/*"]
         },
         "skipLibCheck": true,

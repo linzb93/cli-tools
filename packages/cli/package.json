@@ -58,6 +58,7 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
+        "@types/binary-split": "^1.0.3",
         "@types/blacklist": "^1.1.2",
         "@types/bytes": "^3.1.1",
         "@types/color-convert": "^2.0.0",

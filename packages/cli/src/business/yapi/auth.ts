@@ -20,7 +20,7 @@ export const manualInputCookie = async (): Promise<string | null> => {
                 type: 'input',
                 name: 'uid',
                 message: '请输入Yapi的_yapi_uid:',
-                validate: (input) => !!input || 'uid不能为空',
+                validate: (input: string) => !!input || 'uid不能为空',
             },
         ]);
 
@@ -53,7 +53,8 @@ export const manualInputCookie = async (): Promise<string | null> => {
 
         return `_yapi_token=${token};_yapi_uid=${uid}`;
     } catch (error) {
-        logger.error('手动输入token失败:', error.message);
+        logger.error('手动输入token失败:');
+        logger.error((error as Error).message);
         return null;
     }
 };

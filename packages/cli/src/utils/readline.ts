@@ -7,7 +7,7 @@ export interface ReadlineCommandContext {
     /** 项目列表（如果传入 items） */
     list?: unknown[];
     /** 通用获取项目方法 */
-    getItem?: <T>(indexStr: string) => T | null;
+    getItem: <T>(indexStr: string) => T | null;
 }
 
 export interface ReadlineCommand {

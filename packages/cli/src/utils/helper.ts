@@ -60,7 +60,7 @@ export const generateHelpDoc = (commands: string[]) => {
             });
             fromStream(stream)
                 .pipe(
-                    map((data) => `${data.toString()}\n`),
+                    map((data) => `${(data as unknown as string).toString()}\n`),
                     concatMap((line) =>
                         from(line.split('')).pipe(
                             concatMap((char) =>

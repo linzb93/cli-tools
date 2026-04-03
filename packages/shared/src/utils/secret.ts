@@ -33,12 +33,12 @@ interface Database {
         uploadPath: string;
     };
     oa: {
-        apiPrefix?: string;
+        apiPrefix: string;
         testPrefix?: string;
         userApiPrefix?: string;
         oldApiPrefix?: string;
-        username?: string;
-        password?: string;
+        username: string;
+        password: string;
         token: string;
         dkdPrefix: string;
         zhanwai: {

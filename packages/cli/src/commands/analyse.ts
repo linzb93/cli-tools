@@ -48,5 +48,5 @@ export function analyseCommand(subCommand: string, data: string[], options: Opti
         code,
     };
 
-    commandMap[subCommand](options);
+    commandMap[subCommand as keyof typeof commandMap](options);
 }
