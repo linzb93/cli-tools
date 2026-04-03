@@ -138,10 +138,8 @@ function registerCommands() {
     // npm 子命令
     program
         .command('npm <sub-command>')
-        .option('--package <name>', '要扫描的包名')
-        .option('--version <versions>', '目标版本，逗号分隔')
-        .action((subCommand, options) => {
-            import('./commands/npm').then((m) => m.npmCommand(subCommand, [], options));
+        .action((subCommand) => {
+            import('./commands/npm').then((m) => m.npmCommand(subCommand));
         });
 
     // occ 命令

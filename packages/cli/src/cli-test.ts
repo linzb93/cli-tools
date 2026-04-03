@@ -24,18 +24,17 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 // git 子命令
+// program
+//     .command('git [sub-command] [rest...]')
+//     .allowUnknownOption()
+//     .action((subCommand, rest) => {
+//         import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
+//     });
 program
-    .command('git [sub-command] [rest...]')
+    .command('npm [sub-command] [next...]')
     .allowUnknownOption()
     .action((subCommand, rest) => {
-        import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
-    });
-program
-    .command('npm <sub-command>')
-    .option('--package <name>', '要扫描的包名')
-    .option('--version <versions>', '目标版本，逗号分隔')
-    .action((subCommand, options) => {
-        import('./commands/npm').then((m) => m.npmCommand(subCommand, [], options));
+        import('./commands/npm').then((m) => m.npmCommand(subCommand, rest));
     });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
