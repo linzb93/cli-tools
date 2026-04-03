@@ -1,13 +1,9 @@
 import { basename, join } from 'node:path';
-import fsp from 'node:fs/promises';
 import chalk from 'chalk';
-import Table from 'cli-table3';
 import { execa, execaCommand } from 'execa';
 import pMap from 'p-map';
-import pReduce from 'p-reduce';
-import { sql } from '@cli-tools/shared';
+import { expandWorkDirs, scanDirs, printResultTable } from '@/utils/scan';
 import { logger } from '@/utils/logger';
-import progress from '@/utils/progress';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import { getGitLogData } from '../log';
 import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
@@ -28,27 +24,6 @@ const getStatusMap = (status: number) => {
         4: chalk.gray('不在主分支上'),
     };
     return map[status] || String(status);
-};
-
-/**
- * 打印项目列表表格
- * @param {ResultItem[]} list - 项目列表
- */
-const printProjectTable = (list: ResultItem[]) => {
-    const table = new Table({
-        head: ['名称', '地址', '状态', '分支'],
-        colAligns: ['left', 'left', 'left', 'left'],
-    });
-
-    table.push(
-        ...list.map((item, index) => [
-            `${index + 1}. ${basename(item.fullPath)}`,
-            item.fullPath,
-            `${getStatusMap(item.status)}`,
-            item.branchName,
-        ]),
-    );
-    console.log(table.toString());
 };
 
 /**
@@ -107,60 +82,18 @@ const filterProjects = (items: ResultItem[], full: boolean): ResultItem[] => {
  * @returns {ResultItem[]} - 项目列表
  */
 const doScan = async (): Promise<ResultItem[]> => {
-    logger.info('开始扫描');
-    const gitDirs = await sql(async (db) => db.gitDirs);
-    const allDirs = await pReduce(
-        gitDirs,
-        async (acc, dir) => {
-            try {
-                const dirs = await fsp.readdir(dir.path);
-                return acc.concat(
-                    await pMap(
-                        dirs,
-                        async (subDir) => ({
-                            dir: subDir,
-                            prefix: dir.path,
-                            folderName: dir.name,
-                        }),
-                        { concurrency: 4 },
-                    ),
-                );
-            } catch (error) {
-                // 如果目录不存在或无法读取，跳过
-                return acc;
-            }
-        },
-        [] as { dir: string; prefix: string; folderName: string }[],
-    );
+    const allDirs = await expandWorkDirs();
 
-    progress.setTotal(allDirs.length);
+    const scannedList = await scanDirs<ResultItem>(allDirs, async (dirInfo) => {
+        const fullPath = join(dirInfo.prefix, dirInfo.dir);
+        const { status, branchName } = await getGitProjectStatus(fullPath);
+        return {
+            fullPath,
+            status,
+            branchName,
+        };
+    });
 
-    const scannedList = await pMap(
-        allDirs,
-        async (dirInfo): Promise<ResultItem> => {
-            const fullPath = join(dirInfo.prefix, dirInfo.dir);
-            try {
-                const { status, branchName } = await getGitProjectStatus(fullPath);
-                progress.tick();
-                return {
-                    fullPath,
-                    status,
-                    branchName,
-                };
-            } catch (error) {
-                progress.tick();
-                // 如果获取状态失败，返回一个默认状态或者忽略
-                return {
-                    fullPath,
-                    status: 3, // 默认为正常，避免中断流程
-                    branchName: '',
-                };
-            }
-        },
-        { concurrency: 4 },
-    );
-
-    logger.backwardConsole(2);
     return filterProjects(scannedList, false);
 };
 
@@ -176,7 +109,15 @@ export const scanService = async () => {
         return;
     }
 
-    printProjectTable(list);
+    printResultTable(list, {
+        head: ['名称', '地址', '状态', '分支'],
+        map: (item, index) => [
+            `${index + 1}. ${basename(item.fullPath)}`,
+            item.fullPath,
+            getStatusMap(item.status),
+            item.branchName,
+        ],
+    });
 
     const commands: ReadlineCommand[] = [
         {
@@ -203,7 +144,15 @@ export const scanService = async () => {
                 if (list.length === 0) {
                     console.log(chalk.yellow('没有项目需要提交或推送。'));
                 } else {
-                    printProjectTable(list);
+                    printResultTable(list, {
+                        head: ['名称', '地址', '状态', '分支'],
+                        map: (item, index) => [
+                            `${index + 1}. ${basename(item.fullPath)}`,
+                            item.fullPath,
+                            getStatusMap(item.status),
+                            item.branchName,
+                        ],
+                    });
                 }
             },
         },

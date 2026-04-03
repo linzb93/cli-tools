@@ -7,6 +7,7 @@
 -   优化`open`方法，解决某些终端无法结束任务的bug。
 -   `git commit`命令新增`merge`选项，支持与上一条记录合并。
 -   Jenkins配置移除`lastTag`字段，暂时不需要。
+-   `iteration`命令替换成`git iteration`命令。支持公司项目和Github项目的普通结构和Monorepo结构。
 
 ## 7.2.0 2026-03-25
 
