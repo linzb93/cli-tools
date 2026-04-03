@@ -13,11 +13,11 @@ import { getGitLogData } from '../log';
 import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
-import type { InputItem, ResultItem } from './types';
+import type { ResultItem } from './types';
 
 /**
  * 获取 Git 状态对应的显示文本
- * @param status - 状态码
+ * @param {number} status - 状态码
  * @returns 格式化后的状态文本
  */
 const getStatusMap = (status: number) => {
@@ -32,7 +32,7 @@ const getStatusMap = (status: number) => {
 
 /**
  * 打印项目列表表格
- * @param list - 项目列表
+ * @param {ResultItem[]} list - 项目列表
  */
 const printProjectTable = (list: ResultItem[]) => {
     const table = new Table({
@@ -53,7 +53,7 @@ const printProjectTable = (list: ResultItem[]) => {
 
 /**
  * 打印项目的日志
- * @param item - 项目对象
+ * @param {ResultItem} item - 项目对象
  */
 const printProjectLog = async (item: ResultItem) => {
     console.log(chalk.bold.cyan(`\n项目: ${item.fullPath} (${item.branchName})`));
@@ -88,11 +88,11 @@ const printProjectLog = async (item: ResultItem) => {
 
 /**
  * 过滤需要处理的项目
- * @param items - 项目列表
- * @param full - 是否显示所有项目
- * @returns 过滤后的项目列表
+ * @param {ResultItem[]} items - 项目列表
+ * @param {boolean} full - 是否显示所有项目
+ * @returns {ResultItem[]} - 过滤后的项目列表
  */
-const filterProjects = (items: ResultItem[], full: boolean) => {
+const filterProjects = (items: ResultItem[], full: boolean): ResultItem[] => {
     const srcList = items.filter((item) =>
         [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(item.status),
     );
@@ -104,12 +104,10 @@ const filterProjects = (items: ResultItem[], full: boolean) => {
 
 /**
  * 执行扫描并返回项目列表
- * @param options - 扫描选项
- * @returns 项目列表
+ * @returns {ResultItem[]} - 项目列表
  */
 const doScan = async (): Promise<ResultItem[]> => {
     logger.info('开始扫描');
-
     const gitDirs = await sql(async (db) => db.gitDirs);
     const allDirs = await pReduce(
         gitDirs,
@@ -180,24 +178,11 @@ export const scanService = async () => {
 
     printProjectTable(list);
 
-    /**
-     * 获取指定索引的项目
-     * @param indexStr - 索引字符串
-     * @returns 项目对象或null
-     */
-    const getItem = (indexStr: string) => {
-        const index = parseInt(indexStr, 10);
-        if (isNaN(index) || index < 1 || index > list.length) {
-            return null;
-        }
-        return list[index - 1];
-    };
-
     const commands: ReadlineCommand[] = [
         {
             name: 'restart',
             description: '重新扫描已列出的项目',
-            handler: async () => {
+            handler: async (_, ctx) => {
                 console.log(chalk.blue('正在重新扫描...'));
                 const newList = await pMap(
                     list,
@@ -226,10 +211,11 @@ export const scanService = async () => {
             name: 'diff',
             usage: '<x>',
             description: '查看项目修改。如果超出20行，则用code打开。',
-            handler: async (args) => {
-                const item = getItem(args[0]);
+            requireList: true,
+            handler: async (args, ctx) => {
+                const item = ctx.getItem<ResultItem>(args[0]);
                 if (!item) {
-                    console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
+                    console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
                     return;
                 }
 
@@ -260,14 +246,11 @@ export const scanService = async () => {
             name: 'commit',
             usage: '<x> <message>',
             description: '提交代码',
-            handler: async (args) => {
-                if (args.length < 2) {
-                    console.log(chalk.red('参数不足: /commit <x> <message>'));
-                    return;
-                }
-                const item = getItem(args[0]);
+            requireList: true,
+            handler: async (args, ctx) => {
+                const item = ctx.getItem<ResultItem>(args[0]);
                 if (!item) {
-                    console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
+                    console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
                     return;
                 }
                 const message = args.slice(1).join(' ');
@@ -284,16 +267,17 @@ export const scanService = async () => {
             name: 'log',
             usage: '[x]',
             description: '查看已提交未推送的commit',
-            handler: async (args) => {
+            requireList: true,
+            handler: async (args, ctx) => {
                 if (args.length > 0) {
-                    const item = getItem(args[0]);
+                    const item = ctx.getItem<ResultItem>(args[0]);
                     if (!item) {
-                        console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
+                        console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
                         return;
                     }
                     await printProjectLog(item);
                 } else {
-                    for (const item of list) {
+                    for (const item of ctx.list as ResultItem[]) {
                         await printProjectLog(item);
                     }
                 }
@@ -303,7 +287,8 @@ export const scanService = async () => {
             name: 'push',
             usage: '[x]',
             description: '推送代码',
-            handler: async (args) => {
+            requireList: true,
+            handler: async (args, ctx) => {
                 const pushItem = async (item: ResultItem) => {
                     try {
                         console.log(chalk.blue(`正在推送: ${basename(item.fullPath)} ...`));
@@ -315,14 +300,14 @@ export const scanService = async () => {
                 };
 
                 if (args.length > 0) {
-                    const item = getItem(args[0]);
+                    const item = ctx.getItem<ResultItem>(args[0]);
                     if (!item) {
-                        console.log(chalk.red('请输入有效的项目编号 (1-' + list.length + ')'));
+                        console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
                         return;
                     }
                     await pushItem(item);
                 } else {
-                    const unpushed = list.filter((i) => i.status === GitStatusMap.Unpushed);
+                    const unpushed = (ctx.list as ResultItem[]).filter((i) => i.status === GitStatusMap.Unpushed);
                     if (unpushed.length === 0) {
                         console.log(chalk.yellow('没有发现需要推送的项目 (状态为"未推送")'));
                         return;
@@ -338,5 +323,6 @@ export const scanService = async () => {
     await createCommandReadline(commands, {
         prompt: 'git-scan> ',
         exitCommand: 'exit',
+        items: list,
     });
 };
