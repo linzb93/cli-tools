@@ -1,7 +1,7 @@
 /**
  * 迭代策略工厂
  */
-import { isGithubProject } from '../../git/shared/utils';
+import { isGithubProject } from '../../shared/utils';
 import { isMonorepo } from '../utils';
 import { BaseStrategy } from './BaseStrategy';
 import {

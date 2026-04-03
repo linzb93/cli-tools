@@ -226,16 +226,6 @@ function registerCommands() {
         .action((option) => {
             import('./commands/vue').then((m) => m.vueCommand(option));
         });
-
-    // iteration 命令
-    program
-        .command('iteration')
-        .description('版本迭代：更新版本号并处理Git工作流')
-        .option('--fix', '三级修复版本')
-        .option('--version <version>', '指定版本号')
-        .action((options) => {
-            import('./commands/iteration').then((m) => m.iterationCommand(options));
-        });
 }
 
 // 注册所有命令

@@ -2,7 +2,7 @@
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  */
-export const gitCommand = function (subCommand: string, nextCommand?: string): Promise<void> {
+export const gitCommand = function (subCommand: string, nextCommand?: string): void {
     // 子命令映射表
     if (subCommand === 'push') {
         import('./push').then((module) => module.pushCommand());
@@ -17,7 +17,7 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): P
         return;
     }
     if (subCommand === 'tag') {
-        import('./tag').then((module) => module.tagCommand(nextCommand));
+        import('./tag').then((module) => module.tagCommand(nextCommand || ''));
         return;
     }
     if (subCommand === 'deploy') {
@@ -25,7 +25,7 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): P
         return;
     }
     if (subCommand === 'branch') {
-        import('./branch').then((module) => module.branchCommand([nextCommand]));
+        import('./branch').then((module) => module.branchCommand([nextCommand || '']));
         return;
     }
     if (subCommand === 'scan') {
@@ -44,9 +44,13 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): P
         import('./clone').then((module) => module.cloneCommand());
         return;
     }
+    if (subCommand === 'iteration') {
+        import('./iteration').then((module) => module.iterationCommand({}));
+        return;
+    }
 
     console.log(`未知的 git 子命令: ${subCommand}`);
     console.log(
-        `可用的子命令: ${['push', 'pull', 'commit', 'tag', 'deploy', 'branch', 'scan', 'merge', 'log', 'clone'].join(', ')}`,
+        `可用的子命令: ${['push', 'pull', 'commit', 'tag', 'deploy', 'branch', 'scan', 'merge', 'log', 'clone', 'iteration'].join(', ')}`,
     );
 };

@@ -4,8 +4,8 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';
 import chalk from 'chalk';
-import gitActions from '../git/shared/utils/actions';
-import { getGitProjectStatus, GitStatusMap, getMainBranchName, isCurrenetBranchPushed } from '../git/shared/utils';
+import gitActions from '../shared/utils/actions';
+import { getGitProjectStatus, GitStatusMap, getMainBranchName, isCurrenetBranchPushed } from '../shared/utils';
 import { createIterationStrategy } from './core/Factory';
 import type { IterationContext, IterationOptions } from './types';
 
@@ -229,7 +229,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         // 判断项目类型
         ctx.isGithub = projectPath.includes('github') || process.cwd().includes('github');
         ctx.isMono =
-            path.resolve(projectPath, 'packages') && (await fs.pathExists(path.resolve(projectPath, 'packages')));
+            !!path.resolve(projectPath, 'packages') && (await fs.pathExists(path.resolve(projectPath, 'packages')));
 
         // 计算版本号
         const releaseType = strategy.getReleaseType();
