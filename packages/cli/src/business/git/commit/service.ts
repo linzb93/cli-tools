@@ -3,6 +3,7 @@ import { execaCommand } from 'execa';
 import { isGitProject } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
+import { checkHardcoded } from '../iteration/utils';
 import type { Options } from './types';
 
 /**
@@ -20,11 +21,15 @@ export const commitService = async (message: string, options: Options): Promise<
 
     // 既没有输入提交信息，也没有 --merge 选项
     if (!message && !options.merge) {
-        logger.error('请输入提交信息或使用 --merge 选项');
-        process.exit(1);
+        logger.error('请输入提交信息或使用 --merge 选项', true);
     }
 
     try {
+        // 检查是否有硬编码
+        if (await checkHardcoded()) {
+            logger.error('发现硬编码，禁止提交', true);
+        }
+
         // 执行 git add 命令
         await executeCommands([`git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`]);
 

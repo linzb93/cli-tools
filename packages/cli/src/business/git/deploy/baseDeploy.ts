@@ -12,6 +12,7 @@ import {
 } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
+import { checkHardcoded } from '../iteration/utils';
 
 /**
  * Deploy命令选项接口
@@ -73,6 +74,9 @@ export const executeBaseManagers = async (commitMessage: string, currentBranch: 
         const gitStatus = await getGitProjectStatus();
 
         if (gitStatus.status === GitStatusMap.Uncommitted) {
+            if (await checkHardcoded()) {
+                logger.error('发现硬编码，禁止提交', true);
+            }
             await executeCommands(['git add .', gitActions.commit(commitMessage)], { silentStart: true });
         }
 

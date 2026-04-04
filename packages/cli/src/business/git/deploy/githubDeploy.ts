@@ -3,6 +3,7 @@ import gitActions from '../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import { DeployOptions, mergeToBranch, hasChanges } from './baseDeploy';
+import { checkHardcoded } from '../iteration/utils';
 
 /**
  * 执行 Github 项目的基础 Git 命令（优先 Push 策略）
@@ -17,6 +18,9 @@ export const executeGithubGitFlow = async (commitMessage: string, currentBranch:
         const gitStatus = await getGitProjectStatus();
 
         if (gitStatus.status === GitStatusMap.Uncommitted) {
+            if (await checkHardcoded()) {
+                logger.error('发现硬编码，禁止提交', true);
+            }
             await executeCommands(['git add .', gitActions.commit(commitMessage)], { silentStart: true });
         }
 

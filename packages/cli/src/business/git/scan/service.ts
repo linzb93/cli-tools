@@ -10,7 +10,7 @@ import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import type { ResultItem } from './types';
-import { findBusinessPaths } from '../iteration/utils';
+import { checkHardcoded } from '../iteration/utils';
 
 /**
  * 获取 Git 状态对应的显示文本
@@ -203,23 +203,7 @@ export const scanService = async () => {
                     console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
                     return;
                 }
-                const businessPaths = await findBusinessPaths(item.fullPath);
-                await pMap(
-                    businessPaths,
-                    async (path) => {
-                        try {
-                            const { stdout } = await execaCommand(`grep -rn "// test" --include=${path}`, {
-                                cwd: item.fullPath,
-                            });
-                            if (stdout.trim()) {
-                                console.log(chalk.red(`发现硬编码文件: ${stdout}`));
-                            }
-                        } catch {
-                            console.log('没有找到硬编码文件');
-                        }
-                    },
-                    { concurrency: 4 },
-                );
+                await checkHardcoded(item.fullPath);
             },
         },
         {
