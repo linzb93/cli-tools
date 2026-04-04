@@ -53,6 +53,6 @@ export interface ParsedUsageData {
  * Minimax 服务选项
  */
 export interface Options {
-    /** 刷新间隔（毫秒），默认 3 分钟 */
-    interval?: number;
+    /** 是否开启监控模式 */
+    watch: boolean;
 }

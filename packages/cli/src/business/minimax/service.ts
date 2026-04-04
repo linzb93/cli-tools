@@ -5,7 +5,7 @@ import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
 
 const MINIMAX_API_BASE = 'https://www.minimaxi.com/v1/api/openplatform';
-
+let isRunMode = false;
 /**
  * 获取 Minimax API Token
  */
@@ -111,11 +111,13 @@ function render(data: ParsedUsageData): void {
     console.log(chalk.gray(`  下次重置时间: ${resetTime} (${chalk.yellow(`还有 ${remainsText}`)})`));
     console.log();
     console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
-    console.log(
-        chalk.gray(
-            `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 3 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,
-        ),
-    );
+    if (!isRunMode) {
+        console.log(
+            chalk.gray(
+                `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 3 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,
+            ),
+        );
+    }
     console.log();
 }
 
@@ -141,9 +143,8 @@ function renderError(error: Error, lastData: ParsedUsageData | null): void {
 /**
  * 启动交互式监控
  */
-export async function minimaxService(command?: string): Promise<() => void> {
-    // 判断是否为 run 模式（process.argv 包含 'run'）
-    const isRunMode = command === 'run';
+export async function minimaxService(options?: Options): Promise<() => void> {
+    isRunMode = !!options && options.watch;
 
     // run 模式：直接获取并显示一次，然后退出
     if (isRunMode) {

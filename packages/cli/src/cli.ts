@@ -136,11 +136,9 @@ function registerCommands() {
     });
 
     // npm 子命令
-    program
-        .command('npm <sub-command>')
-        .action((subCommand) => {
-            import('./commands/npm').then((m) => m.npmCommand(subCommand));
-        });
+    program.command('npm <sub-command>').action((subCommand) => {
+        import('./commands/npm').then((m) => m.npmCommand(subCommand));
+    });
 
     // occ 命令
     program
@@ -226,9 +224,12 @@ function registerCommands() {
         });
 
     // minimax 命令
-    program.command('minimax').action(() => {
-        import('./commands/minimax').then((m) => m.minimaxCommand());
-    });
+    program
+        .command('minimax')
+        .option('--watch', '是否开启监控模式')
+        .action((options) => {
+            import('./commands/minimax').then((m) => m.minimaxCommand(options));
+        });
 
     // vue 命令
     program

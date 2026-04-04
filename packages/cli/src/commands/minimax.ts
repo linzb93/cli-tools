@@ -1,5 +1,5 @@
-import { minimaxService } from '@/business/minimax';
+import { minimaxService, Options } from '@/business/minimax';
 
-export const minimaxCommand = async (command?: string): Promise<void> => {
-    await minimaxService(command);
+export const minimaxCommand = async (options?: Options): Promise<void> => {
+    await minimaxService(options);
 };

@@ -24,9 +24,12 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 // minimax 命令
-program.command('minimax [command]').action((command) => {
-    import('./commands/minimax').then((m) => m.minimaxCommand(command));
-});
+program
+    .command('minimax')
+    .option('--watch', '是否开启监控模式')
+    .action((options) => {
+        import('./commands/minimax').then((m) => m.minimaxCommand(options));
+    });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
 
