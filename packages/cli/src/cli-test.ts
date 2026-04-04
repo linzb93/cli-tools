@@ -23,13 +23,13 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// minimax 命令
-program
-    .command('minimax')
-    .option('--watch', '是否开启监控模式')
-    .action((options) => {
-        import('./commands/minimax').then((m) => m.minimaxCommand(options));
-    });
+    // git 子命令
+    program
+        .command('git [sub-command] [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest) => {
+            import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
+        });
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
 

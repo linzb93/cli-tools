@@ -10,6 +10,7 @@ import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import type { ResultItem } from './types';
+import { findBusinessPaths } from '../iteration/utils';
 
 /**
  * 获取 Git 状态对应的显示文本
@@ -182,13 +183,43 @@ export const scanService = async () => {
                         const fileCount = status.trim().split('\n').length;
                         console.log(chalk.yellow(`修改了 ${fileCount} 个文件`));
                         console.log(chalk.blue(`正在用 VS Code 打开: ${item.fullPath}`));
-                        await execa('code', [item.fullPath]);
+                        await execaCommand(`code ${item.fullPath}`);
                     } else {
                         console.log(diff);
                     }
                 } catch (e: any) {
                     console.log(chalk.red(`执行 diff 失败: ${e.message}`));
                 }
+            },
+        },
+        {
+            name: 'hard-coded',
+            description: '查看项目是否有硬编码的文件',
+            usage: '<x>',
+            requireList: true,
+            handler: async (args, ctx) => {
+                const item = ctx.getItem<ResultItem>(args[0]);
+                if (!item) {
+                    console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
+                    return;
+                }
+                const businessPaths = await findBusinessPaths(item.fullPath);
+                await pMap(
+                    businessPaths,
+                    async (path) => {
+                        try {
+                            const { stdout } = await execaCommand(`grep -rn "// test" --include=${path}`, {
+                                cwd: item.fullPath,
+                            });
+                            if (stdout.trim()) {
+                                console.log(chalk.red(`发现硬编码文件: ${stdout}`));
+                            }
+                        } catch {
+                            console.log('没有找到硬编码文件');
+                        }
+                    },
+                    { concurrency: 4 },
+                );
             },
         },
         {
