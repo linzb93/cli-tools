@@ -23,19 +23,10 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// git 子命令
-// program
-//     .command('git [sub-command] [rest...]')
-//     .allowUnknownOption()
-//     .action((subCommand, rest) => {
-//         import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
-//     });
-program
-    .command('npm [sub-command] [next...]')
-    .allowUnknownOption()
-    .action((subCommand, rest) => {
-        import('./commands/npm').then((m) => m.npmCommand(subCommand, rest));
-    });
+// minimax 命令
+program.command('minimax [command]').action((command) => {
+    import('./commands/minimax').then((m) => m.minimaxCommand(command));
+});
 
 program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
 

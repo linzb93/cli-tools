@@ -10,6 +10,7 @@ interface Database {
             siliconflow: string;
             volcano: string;
             volcanoDeepseekV3: string;
+            minimax: string;
         };
     };
     jenkins: {

@@ -225,6 +225,11 @@ function registerCommands() {
             import('./commands/tree').then((m) => m.treeCommand(dir, option));
         });
 
+    // minimax 命令
+    program.command('minimax').action(() => {
+        import('./commands/minimax').then((m) => m.minimaxCommand());
+    });
+
     // vue 命令
     program
         .command('vue')
