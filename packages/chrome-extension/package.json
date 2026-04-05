@@ -1,6 +1,6 @@
 {
   "name": "@cli-tools/chrome-extension",
-  "version": "1.0.0",
+  "version": "7.3.0",
   "private": true,
   "type": "module",
   "scripts": {
