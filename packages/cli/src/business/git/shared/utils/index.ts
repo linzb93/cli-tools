@@ -318,10 +318,11 @@ export async function getBranchFirstCommitTime(
 /**
  * 判断当前分支是否在远端有对应的分支。
  * 不需要通过远端获取，在本地获取已拉取的远端分支即可。
+ * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
  */
-export const isCurrenetBranchPushed = async () => {
-    const current = await getCurrentBranchName();
-    const { stdout } = await execa(`git branch --all`);
+export const isCurrenetBranchPushed = async (projectPath: string = process.cwd()) => {
+    const current = await getCurrentBranchName(projectPath);
+    const { stdout } = await execa(`git branch --all`, { cwd: projectPath });
     return !!stdout.split('\n').find((item) => item.endsWith(`remotes/origin/${current}`));
 };
 

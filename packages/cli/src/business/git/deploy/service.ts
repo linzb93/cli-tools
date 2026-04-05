@@ -3,6 +3,7 @@ import { DeployOptions, handleUserInput, initBranchInfo } from './baseDeploy';
 import { isGithubProject } from '../shared/utils/project-type';
 import { companyDeploy } from './companyDeploy';
 import { githubDeploy } from './githubDeploy';
+import { setDeployCwd } from './context';
 
 /**
  * Git Deploy命令主函数
@@ -10,6 +11,9 @@ import { githubDeploy } from './githubDeploy';
  */
 export const deployService = async (options: DeployOptions): Promise<void> => {
     try {
+        // 设置工作目录
+        setDeployCwd(options.cwd || process.cwd());
+
         options.commit = options.commit || 'update';
 
         // 处理用户输入
