@@ -2,7 +2,7 @@ import { logger } from '@/utils/logger';
 import { execaCommand } from 'execa';
 import { isGitProject } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands, type Command } from '@/utils/promise';
 import { checkHardcoded } from '../iteration/utils';
 import type { Options } from './types';
 
@@ -30,15 +30,14 @@ export const commitService = async (message: string, options: Options): Promise<
             logger.error('发现硬编码，禁止提交', true);
         }
 
-        // 执行 git add 命令
-        await executeCommands([`git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`]);
-
-        // 如果是 --merge 选项，使用上一条提交信息 amend
+        const commands: Command[] = [`git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`];
         if (options.merge && !message) {
-            await execaCommand('git commit --amend --no-edit');
+            // 如果是 --merge 选项，使用上一条提交信息 amend
+            commands.push('git commit --amend --no-edit');
         } else {
-            await executeCommands([gitActions.commit(message)]);
+            commands.push(gitActions.commit(message));
         }
+        await executeCommands(commands);
         logger.success('提交成功');
     } catch (error) {
         logger.error(`提交失败: ${(error as Error).message}`);
