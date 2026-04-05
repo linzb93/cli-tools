@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 import { DeployOptions, handleUserInput, initBranchInfo } from './baseDeploy';
-import { isGithubProject } from '../shared/utils';
+import { isGithubProject } from '../shared/utils/project-type';
 import { companyDeploy } from './companyDeploy';
 import { githubDeploy } from './githubDeploy';
 

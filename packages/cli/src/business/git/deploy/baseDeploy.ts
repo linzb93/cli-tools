@@ -8,11 +8,10 @@ import {
     getGitProjectStatus,
     GitStatusMap,
     isGitProject as checkIsGitProject,
-    isGithubProject,
 } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
-import { checkHardcoded } from '../iteration/utils';
+import { checkHardcoded } from '../shared/utils/hard-coded';
 
 /**
  * Deploy命令选项接口

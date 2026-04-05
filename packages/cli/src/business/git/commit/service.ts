@@ -1,9 +1,8 @@
 import { logger } from '@/utils/logger';
-import { execaCommand } from 'execa';
 import { isGitProject } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/promise';
-import { checkHardcoded } from '../iteration/utils';
+import { checkHardcoded } from '../shared/utils/hard-coded';
 import type { Options } from './types';
 
 /**

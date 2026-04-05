@@ -3,7 +3,7 @@ import gitActions from '../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import { DeployOptions, mergeToBranch, hasChanges } from './baseDeploy';
-import { checkHardcoded } from '../iteration/utils';
+import { checkHardcoded } from '../shared/utils/hard-coded';
 
 /**
  * 执行 Github 项目的基础 Git 命令（优先 Push 策略）

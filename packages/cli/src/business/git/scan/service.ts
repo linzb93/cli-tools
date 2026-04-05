@@ -10,7 +10,7 @@ import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/promise';
 import type { ResultItem } from './types';
-import { checkHardcoded } from '../iteration/utils';
+import { checkHardcoded } from '../shared/utils/hard-coded';
 
 /**
  * 获取 Git 状态对应的显示文本

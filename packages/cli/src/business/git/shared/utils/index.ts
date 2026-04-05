@@ -2,19 +2,6 @@ import dayjs from 'dayjs';
 import { execaCommand as execa } from 'execa';
 
 /**
- * 检查是否为Github项目
- * @returns {Promise<boolean>} 是否为Github项目
- */
-export const isGithubProject = async (): Promise<boolean> => {
-    try {
-        const { stdout } = await execa('git remote -v');
-        return stdout.includes('github.com');
-    } catch (error) {
-        return false;
-    }
-};
-
-/**
  * 判断指定路径是否是 Git 项目
  * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
  * @returns {Promise<boolean>} 是否为 Git 项目
