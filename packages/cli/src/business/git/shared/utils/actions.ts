@@ -3,10 +3,10 @@ import inquirer from '@/utils/inquirer';
 
 /**
  * 格式化提交信息，确保提交信息符合规范
- * @param {string} commit - 原始提交信息
+ * @param {string} rawCommit - 原始提交信息
  * @returns {string} 格式化后的提交信息
  */
-export function fmtCommitMsg(rawCommit: string): string {
+export function formatCommitMessage(rawCommit: string): string {
     let commit = rawCommit.trim().replace(/\s+/g, '-');
     if (!commit) {
         return 'feat:update';
@@ -108,7 +108,7 @@ async function handleConflict() {
  * @param {string} errMsg - 错误信息
  * @returns 是否超时错误
  */
-function isTimeout(errMsg: string): boolean {
+function isNetworkError(errMsg: string): boolean {
     return (
         errMsg.toLowerCase().includes('timeout') ||
         errMsg.includes("Couldn't connect to server") ||
@@ -125,7 +125,7 @@ function isTimeout(errMsg: string): boolean {
  */
 function commit(message: string): CommandConfig {
     return {
-        message: `git commit -m ${fmtCommitMsg(message)}`,
+        message: `git commit -m ${formatCommitMessage(message)}`,
         onError: async () => {
             return {
                 shouldStop: true,
@@ -149,7 +149,7 @@ function pull(): CommandConfig {
                     shouldStop: true,
                 };
             }
-            if (isTimeout(errMsg)) {
+            if (isNetworkError(errMsg)) {
                 return {
                     shouldStop: false,
                 };
@@ -189,7 +189,7 @@ function push(isLocalBranch?: boolean, currenetBranchName?: string): CommandConf
         message: isLocalBranch ? `git push --set-upstream origin ${currenetBranchName}` : 'git push',
         maxAttempts: 100,
         onError: async (errMsg) => {
-            if (isTimeout(errMsg)) {
+            if (isNetworkError(errMsg)) {
                 return {
                     shouldStop: false,
                 };
@@ -213,7 +213,7 @@ function clone(repo: string, dir?: string): CommandConfig {
         message: cmd,
         maxAttempts: 100,
         onError: async (errMsg) => {
-            if (isTimeout(errMsg)) {
+            if (isNetworkError(errMsg)) {
                 return {
                     shouldStop: false,
                 };

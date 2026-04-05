@@ -1,11 +1,11 @@
 import Table from 'cli-table3';
 import { isGitProject, splitGitLog } from '../shared/utils';
-import { execaCommand as execa } from 'execa';
 import chalk from 'chalk';
-import gitActions, { fmtCommitMsg } from '../shared/utils/actions';
+import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
 import type { Options } from './types';
+import { executeCommands } from '@/utils/promise';
 
 /**
  * git merge 命令的实现函数
@@ -19,7 +19,7 @@ export const mergeService = async (options: Options): Promise<void> => {
         return;
     }
     const { head } = options;
-    console.log(`您将要合并最近${head}个提交`);
+    logger.info(`您将要合并最近${head}个提交`);
     // 获取最近几个提交的信息
     const arr = await splitGitLog(head);
     const table = new Table({
@@ -35,11 +35,9 @@ export const mergeService = async (options: Options): Promise<void> => {
         message: `请输入合并后的提交信息，默认使用最近一次的提交信息`,
         name: 'commitMessage',
     });
-    const commitMessage = fmtCommitMsg(
+    const commitMessage = formatCommitMessage(
         answer.commitMessage !== '' ? answer.commitMessage : arr[0].message.replace(/\w+\:/g, ''),
     );
-    await execa(`git reset --soft HEAD~${head}`);
-    await execa('git add .');
-    await execa(gitActions.commit(commitMessage).message);
-    console.log(chalk.green('合并完成'));
+    await executeCommands(['git reset --soft HEAD~' + head, 'git add .', gitActions.commit(commitMessage)]);
+    logger.success(chalk.green('合并完成'));
 };
