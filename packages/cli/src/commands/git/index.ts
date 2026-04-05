@@ -45,7 +45,7 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): v
         return;
     }
     if (subCommand === 'iteration') {
-        import('./iteration').then((module) => module.iterationCommand({}));
+        import('./iteration').then((module) => module.iterationCommand({ debug: false }));
         return;
     }
 

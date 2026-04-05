@@ -200,7 +200,7 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
         console.log(`${chalk.cyan('>')} ${chalk.yellow(config.message)}`);
 
         // 调试模式下仅输出命令，不实际执行
-        if (process.env.DEBUG) {
+        if (process.env.MODE === 'cliTest') {
             console.log(chalk.green('调试模式：跳过实际执行'));
             continue;
         }

@@ -184,7 +184,7 @@ async function processCaptchaAndLogin(
         return res.data;
     } catch (error) {
         removeHandler();
-        if (process.env.DEBUG) {
+        if (process.env.MODE === 'cliTest') {
             console.log((error as Error).message);
         }
         throw error;

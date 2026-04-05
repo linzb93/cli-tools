@@ -14,6 +14,8 @@ export interface IterationOptions {
      * 可选的指定版本号参数
      */
     version?: string;
+    /** 是否为调试模式 */
+    debug: boolean;
 }
 
 /**

@@ -9,11 +9,7 @@ program.version(globalPkg.version);
 program.hook('preAction', (thisCommand) => {
     return new Promise<void>((resolve) => {
         setTimeout(async () => {
-            // 先处理debug模式
-            if (process.argv.includes('--debug')) {
-                process.env.DEBUG = '*';
-                resolve();
-            } else if (process.argv.includes('--help')) {
+            if (process.argv.includes('--help')) {
                 (async () => {
                     const mainCommand = process.argv[2];
                     if (['git', 'npm', 'ai'].includes(mainCommand)) {
@@ -244,4 +240,4 @@ function registerCommands() {
 // 注册所有命令
 registerCommands();
 
-program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
+program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));

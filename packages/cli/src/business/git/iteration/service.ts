@@ -190,7 +190,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
     const pkgPath = path.resolve(projectPath, 'package.json');
 
     // 初始化模块级变量
-    isDebug = process.argv.includes('--debug') || !!process.env.DEBUG;
+    const isDebug = options.debug;
     commandsToRun = [];
 
     if (isDebug) {

@@ -177,6 +177,12 @@ const web = (content: string): void => {
     fs.appendFile(resolve(cacheRoot, 'serverLog.txt'), `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
 };
 
+const logDebug = (content: string): void => {
+    if (process.env.MODE === 'cliTest') {
+        console.log(chalk.bgBlue.white(` ${content} `));
+    }
+};
+
 export const logger = {
     success,
     info,
@@ -187,4 +193,5 @@ export const logger = {
     box,
     cli,
     web,
+    debug: logDebug,
 };
