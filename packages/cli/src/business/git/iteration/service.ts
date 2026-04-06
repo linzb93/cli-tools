@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands, type Command } from '@/utils/promise';
 import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';
@@ -12,14 +12,14 @@ import type { IterationContext, IterationOptions } from './types';
 
 /** 模块级变量 */
 let isDebug = false;
-let commandsToRun: any[] = [];
+let commandsToRun: Command[] = [];
 
 /**
  * 创建 Git 命令运行器（不可变，内部判断 debug 模式）
  * @returns Git 命令执行函数
  */
 const createGitCommandRunner = (): Function => {
-    return async (cmds: any[], ignoreError = false) => {
+    return async (cmds: Command[], ignoreError = false) => {
         if (isDebug) {
             commandsToRun.push(...cmds);
         } else {
@@ -104,7 +104,6 @@ const prepareMainBranch = async (ctx: IterationContext): Promise<{ mainBranch: s
 const updatePackageVersions = async (ctx: IterationContext): Promise<void> => {
     const { projectPath, pkgPath, finalVersion, isMono, isDebug } = ctx;
     logger.info('正在更新 package.json 版本号...');
-    const runGitCommands = createGitCommandRunner();
 
     const updatePackageJson = async (pPath: string, version: string) => {
         if (isDebug) {
@@ -171,6 +170,11 @@ export const iterationService = async (options: IterationOptions): Promise<void>
     const projectPath = process.cwd();
     const pkgPath = path.resolve(projectPath, 'package.json');
 
+    if (!fs.existsSync(pkgPath)) {
+        logger.error('未找到 package.json 文件');
+        return;
+    }
+
     // 初始化模块级变量
     const isDebug = options.debug;
     commandsToRun = [];
@@ -179,19 +183,9 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         logger.info(chalk.bgBlue.white(' === DEBUG 模式 (Dry Run) === '));
     }
 
-    if (!fs.existsSync(pkgPath)) {
-        logger.error('未找到 package.json 文件');
-        return;
-    }
-
     try {
-        // 创建策略
-        const strategy = await createIterationStrategy(projectPath);
-        logger.info(`检测到项目类型: ${strategy.name}`);
-
         const pkg = await fs.readJSON(pkgPath);
         const currentVersion = pkg.version;
-
         // 构建上下文
         const ctx: IterationContext = {
             projectPath,
@@ -202,15 +196,14 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             mainBranch: '',
             currentBranch: '',
             targetBranch: '',
-            isMono: false,
-            isGithub: false,
+            isMono: await isMonorepo(projectPath),
+            isGithub: await isGithubProject(projectPath),
             fix,
             isDebug,
         };
-
-        // 判断项目类型
-        ctx.isGithub = await isGithubProject(projectPath);
-        ctx.isMono = await isMonorepo(projectPath);
+        // 创建策略
+        const strategy = await createIterationStrategy(ctx);
+        logger.info(`检测到项目类型: ${strategy.name}`);
 
         // 计算版本号
         const releaseType = strategy.getReleaseType();
@@ -234,8 +227,8 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             ctx.targetBranch = ctx.mainBranch;
         } else if (ctx.isGithub) {
             // GitHub 项目先检查分支是否存在
-            await strategy.validate!(ctx);
-            const shouldCreate = (ctx as any).shouldCreateBranch;
+            await strategy.validate?.(ctx);
+            const shouldCreate = ctx.shouldCreateBranch;
             if (ctx.isDebug && !shouldCreate) {
                 logger.info(`跳过切换分支操作（分支不存在）`);
             } else {
@@ -245,7 +238,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             }
         } else {
             // 公司项目需要验证分支是否存在
-            if (strategy.validate) {
+            if (typeof strategy.validate === 'function') {
                 await strategy.validate(ctx);
             }
             logger.info(`基于主干创建并切换到 ${ctx.targetBranch} 分支...`);
@@ -264,7 +257,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         }
 
         logger.success(`操作完成！当前处于 ${ctx.targetBranch} 分支，版本号已更新为 ${ctx.finalVersion}`);
-    } catch (error: any) {
-        logger.error(`操作失败: ${error.message || error}`);
+    } catch (error) {
+        logger.error(`操作失败: ${(error as Error).message}`);
     }
 };

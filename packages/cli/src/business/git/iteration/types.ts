@@ -44,7 +44,7 @@ export interface IterationContext {
     isGithub: boolean;
     /** 是否为修复模式 */
     fix: boolean;
-    /** 是否为调试模式 */
+    /** 是否为调试模式,修改三级版本号 */
     isDebug: boolean;
     /** 是否需要创建分支（仅 GitHub 项目使用） */
     shouldCreateBranch?: boolean;

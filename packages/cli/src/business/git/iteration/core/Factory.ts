@@ -1,7 +1,6 @@
 /**
  * 迭代策略工厂
  */
-import { isGithubProject, isMonorepo } from '../../shared/utils/project-type';
 import { BaseStrategy } from './BaseStrategy';
 import {
     MinorReleaseStrategy,
@@ -12,6 +11,7 @@ import {
     PromptVersionIfExistsStrategy,
     CompositeIterationStrategy,
 } from './strategies';
+import type { IterationContext } from '../types';
 
 /** 预创建的策略单例 */
 const releaseStrategies = {
@@ -35,9 +35,8 @@ const branchValidationStrategies = {
  * @param projectPath 项目路径
  * @returns 迭代策略实例
  */
-export const createIterationStrategy = async (projectPath: string): Promise<BaseStrategy> => {
-    const isGithub = await isGithubProject();
-    const isMono = await isMonorepo(projectPath);
+export const createIterationStrategy = async (ctx: IterationContext): Promise<BaseStrategy> => {
+    const { isGithub, isMono } = ctx;
 
     const releaseType = isGithub ? releaseStrategies.github : releaseStrategies.company;
     const branchNaming = isGithub ? branchNamingStrategies.github : branchNamingStrategies.company;
