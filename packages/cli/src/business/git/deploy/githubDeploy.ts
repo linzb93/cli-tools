@@ -34,7 +34,8 @@ export const executeGithubGitFlow = async (commitMessage: string, currentBranch:
                     {
                         message: 'git push',
                         maxAttempts: 3,
-                        onError: async (error: string) => {
+                        onError: async (err: string) => {
+                            const error = err.toLowerCase();
                             // 检查是否需要 pull (non-fast-forward)
                             if (
                                 error.includes('updates were rejected') ||

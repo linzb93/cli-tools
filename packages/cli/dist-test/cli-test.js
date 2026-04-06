@@ -1455,7 +1455,8 @@ const executeGithubGitFlow = async (commitMessage, currentBranch) => {
           {
             message: "git push",
             maxAttempts: 3,
-            onError: async (error2) => {
+            onError: async (err) => {
+              const error2 = err.toLowerCase();
               if (error2.includes("updates were rejected") || error2.includes("fetch first") || error2.includes("contains work that you do not have locally")) {
                 logger.info("检测到远程分支有更新，正在拉取代码...");
                 try {
