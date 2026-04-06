@@ -13,7 +13,8 @@ export const getPerformanceData = async () => {
             plan: Setting.Plan,
         };
     } catch (error) {
-        logger.error('获取绩效数据失败', error);
+        logger.error('获取绩效数据失败');
+        logger.error((error as Error).message);
         process.exit(0);
     }
 };
@@ -27,7 +28,8 @@ export const userForcastList = async () => {
             list: result,
         };
     } catch (error) {
-        logger.error('获取用户预测列表失败', error);
+        logger.error('获取用户预测列表失败');
+        logger.error((error as Error).message);
         process.exit(0);
     }
 };

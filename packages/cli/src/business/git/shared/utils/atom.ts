@@ -137,7 +137,7 @@ function pull(): CommandConfig {
         maxAttempts: 100,
         onError: async (errMsg) => {
             if (errMsg.includes('You have unstaged changes')) {
-                await executeCommands(['git add .', 'git commit -m feat:update', this.pull()]);
+                await executeCommands(['git add .', 'git commit -m feat:update', 'git pull']);
                 return {
                     shouldStop: true,
                 };

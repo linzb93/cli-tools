@@ -3,6 +3,6 @@
  */
 export interface Options {
     head?: number;
-    path?: string;
+    path: string;
     cwd?: string;
 }

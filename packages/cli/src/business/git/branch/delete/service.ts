@@ -51,7 +51,7 @@ export const branchDeleteService = async () => {
 
     spinner.text = '正在删除所选分支';
     const errorBranches: BranchExtraItem[] = [];
-    const selectedItems = selected.map((sel) => branches.find((item) => item.value === sel));
+    const selectedItems = selected.map((sel) => branches.find((item) => item.value === sel) as BranchExtraItem);
 
     await pMap(
         selectedItems,

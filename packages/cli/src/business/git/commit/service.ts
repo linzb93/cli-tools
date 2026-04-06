@@ -25,6 +25,6 @@ export const commitService = async (message: string, options: Options): Promise<
         ]);
         logger.success('提交成功');
     } catch (error) {
-        logger.error(`提交失败: ${error.message || error}`);
+        logger.error(`提交失败: ${(error as Error).message}`);
     }
 };

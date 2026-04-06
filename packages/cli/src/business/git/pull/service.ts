@@ -34,7 +34,7 @@ export const pullService = async (options: Options): Promise<void> => {
         await executeCommands([gitAtom.pull()]);
 
         logger.success(`成功拉取分支 ${chalk.green(currentBranch)} 的最新代码`);
-    } catch (error) {
-        logger.error(`拉取失败: ${error.message || error}`);
+    } catch (error: any) {
+        logger.error(`拉取失败: ${(error as Error).message}`);
     }
 };
