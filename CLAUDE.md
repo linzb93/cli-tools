@@ -24,14 +24,7 @@ pnpm dev:ui                 # 开发 Vue 前端
 pnpm dev:web                # 开发 Express 后端
 
 # 构建
-pnpm build                  # 构建 CLI (包含 gen:features)
-pnpm build:web              # 构建后端
-pnpm build:ui               # 构建前端
-pnpm build:context          # 构建 Windows 右键菜单
-
-# 测试
-pnpm --filter "@cli-tools/cli" test        # 运行 CLI 测试
-pnpm --filter "@cli-tools/ui" test:unit     # 运行前端测试
+**系统不需要运行构建命令。**
 
 # 类型检查
 pnpm check                  # CLI 类型检查
@@ -49,7 +42,7 @@ packages/
 │   │   ├── commands/       # 命令定义 (每个文件一个命令)
 │   │   │   ├── git/       # git 子命令 (push, pull, commit, etc.)
 │   │   │   └── *.ts       # 顶层命令
-│   │   ├── business/       # 业务逻辑 (Factory 模式)
+│   │   ├── business/       # 业务逻辑
 │   │   ├── utils/         # 工具函数
 │   │   └── constant/      # 常量
 ├── server/                 # Express 后端
@@ -76,19 +69,12 @@ packages/
 
 -   顶层命令在 `commands/` 目录，如 `git.ts`、`ai.ts`
 -   子命令在对应子目录，如 `commands/git/` 下 `push.ts`、`pull.ts`
--   命令入口函数使用 `commandMap` 映射表派发子命令
 
 ### Business 业务逻辑 (Factory 模式)
 
 -   `business/` 目录下按功能领域划分模块
 -   复杂模块使用 Factory 模式：`core/Factory.ts` + `implementations/` 多态实现
--   简单模块直接 `Service.ts` 导出
-
-### AI 模块
-
--   使用 `AIModel` 接口定义模型契约
--   不同模型实现在 `implementations/models/` 目录
--   通过 Factory 模式创建模型实例
+-   简单模块直接 `service.ts` 导出
 
 ## 路径别名
 
@@ -100,5 +86,4 @@ packages/
 ## 重要配置
 
 -   `config.json`: 包含服务器端口、前缀等配置
--   `scripts/generateFeatures.js`: 扫描 business 目录自动生成特性列表到 `utils/_internal/features.json`
 -   `package.json` 中的 `MODE` 环境变量控制构建模式 (`cli` | `cliTest` | `report`)
