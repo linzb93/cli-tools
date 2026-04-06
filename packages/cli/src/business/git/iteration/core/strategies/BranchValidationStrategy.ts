@@ -30,8 +30,12 @@ export class CreateBranchIfNotExistsStrategy implements BranchValidationStrategy
         }
 
         if (!isBranchExist) {
-            logger.info(`本地不存在 ${targetBranch} 分支，将新建...`);
-            (ctx as any).shouldCreateBranch = true;
+            if (ctx.isDebug) {
+                logger.info(`目标开发分支 ${targetBranch} 未创建，需要创建。`);
+            } else {
+                logger.info(`本地不存在 ${targetBranch} 分支，将新建...`);
+                (ctx as any).shouldCreateBranch = true;
+            }
         }
     }
 }

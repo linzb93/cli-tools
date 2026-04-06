@@ -236,9 +236,13 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             // GitHub 项目先检查分支是否存在
             await strategy.validate!(ctx);
             const shouldCreate = (ctx as any).shouldCreateBranch;
-            const cmd = shouldCreate ? `git checkout -b ${ctx.targetBranch}` : `git checkout ${ctx.targetBranch}`;
-            logger.info(`切换到 ${ctx.targetBranch} 分支...`);
-            await runGitCommands([cmd]);
+            if (ctx.isDebug && !shouldCreate) {
+                logger.info(`跳过切换分支操作（分支不存在）`);
+            } else {
+                const cmd = shouldCreate ? `git checkout -b ${ctx.targetBranch}` : `git checkout ${ctx.targetBranch}`;
+                logger.info(`切换到 ${ctx.targetBranch} 分支...`);
+                await runGitCommands([cmd]);
+            }
         } else {
             // 公司项目需要验证分支是否存在
             if (strategy.validate) {
