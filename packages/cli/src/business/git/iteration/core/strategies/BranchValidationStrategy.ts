@@ -1,9 +1,9 @@
-import { execaCommand } from 'execa';
 import inquirer from '@/utils/inquirer';
 import semver from 'semver';
 import type { IterationContext } from '../../types';
 import { logger } from '@/utils/logger';
 import { isGithubProject } from '../../../shared/utils/project-type';
+import { checkBranchExist } from '../../../shared/utils';
 /**
  * 分支验证策略接口
  */
@@ -21,20 +21,13 @@ export interface BranchValidationStrategy {
 export class CreateBranchIfNotExistsStrategy implements BranchValidationStrategy {
     async validate(ctx: IterationContext): Promise<void> {
         const targetBranch = ctx.targetBranch;
-        let isBranchExist = false;
-        try {
-            await execaCommand(`git show-ref --verify --quiet refs/heads/${targetBranch}`);
-            isBranchExist = true;
-        } catch {
-            isBranchExist = false;
-        }
-
+        const isBranchExist = await checkBranchExist(targetBranch, ctx.projectPath);
         if (!isBranchExist) {
-            if (ctx.isDebug) {
+            const isDebug = process.env.MODE === 'cliTest';
+            if (isDebug) {
                 logger.info(`目标开发分支 ${targetBranch} 未创建，需要创建。`);
             } else {
                 logger.info(`本地不存在 ${targetBranch} 分支，将新建...`);
-                (ctx as any).shouldCreateBranch = true;
             }
         }
     }
@@ -46,14 +39,7 @@ export class CreateBranchIfNotExistsStrategy implements BranchValidationStrategy
 export class PromptVersionIfExistsStrategy implements BranchValidationStrategy {
     async validate(ctx: IterationContext): Promise<void> {
         const { targetBranch } = ctx;
-        let isBranchExist = false;
-        try {
-            await execaCommand(`git show-ref --verify --quiet refs/heads/${targetBranch}`);
-            isBranchExist = true;
-        } catch {
-            isBranchExist = false;
-        }
-
+        const isBranchExist = await checkBranchExist(targetBranch, ctx.projectPath);
         if (isBranchExist && !(await isGithubProject(ctx.projectPath))) {
             const answer = await inquirer.prompt([
                 {
@@ -63,12 +49,8 @@ export class PromptVersionIfExistsStrategy implements BranchValidationStrategy {
                     validate: async (input: string) => {
                         if (!input) return '版本号不能为空';
                         if (!semver.valid(input)) return '版本号无效';
-                        try {
-                            await execaCommand(`git show-ref --verify --quiet refs/heads/dev-${input}`);
-                            return `分支 dev-${input} 依然存在，请重新输入`;
-                        } catch {
-                            return true;
-                        }
+                        const isExists = await checkBranchExist(`dev-${input}`, ctx.projectPath);
+                        return isExists ? `分支 dev-${input} 依然存在，请重新输入` : true;
                     },
                 },
             ]);

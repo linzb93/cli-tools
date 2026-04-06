@@ -5,14 +5,27 @@ import path from 'node:path';
 import semver from 'semver';
 import chalk from 'chalk';
 import gitActions from '../shared/utils/actions';
-import { getGitProjectStatus, GitStatusMap, getMainBranchName, isCurrenetBranchPushed } from '../shared/utils';
+import { getGitProjectStatus, GitStatusMap, getMainBranchName, checkBranchExist } from '../shared/utils';
 import { createIterationStrategy } from './core/Factory';
 import { isGithubProject, isMonorepo } from '../shared/utils/project-type';
 import type { IterationContext, IterationOptions } from './types';
 
 /** 模块级变量 */
-let isDebug = false;
-let commandsToRun: Command[] = [];
+let isDebug = process.env.MODE === 'cliTest';
+let context: IterationContext = {
+    projectPath: process.cwd(),
+    pkgPath: path.resolve(process.cwd(), 'package.json'),
+    currentVersion: '',
+    newVersion: '',
+    finalVersion: '',
+    mainBranch: '',
+    currentBranch: '',
+    targetBranch: '',
+    isMono: false,
+    isGithub: false,
+    fix: false,
+    shouldCreateBranch: false,
+};
 
 /**
  * 创建 Git 命令运行器（不可变，内部判断 debug 模式）
@@ -20,14 +33,10 @@ let commandsToRun: Command[] = [];
  */
 const createGitCommandRunner = (): Function => {
     return async (cmds: Command[], ignoreError = false) => {
-        if (isDebug) {
-            commandsToRun.push(...cmds);
-        } else {
-            try {
-                await executeCommands(cmds);
-            } catch (e) {
-                if (!ignoreError) throw e;
-            }
+        try {
+            await executeCommands(cmds);
+        } catch (e) {
+            if (!ignoreError) throw e;
         }
     };
 };
@@ -65,16 +74,15 @@ const calculateNewVersion = (
 
 /**
  * 检查当前分支并切换到主分支拉取最新代码
- * @param ctx 迭代上下文
  * @returns Promise<{ mainBranch: string; currentBranch: string }>
  */
-const prepareMainBranch = async (ctx: IterationContext): Promise<{ mainBranch: string; currentBranch: string }> => {
+const prepareMainBranch = async (): Promise<{ mainBranch: string; currentBranch: string }> => {
     const runGitCommands = createGitCommandRunner();
-    const gitStatus = await getGitProjectStatus(ctx.projectPath);
-    const mainBranch = (await getMainBranchName(ctx.projectPath)) || 'master';
+    const gitStatus = await getGitProjectStatus(context.projectPath);
+    const mainBranch = (await getMainBranchName(context.projectPath)) || 'master';
     const currentBranch = gitStatus.branchName;
-    ctx.mainBranch = mainBranch;
-    ctx.currentBranch = currentBranch;
+    context.mainBranch = mainBranch;
+    context.currentBranch = currentBranch;
 
     if (currentBranch !== mainBranch) {
         if (gitStatus.status === GitStatusMap.Uncommitted) {
@@ -98,22 +106,21 @@ const prepareMainBranch = async (ctx: IterationContext): Promise<{ mainBranch: s
 
 /**
  * 更新项目的 package.json 中的版本号
- * @param ctx 迭代上下文
  * @returns Promise<void>
  */
-const updatePackageVersions = async (ctx: IterationContext): Promise<void> => {
-    const { projectPath, pkgPath, finalVersion, isMono, isDebug } = ctx;
+const updatePackageVersions = async (): Promise<void> => {
+    const { projectPath, pkgPath, finalVersion, isMono } = context;
     logger.info('正在更新 package.json 版本号...');
 
     const updatePackageJson = async (pPath: string, version: string) => {
         if (isDebug) {
-            logger.info(`[Dry Run] 更新 ${pPath} 版本号为 ${version}`);
+            logger.info(`${isMono ? `子项目 ${path.basename(path.dirname(pPath))} ` : ''}更新版本号为 ${version}`);
             return;
         }
         if (await fs.pathExists(pPath)) {
-            const packageData = await fs.readJson(pPath);
+            const packageData = await fs.readJSON(pPath);
             packageData.version = version;
-            await fs.writeJson(pPath, packageData, { spaces: 4 });
+            await fs.writeJSON(pPath, packageData, { spaces: 4 });
         }
     };
 
@@ -136,22 +143,15 @@ const updatePackageVersions = async (ctx: IterationContext): Promise<void> => {
 
 /**
  * 提交并推送代码到远端
- * @param ctx 迭代上下文
  * @returns Promise<void>
  */
-const commitAndPushChanges = async (ctx: IterationContext): Promise<void> => {
-    const { finalVersion, targetBranch, isGithub } = ctx;
+const commitAndPushChanges = async (): Promise<void> => {
+    const { finalVersion, targetBranch } = context;
     const runGitCommands = createGitCommandRunner();
     logger.info('提交版本变更并推送到远端...');
-    await runGitCommands(['git add .', gitActions.commit(`bump version to ${finalVersion}`)]);
+    await runGitCommands(['git add .', gitActions.commit(`chore:bump version to ${finalVersion}`)]);
 
-    if (isDebug) {
-        await runGitCommands([gitActions.push(true, targetBranch)]);
-        logger.info('预计将执行上述 Git 命令。');
-        return;
-    }
-
-    if (await isCurrenetBranchPushed()) {
+    if (!context.shouldCreateBranch) {
         await runGitCommands([gitActions.push()]);
         logger.success(`成功推送到远程`);
     } else {
@@ -175,10 +175,6 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         return;
     }
 
-    // 初始化模块级变量
-    const isDebug = options.debug;
-    commandsToRun = [];
-
     if (isDebug) {
         logger.info(chalk.bgBlue.white(' === DEBUG 模式 (Dry Run) === '));
     }
@@ -187,7 +183,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         const pkg = await fs.readJSON(pkgPath);
         const currentVersion = pkg.version;
         // 构建上下文
-        const ctx: IterationContext = {
+        context = {
             projectPath,
             pkgPath,
             currentVersion,
@@ -199,64 +195,65 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             isMono: await isMonorepo(projectPath),
             isGithub: await isGithubProject(projectPath),
             fix,
-            isDebug,
         };
         // 创建策略
-        const strategy = await createIterationStrategy(ctx);
+        const strategy = createIterationStrategy(context);
         logger.info(`检测到项目类型: ${strategy.name}`);
 
         // 计算版本号
         const releaseType = strategy.getReleaseType();
-        ctx.newVersion = calculateNewVersion(currentVersion, versionArg, releaseType);
-        ctx.finalVersion = ctx.newVersion;
+        context.newVersion = calculateNewVersion(currentVersion, versionArg, releaseType);
+        context.finalVersion = context.newVersion;
 
         // 获取目标分支（初始）
-        ctx.targetBranch = strategy.getTargetBranch(ctx.mainBranch, ctx.finalVersion);
+        context.targetBranch = strategy.getTargetBranch(context.mainBranch, context.finalVersion);
         logger.info(`当前版本: ${chalk.green(currentVersion)}`);
-        logger.info(`新版本: ${chalk.green(ctx.finalVersion)}`);
+        logger.info(`新版本: ${chalk.green(context.finalVersion)}`);
 
         // 1. 前置检查与主干切换
-        await prepareMainBranch(ctx);
+        await prepareMainBranch();
 
         // 2. 开发分支策略
-        ctx.targetBranch = strategy.getTargetBranch(ctx.mainBranch, ctx.finalVersion);
+        context.targetBranch = strategy.getTargetBranch(context.mainBranch, context.finalVersion);
         const runGitCommands = createGitCommandRunner();
-
+        const isBranchExist = await checkBranchExist(context.targetBranch);
+        context.shouldCreateBranch = !isBranchExist;
         if (fix) {
-            logger.info(`修复模式: 保持在 ${ctx.mainBranch} 分支进行更新`);
-            ctx.targetBranch = ctx.mainBranch;
-        } else if (ctx.isGithub) {
+            logger.info(`修复模式: 保持在 ${context.mainBranch} 分支进行更新`);
+            context.targetBranch = context.mainBranch;
+        } else if (context.isGithub) {
             // GitHub 项目先检查分支是否存在
-            await strategy.validate?.(ctx);
-            const shouldCreate = ctx.shouldCreateBranch;
-            if (ctx.isDebug && !shouldCreate) {
-                logger.info(`跳过切换分支操作（分支不存在）`);
+            await strategy.validate?.(context);
+            if (isDebug) {
+                logger.info(`跳过切换分支操作`);
             } else {
-                const cmd = shouldCreate ? `git checkout -b ${ctx.targetBranch}` : `git checkout ${ctx.targetBranch}`;
-                logger.info(`切换到 ${ctx.targetBranch} 分支...`);
+                const cmd = isBranchExist
+                    ? `git checkout -b ${context.targetBranch}`
+                    : `git checkout ${context.targetBranch}`;
+                logger.info(`切换到 ${context.targetBranch} 分支...`);
                 await runGitCommands([cmd]);
             }
         } else {
             // 公司项目需要验证分支是否存在
             if (typeof strategy.validate === 'function') {
-                await strategy.validate(ctx);
+                await strategy.validate(context);
             }
-            logger.info(`基于主干创建并切换到 ${ctx.targetBranch} 分支...`);
-            await runGitCommands([`git checkout -b ${ctx.targetBranch}`]);
+            logger.info(`基于主干创建并切换到 ${context.targetBranch} 分支...`);
+            await runGitCommands([`git checkout -b ${context.targetBranch}`]);
         }
 
         // 3. 更新版本号
-        await updatePackageVersions(ctx);
+        await updatePackageVersions();
 
         // 4. 提交并推送
-        await commitAndPushChanges(ctx);
+        await commitAndPushChanges();
 
         // 5. Debug 输出
         if (isDebug) {
             return;
         }
 
-        logger.success(`操作完成！当前处于 ${ctx.targetBranch} 分支，版本号已更新为 ${ctx.finalVersion}`);
+        logger.success(`操作完成！当前处于 ${context.targetBranch} 分支，版本号已更新为 ${context.finalVersion}`);
     } catch (error) {
         logger.error(`操作失败: ${(error as Error).message}`);
     }

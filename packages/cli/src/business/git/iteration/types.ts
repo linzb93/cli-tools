@@ -42,10 +42,8 @@ export interface IterationContext {
     isMono: boolean;
     /** 是否为 GitHub 项目 */
     isGithub: boolean;
-    /** 是否为修复模式 */
+    /** 是否为修复模式,修改三级版本号 */
     fix: boolean;
-    /** 是否为调试模式,修改三级版本号 */
-    isDebug: boolean;
     /** 是否需要创建分支（仅 GitHub 项目使用） */
     shouldCreateBranch?: boolean;
 }

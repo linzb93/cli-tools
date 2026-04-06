@@ -1,58 +1,17 @@
-/**
- * 迭代策略工厂
- */
-import { BaseStrategy } from './BaseStrategy';
-import {
-    MinorReleaseStrategy,
-    PatchReleaseStrategy,
-    FixedBranchNamingStrategy,
-    VersionedBranchNamingStrategy,
-    CreateBranchIfNotExistsStrategy,
-    PromptVersionIfExistsStrategy,
-    CompositeIterationStrategy,
-} from './strategies';
 import type { IterationContext } from '../types';
-
-/** 预创建的策略单例 */
-const releaseStrategies = {
-    github: new MinorReleaseStrategy(),
-    company: new PatchReleaseStrategy(),
-};
-
-const branchNamingStrategies = {
-    github: new FixedBranchNamingStrategy(),
-    company: new VersionedBranchNamingStrategy(),
-};
-
-const branchValidationStrategies = {
-    github: new CreateBranchIfNotExistsStrategy(),
-    company: new PromptVersionIfExistsStrategy(),
-    companyMono: new PromptVersionIfExistsStrategy(),
-};
+import { BaseIterationStrategy } from './BaseIterationStrategy';
+import { ALL_STRATEGIES } from './strategies';
 
 /**
  * 根据项目信息创建迭代策略
- * @param projectPath 项目路径
- * @returns 迭代策略实例
+ * @param ctx 迭代上下文
+ * @returns 对应类型的迭代策略实例
  */
-export const createIterationStrategy = async (ctx: IterationContext): Promise<BaseStrategy> => {
-    const { isGithub, isMono } = ctx;
-
-    const releaseType = isGithub ? releaseStrategies.github : releaseStrategies.company;
-    const branchNaming = isGithub ? branchNamingStrategies.github : branchNamingStrategies.company;
-    const validation = isMono
-        ? branchValidationStrategies.companyMono
-        : isGithub
-          ? branchValidationStrategies.github
-          : branchValidationStrategies.company;
-
-    const name = isGithub
-        ? isMono
-            ? 'GitHub Monorepo项目'
-            : 'GitHub项目'
-        : isMono
-          ? '公司Monorepo项目'
-          : '公司业务项目';
-
-    return new CompositeIterationStrategy(releaseType, branchNaming, validation, name);
+export const createIterationStrategy = (ctx: IterationContext): BaseIterationStrategy => {
+    for (const StrategyClass of ALL_STRATEGIES) {
+        if (StrategyClass.matches(ctx)) {
+            return new StrategyClass();
+        }
+    }
+    throw new Error('未找到匹配的迭代策略');
 };

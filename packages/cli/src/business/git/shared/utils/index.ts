@@ -235,6 +235,21 @@ export async function getAllBranches(projectPath: string = process.cwd()): Promi
 }
 
 /**
+ * 检查指定项目的指定分支是否存在
+ * @param {string} branchName - 要检查的分支名称
+ * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
+ * @returns {Promise<boolean>} 分支是否存在
+ */
+export async function checkBranchExist(branchName: string, projectPath: string = process.cwd()): Promise<boolean> {
+    try {
+        const { stdout } = await execa(`git branch -r`, { cwd: projectPath });
+        return stdout.includes(branchName);
+    } catch {
+        return false;
+    }
+}
+
+/**
  * 删除分支的配置选项
  */
 interface DeleteBranchOptions {
