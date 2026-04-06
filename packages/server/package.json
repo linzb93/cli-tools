@@ -1,6 +1,6 @@
 {
     "name": "@cli-tools/server",
-    "version": "5.0.0",
+    "version": "7.4.0",
     "description": "A cli for personal use",
     "type": "module",
     "private": true,

@@ -1,19 +1,19 @@
 {
-  "name": "@cli-tools/chrome-extension",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "vue": "^3.5.28"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.4",
-    "vue-tsc": "^2.2.4",
-    "@types/chrome": "^0.0.260"
-  }
+    "name": "@cli-tools/chrome-extension",
+    "version": "7.4.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vue-tsc --noEmit && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "vue": "^3.5.28"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.4",
+        "vue-tsc": "^2.2.4",
+        "@types/chrome": "^0.0.260"
+    }
 }
