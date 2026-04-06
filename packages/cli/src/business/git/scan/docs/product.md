@@ -104,5 +104,5 @@ flowchart TD
 ## 7. 约束与限制 (Constraints)
 
 -   **环境依赖**: 必须安装 `git` 和 `code` (VS Code CLI) 命令。
--   **配置依赖**: 需预先在 CLI 的数据库中配置 Git 根目录 (`db.gitDirs`)。
+-   **配置依赖**: 需预先在 CLI 的数据库中配置 Git 根目录 (`db.workDirs`)。
 -   **性能限制**: 极大量（如 >1000）仓库扫描可能会较慢，建议按需配置根目录。

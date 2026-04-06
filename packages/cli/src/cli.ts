@@ -9,11 +9,7 @@ program.version(globalPkg.version);
 program.hook('preAction', (thisCommand) => {
     return new Promise<void>((resolve) => {
         setTimeout(async () => {
-            // 先处理debug模式
-            if (process.argv.includes('--debug')) {
-                process.env.DEBUG = '*';
-                resolve();
-            } else if (process.argv.includes('--help')) {
+            if (process.argv.includes('--help')) {
                 (async () => {
                     const mainCommand = process.argv[2];
                     if (['git', 'npm', 'ai'].includes(mainCommand)) {
@@ -135,6 +131,11 @@ function registerCommands() {
         import('./commands/kill').then((m) => m.killCommand(data));
     });
 
+    // npm 子命令
+    program.command('npm <sub-command>').action((subCommand) => {
+        import('./commands/npm').then((m) => m.npmCommand(subCommand));
+    });
+
     // occ 命令
     program
         .command('occ [data...]')
@@ -218,6 +219,14 @@ function registerCommands() {
             import('./commands/tree').then((m) => m.treeCommand(dir, option));
         });
 
+    // minimax 命令
+    program
+        .command('minimax')
+        .option('--watch', '是否开启监控模式')
+        .action((options) => {
+            import('./commands/minimax').then((m) => m.minimaxCommand(options));
+        });
+
     // vue 命令
     program
         .command('vue')
@@ -226,19 +235,9 @@ function registerCommands() {
         .action((option) => {
             import('./commands/vue').then((m) => m.vueCommand(option));
         });
-
-    // iteration 命令
-    program
-        .command('iteration')
-        .description('版本迭代：更新版本号并处理Git工作流')
-        .option('--fix', '三级修复版本')
-        .option('--version <version>', '指定版本号')
-        .action((options) => {
-            import('./commands/iteration').then((m) => m.iterationCommand(options));
-        });
 }
 
 // 注册所有命令
 registerCommands();
 
-program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
+program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));

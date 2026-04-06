@@ -152,10 +152,10 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
             return await fn();
         } catch (error) {
             if (typeof onFail === 'function') {
-                const { shouldStop } = onFail(attempt, error);
+                const { shouldStop } = onFail(attempt, error as Error);
                 if (shouldStop) {
                     // 抛出和变量error一样的Error类型
-                    throw error instanceof Error ? error : new Error(error);
+                    throw error instanceof Error ? error : new Error(String(error));
                 }
             }
 
@@ -200,7 +200,7 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
         console.log(`${chalk.cyan('>')} ${chalk.yellow(config.message)}`);
 
         // 调试模式下仅输出命令，不实际执行
-        if (process.env.DEBUG) {
+        if (process.env.MODE === 'cliTest') {
             console.log(chalk.green('调试模式：跳过实际执行'));
             continue;
         }
@@ -215,7 +215,7 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
         }
     }
 
-    if (!options?.silentStart) {
+    if (!options?.silentStart && process.env.MODE !== 'cliTest') {
         const endTime = dayjs();
         const duration = endTime.diff(startTime, 'millisecond') / 1000;
         console.log(`${endTime.format('HH:mm:ss')} 任务执行完成，用时${chalk.blue(duration.toFixed(2))}秒`);

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import open from 'open';
+import { open } from '@/utils/helper';
 import { getTime } from '../time';
 import { AnyObject } from '@/types';
 import type { TokenParser } from './core/TokenParser';
@@ -51,7 +51,7 @@ export const tokenService = async (tk: string, options: Options) => {
 
     if (!decoded || !matchParser) {
         logger.error('无法解析token，即将打开网站');
-        await open('https://www.bejson.com/jwt/', { wait: true });
+        await open('https://www.bejson.com/jwt/');
         return;
     }
 
@@ -78,6 +78,6 @@ export const tokenService = async (tk: string, options: Options) => {
         return decoded;
     } else {
         logger.error('无法解析token，即将打开网站');
-        await open('https://www.bejson.com/jwt/', { wait: true });
+        await open('https://www.bejson.com/jwt/');
     }
 };

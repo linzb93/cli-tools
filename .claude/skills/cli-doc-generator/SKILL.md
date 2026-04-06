@@ -43,6 +43,26 @@ description: "为CLI命令生成说明文档，包括产品文档(product.md)和
 -   **核心任务**: 提取命令行参数和选项定义，编写使用示例。
 -   **输出路径**: `<module_path>/docs/help.md`
 
+### 4. 更新 CHANGELOG.md
+
+在完成文档生成后，根据本次对话中涉及的功能变更，更新项目根目录下的 `CHANGELOG.md` 文件。
+
+#### 更新规则
+-   **新增功能**: 在 `## [Unreleased]` 或 `## [version]` 下的 `### Features` 部分添加新功能描述
+-   **功能改进**: 在 `### Improved` 部分添加改进说明
+-   **Bug 修复**: 在 `### Fixed` 部分添加修复说明
+-   **如果 CHANGELOG.md 不存在**: 创建基本的 CHANGELOG.md 结构
+
+#### 编写规范
+-   使用中文编写变更描述
+-   每条变更用一句话概括，简洁明了
+-   格式示例：
+    ```markdown
+    ### Features
+    - 新增 `xxx` 命令，支持 xxx 功能 (#xxx)
+    ```
+-   如果对话中提到了 issue 或 PR 编号，在括号中注明
+
 ## 参考文件
 
 -   [product-doc.md](./references/product-doc.md)

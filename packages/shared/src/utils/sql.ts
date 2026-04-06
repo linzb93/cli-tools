@@ -27,7 +27,7 @@ export interface Database {
     /**
      * 需要扫描的Git项目父目录
      */
-    gitDirs: {
+    workDirs: {
         /**
          * 项目路径
          */

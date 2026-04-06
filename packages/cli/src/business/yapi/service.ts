@@ -127,7 +127,8 @@ const getApiDetails = async (
                     fs.writeFileSync(apiMdFile, '');
                 }
             } catch (error) {
-                logger.error(`处理接口 ${apiItem._id} 时出错:`, error.message);
+                logger.error(`处理接口 ${apiItem._id} 时出错:`);
+                logger.error((error as Error).message);
             }
         },
         { concurrency: 4 },
@@ -174,7 +175,8 @@ const updateIndexFile = async (indexPath: string, newDocs: SavedData[]) => {
         // 写入更新后的索引文件
         await fs.writeJSON(indexPath, mergedDocs, { spaces: 4 });
     } catch (error) {
-        logger.error('更新索引文件失败:', error.message);
+        logger.error('更新索引文件失败:');
+        logger.error((error as Error).message);
     }
 };
 
@@ -211,7 +213,7 @@ export const yapiService = async (url: string) => {
             ]);
 
             if (manualInput.confirm) {
-                cookie = await manualInputCookie();
+                cookie = (await manualInputCookie()) as string;
             }
 
             if (!cookie) {
@@ -276,7 +278,7 @@ export const yapiService = async (url: string) => {
             spinner.succeed(`成功获取 ${apiDocs.length} 个接口文档`);
         }
     } catch (error) {
-        spinner.fail('获取接口文档失败');
-        logger.error(error.message || error);
+        spinner.fail('获取接口文档失败:');
+        logger.error((error as Error).message);
     }
 };

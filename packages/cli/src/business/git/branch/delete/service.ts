@@ -52,6 +52,7 @@ export const branchDeleteService = async () => {
     spinner.text = '正在删除所选分支';
     const errorBranches: BranchExtraItem[] = [];
     const selectedItems = selected.map((sel) => branches.find((item) => item.value === sel) as BranchExtraItem);
+    let successCount = 0;
 
     await pMap(
         selectedItems,
@@ -78,6 +79,8 @@ export const branchDeleteService = async () => {
                     return;
                 }
             }
+            successCount++;
+            spinner.text = `已删除 ${successCount}/${selectedItems.length} 个分支`;
         },
         { concurrency: 4 },
     );

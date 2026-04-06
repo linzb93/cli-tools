@@ -9,7 +9,7 @@ import type { IOptions } from './types';
  * @param {string} filename - 文件名
  * @returns {Promise<string[]>} 匹配的文件路径列表
  */
-export const getMatchPaths = (filename: string) => {
+export const getMatchPaths = (filename: string): Promise<string[]> => {
     return globby([`**/*/${filename}`, '!node_modules']);
 };
 
@@ -20,7 +20,7 @@ export const getMatchPaths = (filename: string) => {
  * @param {IOptions} options - 选项
  * @returns {Promise<void>}
  */
-export const clearService = async (filename: string, options?: IOptions) => {
+export const clearService = async (filename: string, options?: IOptions): Promise<void> => {
     if (options?.root) {
         await del(filename);
         logger.success(`${filename}已删除`);

@@ -217,7 +217,7 @@ export async function getYapiInterfaceList(obj: {
                 return null;
             }
 
-            return response.data.data.list.map((item) => ({
+            return response.data.data.list.map((item: YapiInterfaceDetail) => ({
                 _id: item._id,
             }));
         } catch (error) {

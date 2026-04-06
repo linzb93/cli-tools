@@ -174,7 +174,7 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
             const shopUrl = await filterShops({ version });
             return shopUrl;
         } catch (error) {
-            console.error(chalk.red('获取版本信息时发生错误:'), error.message);
+            console.error(chalk.red('获取版本信息时发生错误:'), (error as Error).message);
             process.exit(1);
         }
     };

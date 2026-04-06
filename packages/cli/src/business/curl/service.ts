@@ -3,66 +3,11 @@ import * as prettier from 'prettier';
 import { createParser, detectCurlMode } from './core/Factory';
 import type { Options } from './types';
 import { logger } from '@/utils/logger';
-import { parseCookie } from '../cookie';
+import { parseCookie } from '../cookie/shared';
+import { isCurl, getCookieFromCurl, getBodyFromCurl } from './shared';
 
 export type { Options };
-
-export const isCurl = (curl: string): boolean => {
-    const trimmed = curl.trim();
-    return (
-        trimmed.startsWith('curl') ||
-        trimmed.includes('Invoke-WebRequest') ||
-        trimmed.includes('New-Object Microsoft.PowerShell')
-    );
-};
-
-export const getCookieFromCurl = (curl: string, options?: Options): string => {
-    const lines = curl.split('\n');
-    const urlLine = lines.find((line) => {
-        const trimmed = line.trim();
-        return trimmed.startsWith('curl') || trimmed.startsWith('Invoke-WebRequest');
-    });
-    if (!urlLine) {
-        logger.error('可能剪贴板里的不是curl代码，退出进程');
-        process.exit(0);
-    }
-    const mode = detectCurlMode(curl);
-    const parser = createParser(mode, options || ({} as Options));
-    return parser.getCookieFromCurl(curl);
-};
-
-/**
- * 获取curl命令中的HTTP请求体
- * @param curl curl命令文本
- * @param options 选项
- * @returns 请求体数据，如果没有请求体则返回空字符串
- */
-export const getBodyFromCurl = (curl: string, options?: Options): string => {
-    if (!isCurl(curl)) {
-        logger.error('不是有效的curl命令');
-        return '';
-    }
-
-    const lines = curl.split('\n');
-    const urlLine = lines.find((line) => {
-        const trimmed = line.trim();
-        return trimmed.startsWith('curl') || trimmed.startsWith('Invoke-WebRequest');
-    });
-
-    if (!urlLine) {
-        logger.error('无法找到curl命令起始行');
-        return '';
-    }
-
-    const mode = detectCurlMode(curl);
-    const parser = createParser(mode, options || ({} as Options));
-
-    const headers = parser.parseHeaders(lines);
-    const contentType = headers['content-type'] || headers['Content-Type'] || '';
-
-    // 解析请求体数据
-    return parser.parseData(lines, contentType);
-};
+export { isCurl, getCookieFromCurl, getBodyFromCurl };
 
 export const curlService = async (options: Options): Promise<void> => {
     // 读取剪贴板

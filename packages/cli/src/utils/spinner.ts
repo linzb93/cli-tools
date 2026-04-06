@@ -1,18 +1,39 @@
 import ora from 'ora';
 import logSymbols from 'log-symbols';
+
+const isCliTest = process.env.MODE === 'cliTest';
+
 interface Setting {
     showTime: boolean;
+    /** 是否启用真正的 spinner，为 false 或 cliTest 模式时使用 console.log 输出 */
+    enabled: boolean;
 }
 
 export class Spinner {
     private spinner = ora({
         interval: 100,
     });
-    private setting: Setting;
+    private setting: Setting = {
+        showTime: true,
+        enabled: false,
+    };
+    /** 记录 console.log 模式的当前状态 */
+    private consoleText = '';
+
     get text() {
+        if (!this.setting.enabled || isCliTest) {
+            return this.consoleText;
+        }
         return this.spinner.text;
     }
     set text(value) {
+        if (!this.setting.enabled || isCliTest) {
+            this.consoleText = value;
+            if (this.consoleText) {
+                console.log(value);
+            }
+            return;
+        }
         if (this.spinner.text === '' || !this.spinner.isSpinning) {
             this.start();
         }
@@ -20,12 +41,22 @@ export class Spinner {
         this.spinner.spinner = 'dots';
     }
     get isSpinning() {
+        if (!this.setting.enabled || isCliTest) {
+            return false;
+        }
         return this.spinner.isSpinning;
     }
     start() {
+        if (!this.setting.enabled || isCliTest) {
+            return;
+        }
         this.spinner.start();
     }
     warning(text: string) {
+        if (!this.setting.enabled || isCliTest) {
+            console.log(`${logSymbols.warning} ${text}`);
+            return;
+        }
         this.spinner.text = text;
         this.spinner.spinner = {
             interval: 100,
@@ -33,6 +64,10 @@ export class Spinner {
         };
     }
     succeed(text?: string, notEnd?: boolean) {
+        if (!this.setting.enabled || isCliTest) {
+            console.log(`${logSymbols.success} ${text || this.consoleText}`);
+            return;
+        }
         if (notEnd) {
             if (!this.spinner.isSpinning) {
                 this.spinner.start();
@@ -47,6 +82,13 @@ export class Spinner {
         }
     }
     fail(text: string, needExit?: boolean) {
+        if (!this.setting.enabled || isCliTest) {
+            console.log(`${logSymbols.error} ${text}`);
+            if (needExit) {
+                process.exit(1);
+            }
+            return;
+        }
         this.spinner.fail(text);
         if (needExit) {
             process.exit(1);
@@ -56,12 +98,19 @@ export class Spinner {
      * 暂停，但会清空文字
      */
     stop() {
+        if (!this.setting.enabled || isCliTest) {
+            this.consoleText = '';
+            return;
+        }
         this.spinner.stop();
     }
     /**
      * 暂停，保持显示的文字
      */
     stopAndPersist() {
+        if (!this.setting.enabled || isCliTest) {
+            return;
+        }
         this.spinner.stopAndPersist();
     }
     set(options: Partial<Setting>) {

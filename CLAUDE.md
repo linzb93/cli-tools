@@ -8,9 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 环境要求
 
-- Node.js v14+ (主要运行环境)
-- Node.js v20+ (AI 相关功能)
-- Python v3.12.3 (处理 Node.js 解决不了的功能)
+-   Node.js v14+ (主要运行环境)
+-   Node.js v20+ (AI 相关功能)
+-   Python v3.12.3 (处理 Node.js 解决不了的功能)
 
 ## 常用命令
 
@@ -32,7 +32,6 @@ pnpm build:context          # 构建 Windows 右键菜单
 # 测试
 pnpm --filter "@cli-tools/cli" test        # 运行 CLI 测试
 pnpm --filter "@cli-tools/ui" test:unit     # 运行前端测试
-pnpm --filter "@cli-tools/shared" test     # 运行 shared 测试
 
 # 类型检查
 pnpm check                  # CLI 类型检查
@@ -74,28 +73,32 @@ packages/
 ## 架构模式
 
 ### CLI 命令组织
-- 顶层命令在 `commands/` 目录，如 `git.ts`、`ai.ts`
-- 子命令在对应子目录，如 `commands/git/` 下 `push.ts`、`pull.ts`
-- 命令入口函数使用 `commandMap` 映射表派发子命令
+
+-   顶层命令在 `commands/` 目录，如 `git.ts`、`ai.ts`
+-   子命令在对应子目录，如 `commands/git/` 下 `push.ts`、`pull.ts`
+-   命令入口函数使用 `commandMap` 映射表派发子命令
 
 ### Business 业务逻辑 (Factory 模式)
-- `business/` 目录下按功能领域划分模块
-- 复杂模块使用 Factory 模式：`core/Factory.ts` + `implementations/` 多态实现
-- 简单模块直接 `Service.ts` 导出
+
+-   `business/` 目录下按功能领域划分模块
+-   复杂模块使用 Factory 模式：`core/Factory.ts` + `implementations/` 多态实现
+-   简单模块直接 `Service.ts` 导出
 
 ### AI 模块
-- 使用 `AIModel` 接口定义模型契约
-- 不同模型实现在 `implementations/models/` 目录
-- 通过 Factory 模式创建模型实例
+
+-   使用 `AIModel` 接口定义模型契约
+-   不同模型实现在 `implementations/models/` 目录
+-   通过 Factory 模式创建模型实例
 
 ## 路径别名
 
 在 `packages/cli/tsconfig.json` 中配置：
-- `@/*` → `packages/cli/src/*`
-- `@cli-tools/shared/*` → `packages/shared/src/*`
+
+-   `@/*` → `packages/cli/src/*`
+-   `@cli-tools/shared/*` → `packages/shared/src/*`
 
 ## 重要配置
 
-- `config.json`: 包含服务器端口、前缀等配置
-- `scripts/generateFeatures.js`: 扫描 business 目录自动生成特性列表到 `utils/_internal/features.json`
-- `package.json` 中的 `MODE` 环境变量控制构建模式 (`cli` | `cliTest` | `report`)
+-   `config.json`: 包含服务器端口、前缀等配置
+-   `scripts/generateFeatures.js`: 扫描 business 目录自动生成特性列表到 `utils/_internal/features.json`
+-   `package.json` 中的 `MODE` 环境变量控制构建模式 (`cli` | `cliTest` | `report`)

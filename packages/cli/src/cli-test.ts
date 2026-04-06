@@ -2,7 +2,6 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import { generateHelpDoc } from '@/utils/helper';
-import { forkCommand } from './commands/fork';
 
 const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');
@@ -24,14 +23,15 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
+// git 子命令
 program
-    .command('fork [filename]')
-    .option('--duration <duration>', '服务等待断联时间（秒）')
-    .action((file, options) => {
-        forkCommand(file, options);
+    .command('git [sub-command] [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest) => {
+        import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
     });
 
-program.parse(process.argv.filter((cmd) => ['--debug', '--help'].includes(cmd) === false));
+program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
 
 if (!process.argv.slice(2).length) {
     program.outputHelp();

@@ -35,6 +35,6 @@ export const tagDeleteService = async (): Promise<void> => {
         await deleteTags({ tags: selectedTags, remote: true });
         logger.success('标签删除操作完成');
     } catch (error) {
-        logger.error(`删除标签失败: ${error.message || error}`);
+        logger.error(`删除标签失败: ${(error as Error).message}`);
     }
 };

@@ -35,26 +35,16 @@
         "menus": {
             "editor/context": [
                 {
-                    "submenu": "mycli.submenu",
-                    "group": "navigation",
-                    "when": "editorHasSelection"
+                    "command": "mycli.copyFilePathAndLine",
+                    "when": "editorHasSelection",
+                    "group": "2_files"
                 }
             ],
             "explorer/context": [
                 {
-                    "submenu": "mycli.submenu",
-                    "group": "navigation",
-                    "when": "explorerResourceIsFolder"
-                }
-            ],
-            "mycli.submenu": [
-                {
-                    "command": "mycli.copyFilePathAndLine",
-                    "when": "editorHasSelection"
-                },
-                {
                     "command": "mycli.startVueBuildedProject",
-                    "when": "explorerResourceIsFolder"
+                    "when": "explorerResourceIsFolder",
+                    "group": "2_files"
                 }
             ]
         }

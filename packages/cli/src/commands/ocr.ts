@@ -1,5 +1,5 @@
-import { ocrService } from '@/business/ocr/service';
-import type { OCROptions } from '@/business/ocr/types';
+import { ocrService } from '@/business/ocr';
+import type { OCROptions } from '@/business/ocr';
 
 /**
  * OCR命令入口函数

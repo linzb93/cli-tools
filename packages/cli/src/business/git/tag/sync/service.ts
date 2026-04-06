@@ -40,6 +40,6 @@ export const tagSyncService = async (): Promise<void> => {
         const updatedTags = await getAllTags();
         logger.success(`标签同步完成，现有 ${updatedTags.length} 个标签`);
     } catch (error) {
-        logger.error(`同步标签失败: ${error.message || error}`);
+        logger.error(`同步标签失败: ${(error as Error).message}`);
     }
 };

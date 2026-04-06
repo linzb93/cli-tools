@@ -22,7 +22,7 @@ const getIpLocation = async (ip: string) => {
         });
         html = data;
     } catch (error) {
-        spinner.fail('查询失败:' + error.message);
+        spinner.fail('查询失败:' + (error as Error).message);
         return;
     }
     const $ = load(html);
@@ -65,14 +65,14 @@ ${table.toString()}`);
 const getWebsiteIpAndPort = async (website: string) => {
     spinner.text = '正在查询网站IP和端口';
     Promise.all([
-        new Promise((resolve) => {
+        new Promise<number>((resolve) => {
             const socket = new Socket();
             socket.connect(443, website, () => {
                 socket.end();
-                resolve(socket.remotePort);
+                resolve(socket.remotePort as number);
             });
         }),
-        new Promise((resolve, reject) => {
+        new Promise<string[]>((resolve, reject) => {
             resolve4(website, (err, address) => {
                 if (err) {
                     reject(err);
@@ -82,7 +82,7 @@ const getWebsiteIpAndPort = async (website: string) => {
             });
         }),
     ])
-        .then(([port, ip]: [number, string[]]) => {
+        .then(([port, ip]) => {
             spinner.succeed(`查询成功
 ${ip.join('\n')}
 端口: ${port}`);
@@ -92,7 +92,7 @@ ${ip.join('\n')}
         });
 };
 
-export const ipService = async (data?: string[]) => {
+export const ipService = async (data: string[]) => {
     if (data[0] && data[0].match(/^(\d{1,3}\.){3}\d{1,3}$/)) {
         getIpLocation(data[0]);
         return;

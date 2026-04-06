@@ -1,6 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import { executeCommands } from '@/utils/promise';
-import gitAtom from '../shared/utils/atom';
+import gitActions from '../shared/utils/actions';
 import {
     getCurrentBranchName,
     getMainBranchName,
@@ -8,10 +8,11 @@ import {
     getGitProjectStatus,
     GitStatusMap,
     isGitProject as checkIsGitProject,
-    isGithubProject,
 } from '../shared/utils';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
+import { checkHardcoded } from '../shared/utils/hard-coded';
+import { getDeployCwd } from './context';
 
 /**
  * Deploy命令选项接口
@@ -44,6 +45,11 @@ export interface DeployOptions {
      * @default false
      */
     current?: boolean;
+    /**
+     * 工作目录路径，不作为命令行选项传入
+     * @default process.cwd()
+     */
+    cwd?: string;
 }
 
 /**
@@ -52,7 +58,7 @@ export interface DeployOptions {
  */
 export const hasChanges = async (): Promise<boolean> => {
     try {
-        const { stdout } = await execa('git status -s');
+        const { stdout } = await execa('git status -s', { cwd: getDeployCwd() });
         return stdout.trim() !== '';
     } catch (error) {
         logger.error('检查未提交更改失败');
@@ -68,12 +74,16 @@ export const hasChanges = async (): Promise<boolean> => {
  */
 export const executeBaseManagers = async (commitMessage: string, currentBranch: string): Promise<void> => {
     logger.info('执行基础Git命令...');
+    const cwd = getDeployCwd();
 
     try {
         const gitStatus = await getGitProjectStatus();
 
         if (gitStatus.status === GitStatusMap.Uncommitted) {
-            await executeCommands(['git add .', gitAtom.commit(commitMessage)], { silentStart: true });
+            if (await checkHardcoded()) {
+                logger.error('发现硬编码，禁止提交', true);
+            }
+            await executeCommands(['git add .', gitActions.commit(commitMessage)], { cwd, silentStart: true });
         }
 
         // 检查当前分支是否已推送到远端
@@ -81,19 +91,19 @@ export const executeBaseManagers = async (commitMessage: string, currentBranch: 
 
         // 根据分支推送状态决定是否添加 pull 命令
         if (isBranchPushed) {
-            await executeCommands([gitAtom.pull()], { silentStart: true });
+            await executeCommands([gitActions.pull()], { cwd, silentStart: true });
 
             // 检查Pull后是否有未提交的更改（如合并产生的未提交更改）
             if (await hasChanges()) {
-                await executeCommands(['git add .', gitAtom.commit('合并代码')], { silentStart: true });
+                await executeCommands(['git add .', gitActions.commit('合并代码')], { cwd, silentStart: true });
             }
         }
 
         // 根据分支是否已推送到远端决定push方式
         if (isBranchPushed) {
-            await executeCommands([gitAtom.push()], { silentStart: true });
+            await executeCommands([gitActions.push()], { cwd, silentStart: true });
         } else {
-            await executeCommands([gitAtom.push(true, currentBranch)], { silentStart: true });
+            await executeCommands([gitActions.push(true, currentBranch)], { cwd, silentStart: true });
         }
 
         logger.success('基础Git命令执行完成');
@@ -116,15 +126,16 @@ export const mergeToBranch = async (
     switchBackToBranch: boolean = false,
 ): Promise<void> => {
     logger.info(`合并代码到 ${targetBranch} 分支...`);
+    const cwd = getDeployCwd();
 
     try {
         // 保存当前分支
-        await execa(`git checkout ${targetBranch}`);
-        await executeCommands([gitAtom.pull(), gitAtom.merge(currentBranch), gitAtom.push()]);
+        await execa(`git checkout ${targetBranch}`, { cwd });
+        await executeCommands([gitActions.pull(), gitActions.merge(currentBranch), gitActions.push()], { cwd });
 
         // 根据参数决定是否切回原分支
         if (switchBackToBranch) {
-            await execa(`git checkout ${currentBranch}`);
+            await execa(`git checkout ${currentBranch}`, { cwd });
         }
 
         logger.success(`代码已成功合并到 ${targetBranch} 分支`);
@@ -132,7 +143,7 @@ export const mergeToBranch = async (
         // 如果需要切换回原始分支，并且出现错误
         if (switchBackToBranch) {
             try {
-                await execa(`git checkout ${currentBranch}`);
+                await execa(`git checkout ${currentBranch}`, { cwd });
             } catch (checkoutError) {
                 logger.error('切回原始分支失败');
             }

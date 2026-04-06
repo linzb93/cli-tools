@@ -15,9 +15,9 @@ export const subCommandCompiler = (fn: (cmd: Command) => void, options: Options 
     fn(program);
     const commands = process.argv.filter((item, index) => {
         if (options.level === 2) {
-            return item !== '--debug' && index !== 2;
+            return index !== 2;
         }
-        return index < 2 || (index > 3 && index <= options.level + 1 && item !== '--debug');
+        return index < 2 || (index > 3 && index <= options.level + 1);
     });
     program.parse(commands);
 };

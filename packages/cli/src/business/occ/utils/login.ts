@@ -1,6 +1,6 @@
 import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
-import open from 'open';
+import { open } from '@/utils/helper';
 import { useAI } from '@/utils/ai/implementation';
 import { readSecret } from '@cli-tools/shared';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
@@ -26,7 +26,7 @@ async function manualCaptchaLogin(
 }> {
     const { url, uuid, removeHandler } = await getLoginCaptcha();
     console.log(chalk.green('请在浏览器中打开以下地址查看验证码：'));
-    await open(url, { wait: true });
+    await open(url);
 
     const { code } = await inquirer.prompt([
         {
@@ -53,9 +53,10 @@ export async function login(): Promise<void> {
         if (!username) {
             await getOCCUserInfo();
         }
-        username = await readSecret((db) => db.oa.username);
-        const password = await readSecret((db) => db.oa.password);
-        const prefix = await readSecret((db) => db.oa.apiPrefix);
+        const oa = await readSecret((db) => db.oa);
+        username = oa.username;
+        const password = oa.password;
+        const prefix = oa.apiPrefix;
 
         let loginSuccess = false;
         let retryCount = 0;
@@ -93,7 +94,7 @@ export async function login(): Promise<void> {
             db.oa.token = loginResult.token;
         });
     } catch (error) {
-        console.error(chalk.red('登录过程中发生错误:'), error.message);
+        console.error(chalk.red('登录过程中发生错误:'), (error as Error).message);
         process.exit(0);
     }
 }
@@ -183,8 +184,8 @@ async function processCaptchaAndLogin(
         return res.data;
     } catch (error) {
         removeHandler();
-        if (process.env.DEBUG) {
-            console.log(error.message);
+        if (process.env.MODE === 'cliTest') {
+            console.log((error as Error).message);
         }
         throw error;
     }

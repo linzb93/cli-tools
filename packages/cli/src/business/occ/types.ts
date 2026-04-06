@@ -43,8 +43,8 @@ export interface Options {
 
 export interface UserInfo {
     version: number;
-    versionPlus?: number;
-    surplusDays?: number;
+    versionPlus: number;
+    surplusDays: number;
 }
 
 export interface App {

@@ -1,5 +1,17 @@
 # 更新日志
 
+## 7.3.0 2026-04-05
+
+### 功能
+
+-   优化`open`方法，解决某些终端无法结束任务的bug。
+-   `git commit`命令新增`merge`选项，支持与上一条记录合并。
+-   Jenkins配置移除`lastTag`字段，暂时不需要。
+-   `iteration`命令替换成`git iteration`命令。支持公司项目和Github项目的普通结构和Monorepo结构。
+-   新增`npm scan`命令，用于扫描是否有不安全的npm包。
+-   新增`minimax`命令，用于查看Minimax API的使用情况。
+-   `git scan`命令将`push`指令改成`deploy`指令，便于一步完成代码提交和推送。
+
 ## 7.2.0 2026-03-25
 
 ### 功能

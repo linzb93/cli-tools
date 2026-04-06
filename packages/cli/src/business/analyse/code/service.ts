@@ -26,7 +26,7 @@ const getMatchFiles = async (
     for (const m of modules) {
         if (await m.access()) {
             return {
-                files: await globby([m.filePattern(''), '!**/node_modules', '!**/dist'], {
+                files: await globby([m.filePattern(''), '!**/node_modules', '!**/dist', '!**/dist-test'], {
                     cwd: process.cwd(),
                 }),
                 max: m.maxLength,
