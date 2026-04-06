@@ -162,25 +162,6 @@ const commitAndPushChanges = async (ctx: IterationContext): Promise<void> => {
 };
 
 /**
- * 打印 Dry Run 结果
- * @param ctx 迭代上下文
- */
-const printDryRunResult = (ctx: IterationContext): void => {
-    const { currentBranch, targetBranch, currentVersion, finalVersion } = ctx;
-    logger.info(chalk.cyan('\n=== Dry Run 执行结果 ==='));
-    logger.info(`当前分支: ${currentBranch}`);
-    logger.info(`目标分支: ${targetBranch}`);
-    logger.info(`项目原版本: ${currentVersion}`);
-    logger.info(`项目新版本: ${finalVersion}`);
-    logger.info(`计划执行的 Git 命令:`);
-    commandsToRun.forEach((cmd, idx) => {
-        const cmdStr = typeof cmd === 'string' ? cmd : cmd.message;
-        logger.info(`  ${idx + 1}. ${cmdStr}`);
-    });
-    logger.info(chalk.cyan('========================\n'));
-};
-
-/**
  * iteration 命令的主编排流程
  * @param options 命令选项
  * @returns Promise<void>
@@ -275,7 +256,6 @@ export const iterationService = async (options: IterationOptions): Promise<void>
 
         // 5. Debug 输出
         if (isDebug) {
-            printDryRunResult(ctx);
             return;
         }
 
