@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import gitActions from '../shared/utils/actions';
 import { getGitProjectStatus, GitStatusMap, getMainBranchName, isCurrenetBranchPushed } from '../shared/utils';
 import { createIterationStrategy } from './core/Factory';
+import { isGithubProject, isMonorepo } from '../shared/utils/project-type';
 import type { IterationContext, IterationOptions } from './types';
 
 /** 模块级变量 */
@@ -101,7 +102,7 @@ const prepareMainBranch = async (ctx: IterationContext): Promise<{ mainBranch: s
  * @returns Promise<void>
  */
 const updatePackageVersions = async (ctx: IterationContext): Promise<void> => {
-    const { projectPath, pkgPath, finalVersion, isMono } = ctx;
+    const { projectPath, pkgPath, finalVersion, isMono, isDebug } = ctx;
     logger.info('正在更新 package.json 版本号...');
     const runGitCommands = createGitCommandRunner();
 
@@ -227,9 +228,8 @@ export const iterationService = async (options: IterationOptions): Promise<void>
         };
 
         // 判断项目类型
-        ctx.isGithub = projectPath.includes('github') || process.cwd().includes('github');
-        ctx.isMono =
-            !!path.resolve(projectPath, 'packages') && (await fs.pathExists(path.resolve(projectPath, 'packages')));
+        ctx.isGithub = await isGithubProject(projectPath);
+        ctx.isMono = await isMonorepo(projectPath);
 
         // 计算版本号
         const releaseType = strategy.getReleaseType();
@@ -238,8 +238,6 @@ export const iterationService = async (options: IterationOptions): Promise<void>
 
         // 获取目标分支（初始）
         ctx.targetBranch = strategy.getTargetBranch(ctx.mainBranch, ctx.finalVersion);
-
-        logger.info(`项目类型: ${ctx.isGithub ? 'GitHub' : '公司'}${ctx.isMono ? ' Monorepo' : ' 普通项目'}`);
         logger.info(`当前版本: ${chalk.green(currentVersion)}`);
         logger.info(`新版本: ${chalk.green(ctx.finalVersion)}`);
 

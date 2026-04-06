@@ -3,7 +3,7 @@ import inquirer from '@/utils/inquirer';
 import semver from 'semver';
 import type { IterationContext } from '../../types';
 import { logger } from '@/utils/logger';
-
+import { isGithubProject } from '../../../shared/utils/project-type';
 /**
  * 分支验证策略接口
  */
@@ -50,7 +50,7 @@ export class PromptVersionIfExistsStrategy implements BranchValidationStrategy {
             isBranchExist = false;
         }
 
-        if (isBranchExist) {
+        if (isBranchExist && !(await isGithubProject(ctx.projectPath))) {
             const answer = await inquirer.prompt([
                 {
                     type: 'input',

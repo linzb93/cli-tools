@@ -6,9 +6,9 @@ import { resolve } from 'node:path';
  * 检查是否为Github项目
  * @returns {Promise<boolean>} 是否为Github项目
  */
-export const isGithubProject = async (): Promise<boolean> => {
+export const isGithubProject = async (cwd: string = process.cwd()): Promise<boolean> => {
     try {
-        const { stdout } = await execa('git remote -v');
+        const { stdout } = await execa('git remote -v', { cwd });
         return stdout.includes('github.com');
     } catch (error) {
         return false;
