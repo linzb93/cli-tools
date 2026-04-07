@@ -19,6 +19,13 @@ export interface ReadlineCommand {
     handler: (args: string[], item: any) => void | Promise<void>;
 }
 
+export interface CommandCompleteContext {
+    rl: readline.Interface;
+    command: string;
+}
+
+export type CommandCompleteCallback = (ctx: CommandCompleteContext) => void | Promise<void>;
+
 interface CommandReadlineOptions {
     prompt?: string;
     input?: NodeJS.ReadableStream;
@@ -27,6 +34,8 @@ interface CommandReadlineOptions {
     exitCommand?: string;
     /** 项目列表（可选），传入后命令上下文中会自动包含 getItem 方法 */
     items?: unknown[];
+    /** 命令执行完成后的回调（除 exit 外） */
+    onComplete?: CommandCompleteCallback;
 }
 
 interface ParsedSlashCommand {
@@ -190,6 +199,10 @@ export function createCommandReadline(
         } finally {
             rl.resume();
             rl.prompt();
+            // 命令完成后触发回调（除了 exit 命令）
+            if (cmd && parsed.command !== exitCommand) {
+                await options.onComplete?.({ rl, command: cmd.name });
+            }
         }
     };
 
