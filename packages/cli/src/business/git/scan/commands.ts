@@ -66,10 +66,7 @@ const printProjectLog = async (item: ResultItem) => {
  * @param {ResultItem[]} list - 项目列表引用
  * @param {() => void} onRestart - 重新扫描回调
  */
-const commands = (
-    list: ResultItem[],
-    onRestart: () => void,
-): ReadlineCommand[] => [
+const commands = (list: ResultItem[], onRestart: () => void): ReadlineCommand[] => [
     {
         name: 'restart',
         description: '重新扫描已列出的项目',
@@ -89,9 +86,13 @@ const commands = (
             );
 
             list.length = 0;
-            list.push(...newList.filter((item) =>
-                [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(item.status),
-            ));
+            list.push(
+                ...newList.filter((item) =>
+                    [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(
+                        item.status,
+                    ),
+                ),
+            );
 
             if (list.length === 0) {
                 console.log(chalk.yellow('没有项目需要提交或推送。'));
@@ -114,28 +115,23 @@ const commands = (
         usage: '<x>',
         description: '查看项目修改。如果超出20行，则用code打开。',
         requireList: true,
-        handler: async (args, ctx) => {
-            const item = ctx.getItem<ResultItem>(args[0]);
-            if (!item) {
-                console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
-                return;
-            }
-
+        handler: async (_args, item) => {
+            const fullPath = (item as ResultItem).fullPath;
             try {
-                const { stdout: status } = await execaCommand('git status --porcelain', { cwd: item.fullPath });
+                const { stdout: status } = await execaCommand('git status --porcelain', { cwd: fullPath });
                 if (!status.trim()) {
                     console.log(chalk.green('没有要提交的代码'));
                     return;
                 }
 
-                const { stdout: diff } = await execaCommand('git diff HEAD', { cwd: item.fullPath });
+                const { stdout: diff } = await execaCommand('git diff HEAD', { cwd: fullPath });
                 const lines = diff.split('\n');
 
                 if (lines.length > 20) {
                     const fileCount = status.trim().split('\n').length;
                     console.log(chalk.yellow(`修改了 ${fileCount} 个文件`));
-                    console.log(chalk.blue(`正在用 VS Code 打开: ${item.fullPath}`));
-                    await execaCommand(`code ${item.fullPath}`);
+                    console.log(chalk.blue(`正在用 VS Code 打开: ${fullPath}`));
+                    await execaCommand(`code ${fullPath}`);
                 } else {
                     console.log(diff);
                 }
@@ -149,12 +145,7 @@ const commands = (
         description: '查看项目是否有硬编码的文件',
         usage: '<x>',
         requireList: true,
-        handler: async (args, ctx) => {
-            const item = ctx.getItem<ResultItem>(args[0]);
-            if (!item) {
-                console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
-                return;
-            }
+        handler: async (_args, item: ResultItem) => {
             await checkHardcoded(item.fullPath);
         },
     },
@@ -163,12 +154,7 @@ const commands = (
         usage: '<x> <message>',
         description: '提交代码',
         requireList: true,
-        handler: async (args, ctx) => {
-            const item = ctx.getItem<ResultItem>(args[0]);
-            if (!item) {
-                console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
-                return;
-            }
+        handler: async (args, item: ResultItem) => {
             const message = args.slice(1).join(' ');
 
             try {
@@ -184,17 +170,12 @@ const commands = (
         usage: '[x]',
         description: '查看已提交未推送的commit',
         requireList: true,
-        handler: async (args, ctx) => {
+        handler: async (args, item: ResultItem) => {
             if (args.length > 0) {
-                const item = ctx.getItem<ResultItem>(args[0]);
-                if (!item) {
-                    console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
-                    return;
-                }
                 await printProjectLog(item);
             } else {
-                for (const item of ctx.list as ResultItem[]) {
-                    await printProjectLog(item);
+                for (const i of list) {
+                    await printProjectLog(i);
                 }
             }
         },
@@ -204,20 +185,16 @@ const commands = (
         usage: '<x> <message>',
         description: '部署代码',
         requireList: true,
-        handler: async (args, ctx) => {
-            const item = ctx.getItem<ResultItem>(args[0]);
-            if (!item) {
-                console.log(chalk.red('请输入有效的项目编号 (1-' + ctx.list!.length + ')'));
-                return;
-            }
+        handler: async (args, item: ResultItem) => {
             const message = args.slice(1).join(' ');
+            const fullPath = item.fullPath;
 
             try {
-                console.log(chalk.blue(`正在部署: ${item.fullPath.split('/').pop()} ...`));
-                await deployService({ current: true, commit: message, cwd: item.fullPath });
-                console.log(chalk.green(`部署成功: ${item.fullPath.split('/').pop()}`));
+                console.log(chalk.blue(`正在部署: ${fullPath.split('/').pop()} ...`));
+                await deployService({ current: true, commit: message, cwd: fullPath });
+                console.log(chalk.green(`部署成功: ${fullPath.split('/').pop()}`));
             } catch (e: any) {
-                console.log(chalk.red(`部署失败 (${item.fullPath.split('/').pop()}): ${e.message}`));
+                console.log(chalk.red(`部署失败 (${fullPath.split('/').pop()}): ${e.message}`));
             }
         },
     },
@@ -228,11 +205,13 @@ const commands = (
  * @param {ResultItem[]} list - 项目列表
  */
 const startRepl = (list: ResultItem[]) => {
-    createCommandReadline(commands(list, () => {}), {
-        prompt: 'git-scan> ',
-        exitCommand: 'exit',
-        items: list,
-    });
+    createCommandReadline(
+        commands(list, () => {}),
+        {
+            prompt: 'git-scan',
+            items: list,
+        },
+    );
 };
 
 export { getStatusMap, printProjectLog, commands, startRepl };
