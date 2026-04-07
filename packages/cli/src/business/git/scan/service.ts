@@ -4,6 +4,7 @@ import { logger } from '@/utils/logger';
 import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import { startRepl } from './commands';
 import type { ResultItem } from './types';
+import chalk from 'chalk';
 
 /**
  * 过滤需要处理的项目
@@ -11,9 +12,7 @@ import type { ResultItem } from './types';
  * @returns {ResultItem[]} - 过滤后的项目列表
  */
 const filterProjects = (items: ResultItem[]): ResultItem[] => {
-    return items.filter((item) =>
-        [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(item.status),
-    );
+    return items.filter((item) => [GitStatusMap.Uncommitted, GitStatusMap.Unpushed].includes(item.status));
 };
 
 /**
@@ -53,12 +52,12 @@ export const scanService = async () => {
             `${index + 1}. ${basename(item.fullPath)}`,
             item.fullPath,
             item.status === 1
-                ? '\x1b[31m未提交\x1b[0m'
+                ? chalk.red('未提交')
                 : item.status === 2
-                    ? '\x1b[33m未推送\x1b[0m'
-                    : item.status === 3
-                        ? '\x1b[32m正常\x1b[0m'
-                        : '\x1b[90m不在主分支上\x1b[0m',
+                  ? chalk.yellow('未推送')
+                  : item.status === 3
+                    ? chalk.green('正常')
+                    : chalk.gray('不在主分支上'),
             item.branchName,
         ],
     });
