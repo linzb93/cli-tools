@@ -1,3 +1,4 @@
+import axios from 'axios';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { readSecret } from '@cli-tools/shared';
@@ -5,7 +6,7 @@ import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
 
 const MINIMAX_API_BASE = 'https://www.minimaxi.com/v1/api/openplatform';
-let isRunMode = false;
+let isWatchMode = false;
 /**
  * 获取 Minimax API Token
  */
@@ -17,18 +18,14 @@ async function getToken(): Promise<string> {
  * 调用 Minimax API
  */
 async function fetchAPI<T>(endpoint: string, token: string): Promise<T> {
-    const response = await fetch(`${MINIMAX_API_BASE}${endpoint}`, {
+    const response = await axios.get<T>(`${MINIMAX_API_BASE}${endpoint}`, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
     });
 
-    if (!response.ok) {
-        throw new Error(`API 请求失败: ${response.status} ${response.statusText}`);
-    }
-
-    return response.json() as Promise<T>;
+    return response.data;
 }
 
 /**
@@ -45,15 +42,14 @@ function formatRemainsTime(ms: number): string {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
 
     if (hours > 0) {
-        return `${hours}h ${minutes}m`;
+        return `还有${chalk.magenta(`${hours}小时${minutes}分钟`)}`;
     }
     if (minutes > 0) {
-        return `${minutes}m ${seconds}s`;
+        return `还有${chalk.magenta(`${minutes}分钟`)}`;
     }
-    return `${seconds}s`;
+    return chalk.magenta('不到一分钟');
 }
 
 /**
@@ -94,24 +90,23 @@ function renderProgressBar(percentage: number, width: number = 40): string {
  * 渲染用量界面
  */
 function render(data: ParsedUsageData): void {
-    const { modelName, used, remaining, total, percentage, resetTime, remainsTime } = data;
-    const remainsText = formatRemainsTime(remainsTime);
-
+    const { used, remaining, total, percentage, remainsTime } = data;
     console.clear();
     console.log(chalk.bold.cyan('\n  Minimax 用量监控'));
     console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
     console.log();
-    console.log(chalk.white(`  模型: ${chalk.bold.yellow(modelName)}`));
+    console.log(`  ${renderProgressBar(percentage)} ${chalk.green(used)} / ${total}`);
     console.log();
-    console.log(chalk.white(`  当前周期用量: ${chalk.green(used)} / ${total}`));
-    console.log(`  ${renderProgressBar(percentage)} ${chalk.green(percentage.toFixed(1))}%`);
+    console.log(
+        chalk.white(
+            `  剩余额度: ${chalk.bold.cyan(remaining)}${chalk.cyan(`(${(100 - percentage).toFixed(1) + '%'})`)}`,
+        ),
+    );
     console.log();
-    console.log(chalk.white(`  剩余额度: ${chalk.bold.cyan(remaining)}`));
-    console.log();
-    console.log(chalk.gray(`  下次重置时间: ${resetTime} (${chalk.yellow(`还有 ${remainsText}`)})`));
+    console.log(chalk.gray(`  距离下次重置时间${formatRemainsTime(remainsTime)}`));
     console.log();
     console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
-    if (!isRunMode) {
+    if (isWatchMode) {
         console.log(
             chalk.gray(
                 `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 3 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,
@@ -144,10 +139,10 @@ function renderError(error: Error, lastData: ParsedUsageData | null): void {
  * 启动交互式监控
  */
 export async function minimaxService(options?: Options): Promise<() => void> {
-    isRunMode = !!options && options.watch;
+    isWatchMode = !!options && options.watch;
 
     // run 模式：直接获取并显示一次，然后退出
-    if (isRunMode) {
+    if (!isWatchMode) {
         let token: string;
         try {
             token = await getToken();

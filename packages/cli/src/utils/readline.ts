@@ -16,8 +16,15 @@ export interface ReadlineCommand {
     usage?: string;
     /** 是否需要项目列表上下文（用于命令如 diff/commit/log/push） */
     requireList?: boolean;
-    handler: (args: string[], ctx: ReadlineCommandContext) => void | Promise<void>;
+    handler: (args: string[], item: any) => void | Promise<void>;
 }
+
+export interface CommandCompleteContext {
+    rl: readline.Interface;
+    command: string;
+}
+
+export type CommandCompleteCallback = (ctx: CommandCompleteContext) => void | Promise<void>;
 
 interface CommandReadlineOptions {
     prompt?: string;
@@ -27,6 +34,8 @@ interface CommandReadlineOptions {
     exitCommand?: string;
     /** 项目列表（可选），传入后命令上下文中会自动包含 getItem 方法 */
     items?: unknown[];
+    /** 命令执行完成后的回调（除 exit 外） */
+    onComplete?: CommandCompleteCallback;
 }
 
 interface ParsedSlashCommand {
@@ -87,8 +96,8 @@ export function createCommandReadline(
     commands: ReadlineCommand[],
     options: CommandReadlineOptions = {},
 ): Promise<void> {
-    const prompt = options.prompt ?? '> ';
-    const exitCommand = options.exitCommand ?? 'exit';
+    const prompt = `${options.prompt || ''}> `;
+    const exitCommand = options.exitCommand || 'exit';
     const { items } = options;
 
     const commandMap = new Map<string, ReadlineCommand>();
@@ -122,12 +131,6 @@ export function createCommandReadline(
             return null;
         }
         return items[index - 1] as T;
-    };
-
-    const ctxBase: ReadlineCommandContext = {
-        rl,
-        getItem,
-        list: items,
     };
 
     const handleLine = async (line: string): Promise<void> => {
@@ -166,15 +169,40 @@ export function createCommandReadline(
             }
         }
 
+        // requireList 模式下自动校验 item
+        let item: unknown = null;
+        if (cmd.requireList) {
+            if (!items) {
+                console.log(chalk.red(`命令 /${cmd.name} 需要项目列表`));
+                rl.prompt();
+                return;
+            }
+            if (parsed.args.length === 0) {
+                console.log(chalk.red(`参数不足: /${cmd.name} ${cmd.usage}`));
+                rl.prompt();
+                return;
+            }
+            item = getItem(parsed.args[0]);
+            if (!item) {
+                console.log(chalk.red(`请输入有效的项目编号 (1-${items.length})`));
+                rl.prompt();
+                return;
+            }
+        }
+
         rl.pause();
         try {
-            await cmd.handler(parsed.args, { ...ctxBase, line });
+            await cmd.handler(parsed.args, item);
         } catch (err) {
             console.log(chalk.red(`命令执行失败: /${cmd.name}`));
             console.log(String(err));
         } finally {
             rl.resume();
             rl.prompt();
+            // 命令完成后触发回调（除了 exit 命令）
+            if (cmd && parsed.command !== exitCommand) {
+                await options.onComplete?.({ rl, command: cmd.name });
+            }
         }
     };
 
