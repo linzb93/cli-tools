@@ -100,7 +100,7 @@ async function executeCommand(config: CommandConfig, options: { cwd?: string } =
     await retryAsync(
         async () => {
             try {
-                const { stdout } = await execa(config.message, { cwd });
+                const { stdout } = await execa(config.message, { cwd, stripColor: false });
                 if (stdout) {
                     console.log(stdout);
                 }
