@@ -132,9 +132,12 @@ function registerCommands() {
     });
 
     // npm 子命令
-    program.command('npm <sub-command>').action((subCommand) => {
-        import('./commands/npm').then((m) => m.npmCommand(subCommand));
-    });
+    program
+        .command('npm <sub-command> [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest) => {
+            import('./commands/npm').then((m) => m.npmCommand(subCommand, rest));
+        });
 
     // occ 命令
     program

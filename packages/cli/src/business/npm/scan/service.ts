@@ -47,6 +47,17 @@ const isVersionLower = (current: string, target: string): boolean => {
 };
 
 /**
+ * 获取版本的主版本号
+ * @param version - 版本字符串
+ * @returns 主版本号数字
+ */
+const getMajorVersion = (version: string): number => {
+    const ver = extractVersion(version);
+    const major = parseInt(ver.split('.')[0], 10);
+    return isNaN(major) ? 0 : major;
+};
+
+/**
  * 扫描单个项目的 npm 依赖
  * @param dirInfo - 目录信息
  * @param packageName - 要扫描的包名
@@ -90,16 +101,25 @@ const scanProject = async (
         if (!targetVersions || targetVersions.length === 0) {
             status = 'found';
         } else {
-            // 检查是否符合问题条件
-            // 1. 没锁版本且低于传入版本
-            // 2. 锁了版本但是正好是传入版本
-            const isLower = targetVersions.some((target) => isVersionLower(currentVersion!, target));
-            const isExactMatch = targetVersions.includes(currentVersion!);
+            // 检查主版本号是否匹配
+            const currentMajor = getMajorVersion(currentVersion!);
+            const hasMatchingMajor = targetVersions.some((target) => getMajorVersion(target) === currentMajor);
 
-            if ((!isLocked && isLower) || (isLocked && isExactMatch)) {
-                status = 'problem';
+            // 主版本号不匹配，不纳入问题范围
+            if (!hasMatchingMajor) {
+                status = 'not-found';
             } else {
-                status = 'found';
+                // 检查是否符合问题条件
+                // 1. 没锁版本且低于传入版本
+                // 2. 锁了版本但是正好是传入版本
+                const isLower = targetVersions.some((target) => isVersionLower(currentVersion!, target));
+                const isExactMatch = targetVersions.includes(currentVersion!);
+
+                if ((!isLocked && isLower) || (isLocked && isExactMatch)) {
+                    status = 'problem';
+                } else {
+                    status = 'found';
+                }
             }
         }
 

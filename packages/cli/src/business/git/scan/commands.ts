@@ -212,71 +212,9 @@ const commands = (list: ResultItem[], onRestart: () => void): ReadlineCommand[] 
  */
 const startRepl = (list: ResultItem[]) => {
     const cmds = commands(list, () => {});
-
-    // 显示命令帮助
-    const displayHelp = () => {
-        const displayLines: string[] = [];
-        for (const cmd of cmds) {
-            const usage = cmd.usage ? ` ${cmd.usage}` : '';
-            const desc = cmd.description ? ` - ${cmd.description}` : '';
-            displayLines.push(`/${cmd.name}${usage}${desc}`);
-        }
-        displayLines.push('/exit - 退出');
-        console.log(chalk.yellow(displayLines.join('\n')));
-    };
-
-    const onComplete: CommandCompleteCallback = async ({ command }: CommandCompleteContext) => {
-        // restart 命令已经有自己的刷新逻辑，跳过
-        if (command === 'restart') return;
-
-        // 延迟 1 秒
-        await sleep(1000);
-
-        // 重新扫描所有项目
-        const newList = await pMap(
-            list,
-            async (item): Promise<ResultItem> => {
-                try {
-                    const { status, branchName } = await getGitProjectStatus(item.fullPath);
-                    return { ...item, status, branchName };
-                } catch {
-                    return item;
-                }
-            },
-            { concurrency: 4 },
-        );
-
-        // 更新列表（只保留需要处理的项目）
-        list.length = 0;
-        list.push(
-            ...newList.filter((item) =>
-                [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(item.status),
-            ),
-        );
-
-        // 重新显示表格
-        if (list.length === 0) {
-            console.log(chalk.yellow('没有项目需要提交或推送。'));
-        } else {
-            printResultTable(list, {
-                head: ['名称', '地址', '状态', '分支'],
-                map: (item, index) => [
-                    `${index + 1}. ${item.fullPath.split('/').pop()}`,
-                    item.fullPath,
-                    getStatusMap(item.status),
-                    item.branchName,
-                ],
-            });
-        }
-
-        // 显示命令帮助
-        displayHelp();
-    };
-
     createCommandReadline(cmds, {
         prompt: 'git-scan',
         items: list,
-        onComplete,
     });
 };
 
