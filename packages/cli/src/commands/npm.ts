@@ -1,7 +1,3 @@
-import { hasService, type Options as HasOptions } from '@/business/npm/has';
-import { uninstallService, type Options as UninstallOptions } from '@/business/npm/uninstall';
-import { searchService, type Options as SearchOptions } from '@/business/npm/search';
-import { scanService } from '@/business/npm/scan';
 import { subCommandCompiler } from '@/utils';
 
 /**
@@ -17,8 +13,8 @@ export const npmCommand = function (subCommand: string, nextCommand?: string): v
                 .description('检查本地是否安装了指定的 npm 包')
                 .option('--dev', '检查 devDependencies')
                 .option('--global', '检查全局安装的包')
-                .action((name: string, options: HasOptions) => {
-                    hasService([name], options);
+                .action((name: string, options) => {
+                    import('@/business/npm/has').then((module) => module.hasService([name], options));
                 });
         });
         return;
@@ -30,8 +26,8 @@ export const npmCommand = function (subCommand: string, nextCommand?: string): v
                 .description('搜索 npm 包信息')
                 .option('--open', '在浏览器中打开包页面')
                 .option('--full', '显示完整信息（包含描述）')
-                .action((names: string[], options: SearchOptions) => {
-                    searchService(names, options);
+                .action((names: string[], options) => {
+                    import('@/business/npm/search').then((module) => module.searchService(names, options));
                 });
         });
         return;
@@ -42,8 +38,8 @@ export const npmCommand = function (subCommand: string, nextCommand?: string): v
                 .command('uninstall <name>')
                 .description('卸载本地 npm 包')
                 .option('--global', '卸载全局安装的包')
-                .action((name: string, options: UninstallOptions) => {
-                    uninstallService([name], options);
+                .action((name: string, options) => {
+                    import('@/business/npm/uninstall').then((module) => module.uninstallService([name], options));
                 });
         });
         return;
@@ -56,7 +52,9 @@ export const npmCommand = function (subCommand: string, nextCommand?: string): v
                 .requiredOption('--package <name>', '要扫描的包名')
                 .option('--version <versions>', '目标版本，多个用逗号分隔')
                 .action((options: { package: string; version?: string }) => {
-                    scanService(options.package, options.version);
+                    import('@/business/npm/scan').then((module) =>
+                        module.scanService(options.package, options.version),
+                    );
                 });
         });
         return;

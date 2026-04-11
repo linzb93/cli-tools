@@ -182,10 +182,33 @@ export const scanService = async (packageName: string, versionStr?: string) => {
             logger.success('恭喜！没有发现问题项目。');
             return;
         }
+
+        // 按主版本号分组
+        const groupedByMajor = new Map<number, ScanResultItem[]>();
+        for (const item of problemList) {
+            const major = getMajorVersion(item.currentVersion || '');
+            if (!groupedByMajor.has(major)) {
+                groupedByMajor.set(major, []);
+            }
+            groupedByMajor.get(major)!.push(item);
+        }
+
+        // 按主版本号排序输出，合并在一个 Table
+        const sortedMajors = Array.from(groupedByMajor.keys()).sort((a, b) => a - b);
+        const allItems: ScanResultItem[] = [];
+        for (const major of sortedMajors) {
+            const items = groupedByMajor.get(major)!;
+            allItems.push(...items);
+        }
         console.log(chalk.yellow(`\n发现 ${problemList.length} 个问题项目：\n`));
-        printResultTable(problemList, {
-            head: ['序号', '路径', '当前版本'],
-            map: (item, index) => [`${index + 1}`, item.fullPath, item.currentVersion || '-'],
+        printResultTable(allItems, {
+            head: ['序号', '主版本', '路径', '当前版本'],
+            map: (item, index) => [
+                `${index + 1}`,
+                `v${getMajorVersion(item.currentVersion || '')}`,
+                item.fullPath,
+                item.currentVersion || '-',
+            ],
         });
     } else {
         // 没有目标版本时，显示所有使用该包的项目
