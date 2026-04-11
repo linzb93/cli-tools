@@ -1,0 +1,12 @@
+export const serverConfig = {
+    port: {
+        development: 6543,
+        development_fe: 6547,
+        production: 9527,
+    },
+    prefix: {
+        static: 'fe',
+        temp: '/temp',
+        api: '/api',
+    },
+};

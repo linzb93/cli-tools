@@ -7,7 +7,7 @@ import type { Application } from 'express';
 import express from 'express';
 import { useAI } from '@/utils/ai/implementation';
 import { logger } from '@/utils/logger';
-import globalConfig from '../../../../../config.json';
+import { serverConfig } from '@cli-tools/shared';
 import { objectToCmdOptions } from '@/utils/helper';
 
 export interface StartStaticServerOptions {
@@ -79,7 +79,7 @@ ${configContent.substring(0, 2000)}`;
 
 export const startStaticServer = async ({ cwd, reqApp }: StartStaticServerOptions): Promise<{ url: string }> => {
     const publicPath = await extractPublicPath(cwd);
-    const ip = await internalIp.v4() || '127.0.0.1';
+    const ip = (await internalIp.v4()) || '127.0.0.1';
 
     if (!publicPath || publicPath === '/') {
         // 分配新端口启动独立的静态服务
@@ -89,7 +89,7 @@ export const startStaticServer = async ({ cwd, reqApp }: StartStaticServerOption
                 objectToCmdOptions({
                     cwd,
                     publicPath: '/',
-                    port: 0 // let detect-port auto-allocate
+                    port: 0, // let detect-port auto-allocate
                 }),
                 {
                     detached: true,
@@ -116,21 +116,21 @@ export const startStaticServer = async ({ cwd, reqApp }: StartStaticServerOption
             // 在 Server 环境下，复用主服务
             const distPath = join(cwd, 'dist');
             reqApp.use(publicPath, express.static(distPath));
-            const port = globalConfig.port.production || 9527;
+            const port = serverConfig.port.production || 9527;
             const url = `http://${ip}:${port}${publicPath}`;
             return { url };
         } else {
             // 在 CLI 环境下，调用 Server 接口挂载
-            const port = globalConfig.port.production || 9527;
+            const port = serverConfig.port.production || 9527;
             try {
                 const response = await fetch(`http://127.0.0.1:${port}/api/vue/start`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ path: cwd })
+                    body: JSON.stringify({ path: cwd }),
                 });
-                
+
                 if (response.ok) {
-                    const data = await response.json() as { success?: boolean; url?: string; error?: string };
+                    const data = (await response.json()) as { success?: boolean; url?: string; error?: string };
                     if (data.success && data.url) {
                         return { url: data.url };
                     }
@@ -145,7 +145,7 @@ export const startStaticServer = async ({ cwd, reqApp }: StartStaticServerOption
                         objectToCmdOptions({
                             cwd,
                             publicPath,
-                            port: 0
+                            port: 0,
                         }),
                         {
                             detached: true,

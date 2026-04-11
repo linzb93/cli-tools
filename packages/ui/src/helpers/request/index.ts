@@ -1,15 +1,15 @@
-import { ref, shallowRef } from 'vue'
-import axios from 'axios'
-import { loading } from '../util'
-import globalConfig from '../../../../../config.json'
+import { ref, shallowRef } from 'vue';
+import axios from 'axios';
+import { loading } from '../util';
+import { serverConfig } from '@cli-tools/shared/';
 interface Option {
-  showLoading?: boolean
+  showLoading?: boolean;
 }
-export const baseURL = `http://localhost:${globalConfig.port.production}${globalConfig.prefix.api}`
+export const baseURL = `http://localhost:${serverConfig.port.production}${serverConfig.prefix.api}`;
 const service = axios.create({
   baseURL,
   timeout: 60000
-})
+});
 
 export default async function doRequest<T = any>(
   path: string,
@@ -17,34 +17,34 @@ export default async function doRequest<T = any>(
   options?: Option
 ): Promise<T> {
   if (options?.showLoading) {
-    loading.open()
+    loading.open();
   }
   const response = await service({
     method: 'POST',
     url: path,
     data: params
-  })
+  });
   if (options?.showLoading) {
-    loading.close()
+    loading.close();
   }
-  const res = response.data
+  const res = response.data;
   if (res.code !== 200) {
-    return Promise.reject(res)
+    return Promise.reject(res);
   }
-  return res.result
+  return res.result;
 }
 
 // hook
 export function useRequest<T = any>(path: string, params?: any, options?: Option) {
-  const loaded = shallowRef(false)
-  const result = ref<T>()
+  const loaded = shallowRef(false);
+  const result = ref<T>();
   return {
     loaded,
     result,
     async fetch() {
-      const res = await doRequest(path, params, options)
-      loaded.value = true
-      result.value = res
+      const res = await doRequest(path, params, options);
+      loaded.value = true;
+      result.value = res;
     }
-  }
+  };
 }

@@ -7,12 +7,12 @@ import chalk from 'chalk';
 import { root, sql } from '@cli-tools/shared';
 import { killService } from '../kill';
 import inquirer from '@/utils/inquirer';
-import globalConfig from '../../../../../config.json';
+import { serverConfig } from '@cli-tools/shared';
 import type { Options } from './types';
 
 const openPage = async (options?: Options) => {
     if (options?.open) {
-        await open(`http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}`);
+        await open(`http://localhost:${serverConfig.port.production}/${serverConfig.prefix.static}`);
         return;
     }
     if (options?.menu) {
@@ -32,12 +32,12 @@ const openPage = async (options?: Options) => {
         } else {
             menu = options.menu as string;
         }
-        await open(`http://localhost:${globalConfig.port.production}/${globalConfig.prefix.static}/#${menu}`);
+        await open(`http://localhost:${serverConfig.port.production}/${serverConfig.prefix.static}/#${menu}`);
     }
 };
 
 export const server = async (command?: string, options?: Options) => {
-    const port = globalConfig.port.production;
+    const port = serverConfig.port.production;
     if (command === 'stop') {
         killService('port', port, {
             log: true,
@@ -62,7 +62,7 @@ export const server = async (command?: string, options?: Options) => {
             if (msgObj.type === 'server-start') {
                 console.log(
                     `${chalk.yellow(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`)} 服务在${
-                        globalConfig.port.production
+                        serverConfig.port.production
                     }端口启动。`,
                 );
                 await openPage(options);
