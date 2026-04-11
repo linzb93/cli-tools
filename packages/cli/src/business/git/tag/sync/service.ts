@@ -1,6 +1,6 @@
 import { execa } from 'execa';
 import { logger } from '@/utils/logger';
-import { executeCommands, CommandConfig } from '@/utils/promise';
+import { executeCommands, CommandConfig } from '@/utils/execuate-command-line';
 import { isGitProject, getAllTags } from '../../shared/utils';
 
 const fetchTags = (): CommandConfig => {

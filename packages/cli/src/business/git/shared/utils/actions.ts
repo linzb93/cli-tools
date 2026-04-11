@@ -1,4 +1,4 @@
-import { executeCommands, CommandConfig } from '@/utils/promise';
+import { executeCommands, CommandConfig } from '@/utils/execuate-command-line';
 import inquirer from '@/utils/inquirer';
 
 /**

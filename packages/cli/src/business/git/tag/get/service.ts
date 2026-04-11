@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import clipboardy from 'clipboardy';
 import { logger } from '@/utils/logger';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands } from '@/utils/execuate-command-line';
 import { isGitProject, getAllTags } from '../../shared/utils';
 import { getProjectName } from '../../shared/utils/jenkins';
 import type { TagGetOptions as Options, VersionInfo } from '../types';

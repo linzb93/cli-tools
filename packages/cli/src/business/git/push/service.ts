@@ -1,7 +1,7 @@
 import { logger } from '@/utils/logger';
 import { isGitProject, getCurrentBranchName, isCurrenetBranchPushed } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands } from '@/utils/execuate-command-line';
 import chalk from 'chalk';
 import type { Options } from './types';
 

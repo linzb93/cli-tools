@@ -12,7 +12,7 @@ import {
 import { getGitLogData } from '../log';
 import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands } from '@/utils/execuate-command-line';
 import { checkHardcoded } from '../shared/utils/hard-coded';
 import { deployService } from '../deploy';
 import type { ResultItem } from './types';

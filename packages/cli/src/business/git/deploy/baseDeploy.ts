@@ -1,5 +1,5 @@
 import { execaCommand as execa } from 'execa';
-import { executeCommands } from '@/utils/promise';
+import { executeCommands } from '@/utils/execuate-command-line';
 import gitActions from '../shared/utils/actions';
 import {
     getCurrentBranchName,

@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger';
-import { executeCommands, type Command } from '@/utils/promise';
+import { executeCommands, type Command } from '@/utils/execuate-command-line';
 import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';

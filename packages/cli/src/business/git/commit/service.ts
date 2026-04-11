@@ -1,7 +1,7 @@
 import { logger } from '@/utils/logger';
 import { isGitProject } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
-import { executeCommands, type Command } from '@/utils/promise';
+import { executeCommands, type Command } from '@/utils/execuate-command-line';
 import { checkHardcoded } from '../shared/utils/hard-coded';
 import type { Options } from './types';
 
