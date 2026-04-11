@@ -1,9 +1,9 @@
 import { join } from 'node:path';
-import fs from 'fs-extra';
 import chalk from 'chalk';
 import { cacheRoot } from '@cli-tools/shared';
 import { levelCharacters } from '@/constant';
 import { logger } from '@/utils/logger';
+import { parseLogDir } from '@/utils/files/log';
 import type { TimePeriod, CliAnalyseOptions } from './types';
 
 /**
@@ -75,13 +75,13 @@ const getTimeFilterRange = (period: TimePeriod): { start: Date; end: Date } | nu
  * @param record 记录对象
  * @returns 解析结果
  */
-const parseRecord = (record: { time: string; command: string }) => {
-    const command = record.command;
+const parseRecord = (record: { createAt: Date; content: string }) => {
+    const command = record.content;
     const cmdMatch = command.match(/^([a-z]+)\s*([a-z]*)/);
     const cmd = cmdMatch ? cmdMatch[1] : '';
     const subCmd = ['git', 'npm', 'ai'].includes(cmd) && cmdMatch ? cmdMatch[2] : '';
     return {
-        time: record.time,
+        time: record.createAt,
         cmd,
         message: !cmd ? command : '',
         subCmd,
@@ -94,40 +94,15 @@ const parseRecord = (record: { time: string; command: string }) => {
 export const cliAnalyseService = async (options: CliAnalyseOptions = {}) => {
     const period = options.period || 'all';
     const trackDir = join(cacheRoot, 'track');
-    const files = (await fs.readdir(trackDir)).filter((file) => file.endsWith('.log')).sort();
-    const records: Array<{ time: string; command: string }> = [];
+    const allRecords = await parseLogDir(trackDir);
 
     // 获取时间过滤范围
     const filterRange = getTimeFilterRange(period);
 
-    for (const file of files) {
-        const content = await fs.readFile(join(trackDir, file), 'utf8');
-        const fileRecords: Array<{ time: string; command: string }> = [];
-
-        const lines = content.split('\n').filter((line) => line.trim() !== '');
-        for (const line of lines) {
-            const match = line.match(/^\[(.*?)\]\s+(.*)$/);
-            if (match) {
-                fileRecords.push({
-                    time: match[1],
-                    command: match[2],
-                });
-            } else {
-                console.warn(`解析文件 ${file} 中的行失败:`, line);
-            }
-        }
-
-        // 如果时间过滤启用，只保留在指定时间范围内的记录
-        if (filterRange) {
-            const filteredRecords = fileRecords.filter((record) => {
-                const lineDate = new Date(record.time);
-                return lineDate >= filterRange.start && lineDate <= filterRange.end;
-            });
-            records.push(...filteredRecords);
-        } else {
-            records.push(...fileRecords);
-        }
-    }
+    // 如果时间过滤启用，只保留在指定时间范围内的记录
+    const records = filterRange
+        ? allRecords.filter((record) => record.createAt >= filterRange.start && record.createAt <= filterRange.end)
+        : allRecords;
 
     const errorMessages = [];
     const result = records.reduce<{ cmd: string; count: number; children: { cmd: string; count: number }[] }[]>(
@@ -176,7 +151,7 @@ export const cliAnalyseService = async (options: CliAnalyseOptions = {}) => {
     });
     const firstRecord = records[0];
     const periodText = getPeriodText(period);
-    console.log(`${periodText}从${chalk.magenta(firstRecord ? firstRecord.time : 'N/A')}至现在，cli共使用${chalk.hex(
+    console.log(`${periodText}从${chalk.magenta(firstRecord ? firstRecord.createAt.toISOString() : 'N/A')}至现在，cli共使用${chalk.hex(
         '#ffa500',
     )(records.length)}次。各命令使用情况如下：
 ${result

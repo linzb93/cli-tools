@@ -1,4 +1,4 @@
-import { resolve } from 'node:path';
+import { resolve, extname as extnameNode } from 'node:path';
 import fs, { Stats as FSStats } from 'fs-extra';
 import bytes from 'bytes';
 import axios, { AxiosResponse } from 'axios';
@@ -7,23 +7,21 @@ import through from 'through2';
 import { deleteAsync as del } from 'del';
 import { logger } from '@/utils/logger';
 import { isURL, emptyWritableStream } from '@/utils/helper';
+import { isImage } from '@/utils/image';
 import { root } from '@cli-tools/shared';
 import { Options, Dimensions } from './types';
-
-/**
- * 获取图片的后缀名
- * @param {string} filename - 文件名
- * @returns {string} - 图片的后缀名
- */
-const getExtname = (filename: string): string => {
-    return ['.jpg', '.png', '.webp', '.gif'].find((ext) => filename.includes(ext)) || '.png';
-};
 
 export const sizeService = async (filePath: string, options: Options) => {
     if (isURL(filePath)) {
         let res: AxiosResponse;
         // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
         filePath = filePath.replace(/\s/g, ',');
+
+        if (!isImage(filePath)) {
+            logger.error('文件地址不是图片格式');
+            return;
+        }
+
         try {
             res = await axios.get(filePath, {
                 responseType: 'stream',
@@ -33,7 +31,7 @@ export const sizeService = async (filePath: string, options: Options) => {
             return;
         }
         let size = 0;
-        const extname = getExtname(filePath);
+        const extname = extnameNode(filePath);
         const targetName = resolve(root, `cache/temp/getSizeImage${extname}`);
         const settingRect = options.rect;
         await new Promise((resolve) => {

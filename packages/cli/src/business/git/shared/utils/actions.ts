@@ -49,7 +49,7 @@ export function formatCommitMessage(rawCommit: string): string {
         },
         {
             value: 'refactor',
-            key: ['重构', '优化', 'refactor', 'improve', 'optimize'],
+            key: ['重构', '优化', 'refactor', 'improve', 'optimize', '迁移'],
         },
         {
             value: 'fix',

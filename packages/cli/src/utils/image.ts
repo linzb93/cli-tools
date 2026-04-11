@@ -4,6 +4,10 @@ import { readSecret } from '@cli-tools/shared';
 import { join } from 'node:path';
 import slash from 'slash';
 import { type Readable } from 'node:stream';
+import { execaCommand as execa } from 'execa';
+import { isWin, cmdName, parseJSON, getExecutePath } from '@cli-tools/shared';
+
+const pythonExecutePath = getExecutePath(`image-clipboard-${isWin ? 'win' : 'mac'}`);
 type Params =
     | {
           type: 'url';
@@ -50,4 +54,28 @@ export const imageBase64ToStream = (base64: string) => {
  */
 export const imageBase64ToBuffer = (base64: string) => {
     return Buffer.from(base64, 'base64');
+};
+
+/**
+ * 检查URL是否为图片
+ * @param url URL字符串
+ * @returns 是否为图片
+ */
+export const isImage = (url: string) => {
+    return ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'].some((ext) => url.endsWith(ext));
+};
+
+export const imageClipboard = {
+    /**
+     * 读取剪贴板图片
+     * @returns {Promise<string>} base64格式的图片
+     */
+    async read(): Promise<string> {
+        const { stdout } = await execa(`${cmdName} ${pythonExecutePath} --type=read`);
+        const data = parseJSON(stdout);
+        if (data.success === 'true') {
+            return data.data;
+        }
+        throw new Error(data.message);
+    },
 };
