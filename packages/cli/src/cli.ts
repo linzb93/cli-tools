@@ -238,6 +238,15 @@ function registerCommands() {
         .action((option) => {
             import('./commands/vue').then((m) => m.vueCommand(option));
         });
+
+    // fetch 命令
+    program
+        .command('fetch <url> [data]')
+        .option('-c, --clipboard', '从剪贴板读取请求数据')
+        .option('-m, --method <method>', 'HTTP 方法', 'post')
+        .action((url, data, options) => {
+            import('./commands/fetch').then((m) => m.fetchCommand(url, data, options));
+        });
 }
 
 // 注册所有命令
