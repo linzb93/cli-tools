@@ -1,11 +1,11 @@
 import { openDeployPage } from '../shared/utils/jenkins';
 import { tagService, Options as TagOptions } from '../tag/get';
 import { sleep } from '@linzb93/utils';
-import path from 'node:path';
-import fs from 'fs-extra';
+import { readPackage } from 'read-pkg';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
-import { DeployOptions, executeBaseManagers, mergeToBranch } from './baseDeploy';
+import { executeBaseManagers, mergeToBranch } from './baseDeploy';
+import type { DeployOptions } from './types';
 
 /**
  * 处理标签和输出信息
@@ -19,11 +19,8 @@ const handleTagAndOutput = async (options: DeployOptions, readFromPackage: boole
     // 如果没有指定version，且允许读取package.json，尝试从package.json读取
     if (!version && readFromPackage) {
         try {
-            const pkgPath = path.resolve(process.cwd(), 'package.json');
-            if (await fs.pathExists(pkgPath)) {
-                const pkg = await fs.readJson(pkgPath);
-                version = pkg.version;
-            }
+            const pkg = await readPackage();
+            version = pkg.version;
         } catch (error) {
             // 读取失败则忽略，保持version为undefined
         }

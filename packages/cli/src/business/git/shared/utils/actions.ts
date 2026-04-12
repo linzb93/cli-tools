@@ -225,10 +225,28 @@ function clone(repo: string, dir?: string): CommandConfig {
     };
 }
 
+/**
+ * 生成 Git 切换分支命令配置
+ * @param {string} branch - 要切换的分支名称
+ * @param {boolean} [createBranch] - 是否创建并切换到新分支
+ * @returns {CommandConfig} Git 切换分支命令配置对象
+ */
+function checkout(branch: string, createBranch?: boolean): CommandConfig {
+    return {
+        message: createBranch ? `git checkout -b ${branch}` : `git checkout ${branch}`,
+        onError: async () => {
+            return {
+                shouldStop: true,
+            };
+        },
+    };
+}
+
 export default {
     commit,
     pull,
     merge,
     push,
     clone,
+    checkout,
 };

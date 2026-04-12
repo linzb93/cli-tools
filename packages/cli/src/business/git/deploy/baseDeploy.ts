@@ -13,44 +13,7 @@ import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
 import { checkHardcoded } from '../shared/utils/hard-coded';
 import { getDeployCwd } from './context';
-
-/**
- * Deploy命令选项接口
- */
-export interface DeployOptions {
-    /**
-     * 是否发布到master或main分支
-     * @default false
-     */
-    prod?: boolean;
-    /**
-     * 项目类型，用于标记tag
-     */
-    type?: string;
-    /**
-     * 项目版本号，用于标记tag
-     */
-    version?: string;
-    /**
-     * 是否打开对应的jenkins主页
-     * @default false
-     */
-    open?: boolean;
-    /**
-     * git commit提交信息
-     */
-    commit: string;
-    /**
-     * 仅完成基础命令后结束任务
-     * @default false
-     */
-    current?: boolean;
-    /**
-     * 工作目录路径，不作为命令行选项传入
-     * @default process.cwd()
-     */
-    cwd?: string;
-}
+import type { DeployOptions } from './types';
 
 /**
  * 检查是否有未提交的更改
@@ -130,12 +93,12 @@ export const mergeToBranch = async (
 
     try {
         // 保存当前分支
-        await execa(`git checkout ${targetBranch}`, { cwd });
+        await executeCommands([gitActions.checkout(targetBranch)], { cwd });
         await executeCommands([gitActions.pull(), gitActions.merge(currentBranch), gitActions.push()], { cwd });
 
         // 根据参数决定是否切回原分支
         if (switchBackToBranch) {
-            await execa(`git checkout ${currentBranch}`, { cwd });
+            await executeCommands([gitActions.checkout(currentBranch)], { cwd });
         }
 
         logger.success(`代码已成功合并到 ${targetBranch} 分支`);
@@ -143,7 +106,7 @@ export const mergeToBranch = async (
         // 如果需要切换回原始分支，并且出现错误
         if (switchBackToBranch) {
             try {
-                await execa(`git checkout ${currentBranch}`, { cwd });
+                await executeCommands([gitActions.checkout(currentBranch)], { cwd });
             } catch (checkoutError) {
                 logger.error('切回原始分支失败');
             }

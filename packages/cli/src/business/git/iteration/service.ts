@@ -3,6 +3,7 @@ import { executeCommands, type Command } from '@/utils/execuate-command-line';
 import fs from 'fs-extra';
 import path from 'node:path';
 import semver from 'semver';
+import { readPackageSync } from 'read-pkg';
 import chalk from 'chalk';
 import gitActions from '../shared/utils/actions';
 import { getGitProjectStatus, GitStatusMap, getMainBranchName, checkBranchExist } from '../shared/utils';
@@ -90,7 +91,7 @@ const prepareMainBranch = async (): Promise<{ mainBranch: string; currentBranch:
             await runGitCommands(['git add .', gitActions.commit('save uncommitted changes before iteration')]);
         }
         logger.info(`切换到主干分支 ${mainBranch} 并拉取最新代码...`);
-        await runGitCommands([`git checkout ${mainBranch}`, gitActions.pull()]);
+        await runGitCommands([gitActions.checkout(mainBranch), gitActions.pull()]);
     } else {
         // 已经在主分支，拉取前检查是否有未提交代码
         if (gitStatus.status === GitStatusMap.Uncommitted) {
@@ -227,9 +228,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             if (isDebug) {
                 logger.info(`跳过切换分支操作`);
             } else {
-                const cmd = isBranchExist
-                    ? `git checkout -b ${context.targetBranch}`
-                    : `git checkout ${context.targetBranch}`;
+                const cmd = gitActions.checkout(context.targetBranch, !isBranchExist);
                 logger.info(`切换到 ${context.targetBranch} 分支...`);
                 await runGitCommands([cmd]);
             }
@@ -239,7 +238,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
                 await strategy.validate(context);
             }
             logger.info(`基于主干创建并切换到 ${context.targetBranch} 分支...`);
-            await runGitCommands([`git checkout -b ${context.targetBranch}`]);
+            await runGitCommands([gitActions.checkout(context.targetBranch, true)]);
         }
 
         // 3. 更新版本号

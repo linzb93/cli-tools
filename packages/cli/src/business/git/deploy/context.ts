@@ -12,4 +12,4 @@ export const setDeployCwd = (cwd: string) => {
  * 获取 deploy 命令的工作目录
  * @returns {string} 工作目录路径
  */
-export const getDeployCwd = () => currentCwd;
+export const getDeployCwd = (): string => currentCwd;

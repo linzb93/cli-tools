@@ -1,6 +1,7 @@
 import { basename, join } from 'node:path';
 import fsp from 'node:fs/promises';
 import chalk from 'chalk';
+import { readPackageSync } from 'read-pkg';
 import { expandWorkDirs, scanDirs, printResultTable } from '@/utils/scan';
 import { logger } from '@/utils/logger';
 import type { ScanResultItem } from './types';
@@ -71,10 +72,7 @@ const scanProject = async (
 ): Promise<ScanResultItem | null> => {
     const fullPath = join(dirInfo.prefix, dirInfo.dir);
     try {
-        const packageJsonPath = join(fullPath, 'package.json');
-        const packageJsonContent = await fsp.readFile(packageJsonPath, 'utf-8');
-        const packageJson = JSON.parse(packageJsonContent);
-
+        const packageJson = readPackageSync({ cwd: fullPath });
         const deps = packageJson.dependencies || {};
         const devDeps = packageJson.devDependencies || {};
 

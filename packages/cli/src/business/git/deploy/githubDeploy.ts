@@ -2,9 +2,9 @@ import { executeCommands } from '@/utils/execuate-command-line';
 import gitActions from '../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import { logger } from '@/utils/logger';
-import { DeployOptions, mergeToBranch, hasChanges } from './baseDeploy';
+import { mergeToBranch, hasChanges } from './baseDeploy';
 import { checkHardcoded } from '../shared/utils/hard-coded';
-
+import type { DeployOptions } from './types';
 /**
  * 执行 Github 项目的基础 Git 命令（优先 Push 策略）
  * @param {string} commitMessage - 提交信息

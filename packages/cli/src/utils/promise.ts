@@ -33,11 +33,19 @@ interface RetryOptions {
 export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
     const { maxAttempts = 10, onFail } = options;
     let attempt = 1;
+    let firstFailTime: number | null = null;
 
     while (attempt <= maxAttempts) {
         try {
             return await fn();
         } catch (error) {
+            const now = Date.now();
+            firstFailTime = now;
+            if (now - firstFailTime < 1000) {
+                // 下一次失败与上一次失败间隔小于1秒，直接抛出错误
+                throw error instanceof Error ? error : new Error(String(error));
+            }
+
             if (typeof onFail === 'function') {
                 const { shouldStop } = onFail(attempt, error as Error);
                 if (shouldStop) {

@@ -1,10 +1,10 @@
 import { logger } from '@/utils/logger';
-import { DeployOptions, handleUserInput, initBranchInfo } from './baseDeploy';
+import { handleUserInput, initBranchInfo } from './baseDeploy';
 import { isGithubProject } from '../shared/utils/project-type';
 import { companyDeploy } from './companyDeploy';
 import { githubDeploy } from './githubDeploy';
 import { setDeployCwd } from './context';
-
+import type { DeployOptions } from './types';
 /**
  * Git Deploy命令主函数
  * @param {DeployOptions} options - 命令选项
