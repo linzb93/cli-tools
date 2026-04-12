@@ -1,6 +1,6 @@
 import spinner from '@/utils/spinner';
 import { execaCommand as execa } from 'execa';
-import { splitGitLog } from '../shared/utils';
+import { splitGitLog } from '../shared/utils/log';
 import pMap from 'p-map';
 import chalk from 'chalk';
 import type { Options } from './types';

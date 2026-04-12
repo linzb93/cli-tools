@@ -1,6 +1,7 @@
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
-import { isGitProject, getAllTags, deleteTags } from '../../shared/utils';
+import { isGitProject } from '../../shared/utils';
+import { getAllTags, deleteTags } from '../shared';
 
 export const tagDeleteService = async (): Promise<void> => {
     // 检查当前目录是否是 Git 项目

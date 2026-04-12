@@ -94,64 +94,6 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
 }
 
 /**
- * 获取指定 Git 项目的远端地址
- * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
- * @returns {Promise<string>} 远端地址
- */
-export async function getRemoteUrl(projectPath: string = process.cwd()): Promise<string> {
-    try {
-        const { stdout } = await execa(`git config --get remote.origin.url`, { cwd: projectPath });
-        return stdout.trim();
-    } catch {
-        return '';
-    }
-}
-
-/**
- * 获取指定项目的所有 tag
- * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
- * @returns {Promise<string[]>} tag 列表
- */
-export async function getAllTags(projectPath: string = process.cwd()): Promise<string[]> {
-    try {
-        const { stdout } = await execa(`git tag`, { cwd: projectPath });
-        return stdout.trim().split('\n').filter(Boolean);
-    } catch {
-        return [];
-    }
-}
-
-/**
- * 删除指定项目的部分 tag
- * @param {Object} params - 删除 tag 的参数
- * @param {string[]} params.tags - 要删除的 tag 列表
- * @param {string} [params.projectPath=process.cwd()] - 项目路径，默认为当前工作目录
- * @param {boolean} [params.remote=false] - 是否删除远端 tag
- * @returns {Promise<void>}
- */
-export async function deleteTags({
-    tags,
-    projectPath = process.cwd(),
-    remote = false,
-}: {
-    tags: string[];
-    projectPath?: string;
-    remote?: boolean;
-}): Promise<void> {
-    const deletePromises = tags.map(async (tag) => {
-        // 删除本地 tag
-        await execa(`git tag -d ${tag}`, { cwd: projectPath });
-
-        // 如果需要删除远端 tag
-        if (remote) {
-            await execa(`git push origin :refs/tags/${tag}`, { cwd: projectPath });
-        }
-    });
-
-    await Promise.all(deletePromises);
-}
-
-/**
  * 包含本地和远端状态的分支信息
  */
 export interface BranchInfo {
@@ -339,46 +281,4 @@ export const isCurrenetBranchPushed = async (projectPath: string = process.cwd()
     const current = await getCurrentBranchName(projectPath);
     const { stdout } = await execa(`git branch --all`, { cwd: projectPath });
     return !!stdout.split('\n').find((item) => item.endsWith(`remotes/origin/${current}`));
-};
-
-/**
- * 分割Git日志字符串，将其转换为数组，每个元素为一个提交记录。
- */
-export const splitGitLog = async (head: number, cwd: string = process.cwd()) => {
-    const log = await execa(`git log -${head}`, { cwd });
-    const list = log.stdout.split('\n').filter(Boolean);
-    let result: {
-        id: string;
-        author: string;
-        date: string;
-        message: string;
-    }[] = [];
-    for (const line of list) {
-        if (line.startsWith('commit')) {
-            result.slice(-1)[0]?.message.trimEnd();
-            result.push({
-                id: line.split(' ')[1],
-                author: '',
-                date: '',
-                message: '',
-            });
-            continue;
-        }
-        if (line.startsWith('Author:')) {
-            result.slice(-1)[0].author = line.split('Author: ')[1].trim();
-            continue;
-        }
-        if (line.startsWith('Date:')) {
-            result.slice(-1)[0].date = dayjs(line.split('Date: ')[1].trim()).format('YYYY-MM-DD HH:mm:ss');
-            continue;
-        }
-        result.slice(-1)[0].message += line.trim() + '\n';
-    }
-    if (result.length) {
-        result = result.map((item) => ({
-            ...item,
-            message: item.message.trimEnd().replace(/\n$/, ''),
-        }));
-    }
-    return result;
 };
