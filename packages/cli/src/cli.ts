@@ -12,7 +12,7 @@ program.hook('preAction', (thisCommand) => {
             if (process.argv.includes('--help')) {
                 (async () => {
                     const mainCommand = process.argv[2];
-                    if (['git', 'npm', 'ai'].includes(mainCommand)) {
+                    if (['git', 'npm', 'analyse'].includes(mainCommand)) {
                         await generateHelpDoc([mainCommand, process.argv[3]]);
                     } else {
                         await generateHelpDoc([mainCommand]);

@@ -1,6 +1,5 @@
 export interface Options {
     full: boolean;
-    help?: boolean;
 }
 
 export interface User {

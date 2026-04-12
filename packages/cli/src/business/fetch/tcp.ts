@@ -1,4 +1,4 @@
-import { Socket } from 'net';
+import { Socket } from 'node:net';
 import { parseData, parseTcpAddress } from './utils';
 
 /**

@@ -79,7 +79,7 @@ const parseRecord = (record: { createAt: Date; content: string }) => {
     const command = record.content;
     const cmdMatch = command.match(/^([a-z]+)\s*([a-z]*)/);
     const cmd = cmdMatch ? cmdMatch[1] : '';
-    const subCmd = ['git', 'npm', 'ai'].includes(cmd) && cmdMatch ? cmdMatch[2] : '';
+    const subCmd = ['git', 'npm', 'analyse'].includes(cmd) && cmdMatch ? cmdMatch[2] : '';
     return {
         time: record.createAt,
         cmd,

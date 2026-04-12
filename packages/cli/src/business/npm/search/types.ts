@@ -1,7 +1,6 @@
 export interface Options {
     open?: boolean;
     full?: boolean;
-    help?: boolean;
 }
 
 interface OutputPkgItem {
