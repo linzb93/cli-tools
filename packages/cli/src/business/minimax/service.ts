@@ -2,6 +2,7 @@ import axios from 'axios';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { readSecret } from '@cli-tools/shared';
+import { timeMsFormat } from '@/utils/helper';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
 
@@ -33,23 +34,6 @@ async function fetchAPI<T>(endpoint: string, token: string): Promise<T> {
  */
 async function fetchUsage(token: string): Promise<UsageResponse> {
     return fetchAPI<UsageResponse>('/coding_plan/remains', token);
-}
-
-/**
- * 格式化剩余时间
- */
-function formatRemainsTime(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-
-    if (hours > 0) {
-        return `还有${chalk.magenta(`${hours}小时${minutes}分钟`)}`;
-    }
-    if (minutes > 0) {
-        return `还有${chalk.magenta(`${minutes}分钟`)}`;
-    }
-    return chalk.magenta('不到一分钟');
 }
 
 /**
@@ -103,7 +87,7 @@ function render(data: ParsedUsageData): void {
         ),
     );
     console.log();
-    console.log(chalk.gray(`  距离下次重置时间${formatRemainsTime(remainsTime)}`));
+    console.log(chalk.gray(`  距离下次重置时间${timeMsFormat(remainsTime, { minUnitIsMinute: true })}`));
     console.log();
     console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
     if (isWatchMode) {

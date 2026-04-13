@@ -23,12 +23,12 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// npm 子命令
+// minimax 命令
 program
-    .command('npm <sub-command> [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest) => {
-        import('./commands/npm').then((m) => m.npmCommand(subCommand, rest));
+    .command('minimax')
+    .option('--watch', '是否开启监控模式')
+    .action((options) => {
+        import('./commands/minimax').then((m) => m.minimaxCommand(options));
     });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
