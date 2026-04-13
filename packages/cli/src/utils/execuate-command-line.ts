@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { execaCommand as execa } from 'execa';
 import { retryAsync } from './promise';
-
+import { timeMsFormat } from './helper';
 /**
  * 命令配置接口
  */
@@ -157,9 +157,7 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
 
     if (!options?.silentStart && process.env.MODE !== 'cliTest') {
         const endTime = dayjs();
-        const duration = endTime.diff(startTime, 'millisecond') / 1000;
-        console.log(
-            `${chalk.gray(`[${endTime.format('HH:mm:ss')}]`)} 任务执行完成，用时${chalk.blue(duration.toFixed(2))}秒`,
-        );
+        const duration = endTime.diff(startTime, 'millisecond');
+        console.log(`${chalk.gray(`[${endTime.format('HH:mm:ss')}]`)} 任务执行完成，用时${timeMsFormat(duration)}`);
     }
 }

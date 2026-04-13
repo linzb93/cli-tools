@@ -106,3 +106,12 @@ export const defaultBrowserHeaders = {
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
 };
+
+export const timeMsFormat = (timeMs: number) => {
+    const timeS = timeMs / 1000;
+    if (timeS < 60) {
+        return `${timeS.toFixed(2)}秒`;
+    }
+    const timeM = timeS / 60;
+    return `${timeM.toFixed(2)}分钟${(timeS % 60).toFixed(2)}秒`;
+};
