@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import fs from 'fs-extra';
 import cdn from 'vite-plugin-cdn-import';
 import vue from '@vitejs/plugin-vue';
-import globalConfig from '../../config.json';
+import { serverConfig } from '@cli-tools/shared';
 
 const file = fs.readJSONSync('../../cache/secret.json');
 const cdnObject = file.cdn;
@@ -13,9 +13,9 @@ if (!cdnObject) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: `/${globalConfig.prefix.static}/`,
+  base: `/${serverConfig.prefix.static}/`,
   server: {
-    port: globalConfig.port.development_fe
+    port: serverConfig.port.development_fe
   },
   define: {
     'process.platform': JSON.stringify(process.platform)

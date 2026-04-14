@@ -158,6 +158,8 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
     if (!options?.silentStart && process.env.MODE !== 'cliTest') {
         const endTime = dayjs();
         const duration = endTime.diff(startTime, 'millisecond');
-        console.log(`${chalk.gray(`[${endTime.format('HH:mm:ss')}]`)} 任务执行完成，用时${timeMsFormat(duration)}`);
+        console.log(
+            `${chalk.gray(`[${endTime.format('HH:mm:ss')}]`)} 任务执行完成，用时${chalk.magenta(timeMsFormat(duration))}`,
+        );
     }
 }

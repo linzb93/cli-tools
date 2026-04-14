@@ -22,6 +22,7 @@
     "license": "ISC",
     "dependencies": {
         "@cli-tools/shared": "workspace:*",
+        "@linzb93/utils": "^0.0.14",
         "ali-oss": "^6.22.0",
         "binary-split": "^1.0.5",
         "bytes": "^3.1.2",
@@ -50,6 +51,7 @@
         "public-ip": "^5.0.0",
         "read-pkg": "^9.0.0",
         "rxjs": "^7.8.1",
+        "sass": "^1.74.1",
         "semver": "^7.7.4",
         "slash": "^5.1.0",
         "string-width": "^8.2.0",
@@ -68,6 +70,7 @@
         "@types/progress": "^2.0.7",
         "@types/prop-types": "^15.7.15",
         "@types/semver": "^7.3.9",
-        "@types/through2": "^2.0.36"
+        "@types/through2": "^2.0.36",
+        "cross-env": "^7.0.3"
     }
 }

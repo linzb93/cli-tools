@@ -1,6 +1,6 @@
 import serviceGenerator from '@/utils/http';
 import { readSecret } from '@cli-tools/shared';
-import { login } from '../utils/login';
+// import { login } from '../utils/login';
 import chalk from 'chalk';
 import { App, Options, UserInfo } from '../types';
 import { getToken } from './appRunner';
@@ -159,30 +159,30 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
         return '';
     };
 
-    const getByVersion = async (version: number, shopName: string): Promise<string> => {
-        try {
-            let { token } = await readSecret((db) => db.oa);
-            if (!token) {
-                await login();
-                return getByVersion(version, shopName);
-            }
-            const res = await queryBusinessInfoList({ version, pageIndex: 1, pageSize: 1 });
-            if (res.data.code !== 200) {
-                await login();
-                return getByVersion(version, shopName);
-            }
-            const shopUrl = await filterShops({ version });
-            return shopUrl;
-        } catch (error) {
-            console.error(chalk.red('获取版本信息时发生错误:'), (error as Error).message);
-            process.exit(1);
-        }
-    };
+    // const getByVersion = async (version: number, shopName: string): Promise<string> => {
+    //     try {
+    //         let { token } = await readSecret((db) => db.oa);
+    //         if (!token) {
+    //             await login();
+    //             return getByVersion(version, shopName);
+    //         }
+    //         const res = await queryBusinessInfoList({ version, pageIndex: 1, pageSize: 1 });
+    //         if (res.data.code !== 200) {
+    //             await login();
+    //             return getByVersion(version, shopName);
+    //         }
+    //         const shopUrl = await filterShops({ version });
+    //         return shopUrl;
+    //     } catch (error) {
+    //         console.error(chalk.red('获取版本信息时发生错误:'), (error as Error).message);
+    //         process.exit(1);
+    //     }
+    // };
 
     const getShopUrl = async (keyword: string, options: Options): Promise<string> => {
-        if (options.version) {
-            return await getByVersion(options.version, keyword);
-        }
+        // if (options.version) {
+        //     return await getByVersion(options.version, keyword);
+        // }
         return getMeituanShopUrl(
             {
                 appKey: appKey,

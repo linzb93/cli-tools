@@ -13,6 +13,7 @@
     },
     "devDependencies": {
         "vue-tsc": "^2.2.4",
-        "@types/chrome": "^0.0.260"
+        "@types/chrome": "^0.0.260",
+        "@vitejs/plugin-vue": "^6.0.4"
     }
 }
