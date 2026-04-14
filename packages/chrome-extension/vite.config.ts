@@ -1,10 +1,26 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
+import fs from 'fs-extra'
+import cdn from 'vite-plugin-cdn-import'
+
+const file = fs.readJSONSync('../../cache/secret.json')
+const cdnObject = file.cdn
+if (!cdnObject) {
+  throw new Error('cdnObject is empty')
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    cdn({
+      modules: [
+        { name: 'vue', var: 'Vue', path: cdnObject.vue },
+        { name: 'element-plus', var: 'ElementPlus', path: cdnObject['element-plus'] }
+      ]
+    })
+  ],
   build: {
     rollupOptions: {
       input: {
