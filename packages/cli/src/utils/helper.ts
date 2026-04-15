@@ -129,8 +129,14 @@ export const timeMsFormat = (
     }
     const timeM = timeS / 60;
     if (timeM < 60) {
+        if (minUnitIsMinute) {
+            return `${parseInt(timeM.toString())}分钟`;
+        }
         return `${parseInt(timeM.toString())}分钟${parseInt((timeS % 60).toString())}秒`;
     }
     const timeH = timeM / 60;
+    if (minUnitIsMinute) {
+        return `${parseInt(timeH.toString())}小时${parseInt((timeM % 60).toString())}分钟`;
+    }
     return `${parseInt(timeH.toString())}小时${parseInt((timeM % 60).toString())}分钟${parseInt((timeS % 60).toString())}秒`;
 };

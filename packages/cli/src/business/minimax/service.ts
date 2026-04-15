@@ -87,7 +87,7 @@ function render(data: ParsedUsageData): void {
         ),
     );
     console.log();
-    console.log(chalk.gray(`  距离下次重置时间${timeMsFormat(remainsTime, { minUnitIsMinute: true })}`));
+    console.log(chalk.gray(`  距离下次重置时间${chalk.magenta(timeMsFormat(remainsTime, { minUnitIsMinute: true }))}`));
     console.log();
     console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
     if (isWatchMode) {
