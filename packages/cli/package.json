@@ -26,6 +26,7 @@
         "ali-oss": "^6.22.0",
         "binary-split": "^1.0.5",
         "bytes": "^3.1.2",
+        "cfonts": "^3.3.1",
         "cheerio": "1.0.0-rc.12",
         "chokidar": "^3.6.0",
         "clipboardy": "^5.3.1",
@@ -36,6 +37,7 @@
         "execa": "^9.6.1",
         "global-modules": "^2.0.0",
         "globby": "^16.1.1",
+        "gradient-string": "^3.0.0",
         "image-size": "^1.0.1",
         "inquirer": "^13.3.0",
         "internal-ip": "^6.2.0",
@@ -57,6 +59,7 @@
         "string-width": "^8.2.0",
         "terminal-size": "^4.0.0",
         "through2": "^4.0.2",
+        "tinycolor2": "^1.6.0",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
@@ -71,6 +74,7 @@
         "@types/prop-types": "^15.7.15",
         "@types/semver": "^7.3.9",
         "@types/through2": "^2.0.36",
+        "@types/tinycolor2": "^1.4.6",
         "cross-env": "^7.0.3"
     }
 }

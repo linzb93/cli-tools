@@ -70,7 +70,6 @@ try {
     features.sort();
 
     fs.writeFileSync(targetFile, JSON.stringify(features, null, 4));
-    console.log(`Successfully generated ${features.length} features to ${targetFile}`);
 } catch (err) {
     console.error('Error generating features:', err);
     process.exit(1);

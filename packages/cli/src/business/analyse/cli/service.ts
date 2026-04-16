@@ -5,6 +5,7 @@ import { levelCharacters } from '@/constant';
 import { logger } from '@/utils/logger';
 import { parseLogDir } from '@/utils/files/log';
 import type { TimePeriod, CliAnalyseOptions } from './types';
+import { COLOR_MAP } from '@/business/color';
 
 /**
  * 获取时间段文本描述
@@ -152,7 +153,7 @@ export const cliAnalyseService = async (options: CliAnalyseOptions = {}) => {
     const firstRecord = records[0];
     const periodText = getPeriodText(period);
     console.log(`${periodText}从${chalk.magenta(firstRecord ? firstRecord.createAt.toISOString() : 'N/A')}至现在，cli共使用${chalk.hex(
-        '#ffa500',
+        COLOR_MAP.orange,
     )(records.length)}次。各命令使用情况如下：
 ${result
     .map((item) => {

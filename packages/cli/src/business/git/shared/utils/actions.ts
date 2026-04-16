@@ -114,7 +114,7 @@ function isNetworkError(errMsg: string): boolean {
         errMsg.includes("Couldn't connect to server") ||
         errMsg.includes('Failed to connect to') ||
         errMsg.includes('Connection reset by peer') ||
-        errMsg.includes('Connection was reset, errno') ||
+        errMsg.includes('Connection was reset') ||
         errMsg.includes('before end of the underlying stream')
     );
 }

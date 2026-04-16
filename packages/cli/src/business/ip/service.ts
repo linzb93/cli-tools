@@ -8,6 +8,7 @@ import { load } from 'cheerio';
 import Table from 'cli-table3';
 import { defaultBrowserHeaders } from '@/utils/helper';
 import spinner from '@/utils/spinner';
+import { COLOR_MAP } from '../color';
 
 /**
  * 获取IP归属地
@@ -103,7 +104,7 @@ export const ipService = async (data: string[]) => {
     }
     spinner.text = '正在获取IP';
     const [iIp, pIp] = await Promise.all([internalIp.v4(), publicIp.v4()]);
-    spinner.succeed(`内网IP: ${chalk.hex('#ffa500')(iIp)}
-公网IP: ${chalk.hex('#ffa500')(pIp)}`);
+    spinner.succeed(`内网IP: ${chalk.hex(COLOR_MAP.orange)(iIp)}
+公网IP: ${chalk.hex(COLOR_MAP.orange)(pIp)}`);
     // 公网ipv6就不要了，时间很久，不知道能不能获取。内网的没有ipv6。
 };

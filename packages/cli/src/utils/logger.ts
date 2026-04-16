@@ -2,7 +2,10 @@ import readline from 'node:readline';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
+import cfonts from 'cfonts';
 import fs from 'fs-extra';
+import tinycolor from 'tinycolor2';
+import gradientUtil from 'gradient-string';
 import logSymbols from 'log-symbols';
 import terminalSize from 'terminal-size';
 import stringWidth from 'string-width';
@@ -182,6 +185,28 @@ const logDebug = (content: string): void => {
         console.log(chalk.bgBlue.white(` ${content} `));
     }
 };
+const big = (
+    text: string,
+    options?: {
+        color: string;
+    },
+): void => {
+    cfonts.say(text, {
+        font: 'block',
+        colors: [options?.color || 'red'],
+        background: 'transparent',
+    });
+};
+const gradient = (text: string): void => {
+    const coolGradient = gradientUtil([
+        tinycolor('#FFBB65'),
+        { r: 0, g: 255, b: 0 },
+        { h: 240, s: 1, v: 1, a: 1 },
+        'rgb(120, 120, 0)',
+        'gold',
+    ]);
+    console.log(coolGradient(text));
+};
 
 export const logger = {
     success,
@@ -194,4 +219,6 @@ export const logger = {
     cli,
     web,
     debug: logDebug,
+    big,
+    gradient,
 };

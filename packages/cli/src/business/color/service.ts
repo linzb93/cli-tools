@@ -7,7 +7,7 @@ import type { Options } from './types';
 /**
  * 颜色映射表
  */
-const COLOR_MAP: Record<string, string> = {
+export const COLOR_MAP = {
     red: '#ff0000',
     yellow: '#ffff00',
     orange: '#ffa500',
@@ -66,8 +66,8 @@ export const getTranslatedColor = (input: string) => {
  */
 export const colorService = (input: string, options: Options) => {
     const { output, blockColor } = getColorInfo(input);
-    if (COLOR_MAP[input]) {
-        const output = COLOR_MAP[input];
+    if (COLOR_MAP[input as keyof typeof COLOR_MAP]) {
+        const output = COLOR_MAP[input as keyof typeof COLOR_MAP];
         logger.success(`${chalk.green('[已复制]')}${chalk.hex(output).bold(output)}`);
         clipboard.writeSync(output);
         return;

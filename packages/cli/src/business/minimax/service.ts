@@ -5,6 +5,8 @@ import { readSecret } from '@cli-tools/shared';
 import { timeMsFormat } from '@/utils/helper';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
+import { logger } from '@/utils/logger';
+import { COLOR_MAP } from '@/business/color';
 
 const MINIMAX_API_BASE = 'https://www.minimaxi.com/v1/api/openplatform';
 let isWatchMode = false;
@@ -76,8 +78,9 @@ function renderProgressBar(percentage: number, width: number = 40): string {
 function render(data: ParsedUsageData): void {
     const { used, remaining, total, percentage, remainsTime } = data;
     console.clear();
-    console.log(chalk.bold.cyan('\n  Minimax 用量监控'));
-    console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
+    logger.big('Minimax', {
+        color: COLOR_MAP.orange,
+    });
     console.log();
     console.log(`  ${renderProgressBar(percentage)} ${chalk.green(used)} / ${total}`);
     console.log();
@@ -87,7 +90,9 @@ function render(data: ParsedUsageData): void {
         ),
     );
     console.log();
-    console.log(chalk.gray(`  距离下次重置时间${chalk.magenta(timeMsFormat(remainsTime, { minUnitIsMinute: true }))}`));
+    console.log(
+        chalk.gray(`  距离下次重置时间还有${chalk.magenta(timeMsFormat(remainsTime, { minUnitIsMinute: true }))}`),
+    );
     console.log();
     console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
     if (isWatchMode) {
