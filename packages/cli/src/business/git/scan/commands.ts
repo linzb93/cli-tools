@@ -87,7 +87,7 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
     {
         name: 'diff',
         usage: '<x>',
-        description: '查看项目修改。如果超出20行，则用code打开。',
+        description: '列出有修改的文件。单个文件时显示详细改动',
         requireList: true,
         handler: async (_args, item) => {
             const fullPath = (item as ResultItem).fullPath;
@@ -98,16 +98,30 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
                     return;
                 }
 
-                const { stdout: diff } = await execaCommand('git diff HEAD', { cwd: fullPath });
-                const lines = diff.split('\n');
+                // 过滤出修改的文件（不是新增 A 或删除 D）
+                const modifiedFiles = status
+                    .split('\n')
+                    .filter((line) => line.trim() && line[1] === 'M')
+                    .map((line) => line.slice(3).trim());
 
-                if (lines.length > 20) {
-                    const fileCount = status.trim().split('\n').length;
-                    console.log(chalk.yellow(`修改了 ${fileCount} 个文件`));
-                    console.log(chalk.blue(`正在用 VS Code 打开: ${fullPath}`));
-                    await execaCommand(`code ${fullPath}`);
-                } else {
+                if (modifiedFiles.length === 1) {
+                    const { stdout: diff } = await execaCommand('git diff HEAD', {
+                        cwd: fullPath,
+                        stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
+                        env: {
+                            FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
+                        },
+                    });
                     console.log(diff);
+                } else {
+                    const { stdout: stat } = await execaCommand('git diff --stat', {
+                        cwd: fullPath,
+                        stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
+                        env: {
+                            FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
+                        },
+                    });
+                    console.log(stat);
                 }
             } catch (e: any) {
                 console.log(chalk.red(`执行 diff 失败: ${e.message}`));
