@@ -28,9 +28,6 @@ export type CommandCompleteCallback = (ctx: CommandCompleteContext) => void | Pr
 
 interface CommandReadlineOptions {
     prompt?: string;
-    input?: NodeJS.ReadableStream;
-    output?: NodeJS.WritableStream;
-    terminal?: boolean;
     exitCommand?: string;
     /** 项目列表（可选），传入后命令上下文中会自动包含 getItem 方法 */
     items?: unknown[];
@@ -86,6 +83,17 @@ function parseSlashCommand(line: string): ParsedSlashCommand | null {
     };
 }
 
+export const displayCommands = (commands: ReadlineCommand[], exitCommand: string) => {
+    const displayLines: string[] = [];
+    for (const cmd of commands) {
+        const usage = cmd.usage ? ` ${cmd.usage}` : '';
+        const desc = cmd.description ? ` - ${cmd.description}` : '';
+        displayLines.push(`/${cmd.name}${usage}${desc}`);
+    }
+    displayLines.push(`/${exitCommand} - 退出`);
+    console.log(chalk.yellow(displayLines.join('\n')));
+};
+
 /**
  * 原有 readline 实现（VSCode 环境）
  * @param {ReadlineCommand[]} commands - 需要注册的命令列表
@@ -104,20 +112,12 @@ export function createCommandReadline(
     for (const cmd of commands) {
         commandMap.set(cmd.name, cmd);
     }
-
-    const displayLines: string[] = [];
-    for (const cmd of commands) {
-        const usage = cmd.usage ? ` ${cmd.usage}` : '';
-        const desc = cmd.description ? ` - ${cmd.description}` : '';
-        displayLines.push(`/${cmd.name}${usage}${desc}`);
-    }
-    displayLines.push(`/${exitCommand} - 退出`);
-    console.log(chalk.yellow(displayLines.join('\n')));
+    displayCommands(commands, exitCommand);
 
     const rl = readline.createInterface({
-        input: options.input ?? process.stdin,
-        output: options.output ?? process.stdout,
-        terminal: options.terminal ?? true,
+        input: process.stdin,
+        output: process.stdout,
+        terminal: true,
     });
 
     rl.setPrompt(prompt);

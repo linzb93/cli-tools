@@ -1,6 +1,7 @@
 import fsp from 'node:fs/promises';
 import Table from 'cli-table3';
 import pMap from 'p-map';
+import { join } from 'node:path';
 import pReduce from 'p-reduce';
 import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
@@ -11,7 +12,7 @@ import progress from '@/utils/progress';
  */
 export interface DirInfo {
     /** 子目录名 */
-    dir: string;
+    project: string;
     /** 父目录路径 */
     prefix: string;
 }
@@ -20,7 +21,7 @@ export interface DirInfo {
  * 扫描目录并返回所有子目录信息
  * @returns 所有子目录信息列表
  */
-export const expandWorkDirs = async (): Promise<DirInfo[]> => {
+export const expandWorkDirs = async (): Promise<string[]> => {
     const workDirs = await sql(async (db) => db.workDirs);
 
     if (!workDirs || workDirs.length === 0) {
@@ -31,22 +32,13 @@ export const expandWorkDirs = async (): Promise<DirInfo[]> => {
         workDirs,
         async (acc, dir) => {
             try {
-                const dirs = await fsp.readdir(dir.path);
-                return acc.concat(
-                    await pMap(
-                        dirs,
-                        async (subDir) => ({
-                            dir: subDir,
-                            prefix: dir.path,
-                        }),
-                        { concurrency: 4 },
-                    ),
-                );
+                const projectNames = await fsp.readdir(dir.path);
+                return acc.concat(projectNames.map((project) => join(dir.path, project)));
             } catch {
                 return acc;
             }
         },
-        [] as DirInfo[],
+        [] as string[],
     );
 
     return allDirs;
@@ -61,18 +53,18 @@ export const expandWorkDirs = async (): Promise<DirInfo[]> => {
  * @returns 扫描结果列表
  */
 export const scanDirs = async <T>(
-    allDirs: DirInfo[],
-    scanner: (dirInfo: DirInfo) => Promise<T | null>,
+    allDirs: string[],
+    scanner: (project: string) => Promise<T | null>,
     options?: { onError?: (error: unknown) => void },
 ): Promise<T[]> => {
     progress.setTotal(allDirs.length);
 
     const results = await pMap(
         allDirs,
-        async (dirInfo) => {
+        async (project) => {
             progress.tick();
             try {
-                return await scanner(dirInfo);
+                return await scanner(project);
             } catch (error) {
                 options?.onError?.(error);
                 return null;

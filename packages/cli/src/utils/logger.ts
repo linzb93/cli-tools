@@ -119,6 +119,12 @@ const backwardConsole = (times = 1): void => {
     }
 };
 
+const empty = (lines = 1) => {
+    for (let i = 0; i < lines; i++) {
+        console.log();
+    }
+};
+
 /**
  * 显示边框盒子，替代原来的boxen
  * @param options - 盒子选项
@@ -216,6 +222,7 @@ export const logger = {
     clearConsole,
     backwardConsole,
     box,
+    empty,
     cli,
     web,
     debug: logDebug,

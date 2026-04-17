@@ -1,5 +1,4 @@
-import { basename, join } from 'node:path';
-import fsp from 'node:fs/promises';
+import { basename } from 'node:path';
 import chalk from 'chalk';
 import { readPackageSync } from 'read-pkg';
 import { expandWorkDirs, scanDirs, printResultTable } from '@/utils/scan';
@@ -66,11 +65,10 @@ const getMajorVersion = (version: string): number => {
  * @returns 扫描结果
  */
 const scanProject = async (
-    dirInfo: { dir: string; prefix: string },
+    fullPath: string,
     packageName: string,
     targetVersions?: string[],
 ): Promise<ScanResultItem | null> => {
-    const fullPath = join(dirInfo.prefix, dirInfo.dir);
     try {
         const packageJson = readPackageSync({ cwd: fullPath });
         const deps = packageJson.dependencies || {};

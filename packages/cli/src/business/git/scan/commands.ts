@@ -1,20 +1,13 @@
 import chalk from 'chalk';
 import { execaCommand } from 'execa';
-import pMap from 'p-map';
-import { printResultTable } from '@/utils/scan';
-import { sleep } from '@linzb93/utils';
-import {
-    createCommandReadline,
-    type ReadlineCommand,
-    type CommandCompleteCallback,
-    type CommandCompleteContext,
-} from '@/utils/readline';
+import { logger } from '@/utils/logger';
+import { createCommandReadline, displayCommands, type ReadlineCommand } from '@/utils/readline';
 import { getGitLogData } from '../log';
-import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/execuate-command-line';
 import { checkHardcoded } from '../shared/utils/hard-coded';
 import { deployService } from '../deploy';
+import { printTable, doScan } from './scanner';
 import type { ResultItem } from './types';
 
 /**
@@ -70,50 +63,25 @@ const printProjectLog = async (item: ResultItem) => {
 /**
  * 交互命令数组
  * @param {ResultItem[]} list - 项目列表引用
- * @param {() => void} onRestart - 重新扫描回调
  */
-const commands = (list: ResultItem[], onRestart: () => void): ReadlineCommand[] => [
+const commands = (list: ResultItem[]): ReadlineCommand[] => [
     {
         name: 'restart',
         description: '重新扫描已列出的项目',
         handler: async () => {
+            logger.clearConsole();
+            logger.empty();
             console.log(chalk.blue('正在重新扫描...'));
-            const newList = await pMap(
-                list,
-                async (item): Promise<ResultItem> => {
-                    try {
-                        const { status, branchName } = await getGitProjectStatus(item.fullPath);
-                        return { ...item, status, branchName };
-                    } catch {
-                        return item;
-                    }
-                },
-                { concurrency: 4 },
-            );
+            const newList = await doScan(list.map((item) => item.fullPath));
 
-            list.length = 0;
-            list.push(
-                ...newList.filter((item) =>
-                    [GitStatusMap.Uncommitted, GitStatusMap.Unpushed, GitStatusMap.NotOnMainBranch].includes(
-                        item.status,
-                    ),
-                ),
-            );
-
-            if (list.length === 0) {
+            if (newList.length === 0) {
                 console.log(chalk.yellow('没有项目需要提交或推送。'));
             } else {
-                printResultTable(list, {
-                    head: ['名称', '地址', '状态', '分支'],
-                    map: (item, index) => [
-                        `${index + 1}. ${item.fullPath.split('/').pop()}`,
-                        item.fullPath,
-                        getStatusMap(item.status),
-                        item.branchName,
-                    ],
-                });
+                printTable(newList);
             }
-            onRestart();
+
+            // 重新显示所有交互命令
+            displayCommands(commands(newList), 'exit');
         },
     },
     {
@@ -211,7 +179,7 @@ const commands = (list: ResultItem[], onRestart: () => void): ReadlineCommand[] 
  * @param {ResultItem[]} list - 项目列表
  */
 const startRepl = (list: ResultItem[]) => {
-    const cmds = commands(list, () => {});
+    const cmds = commands(list);
     createCommandReadline(cmds, {
         prompt: 'git-scan',
         items: list,
