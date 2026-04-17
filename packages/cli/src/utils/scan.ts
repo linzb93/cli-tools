@@ -72,6 +72,7 @@ export const scanDirs = async <T>(
         },
         { concurrency: 4 },
     );
+    logger.empty();
 
     logger.backwardConsole(2);
 
