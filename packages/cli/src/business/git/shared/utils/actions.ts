@@ -101,7 +101,7 @@ async function handleConflict() {
     if (!resolved) {
         throw new Error('exit');
     }
-    await executeCommands(['git add .', 'git commit -m fix:conflict']);
+    await executeCommands(['git add .', commit('解决冲突')]);
 }
 /**
  * 判断是否超时错误
@@ -109,12 +109,13 @@ async function handleConflict() {
  * @returns 是否超时错误
  */
 function isNetworkError(errMsg: string): boolean {
+    console.log(errMsg);
     return (
         errMsg.toLowerCase().includes('timeout') ||
         errMsg.includes("Couldn't connect to server") ||
         errMsg.includes('Failed to connect to') ||
         errMsg.includes('Connection reset by peer') ||
-        errMsg.includes('Connection was reset') ||
+        errMsg.includes('unable to access') ||
         errMsg.includes('before end of the underlying stream')
     );
 }
