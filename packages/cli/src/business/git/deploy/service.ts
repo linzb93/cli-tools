@@ -24,7 +24,7 @@ export const deployService = async (options: DeployOptions): Promise<void> => {
         const { currentBranch, mainBranch } = await initBranchInfo();
 
         // 判断项目类型并执行相应部署
-        const isGithub = await isGithubProject();
+        const isGithub = await isGithubProject(options.cwd as string);
 
         if (isGithub) {
             await githubDeploy(options, currentBranch, mainBranch);
