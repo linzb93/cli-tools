@@ -32,7 +32,25 @@
 |     |   |   ├ bin.ts             # 正式版入口文件
 |     |   |   ├ commands/          # 命令模块列表
 |     |   |   |     └ module.ts    # 模块入口文件
-|     |   |   ├ hooks/             # 生命周期钩子函数
+|     |   |   ├ business/                        # 业务代码核心（按功能领域划分）
+|     |   |   |     ├ module-a/                  # 简单模块
+|     |   |   |     |    ├ index.ts              # 统一出口
+|     |   |   |     |    ├ Service.ts            # 业务实现
+|     |   |   |     |    └ types.ts              # 模块专用类型
+|     |   |   |     ├ module-b/                  # 复杂模块（工厂模式）
+|     |   |   |     |    ├ core/                 # 模块内部抽象与工厂
+|     |   |   |     |    |   ├ AbstractWorker.ts # 模块级抽象执行类
+|     |   |   |     |    |   └ Factory.ts        # 继承自 BaseFactory
+|     |   |   |     |    ├ implementations/      # 多态实现类
+|     |   |   |     |    |    ├ WorkerA.ts
+|     |   |   |     |    |    └ WorkerB.ts
+|     |   |   |     |    ├ types.ts
+|     |   |   |     |    └ index.ts
+|     |   |   |     └ parent-module/             # 父子模块结构
+|     |   |   |            ├ shared/             # 父模块内子模块复用的代码
+|     |   |   |            ├ sub-module-1/
+|     |   |   |            └ sub-module-2/
+|     |   |   ├ bootstrap/         # 生命周期钩子函数
 |     |   |   └ utils/             # 工具函数
 |     ├ server/                    # 服务器
 |     |    ├ src/
@@ -45,27 +63,6 @@
 |     |    ├ src/
 |     |    |  ├ constants/                     # 全局常量（如状态码、错误码）
 |     |    |  ├ utils/                         # 纯工具函数（不含业务逻辑，如 date, string 处理）
-|     |    |  ├ base/                          # 顶层抽象基类（核心架构）
-|     |    |  |   ├ BaseService.ts             # 所有业务执行文件的基类
-|     |    |  |   └ BaseFactory.ts             # 抽象工厂基类
-|     |    |  ├ business/                       # 业务代码核心（按功能领域划分）
-|     |    |  |   ├ module-a/                  # 简单模块
-|     |    |  |   |    ├ index.ts              # 统一出口
-|     |    |  |   |    ├ Service.ts            # 业务实现
-|     |    |  |   |    └ types.ts              # 模块专用类型
-|     |    |  |   ├ module-b/                  # 复杂模块（工厂模式）
-|     |    |  |   |    ├ core/                 # 模块内部抽象与工厂
-|     |    |  |   |    |   ├ AbstractWorker.ts # 模块级抽象执行类
-|     |    |  |   |    |   └ Factory.ts        # 继承自 BaseFactory
-|     |    |  |   |    ├ implementations/      # 多态实现类
-|     |    |  |   |            ├ WorkerA.ts
-|     |    |  |   |            └ WorkerB.ts
-|     |    |  |   |    ├ types.ts
-|     |    |  |   |    └ index.ts
-|     |    |  |   ├ parent-module/             # 父子模块结构
-|     |    |  |   |      ├ common/             # 父模块内子模块复用的代码
-|     |    |  |   |      ├ sub-module-1/
-|     |    |  |   |      └ sub-module-2/
 │     |    |  └ types/                         # 全局公用类型（跨模块的 DTO、通用接口）
 |     ├ ui/                        # 前端项目
 |     |  ├ src/

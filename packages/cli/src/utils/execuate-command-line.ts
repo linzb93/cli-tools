@@ -123,6 +123,22 @@ interface ExecuateOptions {
      */
     cwd?: string;
 }
+
+const commandDatabase: Command[] = [];
+/**
+ * 存储命令到数据库
+ * @param {Command[]} commands - 命令列表
+ */
+export const storeCommands = (commands: Command[]) => {
+    commandDatabase.push(...commands);
+};
+/**
+ * 开始执行命令
+ * @param {ExecuateOptions} [options] - 配置选项
+ */
+export const startExecuateCommands = async (options?: ExecuateOptions) => {
+    executeCommands(commandDatabase, options);
+};
 /**
  * 执行命令行命令列表
  * @param {Command[]} commands - 命令列表

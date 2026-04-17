@@ -6,20 +6,20 @@ export interface DeployOptions {
      * 是否发布到master或main分支
      * @default false
      */
-    prod?: boolean;
+    prod: boolean;
     /**
      * 项目类型，用于标记tag
      */
-    type?: string;
+    type: string;
     /**
      * 项目版本号，用于标记tag
      */
-    version?: string;
+    version: string;
     /**
      * 是否打开对应的jenkins主页
      * @default false
      */
-    open?: boolean;
+    open: boolean;
     /**
      * git commit提交信息
      */
@@ -28,10 +28,21 @@ export interface DeployOptions {
      * 仅完成基础命令后结束任务
      * @default false
      */
-    current?: boolean;
+    current: boolean;
     /**
      * 工作目录路径，不作为命令行选项传入
      * @default process.cwd()
      */
-    cwd?: string;
+    cwd: string;
+}
+
+export interface DeployContext extends DeployOptions {
+    /**
+     * 主分支名称
+     */
+    mainBranch: string;
+    /**
+     * 当前分支名称
+     */
+    currentBranch: string;
 }

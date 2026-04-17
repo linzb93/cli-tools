@@ -108,7 +108,7 @@ async function handleConflict() {
  * @param {string} errMsg - 错误信息
  * @returns 是否超时错误
  */
-function isNetworkError(errMsg: string): boolean {
+export function isNetworkError(errMsg: string): boolean {
     console.log(errMsg);
     return (
         errMsg.toLowerCase().includes('timeout') ||
