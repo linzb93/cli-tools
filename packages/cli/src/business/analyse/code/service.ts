@@ -79,14 +79,14 @@ const run = async (modules: Module[]) => {
     console.log(`${chalk.yellow('警告行数')}：${max.warning}行，${chalk.red('危险行数')}：${max.danger}行`);
 
     // 根据模块类型选择不同的表头
-    const headers = ['', chalk.green('文件地址'), chalk.green('行数')];
+    const headers = ['', chalk.green('文件地址'), chalk.green('行数'), chalk.green('排除行数')];
     if (module === vueModule) {
         headers.push(chalk.green('代码分布'));
     }
 
     const table = new Table({
         head: headers,
-        colAligns: ['left', 'left', 'center', 'left'],
+        colAligns: ['left', 'left', 'center', 'center', 'left'],
     });
 
     table.push(
@@ -97,6 +97,7 @@ const run = async (modules: Module[]) => {
                     (index + 1).toString(),
                     chalk.cyan(item.file),
                     item.type === 'danger' ? chalk.red(item.lines) : chalk.yellow(item.lines),
+                    item.excludedLines,
                 ];
 
                 // 如果是Vue模块，添加代码分布信息

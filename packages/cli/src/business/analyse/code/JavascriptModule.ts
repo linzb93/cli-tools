@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import Module, { IFileAnalysis } from './Module';
+import { filterCommentLines } from './commentFilter';
 
 /**
  * JavaScript文件分析模块
@@ -38,9 +39,18 @@ export const javascriptModule: Module = {
     calc(splitLines: string[]) {
         // 过滤空行
         const nonEmptyLines = splitLines.filter((line) => line.trim() !== '');
-        return {
-            lines: nonEmptyLines.length,
-        };
+        const roughLines = nonEmptyLines.length;
+
+        // 如果没有超出警告范围，直接返回
+        if (roughLines <= this.maxLength.warning) {
+            const excludedLines = splitLines.length - roughLines;
+            return { lines: roughLines, excludedLines };
+        }
+
+        // 超出了范围，过滤注释后重新计算
+        const filteredLines = filterCommentLines(nonEmptyLines);
+        const excludedLines = splitLines.length - filteredLines.length;
+        return { lines: filteredLines.length, excludedLines };
     },
 
     /**

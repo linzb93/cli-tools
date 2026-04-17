@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import Module, { IFileAnalysis } from './Module';
+import { filterCommentLines } from './commentFilter';
 
 /**
  * 查找样式标签的信息
@@ -159,6 +160,85 @@ const estimateTemplateLength = (
 };
 
 /**
+ * 提取 template 区域的内容（不含标签行）
+ * @param nonEmptyLines 非空行数组
+ * @param scriptInfo 脚本标签信息
+ * @param styleInfo 样式标签信息
+ * @returns template 区域的内容行
+ */
+const extractTemplateLines = (
+    nonEmptyLines: string[],
+    scriptInfo: { start: number; end: number; length: number },
+    styleInfo: { startIndexes: number[]; endIndexes: number[]; length: number },
+): string[] => {
+    // 检查是否存在 template 标签
+    const hasTemplateStart = nonEmptyLines.some((line) => line.includes('<template'));
+    const hasTemplateEnd = nonEmptyLines.some((line) => line.includes('</template>'));
+
+    if (!hasTemplateStart || !hasTemplateEnd) {
+        // 如果没有完整的 template 标签对，使用估算方式：减去 script 和 style 的区域
+        const scriptStart = scriptInfo.start;
+        const scriptEnd = scriptInfo.end;
+        const styleRegions: { start: number; end: number }[] = styleInfo.startIndexes.map((start, i) => ({
+            start,
+            end: styleInfo.endIndexes[i],
+        }));
+
+        const excludedIndices = new Set<number>();
+
+        // 排除 script 区域
+        if (scriptStart !== -1 && scriptEnd !== -1) {
+            for (let i = scriptStart; i <= scriptEnd; i++) {
+                excludedIndices.add(i);
+            }
+        }
+
+        // 排除 style 区域
+        for (const region of styleRegions) {
+            if (region.start !== -1 && region.end !== -1) {
+                for (let i = region.start; i <= region.end; i++) {
+                    excludedIndices.add(i);
+                }
+            }
+        }
+
+        // 返回不在排除区域内的行
+        return nonEmptyLines.filter((_, index) => !excludedIndices.has(index));
+    }
+
+    // 提取嵌套 template 区域的内容
+    const templateLines: string[] = [];
+    let inTemplate = false;
+    let templateDepth = 0;
+    let templateStartIndex = -1;
+
+    for (let i = 0; i < nonEmptyLines.length; i++) {
+        const line = nonEmptyLines[i];
+
+        if (line.includes('<template')) {
+            if (!inTemplate) {
+                inTemplate = true;
+                templateStartIndex = i;
+            }
+            templateDepth++;
+        }
+
+        if (line.includes('</template>')) {
+            templateDepth--;
+            if (templateDepth === 0 && inTemplate) {
+                // 提取开始和结束标签之间的内容
+                for (let j = templateStartIndex + 1; j < i; j++) {
+                    templateLines.push(nonEmptyLines[j]);
+                }
+                inTemplate = false;
+            }
+        }
+    }
+
+    return templateLines;
+};
+
+/**
  * 计算模板标签的长度
  * @param nonEmptyLines 非空行数组
  * @param scriptInfo 脚本标签信息
@@ -224,11 +304,14 @@ export const vueModule: Module = {
     calc(splitLines: string[]) {
         // 过滤空行
         const nonEmptyLines = splitLines.filter((line) => line.trim() !== '');
+        const roughLines = nonEmptyLines.length;
 
-        // 如果总行数没有达到警告级别，直接返回 0
-        if (nonEmptyLines.length <= this.maxLength.warning) {
+        // 如果总行数没有达到警告级别，直接返回粗糙行数
+        if (roughLines <= this.maxLength.warning) {
+            const excludedLines = splitLines.length - roughLines;
             return {
-                lines: nonEmptyLines.length,
+                lines: roughLines,
+                excludedLines,
                 scriptLength: 0,
                 templateLength: 0,
                 styleLength: 0,
@@ -240,11 +323,38 @@ export const vueModule: Module = {
         const scriptInfo = findScriptTagsInfo(nonEmptyLines);
         const templateLength = calculateTemplateLength(nonEmptyLines, scriptInfo, styleInfo);
 
+        // 提取 script 区域内容并过滤注释
+        const scriptLines =
+            scriptInfo.start !== -1 && scriptInfo.end !== -1
+                ? nonEmptyLines.slice(scriptInfo.start + 1, scriptInfo.end)
+                : [];
+        const filteredScriptLines = filterCommentLines(scriptLines);
+
+        // 提取 style 区域内容并过滤注释
+        const styleLines: string[] = [];
+        for (let i = 0; i < styleInfo.startIndexes.length; i++) {
+            const start = styleInfo.startIndexes[i];
+            const end = styleInfo.endIndexes[i];
+            if (start !== undefined && end !== undefined) {
+                styleLines.push(...nonEmptyLines.slice(start + 1, end));
+            }
+        }
+        const filteredStyleLines = filterCommentLines(styleLines);
+
+        // 提取 template 区域内容并过滤注释
+        const templateLines = extractTemplateLines(nonEmptyLines, scriptInfo, styleInfo);
+        const filteredTemplateLines = filterCommentLines(templateLines);
+
+        const filteredTotal =
+            filteredScriptLines.length + filteredStyleLines.length + filteredTemplateLines.length;
+        const excludedLines = splitLines.length - filteredTotal;
+
         return {
-            lines: nonEmptyLines.length,
-            scriptLength: scriptInfo.length,
-            templateLength,
-            styleLength: styleInfo.length,
+            lines: filteredTotal,
+            excludedLines,
+            scriptLength: filteredScriptLines.length,
+            templateLength: filteredTemplateLines.length,
+            styleLength: filteredStyleLines.length,
         };
     },
 
