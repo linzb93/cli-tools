@@ -1,15 +1,13 @@
-import type { IterationContext } from '../types';
-import { BaseIterationStrategy } from './BaseIterationStrategy';
-import { ALL_STRATEGIES } from './strategies';
+import { BaseStrategy } from './BaseStrategy';
+import { ALL_STRATEGIES } from '../implementations';
 
 /**
  * 根据项目信息创建迭代策略
- * @param ctx 迭代上下文
  * @returns 对应类型的迭代策略实例
  */
-export const createIterationStrategy = (ctx: IterationContext): BaseIterationStrategy => {
+export const createIterationStrategy = (): BaseStrategy => {
     for (const StrategyClass of ALL_STRATEGIES) {
-        if (StrategyClass.matches(ctx)) {
+        if (StrategyClass.matches()) {
             return new StrategyClass();
         }
     }

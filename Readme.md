@@ -44,6 +44,7 @@
 |     |   |   |     |    ├ implementations/      # 多态实现类
 |     |   |   |     |    |    ├ WorkerA.ts
 |     |   |   |     |    |    └ WorkerB.ts
+|     |   |   |     |    ├ delegates/            # 委托类
 |     |   |   |     |    ├ types.ts
 |     |   |   |     |    └ index.ts
 |     |   |   |     └ parent-module/             # 父子模块结构

@@ -244,10 +244,9 @@ export async function getMainBranchName(projectPath: string = process.cwd()): Pr
         const branches = await getAllBranches(projectPath);
         const masterBranch = branches.find((b) => b.name === 'master');
         const mainBranch = branches.find((b) => b.name === 'main');
-
-        return masterBranch ? 'master' : mainBranch ? 'main' : '';
+        return masterBranch?.name || mainBranch?.name || 'master';
     } catch {
-        return '';
+        return 'master';
     }
 }
 
