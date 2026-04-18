@@ -1,6 +1,6 @@
 import type { ReleaseType } from 'semver';
 import { BaseStrategy } from '../core/BaseStrategy';
-import { getContext } from '../shared';
+import { IProjectType } from '../types';
 /**
  * 公司业务项目（非Monorepo）迭代策略
  * - 版本递增: patch
@@ -12,12 +12,10 @@ export class CompanyStrategy extends BaseStrategy {
 
     override releaseType: ReleaseType = 'patch';
 
-    static matches(): boolean {
-        const ctx = getContext();
-        return !ctx.isGithub && !ctx.isMono;
+    static matches(projectType: IProjectType): boolean {
+        return !projectType.isGithub && !projectType.isMono;
     }
     override getTargetBranch(): string {
-        const { finalVersion } = getContext();
-        return `dev-${finalVersion}`;
+        return `dev-${this.newVersion}`;
     }
 }

@@ -1,7 +1,6 @@
 import { BaseStrategy } from '../core/BaseStrategy';
-import { getContext } from '../shared';
 import { updateMonorepoPackageJSON, updatePackageJSON } from '../delegates/updatePackageJSON';
-
+import { IProjectType } from '../types';
 /**
  * 公司 Monorepo 项目迭代策略
  * - 版本递增: patch
@@ -11,12 +10,19 @@ import { updateMonorepoPackageJSON, updatePackageJSON } from '../delegates/updat
 export class CompanyMonoStrategy extends BaseStrategy {
     readonly name = '公司Monorepo项目';
 
-    static matches(): boolean {
-        const ctx = getContext();
-        return !ctx.isGithub && ctx.isMono;
+    static matches(projectType: IProjectType): boolean {
+        return !projectType.isGithub && projectType.isMono;
     }
-    override async updateProjectPackageJSON(pPath: string, version: string) {
-        await updatePackageJSON(pPath, version);
-        await updateMonorepoPackageJSON(pPath, version);
+    override async updateProjectPackageJSON({
+        projectPath,
+        pkgPath,
+        version,
+    }: {
+        projectPath: string;
+        pkgPath: string;
+        version: string;
+    }) {
+        await updatePackageJSON(projectPath, pkgPath, version);
+        await updateMonorepoPackageJSON(projectPath, pkgPath, version);
     }
 }

@@ -1,5 +1,6 @@
 import { BaseStrategy } from '../core/BaseStrategy';
-import { getContext } from '../shared';
+import { IProjectType } from '../types';
+
 /**
  * GitHub 非Monorepo 项目迭代策略
  * - 版本递增: minor
@@ -9,8 +10,7 @@ import { getContext } from '../shared';
 export class GithubStrategy extends BaseStrategy {
     readonly name = 'GitHub项目';
 
-    static matches(): boolean {
-        const ctx = getContext();
-        return ctx.isGithub && !ctx.isMono;
+    static matches(projectType: IProjectType): boolean {
+        return projectType.isGithub && !projectType.isMono;
     }
 }
