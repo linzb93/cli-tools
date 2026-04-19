@@ -8,7 +8,7 @@ import { load } from 'cheerio';
 import Table from 'cli-table3';
 import { defaultBrowserHeaders } from '@/utils/helper';
 import spinner from '@/utils/spinner';
-import { COLOR_MAP } from '../color';
+import { COLOR_MAP } from '@/constant';
 
 /**
  * 获取IP归属地

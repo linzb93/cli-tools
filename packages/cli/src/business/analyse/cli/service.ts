@@ -5,7 +5,7 @@ import { levelCharacters } from '@/constant';
 import { logger } from '@/utils/logger';
 import { parseLogDir } from '@/utils/files/log';
 import type { TimePeriod, CliAnalyseOptions } from './types';
-import { COLOR_MAP } from '@/business/color';
+import { COLOR_MAP } from '@/constant';
 
 /**
  * 获取时间段文本描述

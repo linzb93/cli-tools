@@ -27,10 +27,14 @@ export abstract class BaseStrategy {
     /** 版本递增类型 */
     releaseType: ReleaseType = 'minor';
     /** 新版本号 */
-    protected newVersion: string = '';
+    protected newVersion = '';
     /** 目标分支名 */
-    private targetBranch: string = '';
+    private targetBranch = '';
 
+    /**
+     * 运行迭代策略
+     * @param options 策略选项
+     */
     async run(options: IterationOptions & ExtraStrategyOptions) {
         const { version } = options;
         this.calculateNewVersion(version, options.pkgPath);
@@ -99,15 +103,21 @@ export abstract class BaseStrategy {
         const currentBranch = gitStatus.branchName;
         if (gitStatus.status === GitStatusMap.Uncommitted) {
             logger.info('当前分支有未提交的代码，正在自动提交...');
-            await executeCommands(['git add .', gitActions.commit('save uncommitted changes before iteration')]);
+            await executeCommands(['git add .', gitActions.commit('save uncommitted changes before iteration')], {
+                silentStart: true,
+            });
         }
         if (currentBranch !== mainBranch) {
             logger.info(`切换到主干分支 ${mainBranch} 并拉取最新代码...`);
-            await executeCommands([gitActions.checkout(mainBranch), gitActions.pull()]);
+            await executeCommands([gitActions.checkout(mainBranch), gitActions.pull()], {
+                silentStart: true,
+            });
         } else {
             // 已经在主分支，拉取前检查是否有未提交代码
             logger.info('拉取最新主干代码...');
-            await executeCommands([gitActions.pull()]);
+            await executeCommands([gitActions.pull()], {
+                silentStart: true,
+            });
         }
     }
     /**
@@ -124,10 +134,14 @@ export abstract class BaseStrategy {
             } else {
                 logger.info(`本地不存在 ${targetBranch} 分支，将新建...`);
             }
-            await executeCommands([gitActions.checkout(targetBranch, true)]);
+            await executeCommands([gitActions.checkout(targetBranch, true)], {
+                silentStart: true,
+            });
             return;
         }
-        await executeCommands([gitActions.checkout(targetBranch)]);
+        await executeCommands([gitActions.checkout(targetBranch)], {
+            silentStart: true,
+        });
     }
     /**
      * 更新项目的 package.json 中的版本号
@@ -154,13 +168,19 @@ export abstract class BaseStrategy {
     async commitAndPushChanges(isBranchExist: boolean): Promise<void> {
         const { newVersion, targetBranch } = this;
         logger.info('提交版本变更并推送到远端...');
-        await executeCommands(['git add .', gitActions.commit(`chore:bump version to ${newVersion}`)]);
+        await executeCommands(['git add .', gitActions.commit(`chore:bump version to ${newVersion}`)], {
+            silentStart: true,
+        });
 
         if (isBranchExist) {
-            await executeCommands([gitActions.push()]);
+            await executeCommands([gitActions.push()], {
+                silentStart: true,
+            });
             logger.success(`成功推送到远程`);
         } else {
-            await executeCommands([gitActions.push(true, targetBranch)]);
+            await executeCommands([gitActions.push(true, targetBranch)], {
+                silentStart: true,
+            });
             logger.success(`成功推送到远程并设置上游分支`);
         }
     }

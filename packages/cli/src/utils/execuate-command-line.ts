@@ -63,6 +63,21 @@ export const formatError = (error: string): string => {
         .join('\n');
 };
 
+export const calculateCommandTime = {
+    startTime: dayjs(),
+    endTime: dayjs(),
+    start() {
+        this.startTime = dayjs();
+        console.log(`${chalk.gray(`[${this.startTime.format('HH:mm:ss')}]`)} 开始执行命令`);
+    },
+    end() {
+        this.endTime = dayjs();
+        console.log(
+            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${timeMsFormat(this.endTime.diff(this.startTime))}`,
+        );
+    },
+};
+
 /**
  * 执行单个命令
  * @param {CommandConfig} config - 命令配置
@@ -146,9 +161,8 @@ export const startExecuateCommands = async (options?: ExecuateOptions) => {
  * @returns {Promise<void>}
  */
 export async function executeCommands(commands: Command[], options?: ExecuateOptions): Promise<void> {
-    const startTime = dayjs();
     if (!options?.silentStart) {
-        console.log(`${chalk.gray(`[${startTime.format('HH:mm:ss')}]`)} 开始执行命令`);
+        calculateCommandTime.start();
     }
 
     for (const cmd of commands) {
@@ -172,10 +186,6 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
     }
 
     if (!options?.silentStart && process.env.MODE !== 'cliTest') {
-        const endTime = dayjs();
-        const duration = endTime.diff(startTime, 'millisecond');
-        console.log(
-            `${chalk.gray(`[${endTime.format('HH:mm:ss')}]`)} 任务执行完成，用时${chalk.magenta(timeMsFormat(duration))}`,
-        );
+        calculateCommandTime.end();
     }
 }

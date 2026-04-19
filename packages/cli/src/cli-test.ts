@@ -30,6 +30,13 @@ program
     .action((subCommand, rest) => {
         import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
     });
+// minimax 命令
+program
+    .command('minimax')
+    .option('--watch', '是否开启监控模式')
+    .action((options) => {
+        import('./commands/minimax').then((m) => m.minimaxCommand(options));
+    });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
 

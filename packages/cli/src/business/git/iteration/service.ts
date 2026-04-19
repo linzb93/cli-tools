@@ -4,6 +4,7 @@ import path from 'node:path';
 import chalk from 'chalk';
 import { createIterationStrategy } from './core/Factory';
 import { isGithubProject, isMonorepo } from '../shared/utils/project-type';
+import { calculateCommandTime } from '@/utils/execuate-command-line';
 import type { IterationOptions } from './types';
 import { isDebug } from './shared';
 /**
@@ -12,6 +13,7 @@ import { isDebug } from './shared';
  * @returns Promise<void>
  */
 export const iterationService = async (options: IterationOptions): Promise<void> => {
+    calculateCommandTime.start();
     const projectPath = process.cwd();
     const pkgPath = path.resolve(projectPath, 'package.json');
     if (!fs.existsSync(pkgPath)) {
@@ -36,6 +38,7 @@ export const iterationService = async (options: IterationOptions): Promise<void>
             projectPath,
             pkgPath,
         });
+        calculateCommandTime.end();
     } catch (error) {
         logger.error(`操作失败: ${(error as Error).message}`);
     }

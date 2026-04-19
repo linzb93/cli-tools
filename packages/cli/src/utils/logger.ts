@@ -5,12 +5,14 @@ import dayjs from 'dayjs';
 import cfonts from 'cfonts';
 import fs from 'fs-extra';
 import tinycolor from 'tinycolor2';
+import { sampleSize } from 'lodash-es';
 import gradientUtil from 'gradient-string';
 import logSymbols from 'log-symbols';
 import terminalSize from 'terminal-size';
 import stringWidth from 'string-width';
 import spinner from './spinner';
 import { cacheRoot } from '@cli-tools/shared';
+import { COLOR_MAP } from '../constant';
 
 interface BoxOptions {
     title?: string;
@@ -194,12 +196,18 @@ const logDebug = (content: string): void => {
 const big = (
     text: string,
     options?: {
-        color: string;
+        color?: string;
+        random?: boolean;
     },
 ): void => {
     cfonts.say(text, {
         font: 'block',
-        colors: [options?.color || 'red'],
+        colors: (() => {
+            if (options?.random) {
+                return sampleSize(Object.values(COLOR_MAP), 2);
+            }
+            return [options?.color || 'red'];
+        })(),
         background: 'transparent',
     });
 };

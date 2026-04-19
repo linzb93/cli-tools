@@ -6,7 +6,7 @@ import { timeMsFormat } from '@/utils/helper';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
 import { logger } from '@/utils/logger';
-import { COLOR_MAP } from '@/business/color';
+import { COLOR_MAP } from '@/constant';
 
 const MINIMAX_API_BASE = 'https://www.minimaxi.com/v1/api/openplatform';
 let isWatchMode = false;
@@ -80,6 +80,7 @@ function render(data: ParsedUsageData): void {
     console.clear();
     logger.big('Minimax', {
         color: COLOR_MAP.orange,
+        random: true,
     });
     console.log();
     console.log(`  ${renderProgressBar(percentage)} ${chalk.green(used)} / ${total}`);

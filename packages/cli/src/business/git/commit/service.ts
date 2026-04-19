@@ -29,7 +29,7 @@ export const commitService = async (message: string, options: Options): Promise<
             logger.error('发现硬编码，禁止提交', true);
         }
 
-        const commands: Command[] = [`git add ${options.path ? options.path.replace(/\\/g, '/') || '.' : '.'}`];
+        const commands: Command[] = [`git add ${options.path ? options.path.replace(/\\/g, '/') : '.'}`];
         if (options.merge && !message) {
             // 如果是 --merge 选项，使用上一条提交信息 amend
             commands.push('git commit --amend --no-edit');
