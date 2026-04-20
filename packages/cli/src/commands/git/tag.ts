@@ -45,7 +45,7 @@ const syncTag = () => {
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  */
-export const tagCommand = function (subCommand: string): void {
+export const tagCommand = function (subCommand: string[]): void {
     // 子命令映射表
     const commandMap: Record<string, () => void> = {
         delete: deleteTag,
@@ -53,12 +53,12 @@ export const tagCommand = function (subCommand: string): void {
     };
 
     // 执行对应的子命令
-    if (!subCommand) {
+    if (!subCommand.length) {
         get();
-    } else if (commandMap[subCommand]) {
-        commandMap[subCommand]();
+    } else if (commandMap[subCommand[0]]) {
+        commandMap[subCommand[0]]();
     } else {
-        console.log(`未知的 git tag 子命令: ${subCommand}`);
+        console.log(`未知的 git tag 子命令: ${subCommand[0]}`);
         console.log('可用的子命令: ' + Object.keys(commandMap).join(', '));
     }
 };

@@ -2,7 +2,7 @@
  * git 命令入口函数
  * @param {string} subCommand - 子命令名称
  */
-export const gitCommand = function (subCommand: string, nextCommand?: string): void {
+export const gitCommand = function (subCommand: string, nextCommand: string[]): void {
     // 子命令映射表
     if (subCommand === 'push') {
         import('./push').then((module) => module.pushCommand());
@@ -17,7 +17,7 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): v
         return;
     }
     if (subCommand === 'tag') {
-        import('./tag').then((module) => module.tagCommand(nextCommand || ''));
+        import('./tag').then((module) => module.tagCommand(nextCommand));
         return;
     }
     if (subCommand === 'deploy') {
@@ -25,7 +25,7 @@ export const gitCommand = function (subCommand: string, nextCommand?: string): v
         return;
     }
     if (subCommand === 'branch') {
-        import('./branch').then((module) => module.branchCommand([nextCommand || '']));
+        import('./branch').then((module) => module.branchCommand(nextCommand));
         return;
     }
     if (subCommand === 'scan') {

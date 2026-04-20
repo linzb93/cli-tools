@@ -4,7 +4,7 @@ let context: DeployContext;
 
 let defaultContext: DeployContext = {
     prod: false,
-    type: '',
+    type: 'v',
     version: '',
     open: false,
     commit: '',
