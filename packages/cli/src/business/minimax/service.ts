@@ -82,7 +82,6 @@ function render(data: ParsedUsageData): void {
         color: COLOR_MAP.orange,
         random: true,
     });
-    console.log();
     console.log(`  ${renderProgressBar(percentage)} ${chalk.green(used)} / ${total}`);
     console.log();
     console.log(
@@ -94,9 +93,9 @@ function render(data: ParsedUsageData): void {
     console.log(
         chalk.gray(`  距离下次重置时间还有${chalk.magenta(timeMsFormat(remainsTime, { minUnitIsMinute: true }))}`),
     );
-    console.log();
-    console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
     if (isWatchMode) {
+        console.log();
+        console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
         console.log(
             chalk.gray(
                 `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 3 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,

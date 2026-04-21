@@ -121,7 +121,6 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
                             FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
                         },
                     });
-                    console.log(stat);
                 }
             } catch (e: any) {
                 console.log(chalk.red(`执行 diff 失败: ${e.message}`));

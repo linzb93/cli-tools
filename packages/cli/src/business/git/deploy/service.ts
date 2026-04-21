@@ -1,12 +1,10 @@
 import { logger } from '@/utils/logger';
-import dayjs from 'dayjs';
-import chalk from 'chalk';
-import { timeMsFormat } from '@/utils/helper';
 import { getCurrentBranchName, getMainBranchName, isGitProject as checkIsGitProject } from '../shared/utils';
 import { Factory } from './core/Factory';
 import { setContext } from './shared';
 import type { DeployOptions } from './types';
 import { checkHardcoded } from '../shared/utils/hard-coded';
+import { calculateCommandTime } from '@/utils/execuate-command-line';
 
 /**
  * 初始化分支信息
@@ -37,7 +35,7 @@ export const initBranchInfo = async (): Promise<void> => {
  * @param {DeployOptions} options - 命令选项
  */
 export const deployService = async (options: Partial<DeployOptions>): Promise<void> => {
-    const startTime = dayjs();
+    calculateCommandTime.start();
     try {
         // 检查是否有硬编码的配置
         const hasHardcoded = await checkHardcoded(options.cwd || process.cwd());
@@ -58,11 +56,7 @@ export const deployService = async (options: Partial<DeployOptions>): Promise<vo
         });
         const impl = await Factory.create();
         await impl.start();
-        const endTime = dayjs();
-        const duration = endTime.diff(startTime, 'millisecond');
-        console.log(
-            `${chalk.gray(`[${endTime.format('HH:mm:ss')}]`)} 任务执行完成，用时${chalk.magenta(timeMsFormat(duration))}`,
-        );
+        calculateCommandTime.end();
     } catch (error) {
         if (error instanceof Error) {
             // 忽略 exit 错误，这通常是 inquirer 中断或主动退出

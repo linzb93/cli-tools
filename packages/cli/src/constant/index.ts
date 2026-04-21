@@ -9,8 +9,8 @@ export const levelCharacters = {
  * 颜色映射表
  */
 export const COLOR_MAP = {
-    red: '#ff0000',
-    yellow: '#ffff00',
+    red: '#f00',
+    yellow: '#ff0',
     orange: '#ffa500',
     blue: '#0000ff',
     lightBlue: '#add8e6',
@@ -18,8 +18,10 @@ export const COLOR_MAP = {
     lightGreen: '#90ee90',
     cyan: '#00ffff',
     magenta: '#ff00ff',
-    white: '#ffffff',
-    black: '#000000',
+    white: '#fff',
+    black: '#000',
     pink: '#ffc0cb',
     purple: '#800080',
+    coffee: '#808040',
+    brown: '#8b4513',
 };
