@@ -43,7 +43,7 @@ export const branchCommand = function (restCommand: string[]): void {
     };
 
     // 执行对应的子命令
-    if (!restCommand || !restCommand.length) {
+    if (!restCommand || !restCommand.length || restCommand[0].startsWith('--')) {
         get();
     } else if (commandMap[restCommand[0]]) {
         commandMap[restCommand[0]]();

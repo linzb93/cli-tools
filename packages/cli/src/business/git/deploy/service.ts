@@ -47,7 +47,7 @@ export const deployService = async (options: Partial<DeployOptions>): Promise<vo
         }
         await initBranchInfo();
         // 设置提交信息
-        setContext({ commit: options.commit || 'update', type: options.type || 'v' });
+        setContext({ commit: options.commit || 'update', type: options.type || 'v', prod: options.prod || false });
         const impl = await Factory.create();
         await impl.start();
         const endTime = dayjs();

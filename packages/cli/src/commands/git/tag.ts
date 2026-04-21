@@ -20,25 +20,31 @@ const get = () => {
     });
 };
 const deleteTag = () => {
-    subCommandCompiler((program) => {
-        program
-            .command('delete')
-            .description('删除Git分支')
-            .action(() => {
-                tagDeleteService();
-            });
-    });
+    subCommandCompiler(
+        (program) => {
+            program
+                .command('delete')
+                .description('删除Git分支')
+                .action(() => {
+                    tagDeleteService();
+                });
+        },
+        { level: 3 },
+    );
 };
 
 const syncTag = () => {
-    subCommandCompiler((program) => {
-        program
-            .command('sync')
-            .description('同步Git标签')
-            .action(() => {
-                tagSyncService();
-            });
-    });
+    subCommandCompiler(
+        (program) => {
+            program
+                .command('sync')
+                .description('同步Git标签')
+                .action(() => {
+                    tagSyncService();
+                });
+        },
+        { level: 3 },
+    );
 };
 
 /**
@@ -53,7 +59,7 @@ export const tagCommand = function (subCommand: string[]): void {
     };
 
     // 执行对应的子命令
-    if (!subCommand.length) {
+    if (!subCommand.length || subCommand[0].startsWith('--')) {
         get();
     } else if (commandMap[subCommand[0]]) {
         commandMap[subCommand[0]]();
