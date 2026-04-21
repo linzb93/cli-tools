@@ -1,6 +1,5 @@
 import { BaseDeploy } from '../core/BaseDeploy';
 import { getContext } from '../shared';
-import { readPackage } from 'read-pkg';
 import { openDeployPage } from '../../shared/utils/jenkins';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
@@ -26,7 +25,7 @@ export class CompanyDeploy extends BaseDeploy {
         await this.executeBaseManagers();
         const context = getContext();
         if (!context.current) {
-            await this.handleTagAndOutput(true);
+            await this.handleTagAndOutput();
         }
         if (context.open) {
             await openDeployPage(context.type, true);
@@ -70,7 +69,7 @@ export class CompanyDeploy extends BaseDeploy {
             }
             // 合并到主分支
             await this.mergeToBranch(mainBranch, false);
-            await this.handleTagAndOutput(true);
+            await this.handleTagAndOutput();
         } else if (!context.current) {
             // 合并到release分支
             await this.mergeToBranch('release', true);
@@ -83,28 +82,17 @@ export class CompanyDeploy extends BaseDeploy {
     }
     /**
      * 处理标签和输出信息
-     * @param {boolean} readFromPackage - 是否尝试从package.json读取版本号
      * @returns {Promise<void>}
      */
-    private async handleTagAndOutput(readFromPackage: boolean = false): Promise<void> {
+    private async handleTagAndOutput(): Promise<void> {
         const context = getContext();
 
         let version = context.version;
 
-        // 如果没有指定version，且允许读取package.json，尝试从package.json读取
-        if (!version && readFromPackage) {
-            try {
-                const pkg = await readPackage();
-                version = pkg.version;
-            } catch (error) {
-                // 读取失败则忽略，保持version为undefined
-            }
-        }
-
         // 创建tag选项
         const tagOptions: TagOptions = {
             type: context.type,
-            version: version,
+            version: version || '',
             msg: context.commit,
         };
 
