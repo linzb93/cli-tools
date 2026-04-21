@@ -73,7 +73,7 @@ export const calculateCommandTime = {
     end() {
         this.endTime = dayjs();
         console.log(
-            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${timeMsFormat(this.endTime.diff(this.startTime))}`,
+            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${chalk.magenta(timeMsFormat(this.endTime.diff(this.startTime)))}`,
         );
     },
 };
