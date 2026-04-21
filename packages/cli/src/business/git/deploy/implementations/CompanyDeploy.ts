@@ -51,7 +51,6 @@ export class CompanyDeploy extends BaseDeploy {
         const context = getContext();
         const { mainBranch } = context;
         await this.executeBaseManagers();
-
         if (context.prod) {
             // 询问用户是否确认发布
             const { confirmDeploy } = await inquirer.prompt([

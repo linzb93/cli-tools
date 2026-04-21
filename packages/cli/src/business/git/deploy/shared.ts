@@ -17,6 +17,7 @@ let defaultContext: DeployContext = {
 export const setContext = (ctx: Partial<DeployContext>) => {
     context = {
         ...defaultContext,
+        ...context,
         ...ctx,
     };
 };
