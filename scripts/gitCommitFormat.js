@@ -45,6 +45,10 @@ const commitMap = [
         name: 'ci',
         description: '持续集成',
     },
+    {
+        name: 'merge',
+        description: '合并分支',
+    },
 ];
 const commitMsgPath = process.argv[2];
 const commitMessage = fs.readFileSync(commitMsgPath, 'utf8');

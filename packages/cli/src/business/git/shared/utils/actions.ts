@@ -59,6 +59,10 @@ export function formatCommitMessage(rawCommit: string): string {
             value: 'feat',
             key: ['新增', '功能', 'feature', 'new', 'feat', '添加', 'implement'],
         },
+        {
+            value: 'merge',
+            key: ['合并'],
+        },
     ];
     // 1. 检查是否已有标准前缀 (如 feat:、fix: 等)
     const hasStandardPrefix = prefixes.find((item) => commit.startsWith(`${item.value}:`));
