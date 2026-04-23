@@ -178,6 +178,33 @@ function merge(branch: string): CommandConfig {
         },
     };
 }
+/**
+ * 生成 Git 合并上一个提交命令配置
+ * @param {object} object - 合并上一个提交的参数
+ * @param {string} object.message - 提交信息
+ * @param {number} [object.head=1] - 回退的提交数量
+ * @param {string} [object.path='.'] - 提交路径
+ * @returns {CommandConfig[]} Git 合并上一个提交命令配置数组
+ */
+function mergePrev({
+    message,
+    head = 1,
+    path = '.',
+}: {
+    message: string;
+    head?: number;
+    path?: string;
+}): CommandConfig[] {
+    return [
+        {
+            message: `git reset --soft HEAD~${head}`,
+        },
+        {
+            message: `git add ${path}`,
+        },
+        commit(message),
+    ];
+}
 
 /**
  * 生成 Git 推送代码命令配置
@@ -247,6 +274,7 @@ export default {
     commit,
     pull,
     merge,
+    mergePrev,
     push,
     clone,
     checkout,

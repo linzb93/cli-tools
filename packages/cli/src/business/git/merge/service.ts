@@ -39,6 +39,6 @@ export const mergeService = async (options: Options): Promise<void> => {
     const commitMessage = formatCommitMessage(
         answer.commitMessage !== '' ? answer.commitMessage : arr[0].message.replace(/\w+\:/g, ''),
     );
-    await executeCommands(['git reset --soft HEAD~' + head, 'git add .', gitActions.commit(commitMessage)]);
+    await executeCommands(gitActions.mergePrev({ message: commitMessage, head }));
     logger.success(chalk.green('合并完成'));
 };

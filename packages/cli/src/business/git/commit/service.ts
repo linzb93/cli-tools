@@ -4,6 +4,7 @@ import gitActions from '../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/execuate-command-line';
 import { checkHardcoded } from '../shared/utils/hard-coded';
 import type { Options } from './types';
+import { splitGitLog } from '../shared/utils/log';
 
 /**
  * git commit 命令的主入口函数
@@ -28,15 +29,15 @@ export const commitService = async (message: string, options: Options): Promise<
         if (await checkHardcoded()) {
             logger.error('发现硬编码，禁止提交', true);
         }
-
-        const commands: Command[] = [`git add ${options.path ? options.path.replace(/\\/g, '/') : '.'}`];
+        const commitPath = options.path ? options.path.replace(/\\/g, '/') : '.';
+        let commands: Command[] = [`git add ${commitPath}`, gitActions.commit(message || '更新代码')];
         if (options.merge && !message) {
-            // 如果是 --merge 选项，使用上一条提交信息 amend
-            commands.push('git commit --amend --no-edit');
-        } else {
-            commands.push(gitActions.commit(message));
+            const arr = await splitGitLog(1);
+            const lastCommit = arr[0].message;
+            commands = commands.concat(gitActions.mergePrev({ message: lastCommit, path: commitPath, head: 2 }));
         }
         await executeCommands(commands);
+
         logger.success('提交成功');
     } catch (error) {
         logger.error(`提交失败: ${(error as Error).message}`);

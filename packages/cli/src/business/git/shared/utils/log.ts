@@ -25,11 +25,14 @@ export const splitGitLog = async (head: number, cwd: string = process.cwd()) => 
             continue;
         }
         if (line.startsWith('Author:')) {
-            result.slice(-1)[0].author = line.split('Author: ')[1].trim();
+            result.slice(-1)[0].author = line.replace('Author: ', '').trim();
+            continue;
+        }
+        if (line.startsWith('Merge:')) {
             continue;
         }
         if (line.startsWith('Date:')) {
-            result.slice(-1)[0].date = dayjs(line.split('Date: ')[1].trim()).format('YYYY-MM-DD HH:mm:ss');
+            result.slice(-1)[0].date = dayjs(line.replace('Date: ', '').trim()).format('YYYY-MM-DD HH:mm:ss');
             continue;
         }
         result.slice(-1)[0].message += line.trim() + '\n';
