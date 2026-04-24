@@ -29,6 +29,8 @@ export interface IterationContext {
 }
 
 export interface IProjectType {
+    /** 是否为 mono 项目 */
     isMono: boolean;
+    /** 是否为 github 项目 */
     isGithub: boolean;
 }

@@ -67,7 +67,10 @@ export abstract class BaseStrategy {
         const { releaseType } = this;
         const pkg = await fs.readJSON(pkgPath);
         const currentVersion = pkg.version;
-        if (versionArg) return versionArg;
+        if (versionArg) {
+            this.newVersion = versionArg;
+            return versionArg;
+        }
 
         // 如果没有当前版本，从 1.0.0 开始
         if (!currentVersion) {

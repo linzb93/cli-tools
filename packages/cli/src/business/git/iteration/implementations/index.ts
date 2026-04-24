@@ -10,6 +10,7 @@ import { IProjectType } from '../types';
  */
 export interface StrategyClass {
     new (): BaseStrategy;
+    /** 是否匹配项目类型 */
     matches(projectType: IProjectType): boolean;
 }
 
