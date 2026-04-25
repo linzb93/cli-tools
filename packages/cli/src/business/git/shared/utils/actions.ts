@@ -120,7 +120,8 @@ export function isNetworkError(errMsg: string): boolean {
     return (
         errMsg.toLowerCase().includes('timeout') ||
         errMsg.includes("Couldn't connect to server") ||
-        errMsg.includes('Failed to connect to') ||
+        errMsg.includes('Failed') ||
+        errMsg.includes('Failure') ||
         errMsg.includes('Connection reset by peer') ||
         errMsg.includes('unable to access') ||
         errMsg.includes('before end of the underlying stream')
