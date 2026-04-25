@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { executeCommands, CommandConfig } from '@/utils/execuate-command-line';
 import inquirer from '@/utils/inquirer';
 
@@ -113,7 +114,9 @@ async function handleConflict() {
  * @returns 是否超时错误
  */
 export function isNetworkError(errMsg: string): boolean {
+    console.log(chalk.gray('debug'));
     console.log(errMsg);
+    console.log(chalk.gray('debug-end'));
     return (
         errMsg.toLowerCase().includes('timeout') ||
         errMsg.includes("Couldn't connect to server") ||
