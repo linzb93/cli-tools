@@ -152,12 +152,6 @@ function pull(): CommandConfig {
         message: 'git pull',
         maxAttempts: 100,
         onError: async (errMsg) => {
-            if (errMsg.includes('You have unstaged changes')) {
-                await executeCommands(['git add .', 'git commit -m feat:update', pull()]);
-                return {
-                    shouldStop: true,
-                };
-            }
             if (isNetworkError(errMsg)) {
                 return {
                     shouldStop: false,

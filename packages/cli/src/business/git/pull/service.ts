@@ -1,8 +1,9 @@
-import { isGitProject, getCurrentBranchName } from '../shared/utils';
-import gitActions from '../shared/utils/actions';
+import { isGitProject, getCurrentBranchName, getGitProjectStatus, GitStatusMap } from '../shared/utils';
+import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { executeCommands } from '@/utils/execuate-command-line';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
+import inquirer from '@/utils/inquirer';
 import type { Options } from './types';
 
 /**
@@ -26,6 +27,25 @@ export const pullService = async (options: Options): Promise<void> => {
         }
 
         logger.info(`当前分支: ${chalk.green(currentBranch)}`);
+
+        // 检查是否有未提交的代码
+        const projectStatus = await getGitProjectStatus();
+        if (projectStatus.status === GitStatusMap.Uncommitted) {
+            const { commitMessage } = await inquirer.prompt([
+                {
+                    type: 'input',
+                    message: '检测到有未提交的代码，请输入提交信息:',
+                    name: 'commitMessage',
+                    default: 'feat:update',
+                },
+            ]);
+
+            const formattedMessage = formatCommitMessage(commitMessage);
+            logger.info(`提交信息: ${chalk.green(formattedMessage)}`);
+
+            await executeCommands(['git add .', `git commit -m ${formattedMessage}`]);
+            logger.success('代码已提交');
+        }
 
         // 显示进度提示
         logger.info('正在拉取代码...');
