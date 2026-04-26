@@ -88,6 +88,17 @@ export function formatCommitMessage(rawCommit: string): string {
     }
     return `${inferredPrefix.value}:${commit}`;
 }
+/**
+ * 当提交信息包含空格时，添加引号
+ * @param {string} message - 提交信息
+ * @returns {string} 处理后的提交信息
+ */
+function addQuoteWhenBlankExist(message: string): string {
+    if (message.includes(' ') && !message.startsWith('"')) {
+        return `"${message}"`;
+    }
+    return message;
+}
 
 /**
  * 处理代码合并冲突
@@ -134,7 +145,7 @@ export function isNetworkError(errMsg: string): boolean {
  */
 function commit(message: string): CommandConfig {
     return {
-        message: `git commit -m ${formatCommitMessage(message)}`,
+        message: `git commit -m ${addQuoteWhenBlankExist(formatCommitMessage(message))}`,
         onError: async () => {
             return {
                 shouldStop: true,
@@ -151,16 +162,9 @@ function pull(): CommandConfig {
     return {
         message: 'git pull',
         maxAttempts: 100,
-        onError: async (errMsg) => {
-            if (isNetworkError(errMsg)) {
-                return {
-                    shouldStop: false,
-                };
-            }
-            return {
-                shouldStop: true,
-            };
-        },
+        onError: async (message) => ({
+            shouldStop: !isNetworkError(message),
+        }),
     };
 }
 
