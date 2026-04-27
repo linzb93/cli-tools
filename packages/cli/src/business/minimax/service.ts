@@ -1,6 +1,7 @@
 import axios from 'axios';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
+import net from 'node:net';
 import { readSecret } from '@cli-tools/shared';
 import { timeMsFormat } from '@/utils/helper';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
@@ -9,7 +10,41 @@ import { logger } from '@/utils/logger';
 import { COLOR_MAP } from '@/constant';
 
 const MINIMAX_API_BASE = 'https://www.minimaxi.com/v1/api/openplatform';
+const TCP_PORT = 19876;
 let isWatchMode = false;
+let tcpRefreshCallback: (() => void) | null = null;
+let lastRefreshTime: Date | null = null;
+let isFirstRender = true;
+
+/**
+ * 创建 TCP Server，接收 "/refresh" 命令刷新界面
+ */
+function createTcpServer(port: number): net.Server {
+    const server = net.createServer((socket) => {
+        logger.info(`TCP 客户端连接: ${socket.remoteAddress}:${socket.remotePort}`);
+
+        socket.on('data', (data) => {
+            const message = data.toString().trim();
+            if (message === '/refresh' && tcpRefreshCallback) {
+                logger.info('收到 /refresh 命令，刷新界面');
+                tcpRefreshCallback();
+                socket.write('OK: refreshed\n');
+            } else {
+                socket.write('UNKNOWN command\n');
+            }
+        });
+
+        socket.on('error', (err) => {
+            logger.error(`TCP socket error: ${err.message}`);
+        });
+    });
+
+    server.listen(port, () => {
+        // logger.info(`TCP server listening on port ${port}`);
+    });
+
+    return server;
+}
 /**
  * 获取 Minimax API Token
  */
@@ -96,10 +131,16 @@ function render(data: ParsedUsageData): void {
     if (isWatchMode) {
         console.log();
         console.log(chalk.gray('  ───────────────────────────────────────────────────────'));
+        if (lastRefreshTime) {
+            console.log(chalk.gray(`  上次刷新: ${chalk.bold.white(dayjs(lastRefreshTime).format('HH:mm:ss'))}`));
+        }
         console.log(
             chalk.gray(
                 `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 3 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,
             ),
+        );
+        console.log(
+            chalk.gray(`  TCP 端口: ${chalk.bold.white(TCP_PORT)} (发送 ${chalk.bold.white('/refresh')} 远程刷新)`),
         );
     }
     console.log();
@@ -168,10 +209,12 @@ export async function minimaxService(options?: Options): Promise<() => void> {
     let lastData: ParsedUsageData | null = null;
     let timerId: NodeJS.Timeout | null = null;
     let isRunning = true;
+    let tcpServer: net.Server | null = null;
 
     const refresh = async () => {
         if (!isRunning) return;
 
+        lastRefreshTime = new Date();
         try {
             const response = await fetchUsage(token);
             const data = parseUsageData(response);
@@ -202,6 +245,10 @@ export async function minimaxService(options?: Options): Promise<() => void> {
     // 设置定时刷新
     timerId = setInterval(refresh, interval);
 
+    // 创建 TCP server 接收 /refresh 命令
+    tcpRefreshCallback = refresh;
+    tcpServer = createTcpServer(TCP_PORT);
+
     // 启动 readline 交互
     const readlinePromise = createCommandReadline([refreshCommand], {
         prompt: '\n输入指令> ',
@@ -213,6 +260,9 @@ export async function minimaxService(options?: Options): Promise<() => void> {
         if (timerId) {
             clearInterval(timerId);
         }
+        if (tcpServer) {
+            tcpServer.close();
+        }
     });
 
     // 处理 Ctrl+C 退出
@@ -220,6 +270,9 @@ export async function minimaxService(options?: Options): Promise<() => void> {
         isRunning = false;
         if (timerId) {
             clearInterval(timerId);
+        }
+        if (tcpServer) {
+            tcpServer.close();
         }
         process.exit(0);
     });
@@ -229,6 +282,9 @@ export async function minimaxService(options?: Options): Promise<() => void> {
         isRunning = false;
         if (timerId) {
             clearInterval(timerId);
+        }
+        if (tcpServer) {
+            tcpServer.close();
         }
     };
 }

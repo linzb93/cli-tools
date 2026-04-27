@@ -1,5 +1,5 @@
 import { Socket } from 'node:net';
-import { parseData, parseTcpAddress } from './utils';
+import { parseTcpAddress } from './utils';
 
 /**
  * 发送 TCP 请求
@@ -14,11 +14,16 @@ export function tcpRequest(address: string, data?: string): Promise<unknown> {
         const { host, port } = parseTcpAddress(address);
 
         socket.connect(port, host);
+        socket.setTimeout(3000);
 
         socket.on('connect', () => {
             if (data) {
-                const parsed = parseData(data);
-                socket.write(JSON.stringify(parsed));
+                try {
+                    const parsed = JSON.parse(data);
+                    socket.write(JSON.stringify(parsed));
+                } catch {
+                    socket.write(data);
+                }
             }
             socket.end();
         });
@@ -31,13 +36,18 @@ export function tcpRequest(address: string, data?: string): Promise<unknown> {
             try {
                 const result = JSON.parse(buffer);
                 resolve(result);
-            } catch (error) {
-                reject(new Error(`TCP 响应 JSON.parse 失败: ${(error as Error).message}`));
+            } catch {
+                resolve(buffer);
             }
         });
 
-        socket.on('error', (error) => {
-            reject(new Error(`TCP 请求失败: ${error.message}`));
+        socket.on('error', (error: any) => {
+            if (error.code.includes('ECONNREFUSED')) {
+                reject(new Error(`TCP端口 ${port} 未开启`));
+                socket.destroy();
+            } else {
+                reject(new Error(`TCP 请求失败: ${error.message}`));
+            }
         });
     });
 }

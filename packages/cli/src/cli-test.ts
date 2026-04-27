@@ -24,18 +24,25 @@ program.hook('preAction', () => {
 
 //**** 请在这里替换需要调试的代码 ****
 // git 子命令
-program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest) => {
-        import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
-    });
+// program
+//     .command('git [sub-command] [rest...]')
+//     .allowUnknownOption()
+//     .action((subCommand, rest) => {
+//         import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
+//     });
 // minimax 命令
 program
     .command('minimax')
     .option('--watch', '是否开启监控模式')
     .action((options) => {
         import('./commands/minimax').then((m) => m.minimaxCommand(options));
+    });
+program
+    .command('fetch <url> [data]')
+    .option('-c, --clipboard', '从剪贴板读取请求数据')
+    .option('-m, --method <method>', 'HTTP 方法', 'post')
+    .action((url, data, options) => {
+        import('./commands/fetch').then((m) => m.fetchCommand(url, data, options));
     });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
