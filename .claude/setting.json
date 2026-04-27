@@ -1,0 +1,26 @@
+{
+    "hooks": {
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "mycli fetch \"localhost:19876\" \"/refresh\"",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "PermissionRequest": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "mycli dialog \"$(basename \"$(pwd)\") claude code需要你确认\"",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ]
+    }
+}

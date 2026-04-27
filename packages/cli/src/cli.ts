@@ -79,6 +79,14 @@ function registerCommands() {
             import('./commands/cookie').then((m) => m.cookieCommand(data, options));
         });
 
+    // dialog 命令
+    program
+        .command('dialog <message>')
+        .option('-t, --title <title>', '弹窗标题', '温馨提醒')
+        .action((message, options) => {
+            import('./commands/dialog').then((m) => m.dialogCommand(message, options.title));
+        });
+
     // curl 命令
     program
         .command('curl')
