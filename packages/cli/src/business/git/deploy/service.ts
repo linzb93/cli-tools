@@ -1,7 +1,7 @@
 import { logger } from '@/utils/logger';
 import { getCurrentBranchName, getMainBranchName, isGitProject as checkIsGitProject } from '../shared/utils';
 import { Factory } from './core/Factory';
-import { setContext } from './shared';
+import { setContext } from './helpers/context';
 import type { DeployOptions } from './types';
 import { checkHardcoded } from '../shared/utils/hard-coded';
 import { calculateCommandTime } from '@/utils/execuate-command-line';

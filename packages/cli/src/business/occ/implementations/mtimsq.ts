@@ -1,5 +1,5 @@
 import { createMeituanApp } from '../core/MeituanBase';
-import { openPC, noVersionSearch } from '../utils/occUtils';
+import { openPC, noVersionSearch } from '../helpers/occUtils';
 
 const app = createMeituanApp({
     name: 'im',

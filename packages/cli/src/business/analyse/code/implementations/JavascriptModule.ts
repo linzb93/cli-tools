@@ -1,7 +1,6 @@
 import chalk from 'chalk';
-import Module, { IFileAnalysis } from './Module';
-import { filterCommentLines } from './commentFilter';
-
+import { filterCommentLines } from '../helpers/commentFilter';
+import type { Module, IFileAnalysis } from '../types';
 /**
  * JavaScript文件分析模块
  */

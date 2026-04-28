@@ -1,4 +1,4 @@
-import { DeployContext } from './types';
+import { DeployContext } from '../types';
 
 let context: DeployContext;
 

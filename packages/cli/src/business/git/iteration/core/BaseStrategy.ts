@@ -1,12 +1,12 @@
 import semver from 'semver';
 import type { ReleaseType } from 'semver';
-import { isDebug } from '../shared';
+import { isDebug } from '../helpers';
 import type { IterationOptions } from '../types';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { logger } from '@/utils/logger';
 import { executeCommands } from '@/utils/execuate-command-line';
-import { updatePackageJSON } from '../delegates/updatePackageJSON';
+import { updatePackageJSON } from '../helpers/updatePackageJSON';
 import { getGitProjectStatus, GitStatusMap, getMainBranchName, checkBranchExist } from '../../shared/utils';
 import gitActions from '../../shared/utils/actions';
 

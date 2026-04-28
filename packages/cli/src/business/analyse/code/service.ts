@@ -5,10 +5,9 @@ import { globby } from 'globby';
 import chalk from 'chalk';
 import spinner from '@/utils/spinner';
 import { splitByLine } from '@/utils/stream';
-import Module from './Module';
-import { vueModule } from './VueModule';
-import { javascriptModule } from './JavascriptModule';
-import type { IFileAnalysis } from './types';
+import { vueModule } from './implementations/VueModule';
+import { javascriptModule } from './implementations/JavascriptModule';
+import type { Module, IFileAnalysis } from './types';
 
 /**
  * 寻找所有需要检测的文件，例如vue项目就只找.vue后缀的文件，其他前端项目就找.js和.ts后缀的文件。

@@ -1,6 +1,6 @@
 import type { Options } from './types';
-import { isCurl, getCookieFromCurl } from '../curl/shared';
-import { parseCookie, stringifyCookie } from './shared';
+import { isCurl, getCookieFromCurl } from '../curl/helpers';
+import { parseCookie, stringifyCookie } from './helpers';
 
 export { parseCookie, stringifyCookie };
 

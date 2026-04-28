@@ -1,5 +1,5 @@
 import { Socket } from 'node:net';
-import { parseTcpAddress } from './utils';
+import { parseTcpAddress } from '../helpers';
 
 /**
  * 发送 TCP 请求

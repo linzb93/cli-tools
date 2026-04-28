@@ -1,7 +1,7 @@
 import { expandWorkDirs } from '@/utils/scan';
 import { logger } from '@/utils/logger';
-import { doScan, printTable } from './scanner';
-import { startRepl } from './commands';
+import { doScan, printTable } from './helpers/scanner';
+import { startRepl } from './helpers/commands';
 
 /**
  * 扫描Git项目服务

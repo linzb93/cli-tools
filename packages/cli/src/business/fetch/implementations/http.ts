@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
-import { parseData } from './utils';
-import { isHeadersAndData } from './types';
+import { parseData, isHeadersAndData } from '../helpers';
 
 /**
  * 发送 HTTP 请求

@@ -6,7 +6,7 @@ import { createIterationStrategy } from './core/Factory';
 import { isGithubProject, isMonorepo } from '../shared/utils/project-type';
 import { calculateCommandTime } from '@/utils/execuate-command-line';
 import type { IterationOptions } from './types';
-import { isDebug } from './shared';
+import { isDebug } from './helpers';
 /**
  * iteration 命令的主编排流程
  * @param options 命令选项

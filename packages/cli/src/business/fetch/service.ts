@@ -1,6 +1,6 @@
-import { readFromClipboard, isHttpRequest, isTcpAddress } from './utils';
-import { httpRequest } from './http';
-import { tcpRequest } from './tcp';
+import { readFromClipboard, isHttpRequest, isTcpAddress } from './helpers';
+import { httpRequest } from './implementations/http';
+import { tcpRequest } from './implementations/tcp';
 import type { FetchOptions } from './types';
 import { logger } from '@/utils/logger';
 

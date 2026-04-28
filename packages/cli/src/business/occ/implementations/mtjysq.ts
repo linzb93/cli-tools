@@ -1,5 +1,5 @@
 import { createMeituanApp } from '../core/MeituanBase';
-import { openPC } from '../utils/occUtils';
+import { openPC } from '../helpers/occUtils';
 
 export const mtjysq = createMeituanApp({
     name: 'jysq',

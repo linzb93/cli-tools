@@ -1,5 +1,5 @@
 import { BaseStrategy } from '../core/BaseStrategy';
-import { updateMonorepoPackageJSON, updatePackageJSON } from '../delegates/updatePackageJSON';
+import { updateMonorepoPackageJSON, updatePackageJSON } from '../helpers/updatePackageJSON';
 import { IProjectType } from '../types';
 /**
  * GitHub Monorepo 项目迭代策略

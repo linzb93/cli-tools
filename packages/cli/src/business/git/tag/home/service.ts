@@ -6,7 +6,7 @@ import { executeCommands } from '@/utils/execuate-command-line';
 import { isGitProject } from '../../shared/utils';
 import { getAllTags } from '../shared';
 import { getProjectName } from '../../shared/utils/jenkins';
-import type { TagGetOptions as Options, VersionInfo } from '../types';
+import type { TagGetOptions as Options, VersionInfo } from './types';
 
 /**
  * 解析标签字符串为版本信息对象

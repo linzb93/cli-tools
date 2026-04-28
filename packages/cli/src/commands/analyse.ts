@@ -1,5 +1,7 @@
-import { cliAnalyseService, codeAnalyseService, CliAnalyseOptions } from '@/business/analyse';
 import { subCommandCompiler } from '@/utils/command';
+import { cliAnalyseService } from '@/business/analyse/cli';
+import type { CliAnalyseOptions } from '@/business/analyse/cli';
+import { codeAnalyseService } from '@/business/analyse/code';
 
 /**
  * 分析命令选项接口

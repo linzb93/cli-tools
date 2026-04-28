@@ -1,9 +1,9 @@
 import { BaseDeploy } from '../core/BaseDeploy';
-import { getContext } from '../shared';
+import { getContext } from '../helpers/context';
 import { openDeployPage } from '../../shared/utils/jenkins';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
-import { tagService, Options as TagOptions } from '../../tag/get';
+import { tagService, Options as TagOptions } from '../../tag/home';
 
 export class CompanyDeploy extends BaseDeploy {
     async start(): Promise<void> {

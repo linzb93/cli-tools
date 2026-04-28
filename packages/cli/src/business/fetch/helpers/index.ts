@@ -49,3 +49,13 @@ export function parseTcpAddress(url: string): { host: string; port: number } {
     const [host, port] = url.split(':');
     return { host, port: parseInt(port, 10) };
 }
+/**
+ * 判断 data 是否只包含 headers 和 data 两个属性
+ */
+export function isHeadersAndData(obj: unknown): obj is { headers: Record<string, string>; data: unknown } {
+    if (typeof obj !== 'object' || obj === null) {
+        return false;
+    }
+    const keys = Object.keys(obj);
+    return keys.length === 2 && keys.includes('headers') && keys.includes('data');
+}

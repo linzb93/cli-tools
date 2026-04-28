@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import Module, { IFileAnalysis } from './Module';
-import { filterCommentLines } from './commentFilter';
+import type { Module, IFileAnalysis } from '../types';
+import { filterCommentLines } from '../helpers/commentFilter';
 
 /**
  * 查找样式标签的信息
@@ -345,8 +345,7 @@ export const vueModule: Module = {
         const templateLines = extractTemplateLines(nonEmptyLines, scriptInfo, styleInfo);
         const filteredTemplateLines = filterCommentLines(templateLines);
 
-        const filteredTotal =
-            filteredScriptLines.length + filteredStyleLines.length + filteredTemplateLines.length;
+        const filteredTotal = filteredScriptLines.length + filteredStyleLines.length + filteredTemplateLines.length;
         const excludedLines = splitLines.length - filteredTotal;
 
         return {

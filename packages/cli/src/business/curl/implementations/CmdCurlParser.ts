@@ -62,32 +62,35 @@ export const createCmdCurlParser = (options: Options): CurlParser => {
                 return line.trim().startsWith('-H');
             })
             .map((line) => line.trim())
-            .reduce((acc, line) => {
-                const keyMatch = line.match(/^\-H\s\^"([^:]+)/);
-                if (!keyMatch) {
+            .reduce(
+                (acc, line) => {
+                    const keyMatch = line.match(/^\-H\s\^"([^:]+)/);
+                    if (!keyMatch) {
+                        return acc;
+                    }
+
+                    const key = keyMatch[1].trim();
+                    if (!options?.full && !allowedHeaders.includes(key.toLowerCase())) {
+                        return acc;
+                    }
+
+                    const valueMatch = line.match(/:\s*(.*?)\s*$/);
+                    if (!valueMatch) {
+                        return acc;
+                    }
+
+                    const value = valueMatch[1]
+                        .trim()
+                        .replace(/\^\"\s\^$/, '')
+                        .replace(/\^\\\^/g, '')
+                        .replace(/\^\{/, '{')
+                        .replace(/\^\}/, '}');
+
+                    acc[key] = value;
                     return acc;
-                }
-
-                const key = keyMatch[1].trim();
-                if (!options?.full && !allowedHeaders.includes(key.toLowerCase())) {
-                    return acc;
-                }
-
-                const valueMatch = line.match(/:\s*(.*?)\s*$/);
-                if (!valueMatch) {
-                    return acc;
-                }
-
-                const value = valueMatch[1]
-                    .trim()
-                    .replace(/\^\"\s\^$/, '')
-                    .replace(/\^\\\^/g, '')
-                    .replace(/\^\{/, '{')
-                    .replace(/\^\}/, '}');
-
-                acc[key] = value;
-                return acc;
-            }, {} as Record<string, string>);
+                },
+                {} as Record<string, string>,
+            );
 
         const cookie = getCookieFromCurl(lines.join('\n'));
         if (cookie) {
@@ -132,6 +135,6 @@ export const createCmdCurlParser = (options: Options): CurlParser => {
         parseHeaders,
         parseData,
         getCookieFromCurl,
-        parseMethod
+        parseMethod,
     };
 };

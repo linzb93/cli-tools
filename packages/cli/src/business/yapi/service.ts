@@ -11,8 +11,8 @@ import {
     getYapiInterfaceDetail,
     type YapiInterfaceDetail,
     type SavedData,
-} from './api';
-import { getYapiCookie, manualInputCookie } from './auth';
+} from './helpers/api';
+import { getYapiCookie, manualInputCookie } from './helpers/auth';
 import type { YapiUrlInfo } from './types';
 
 /**

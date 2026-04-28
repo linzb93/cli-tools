@@ -1,5 +1,5 @@
 import { createMeituanApp } from '../core/MeituanBase';
-import { noVersionSearch } from '../utils/occUtils';
+import { noVersionSearch } from '../helpers/occUtils';
 
 const app = createMeituanApp({
     name: 'ai',

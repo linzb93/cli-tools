@@ -2,13 +2,13 @@ import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import { logger } from '@/utils/logger';
 import { createCommandReadline, displayCommands, type ReadlineCommand } from '@/utils/readline';
-import { getGitLogData } from '../log';
-import gitActions from '../shared/utils/actions';
+import { getGitLogData } from '../../log';
+import gitActions from '../../shared/utils/actions';
 import { executeCommands } from '@/utils/execuate-command-line';
-import { checkHardcoded } from '../shared/utils/hard-coded';
-import { deployService } from '../deploy';
+import { checkHardcoded } from '../../shared/utils/hard-coded';
+import { deployService } from '../../deploy';
 import { printTable, doScan } from './scanner';
-import type { ResultItem } from './types';
+import type { ResultItem } from '../types';
 
 /**
  * 获取 Git 状态对应的显示文本

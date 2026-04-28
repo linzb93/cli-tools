@@ -1,8 +1,8 @@
 import { printResultTable } from '@/utils/scan';
 import { scanDirs } from '@/utils/scan';
-import { getGitProjectStatus, GitStatusMap } from '../shared/utils';
+import { getGitProjectStatus, GitStatusMap } from '../../shared/utils';
 import chalk from 'chalk';
-import type { ResultItem } from './types';
+import type { ResultItem } from '../types';
 import { basename } from 'node:path';
 /**
  * 过滤需要处理的项目

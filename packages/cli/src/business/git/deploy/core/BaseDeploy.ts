@@ -1,7 +1,7 @@
 import { executeCommands } from '@/utils/execuate-command-line';
 import gitActions from '../../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../../shared/utils';
-import { getContext } from '../shared';
+import { getContext } from '../helpers/context';
 import { logger } from '@/utils/logger';
 
 export abstract class BaseDeploy {

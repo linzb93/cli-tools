@@ -10,7 +10,7 @@ import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
 import inquirer from '@/utils/inquirer';
 import type { Options, ProjectConfig } from './types';
-import { startStaticServer } from './staticServer';
+import { startStaticServer } from './helpers/staticServer';
 
 /**
  * 命令主入口

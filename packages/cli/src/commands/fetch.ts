@@ -1,11 +1,7 @@
 import { fetchService } from '@/business/fetch/service';
+import type { FetchOptions } from '@/business/fetch/types';
 
-export interface FetchCommandOptions {
-    clipboard?: boolean;
-    method?: 'post' | 'get';
-}
-
-export const fetchCommand = (url: string, data: string | undefined, options: FetchCommandOptions) => {
+export const fetchCommand = (url: string, data: string | undefined, options: Partial<FetchOptions>) => {
     return fetchService({
         url,
         data,

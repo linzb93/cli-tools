@@ -1,4 +1,4 @@
-import { branchService, type Options as BranchOptions } from '@/business/git/branch/get';
+import { branchService, type Options as BranchOptions } from '@/business/git/branch/home';
 import { branchDeleteService } from '@/business/git/branch/delete';
 import { subCommandCompiler } from '@/utils/command';
 

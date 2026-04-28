@@ -3,8 +3,8 @@ import * as prettier from 'prettier';
 import { createParser, detectCurlMode } from './core/Factory';
 import type { Options } from './types';
 import { logger } from '@/utils/logger';
-import { parseCookie } from '../cookie/shared';
-import { isCurl, getCookieFromCurl, getBodyFromCurl } from './shared';
+import { parseCookie } from '../cookie/helpers';
+import { isCurl, getCookieFromCurl, getBodyFromCurl } from './helpers';
 
 export type { Options };
 export { isCurl, getCookieFromCurl, getBodyFromCurl };

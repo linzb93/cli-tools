@@ -1,5 +1,5 @@
-import { createParser, detectCurlMode } from './core/Factory';
-import type { Options } from './types';
+import { createParser, detectCurlMode } from '../core/Factory';
+import type { Options } from '../types';
 import { logger } from '@/utils/logger';
 
 /**

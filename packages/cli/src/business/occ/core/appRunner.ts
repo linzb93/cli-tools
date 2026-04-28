@@ -2,7 +2,7 @@ import { Options, App } from '../types';
 import { logger } from '@/utils/logger';
 import { open } from '@/utils/web';
 import chalk from 'chalk';
-import { copyToken, fixURL, copyURL, printUserInfo } from '../utils/occUtils';
+import { copyToken, fixURL, copyURL, printUserInfo } from '../helpers/occUtils';
 
 export const runApp = async (app: App, keyword: string, options: Options) => {
     const url = await searchApp(app, keyword, options);
