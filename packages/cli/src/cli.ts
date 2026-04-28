@@ -79,12 +79,12 @@ function registerCommands() {
             import('./commands/cookie').then((m) => m.cookieCommand(data, options));
         });
 
-    // dialog 命令
+    // cc 子命令 (claudeCode)
     program
-        .command('dialog <message>')
-        .option('-t, --title <title>', '弹窗标题', '温馨提醒')
-        .action((message, options) => {
-            import('./commands/dialog').then((m) => m.dialogCommand(message, options.title));
+        .command('cc <sub-command> [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest) => {
+            import('./commands/claudeCode').then((m) => m.claudeCodeCommand(subCommand));
         });
 
     // curl 命令
