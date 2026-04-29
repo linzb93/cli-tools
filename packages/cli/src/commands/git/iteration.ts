@@ -1,5 +1,5 @@
 import { iterationService, type IterationOptions } from '@/business/git/iteration';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 export const iterationCommand = (options: IterationOptions) => {
     subCommandCompiler((program) => {

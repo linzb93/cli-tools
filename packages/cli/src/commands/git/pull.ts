@@ -1,5 +1,5 @@
 import { pullService, type Options as PullOptions } from '@/business/git/pull';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git pull 子命令的实现

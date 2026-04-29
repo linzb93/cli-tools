@@ -4,7 +4,7 @@ import pMap from 'p-map';
 import { globby } from 'globby';
 import chalk from 'chalk';
 import spinner from '@/utils/spinner';
-import { splitByLine } from '@/utils/helper';
+import { splitByLine } from '@/utils/stream';
 import Module from './Module';
 import { vueModule } from './VueModule';
 import { javascriptModule } from './JavascriptModule';

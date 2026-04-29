@@ -1,5 +1,5 @@
 import { mergeService, type Options as MergeOptions } from '@/business/git/merge';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /*
  * git merge 子命令的实现

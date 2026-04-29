@@ -1,6 +1,6 @@
 import clipboard from 'clipboardy';
 import { logger } from '@/utils/logger';
-import { open } from '@/utils/helper';
+import { open } from '@/utils/web';
 import { UserInfo } from '../types';
 
 /**

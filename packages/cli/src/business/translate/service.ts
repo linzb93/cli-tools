@@ -6,7 +6,7 @@ import { createDefaultTranslators, getTranslator, TranslatorType } from './core/
 import { TranslateResultItem } from './core/BaseTranslator';
 import { Options } from './types';
 import { getClipboardContent } from './utils';
-import { isUrl } from '@/utils/helper';
+import { isUrl } from '@/utils/web';
 
 /**
  * 显示翻译结果

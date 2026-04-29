@@ -1,6 +1,6 @@
 import { branchService, type Options as BranchOptions } from '@/business/git/branch/get';
 import { branchDeleteService } from '@/business/git/branch/delete';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git branch 子命令的实现

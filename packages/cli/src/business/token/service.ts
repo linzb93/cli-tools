@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { open } from '@/utils/helper';
+import { open } from '@/utils/web';
 import { getTime } from '../time';
 import { AnyObject } from '@/types';
 import type { TokenParser } from './core/TokenParser';

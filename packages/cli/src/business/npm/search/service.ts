@@ -1,4 +1,4 @@
-import { open } from '@/utils/helper';
+import { open } from '@/utils/web';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import { AxiosError } from 'axios';

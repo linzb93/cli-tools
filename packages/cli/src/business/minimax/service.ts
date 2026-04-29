@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import net from 'node:net';
 import { readSecret } from '@cli-tools/shared';
-import { timeRemainsFormat } from '@/utils/helper';
+import { timeRemainsFormat } from '@/utils/time';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
 import { logger } from '@/utils/logger';

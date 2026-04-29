@@ -1,5 +1,5 @@
 import { pushService } from '@/business/git/push';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git push 子命令的实现

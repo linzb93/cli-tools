@@ -1,4 +1,4 @@
-import { open } from '@/utils/helper';
+import { open } from '@/utils/web';
 import { readPackage as readPkg } from 'read-pkg';
 import { readSecret } from '@cli-tools/shared';
 
@@ -64,4 +64,3 @@ export const getProjectName = async (type?: string): Promise<JenkinsProject> => 
         onlineId: jenkins.onlineId || jenkins.id.replace(/[-_]test$/, ''),
     };
 };
-

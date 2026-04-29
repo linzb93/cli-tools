@@ -1,5 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { splitByLine, isUrl, objectToCmdOptions, emptyWritableStream } from '../helper';
+import { describe, it, expect } from 'vitest';
+import { splitByLine, emptyWritableStream } from '../stream';
+import { isUrl } from '../web';
+import { objectToCmdOptions } from '../command';
 
 describe('splitByLine', () => {
     it('应该正确分割Unix换行符', () => {

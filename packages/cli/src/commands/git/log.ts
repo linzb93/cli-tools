@@ -1,5 +1,5 @@
 import { logService, type Options as LogOptions } from '@/business/git/log';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git log 子命令的实现

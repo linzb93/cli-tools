@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { execaCommand as execa } from 'execa';
 import { retryAsync } from './promise';
-import { timeRemainsFormat } from './helper';
+import { timeRemainsFormat } from './time';
 /**
  * 命令配置接口
  */

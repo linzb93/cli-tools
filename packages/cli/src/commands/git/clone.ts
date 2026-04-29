@@ -1,5 +1,5 @@
 import { cloneService, type Options as CloneOptions } from '@/business/git/clone';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git clone 子命令的实现

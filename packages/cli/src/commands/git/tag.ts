@@ -1,7 +1,7 @@
 import { tagService, type Options as TagOptions } from '@/business/git/tag/get';
 import { tagSyncService } from '@/business/git/tag/sync';
 import { tagDeleteService } from '@/business/git/tag/delete';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git tag 子命令的实现

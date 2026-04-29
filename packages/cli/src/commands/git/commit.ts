@@ -1,5 +1,5 @@
 import { commitService, type Options as CommitOptions } from '@/business/git/commit';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git commit 子命令的实现

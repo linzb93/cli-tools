@@ -1,5 +1,5 @@
 import { scanService } from '@/business/git/scan';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git scan 子命令的实现

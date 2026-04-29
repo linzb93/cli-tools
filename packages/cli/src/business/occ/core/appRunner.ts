@@ -1,6 +1,6 @@
 import { Options, App } from '../types';
 import { logger } from '@/utils/logger';
-import { open } from '@/utils/helper';
+import { open } from '@/utils/web';
 import chalk from 'chalk';
 import { copyToken, fixURL, copyURL, printUserInfo } from '../utils/occUtils';
 

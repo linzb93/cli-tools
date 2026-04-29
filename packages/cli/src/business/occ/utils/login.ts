@@ -1,6 +1,6 @@
 import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
-import { open } from '@/utils/helper';
+import { open } from '@/utils/web';
 import { useAI } from '@/utils/ai/implementation';
 import { readSecret } from '@cli-tools/shared';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';

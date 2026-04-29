@@ -1,4 +1,4 @@
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * npm 命令入口函数

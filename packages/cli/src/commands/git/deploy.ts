@@ -1,5 +1,5 @@
 import { deployService, type Options as DeployOptions } from '@/business/git/deploy';
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 
 /**
  * git deploy 子命令的实现

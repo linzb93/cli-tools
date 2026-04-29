@@ -8,7 +8,7 @@ import express from 'express';
 import { useAI } from '@/utils/ai/implementation';
 import { logger } from '@/utils/logger';
 import { serverConfig } from '@cli-tools/shared';
-import { objectToCmdOptions } from '@/utils/helper';
+import { objectToCmdOptions } from '@/utils/command';
 
 export interface StartStaticServerOptions {
     cwd: string;
