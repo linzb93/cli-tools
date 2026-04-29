@@ -21,10 +21,26 @@ export const createZdbApp = (): App => {
     const getShopUrl = async (keyword: string, options: Options) => {
         const { zdb } = await readSecret((db) => db.oa);
         return service
-            .post(`${zdb.baseUrl}/login/directLogin`, {
-                unionId: zdb.unionId,
+            .post(`${zdb.baseUrl}/admin/user/list`, {
+                pageIndex: 1,
+                pageSize: 1,
+                keyword: zdb.keyword,
             })
             .then((res) => {
+                if (!res.data.result) {
+                    throw new Error(res.data.message || '获取用户列表失败');
+                }
+                if (!res.data.result.length) {
+                    throw new Error('未找到用户');
+                }
+                return service.post(`${zdb.baseUrl}/login/directLogin`, {
+                    unionId: res.data.result.list[0].unionId,
+                });
+            })
+            .then((res) => {
+                if (!res.data.result) {
+                    throw new Error(res.data.message || '获取门店信息失败');
+                }
                 console.log(`门店名称：${res.data.result.accountShop.shopName}`);
                 return `https://www.zdb.com/#/login?token=${res.data.result.accountShopToken}`;
             });

@@ -50,6 +50,7 @@ interface Database {
         zdb: {
             baseUrl: string;
             unionId: string;
+            keyword: string;
         };
     };
     yapi: {
