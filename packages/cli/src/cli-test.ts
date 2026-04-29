@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
-import { generateHelpDoc } from '@/utils/helper';
+import { generateHelpDoc } from '@/utils/help-doc';
 
 const program = new Command();
 program.version(globalPkg.version).description('CLI工具集合');

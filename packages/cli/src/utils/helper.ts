@@ -1,9 +1,5 @@
-import { map, first, from, concatMap, interval } from 'rxjs';
 import { Writable } from 'node:stream';
 import rawOpen from 'open';
-import { logger } from '../utils/logger';
-import { findContent } from './markdown';
-import { fromStream } from './rxjs';
 import { sleep } from '@linzb93/utils';
 
 /**
@@ -47,44 +43,6 @@ export const objectToCmdOptions = (obj: Record<string, any>) => {
             return `--${key}=${obj[key]}`;
         })
         .filter(Boolean);
-};
-/**
- * 生成命令帮助文档
- */
-export const generateHelpDoc = (commands: string[]) => {
-    return new Promise<void>(async (resolve) => {
-        try {
-            const stream = findContent({
-                moduleName: commands[0],
-                title: commands[2] && !commands[2].startsWith('--') ? `${commands[1]} ${commands[2]}` : commands[1],
-            });
-            fromStream(stream)
-                .pipe(
-                    map((data) => `${(data as unknown as string).toString()}\n`),
-                    concatMap((line) =>
-                        from(line.split('')).pipe(
-                            concatMap((char) =>
-                                interval(100).pipe(
-                                    first(),
-                                    map(() => char),
-                                ),
-                            ),
-                        ),
-                    ),
-                )
-                .subscribe({
-                    next(data) {
-                        process.stdout.write(data);
-                    },
-                    complete: () => {
-                        resolve();
-                    },
-                });
-        } catch (error) {
-            logger.error(`没有找到${commands.join(' ')}的帮助文档`);
-            resolve();
-        }
-    });
 };
 /**
  * 打开URL

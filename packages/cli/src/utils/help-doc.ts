@@ -4,24 +4,38 @@ import { type Transform } from 'node:stream';
 import fs from 'fs-extra';
 import binarySplit from 'binary-split';
 import through from 'through2';
+import { logger } from './logger';
 import chalk from 'chalk';
 import features from './_internal/features.json';
+import { Subject, map, first, from, concatMap, interval } from 'rxjs';
+import { type Writable } from 'node:stream';
+
+/**
+ * 将流转换为RxJS流
+ * @returns RxJS流
+ */
+export const fromStream = (stream: Writable): Subject<unknown> => {
+    const task = new Subject<unknown>();
+
+    stream.on('data', (data) => {
+        task.next(data);
+    });
+    stream.on('finish', () => {
+        task.complete();
+    });
+    return task;
+};
 
 interface Options {
     moduleName: string;
     title: string;
 }
 /**
- * 在markdown文件中，查找指定标题的内容，匹配到下一个级别和当前级别相同甚至更高的为止。
- * @param {object} options
- * @param {string} option.fileName - markdown文件名
- */
-/**
  * 在markdown文件中查找指定标题的内容
  * @param {Options} options - 包含文件名、标题和标题级别的选项对象
  * @returns {NodeJS.Transform} 返回一个可读流，包含匹配标题的内容
  */
-export const findContent = (options: Options): Transform => {
+const findContent = (options: Options): Transform => {
     const { moduleName, title } = options;
     const fileDirStr = join(fileURLToPath(import.meta.url), '../../src/business', moduleName);
     let filePathStr = '';
@@ -70,4 +84,43 @@ const matches = (line: string, currentLevel: number) => {
         }
     }
     return null;
+};
+
+/**
+ * 生成命令帮助文档
+ */
+export const generateHelpDoc = (commands: string[]) => {
+    return new Promise<void>(async (resolve) => {
+        try {
+            const stream = findContent({
+                moduleName: commands[0],
+                title: commands[2] && !commands[2].startsWith('--') ? `${commands[1]} ${commands[2]}` : commands[1],
+            });
+            fromStream(stream)
+                .pipe(
+                    map((data) => `${(data as unknown as string).toString()}\n`),
+                    concatMap((line) =>
+                        from(line.split('')).pipe(
+                            concatMap((char) =>
+                                interval(100).pipe(
+                                    first(),
+                                    map(() => char),
+                                ),
+                            ),
+                        ),
+                    ),
+                )
+                .subscribe({
+                    next(data) {
+                        process.stdout.write(data);
+                    },
+                    complete: () => {
+                        resolve();
+                    },
+                });
+        } catch (error) {
+            logger.error(`没有找到${commands.join(' ')}的帮助文档`);
+            resolve();
+        }
+    });
 };

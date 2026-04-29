@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import globalPkg from '../../../package.json';
 import init from './bootstrap';
-import { generateHelpDoc } from '@/utils/helper';
+import { generateHelpDoc } from '@/utils/help-doc';
 
 const program = new Command();
 program.version(globalPkg.version);
