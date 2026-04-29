@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import axios from 'axios';
 import { load } from 'cheerio';
 import Table from 'cli-table3';
-import { defaultBrowserHeaders } from '@/utils/helper';
+import { defaultBrowserHeaders } from '@/constant';
 import spinner from '@/utils/spinner';
 import { COLOR_MAP } from '@/constant';
 

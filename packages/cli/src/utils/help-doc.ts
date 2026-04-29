@@ -1,14 +1,13 @@
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { type Transform } from 'node:stream';
+import type { Transform, Writable } from 'node:stream';
 import fs from 'fs-extra';
 import binarySplit from 'binary-split';
-import through from 'through2';
-import { logger } from './logger';
-import chalk from 'chalk';
-import features from './_internal/features.json';
 import { Subject, map, first, from, concatMap, interval } from 'rxjs';
-import { type Writable } from 'node:stream';
+import through from 'through2';
+import chalk from 'chalk';
+import { logger } from './logger';
+import features from './_internal/features.json';
 
 /**
  * 将流转换为RxJS流

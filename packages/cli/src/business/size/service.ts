@@ -6,13 +6,13 @@ import sizeOf from 'image-size';
 import through from 'through2';
 import { deleteAsync as del } from 'del';
 import { logger } from '@/utils/logger';
-import { isURL, emptyWritableStream } from '@/utils/helper';
+import { isUrl, emptyWritableStream } from '@/utils/helper';
 import { isImage } from '@/utils/image';
 import { root } from '@cli-tools/shared';
 import { Options, Dimensions } from './types';
 
 export const sizeService = async (filePath: string, options: Options) => {
-    if (isURL(filePath)) {
+    if (isUrl(filePath)) {
         let res: AxiosResponse;
         // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
         filePath = filePath.replace(/\s/g, ',');

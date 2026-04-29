@@ -11,7 +11,14 @@ export const splitByLine = (fileContent: string): string[] => {
     const eol = fileContent.includes('\r\n') ? '\r\n' : '\n';
     return fileContent === '' ? [] : fileContent.split(eol);
 };
-export const isURL = (text: string) => !!text.match(/^https?\:\/\//);
+/**
+ * 判断是否为URL
+ * @param text 输入文本
+ * @returns 是否为URL
+ */
+export const isUrl = (text: string): boolean => {
+    return /^(http|https):\/\/[^ "]+$/.test(text);
+};
 /**
  * 空的写入流
  */
@@ -54,24 +61,13 @@ export const open = async (url: string): Promise<void> => {
 };
 
 /**
- * 默认浏览器请求头，避免被网站识别非浏览器访问而禁止。
- */
-export const defaultBrowserHeaders = {
-    'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-};
-/**
  * 时间毫秒格式化
  * @param timeMs 时间毫秒
  * @param options 选项
  * @param options.minUnitIsMinute 最小单位是否为分钟，默认false，即秒为单位单位
  * @returns 格式化后的时间字符串
  */
-export const timeMsFormat = (
+export const timeRemainsFormat = (
     timeMs: number,
     options?: {
         minUnitIsMinute?: boolean;

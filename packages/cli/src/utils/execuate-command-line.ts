@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { execaCommand as execa } from 'execa';
 import { retryAsync } from './promise';
-import { timeMsFormat } from './helper';
+import { timeRemainsFormat } from './helper';
 /**
  * 命令配置接口
  */
@@ -73,7 +73,7 @@ export const calculateCommandTime = {
     end() {
         this.endTime = dayjs();
         console.log(
-            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${chalk.magenta(timeMsFormat(this.endTime.diff(this.startTime)))}`,
+            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${chalk.magenta(timeRemainsFormat(this.endTime.diff(this.startTime)))}`,
         );
     },
 };

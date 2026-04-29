@@ -5,7 +5,8 @@ import inquirer from '@/utils/inquirer';
 import { createDefaultTranslators, getTranslator, TranslatorType } from './core/Factory';
 import { TranslateResultItem } from './core/BaseTranslator';
 import { Options } from './types';
-import { getClipboardContent, isUrl } from './utils';
+import { getClipboardContent } from './utils';
+import { isUrl } from '@/utils/helper';
 
 /**
  * 显示翻译结果

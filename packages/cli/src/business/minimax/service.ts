@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import net from 'node:net';
 import { readSecret } from '@cli-tools/shared';
-import { timeMsFormat } from '@/utils/helper';
+import { timeRemainsFormat } from '@/utils/helper';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import type { Options, ParsedUsageData, UsageResponse } from './types';
 import { logger } from '@/utils/logger';
@@ -126,7 +126,7 @@ function render(data: ParsedUsageData): void {
     );
     console.log();
     console.log(
-        chalk.gray(`  距离下次重置时间还有${chalk.magenta(timeMsFormat(remainsTime, { minUnitIsMinute: true }))}`),
+        chalk.gray(`  距离下次重置时间还有${chalk.magenta(timeRemainsFormat(remainsTime, { minUnitIsMinute: true }))}`),
     );
     if (isWatchMode) {
         console.log();
