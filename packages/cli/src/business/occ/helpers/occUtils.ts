@@ -49,12 +49,12 @@ export const printUserInfo = async (
         token: string;
         serviceName: string;
         shopName: string;
-        getUserInfo: (tk: string, isTest: boolean) => Promise<UserInfo>;
+        getUserInfo: (tk: string, userApi: string, isTest: boolean) => Promise<UserInfo>;
     },
     test: boolean,
 ) => {
     logger.info('正在获取用户信息');
-    const data = await obj.getUserInfo(obj.token, test);
+    const data = await obj.getUserInfo(obj.token, '', test);
     logger.success(`获取店铺【${obj.shopName}】信息成功!`);
     console.log(data);
 };

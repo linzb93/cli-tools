@@ -1,15 +1,16 @@
-import { Options, App } from '../types';
+import { Options } from '../types';
+import { BasePlatform } from './BasePlatform';
 import { logger } from '@/utils/logger';
 import { open } from '@/utils/web';
 import chalk from 'chalk';
 import { copyToken, fixURL, copyURL, printUserInfo } from '../helpers/occUtils';
 
-export const runApp = async (app: App, keyword: string, options: Options) => {
+export const runApp = async (app: BasePlatform, keyword: string, options: Options) => {
     const url = await searchApp(app, keyword, options);
     await afterSearchApp(app, url, keyword, options);
 };
 
-export const searchApp = async (app: App, keyword: string, options: Options) => {
+export const searchApp = async (app: BasePlatform, keyword: string, options: Options) => {
     logger.info(`【${app.serviceName}】正在获取店铺【${keyword}】地址`);
     let url = '';
     try {
@@ -22,7 +23,7 @@ export const searchApp = async (app: App, keyword: string, options: Options) => 
     return url;
 };
 
-export const afterSearchApp = async (app: App, url: string, shopName: string, options: Options) => {
+export const afterSearchApp = async (app: BasePlatform, url: string, shopName: string, options: Options) => {
     const token = app.getToken ? app.getToken(url) : getToken(url);
     if (options.token) {
         copyToken({ token, serviceName: app.serviceName, shopName });

@@ -1,34 +1,28 @@
-import { App } from '../types';
 import {
-    mtjysq,
-    mtzxsq,
-    mtpjsq,
-    mtimsq,
-    mtdjds,
-    mtaibdsq,
-    elejysq,
-    chain,
-    spbj,
-    wmb,
-    kdb,
-    dkdMiniProgram,
-    zdb,
-} from '../implementations/index';
+    MeituanJingYingShenQi,
+    MeituanZhuangXiuShenQi,
+    MeituanPingJiaShenQi,
+    MeituanIMShenQi,
+    MeituanDianJinDaShi,
+    MeituanAiBaoDanShenQi,
+} from '../implementations/meituan';
+import { BasePlatform } from '../core/BasePlatform';
+import { TaobaoJingYingShenQi } from '../implementations/taobao';
+// import { chain } from '../implementations/chain';
+// import { spbj } from '../implementations/spbj';
+// import { wmb } from '../implementations/wmb';
+// import { kdb } from '../implementations/kdb';
+// import { dkdMiniProgram } from '../implementations/dkdMiniProgram';
+// import { zdb } from '../implementations/zdb';
 
-const apps: Record<string, App> = {
-    jysq: mtjysq,
-    zx: mtzxsq,
-    pj: mtpjsq,
-    im: mtimsq,
-    dj: mtdjds,
-    ai: mtaibdsq,
-    ele: elejysq,
-    chain: chain,
-    spbj: spbj,
-    wmb: wmb,
-    kdb: kdb,
-    minip: dkdMiniProgram,
-    zdb: zdb,
+const apps: Record<string, BasePlatform> = {
+    jysq: new MeituanJingYingShenQi(),
+    zx: new MeituanZhuangXiuShenQi(),
+    pj: new MeituanPingJiaShenQi(),
+    im: new MeituanIMShenQi(),
+    dj: new MeituanDianJinDaShi(),
+    ai: new MeituanAiBaoDanShenQi(),
+    ele: new TaobaoJingYingShenQi(),
 };
 
 /**
@@ -36,7 +30,7 @@ const apps: Record<string, App> = {
  * @param appName 应用名称（缩写）
  * @returns 应用实例
  */
-export const createApp = (appName: string): App => {
+export const createApp = (appName: string): BasePlatform => {
     const app = apps[appName];
     if (!app) {
         throw new Error(`未找到应用: ${appName}`);
@@ -65,8 +59,8 @@ export const hasApp = (appName: string): boolean => {
  * 获取默认应用实例
  * @returns 默认应用实例
  */
-export const getDefaultApp = (): App => {
-    return mtjysq;
+export const getDefaultApp = (): BasePlatform => {
+    return new MeituanJingYingShenQi();
 };
 
 /**
