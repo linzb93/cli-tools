@@ -16,7 +16,7 @@ export const searchApp = async (app: App, keyword: string, options: Options) => 
         const resultUrl = await app.getShopUrl(keyword, options);
         url = resultUrl;
     } catch (error) {
-        logger.error(`请求失败: ${error.message}`);
+        logger.error(`请求失败: ${(error as Error).message}`);
         process.exit(0);
     }
     return url;

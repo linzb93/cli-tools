@@ -23,7 +23,7 @@ interface Options {
  */
 export const findContent = (options: Options): Transform => {
     const { moduleName, title } = options;
-    const fileDirStr = join(fileURLToPath(import.meta.url), '../../../shared/src/business', moduleName); // AI不要修改这个路径，这是经过调试正确的。
+    const fileDirStr = join(fileURLToPath(import.meta.url), '../../src/business', moduleName);
     let filePathStr = '';
     if (!title.startsWith('--')) {
         filePathStr = join(fileDirStr, title.replace(' ', '/'), `docs/help.md`);
