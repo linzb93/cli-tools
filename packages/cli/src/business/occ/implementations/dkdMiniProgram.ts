@@ -1,4 +1,4 @@
-import serviceGenerator from '@/utils/http';
+import { service } from '@/utils/http/company-service';
 import { readSecret } from '@cli-tools/shared';
 import { Options, App } from '../types';
 import { logger } from '@/utils/logger';
@@ -11,7 +11,6 @@ const platformTypeEnum = {
 };
 
 export const createDkdMiniProgramApp = (): App => {
-    const service = serviceGenerator({ baseURL: '' });
     const name = 'minip';
     const serviceName = '小程序';
     const defaultId = '18759916391';
@@ -43,11 +42,11 @@ export const createDkdMiniProgramApp = (): App => {
             ...searchParams,
             showBindShop: false,
         });
-        if (!userRes.data.result) {
+        if (!userRes) {
             throw new Error('未查询到用户');
         }
         logger.info(`【${serviceName}】正在获取账号【${keyword}】下的门店`);
-        const userInfo = userRes.data.result.list[0];
+        const userInfo = userRes.list[0];
         const listRes = await service.post(
             `${prefix}/miniProgram/queryAccountDetail`,
             {},
@@ -57,12 +56,12 @@ export const createDkdMiniProgramApp = (): App => {
                 },
             },
         );
-        if (!listRes.data.result) {
+        if (!listRes) {
             throw new Error('未查询到用户店铺');
         }
         return {
             unionId: userInfo.unionId,
-            shopList: listRes.data.result,
+            shopList: listRes,
             prefix,
         };
     };
@@ -101,7 +100,7 @@ export const createDkdMiniProgramApp = (): App => {
             shopId: target.shopId,
             unionId,
         });
-        const token = res3.data.result.token;
+        const token = res3.token;
         return `https://jysq.diankeduo.net/pages/jdjysq/#/login?code=${token}&shopId=${shopId}`;
     };
 
@@ -117,10 +116,10 @@ export const createDkdMiniProgramApp = (): App => {
                     },
                 },
             );
-            if (!res3.data.result) {
+            if (!res3) {
                 throw new Error('未查询到用户店铺');
             }
-            const token = res3.data.result;
+            const token = res3;
             const match = getDataSummarizingMatchShop(shopList);
             if (!match) {
                 throw new Error('未找到匹配店铺');

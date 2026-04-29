@@ -1,5 +1,5 @@
 import qs from 'node:querystring';
-import serviceGenerator from '@/utils/http';
+import { service } from '@/utils/http/company-service';
 import encryptPassword from '../helpers/encryptPassword';
 import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
@@ -16,7 +16,6 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
     const { name, serviceName, agentId, prefix } = config;
     const defaultId = '测试';
     const testDefaultId = '13023942325';
-    const service = serviceGenerator({ baseURL: '' });
 
     const chooseChannel = async (token: string) => {
         const zhanwai = await readSecret((db) => db.oa.zhanwai);
@@ -32,7 +31,7 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
                 },
             },
         );
-        return res.data.result.token;
+        return res.token;
     };
 
     const getLoginToken = async () => {
@@ -42,7 +41,7 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
             phoneNumber: zhanwai.username,
             pwd: encryptPassword(zhanwai.password),
         });
-        return await chooseChannel(res.data.result.token);
+        return await chooseChannel(res.token);
     };
 
     const getToken = (url: string): string => {
@@ -82,7 +81,7 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
             logger.error('获取用户信息失败');
             process.exit(0);
         }
-        const accountId = listRes.data.result.list[0].id;
+        const accountId = listRes.list[0].id;
         const shopRes = await service.post(
             `${zhanwai.baseUrl}/authorize/back/produce/user/detail`,
             {
@@ -100,11 +99,11 @@ export const createZhanwaiApp = (config: ZhanwaiAppConfig): App => {
             logger.error('获取店铺信息失败');
             process.exit(0);
         }
-        if (shopRes.data.result.userDetailVoPageInfo.list.length === 0) {
+        if (shopRes.userDetailVoPageInfo.list.length === 0) {
             logger.error('该账号下店铺信息为空');
             process.exit(0);
         }
-        const { shopId } = shopRes.data.result.userDetailVoPageInfo.list.find((item: { platForm: string }) => {
+        const { shopId } = shopRes.userDetailVoPageInfo.list.find((item: { platForm: string }) => {
             if (pt === 'meituan') {
                 return item.platForm === '美团';
             } else if (pt === 'ele') {

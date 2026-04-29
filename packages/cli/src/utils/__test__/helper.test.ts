@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { splitByLine, emptyWritableStream } from '../stream';
-import { isUrl } from '../web';
+import { isURL } from '../web';
 import { objectToCmdOptions } from '../command';
 
 describe('splitByLine', () => {
@@ -33,33 +33,33 @@ describe('splitByLine', () => {
     });
 });
 
-describe('isUrl', () => {
+describe('isURL', () => {
     it('应该正确识别HTTP URL', () => {
-        expect(isUrl('http://example.com')).toBe(true);
-        expect(isUrl('http://www.example.com')).toBe(true);
+        expect(isURL('http://example.com')).toBe(true);
+        expect(isURL('http://www.example.com')).toBe(true);
     });
 
     it('应该正确识别HTTPS URL', () => {
-        expect(isUrl('https://example.com')).toBe(true);
-        expect(isUrl('https://www.example.com')).toBe(true);
+        expect(isURL('https://example.com')).toBe(true);
+        expect(isURL('https://www.example.com')).toBe(true);
     });
 
     it('应该正确识别带路径的URL', () => {
-        expect(isUrl('https://example.com/path/to/resource')).toBe(true);
-        expect(isUrl('http://example.com/api/v1/users')).toBe(true);
+        expect(isURL('https://example.com/path/to/resource')).toBe(true);
+        expect(isURL('http://example.com/api/v1/users')).toBe(true);
     });
 
     it('应该正确识别带查询参数的URL', () => {
-        expect(isUrl('https://example.com/search?q=test')).toBe(true);
-        expect(isUrl('http://example.com/page?id=123&name=test')).toBe(true);
+        expect(isURL('https://example.com/search?q=test')).toBe(true);
+        expect(isURL('http://example.com/page?id=123&name=test')).toBe(true);
     });
 
     it('应该正确拒绝非URL字符串', () => {
-        expect(isUrl('not a url')).toBe(false);
-        expect(isUrl('www.example.com')).toBe(false);
-        expect(isUrl('example.com')).toBe(false);
-        expect(isUrl('ftp://example.com')).toBe(false);
-        expect(isUrl('')).toBe(false);
+        expect(isURL('not a url')).toBe(false);
+        expect(isURL('www.example.com')).toBe(false);
+        expect(isURL('example.com')).toBe(false);
+        expect(isURL('ftp://example.com')).toBe(false);
+        expect(isURL('')).toBe(false);
     });
 });
 

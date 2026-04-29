@@ -1,10 +1,9 @@
-import serviceGenerator from '@/utils/http';
 import { readSecret } from '@cli-tools/shared';
 // import { login } from '../utils/login';
-import chalk from 'chalk';
+// import chalk from 'chalk';
 import { App, Options, UserInfo } from '../types';
 import { getToken } from './appRunner';
-
+import { service } from '@/utils/http/company-service';
 interface MeituanAppConfig {
     name: string;
     appKey: string;
@@ -18,7 +17,6 @@ interface MeituanAppConfig {
 export const createMeituanApp = (config: MeituanAppConfig): App => {
     const { name, appKey, serviceName, defaultId, testDefaultId, userApi = 'home', openPC } = config;
     const platform = 8;
-    const service = serviceGenerator({ baseURL: '' });
 
     const getPrefix = async (isTest: boolean) => {
         return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
@@ -27,7 +25,7 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
     const getMeituanShopUrl = async (params: any, isTest: boolean) => {
         const prefix = await getPrefix(isTest);
         const res = await service.post(`${prefix}/occ/order/replaceUserLogin`, params);
-        return res.data.result;
+        return res;
     };
 
     const queryBusinessInfoList = async (obj: {
@@ -40,14 +38,11 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
         const prefix = await readSecret((db) => db.oa.apiPrefix);
         const token = await readSecret((db) => db.oa.token);
         return service.post<{
-            result: {
-                list: {
-                    shopId: string;
-                    shopName: string;
-                    memberId: string;
-                }[];
-            };
-            code: number;
+            list: {
+                shopId: string;
+                shopName: string;
+                memberId: string;
+            }[];
         }>(
             `${prefix}/query/businessInfoList`,
             {
@@ -84,9 +79,7 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
 
     const getUserInfo = async (token: string, isTest: boolean): Promise<UserInfo> => {
         const prefix = await getPrefix(isTest);
-        const res = await service.post<{
-            result: UserInfo;
-        }>(
+        const res = await service.post<UserInfo>(
             `${prefix}/meituan/${userApi}`,
             {},
             {
@@ -95,7 +88,7 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
                 },
             },
         );
-        return res.data.result;
+        return res;
     };
 
     const findMatchShop = async (
@@ -111,7 +104,7 @@ export const createMeituanApp = (config: MeituanAppConfig): App => {
                 pageSize,
                 minPrice,
             });
-            const { list } = res.data.result;
+            const { list } = res;
             for (const shop of list) {
                 const { memberId } = shop;
                 const shopUrl = await getMeituanShopUrl(

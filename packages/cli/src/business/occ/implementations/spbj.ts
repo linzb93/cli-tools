@@ -1,10 +1,9 @@
 import qs from 'node:querystring';
-import serviceGenerator from '@/utils/http';
+import { service } from '@/utils/http/company-service';
 import { readSecret } from '@cli-tools/shared';
 import { App, Options } from '../types';
 
 export const createSpbjApp = (): App => {
-    const service = serviceGenerator({ baseURL: '' });
     const name = 'spbj';
     const serviceName = '商品搬家';
     const defaultId = '测试';
@@ -17,7 +16,7 @@ export const createSpbjApp = (): App => {
             pageSize: 1,
             pageIndex: 1,
         });
-        return res.data.result;
+        return res;
     };
 
     const getOpenUrl = (res: any) => {

@@ -7,13 +7,13 @@ import through from 'through2';
 import { deleteAsync as del } from 'del';
 import { logger } from '@/utils/logger';
 import { emptyWritableStream } from '@/utils/stream';
-import { isUrl } from '@/utils/web';
+import { isURL } from '@/utils/web';
 import { isImage } from '@/utils/image';
 import { root } from '@cli-tools/shared';
 import { Options, Dimensions } from './types';
 
 export const sizeService = async (filePath: string, options: Options) => {
-    if (isUrl(filePath)) {
+    if (isURL(filePath)) {
         let res: AxiosResponse;
         // 当filePath外面不加引号时，地址里面的逗号会被解析成空格，所以下面这段代码是要把地址还原回去
         filePath = filePath.replace(/\s/g, ',');

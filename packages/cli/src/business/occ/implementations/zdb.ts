@@ -1,10 +1,9 @@
 import qs from 'node:querystring';
-import serviceGenerator from '@/utils/http';
+import { service } from '@/utils/http/company-service';
 import { readSecret } from '@cli-tools/shared';
 import { App, Options } from '../types';
 
 export const createZdbApp = (): App => {
-    const service = serviceGenerator({ baseURL: '' });
     const name = 'zdb';
     const serviceName = '涨单宝小程序';
     const defaultId = '-';
@@ -27,22 +26,22 @@ export const createZdbApp = (): App => {
                 keyword: zdb.keyword,
             })
             .then((res) => {
-                if (!res.data.result) {
+                if (!res) {
                     throw new Error(res.data.message || '获取用户列表失败');
                 }
-                if (!res.data.result.length) {
+                if (!res.length) {
                     throw new Error('未找到用户');
                 }
                 return service.post(`${zdb.baseUrl}/login/directLogin`, {
-                    unionId: res.data.result.list[0].unionId,
+                    unionId: res.list[0].unionId,
                 });
             })
             .then((res) => {
-                if (!res.data.result) {
+                if (!res) {
                     throw new Error(res.data.message || '获取门店信息失败');
                 }
-                console.log(`门店名称：${res.data.result.accountShop.shopName}`);
-                return `https://www.zdb.com/#/login?token=${res.data.result.accountShopToken}`;
+                console.log(`门店名称：${res.accountShop.shopName}`);
+                return `https://www.zdb.com/#/login?token=${res.accountShopToken}`;
             });
     };
 

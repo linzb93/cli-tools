@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import { getPerformanceData, userForcastList, setUserForcast } from './helpers/repository';
+import { getPerformanceData, userForcastList, setUserForcast } from './repository';
 import { Options, User } from './types';
 
 export const cgService = async (action: string, data: string, options: Options) => {

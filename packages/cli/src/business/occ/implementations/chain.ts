@@ -1,10 +1,9 @@
 import qs from 'node:querystring';
-import serviceGenerator from '@/utils/http';
+import { service } from '@/utils/http/company-service';
 import { readSecret } from '@cli-tools/shared';
 import { App, Options } from '../types';
 
 export const createChainApp = (): App => {
-    const service = serviceGenerator({ baseURL: '' });
     const name = 'chain';
     const serviceName = '店客多品牌连锁';
     const defaultId = '13023942325';
@@ -17,13 +16,13 @@ export const createChainApp = (): App => {
             pageSize: 1,
             pageIndex: 1,
         });
-        return res.data.result;
+        return res;
     };
 
     const getChainShopInfo = async (params: any) => {
         const prefix = await readSecret((db) => db.oa.oldApiPrefix);
         const res = await service.post(`${prefix}/chain/occ/dkdAccount/oa/getAccountToken`, params);
-        return res.data.result;
+        return res;
     };
 
     const getOpenUrl = (res: any) => {

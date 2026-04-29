@@ -6,7 +6,7 @@ import { sleep } from '@linzb93/utils';
  * @param text 输入文本
  * @returns 是否为URL
  */
-export const isUrl = (text: string): boolean => {
+export const isURL = (text: string): boolean => {
     return /^(http|https):\/\/[^ "]+$/.test(text);
 };
 

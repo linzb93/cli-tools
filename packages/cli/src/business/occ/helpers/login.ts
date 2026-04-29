@@ -4,11 +4,7 @@ import { open } from '@/utils/web';
 import { useAI } from '@/utils/ai/implementation';
 import { readSecret } from '@cli-tools/shared';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
-import serviceGenerator from '@/utils/http';
-
-const service = serviceGenerator({
-    baseURL: '',
-});
+import { service } from '@/utils/http/company-service';
 
 /**
  * 手动输入验证码进行登录
@@ -163,25 +159,13 @@ async function processCaptchaAndLogin(
             console.log(`识别结果：${ocrResult}`);
         }
         removeHandler();
-        const res = await service.post<
-            {
-                token: string;
-                code: number;
-            },
-            any,
-            {
-                username: string;
-                password: string;
-                uuid: string;
-                code: string;
-            }
-        >(`${prefix}/login`, {
+        const res = await service.post(`${prefix}/login`, {
             username,
             password,
             uuid,
             code: ocrResult.contents,
         });
-        return res.data;
+        return res;
     } catch (error) {
         removeHandler();
         if (process.env.MODE === 'cliTest') {
@@ -207,7 +191,7 @@ async function getLoginCaptcha(): Promise<{
          */
         uuid: string;
     }>(`${prefix}/captchaImage`);
-    const { img, uuid } = res.data;
+    const { img, uuid } = res;
     const stream = imageBase64ToStream(img);
     const { url, removeHandler } = await tempUpload({
         type: 'stream',

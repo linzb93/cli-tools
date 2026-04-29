@@ -1,4 +1,4 @@
-import serviceGenerator from '@/utils/http';
+import { service } from '@/utils/http/company-service';
 import { readSecret } from '@cli-tools/shared';
 import { App, Options } from '../types';
 
@@ -13,7 +13,6 @@ interface EleAppConfig {
 export const createEleApp = (config: EleAppConfig): App => {
     const { name, appKey, serviceName, defaultId, testDefaultId } = config;
     const platform = 11;
-    const service = serviceGenerator({ baseURL: '' });
 
     const getPrefix = async (isTest: boolean) => {
         return await readSecret((db) => (isTest ? db.oa.testPrefix : db.oa.apiPrefix));
@@ -22,7 +21,7 @@ export const createEleApp = (config: EleAppConfig): App => {
     const getEleShopUrl = async (params: any, isTest: boolean) => {
         const prefix = await getPrefix(isTest);
         const res = await service.post(`${prefix}/eleOcc/auth/onelogin`, params);
-        return res.data.result;
+        return res;
     };
 
     const getEleShopList = async (params: any, isTest: boolean) => {
@@ -32,7 +31,7 @@ export const createEleApp = (config: EleAppConfig): App => {
             pageSize: 1,
             pageIndex: 1,
         });
-        return res.data.result;
+        return res;
     };
 
     const getEleUserInfo = async (token: string, isTest: boolean) => {
@@ -46,7 +45,7 @@ export const createEleApp = (config: EleAppConfig): App => {
                 },
             },
         );
-        return res.data.result;
+        return res;
     };
 
     const getShopUrl = async (keyword: string, options: Options): Promise<string> => {

@@ -6,7 +6,7 @@ import { createDefaultTranslators, getTranslator, TranslatorType } from './core/
 import { TranslateResultItem } from './core/BaseTranslator';
 import { Options } from './types';
 import { getClipboardContent } from './utils';
-import { isUrl } from '@/utils/web';
+import { isURL } from '@/utils/web';
 
 /**
  * 显示翻译结果
@@ -158,7 +158,7 @@ export const engService = async (text: string | undefined, options: Options) => 
     }
 
     // 3. 处理 URL
-    if (isUrl(text)) {
+    if (isURL(text)) {
         console.log(chalk.blue('识别到URL，正在请求AI进行翻译...'));
         // 用户要求直接将 URL 发给 AI
         await translateByAI(text);

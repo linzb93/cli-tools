@@ -1,4 +1,4 @@
-import { subCommandCompiler } from '@/utils';
+import { subCommandCompiler } from '@/utils/command';
 import type { Options } from '@/business/claudeCode/dialog';
 /**
  * claudeCode 命令入口函数
