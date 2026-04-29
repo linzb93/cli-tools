@@ -105,16 +105,15 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
                     .map((line) => line.slice(3).trim());
 
                 if (modifiedFiles.length === 1) {
-                    const { stdout: diff } = await execaCommand('git diff HEAD', {
+                    await execaCommand('git diff HEAD', {
                         cwd: fullPath,
                         stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
                         env: {
                             FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
                         },
                     });
-                    console.log(diff);
                 } else {
-                    const { stdout: stat } = await execaCommand('git diff --stat', {
+                    await execaCommand('git diff --stat', {
                         cwd: fullPath,
                         stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
                         env: {
