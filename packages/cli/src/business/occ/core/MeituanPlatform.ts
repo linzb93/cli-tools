@@ -1,11 +1,11 @@
 import { BasePlatform } from './BasePlatform';
-import { Options } from '../types';
-import { getMeituanShopUrl, getUserInfo } from '../repository/meituan';
+import { Options, GetUserInfoRequest } from '../types';
+import { getMeituanShopURL, getUserInfo } from '../repository/meituan';
 import { openPC } from '../helpers/occUtils';
 export abstract class MeituanPlatform extends BasePlatform {
     platform = 8;
     async getShopUrl(keyword: string, options: Options): Promise<string> {
-        return getMeituanShopUrl(
+        return getMeituanShopURL(
             {
                 appKey: this.appKey,
                 memberId: keyword,
@@ -14,8 +14,8 @@ export abstract class MeituanPlatform extends BasePlatform {
             options.test,
         );
     }
-    async getUserInfo(token: string, userApi: string, isTest: boolean): Promise<any> {
-        return getUserInfo(token, userApi, isTest);
+    async getUserInfo(params: GetUserInfoRequest): Promise<any> {
+        return getUserInfo(params);
     }
     openPC(url: string, shopName: string) {
         openPC({ url, serviceName: this.serviceName, shopName });

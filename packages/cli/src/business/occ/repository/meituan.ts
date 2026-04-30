@@ -1,20 +1,45 @@
 import { getPrefix } from '../helpers/http';
 import { service } from '@/utils/http/company-service';
-import { UserInfo } from '../types';
-export const getMeituanShopUrl = async (params: any, isTest: boolean) => {
+import { GetUserInfoRequest } from '../types';
+
+interface MeituanShopURLRequest {
+    /** 应用key */
+    appKey: string;
+    /** 门店id */
+    memberId: string;
+    /** 平台 */
+    platform: number;
+}
+/**
+ * 获取美团店铺登录url
+ * @param {MeituanShopURLRequest} params - 请求参数
+ * @param {boolean} isTest 是否测试环境
+ * @returns {Promise<string>} 登录url
+ */
+export const getMeituanShopURL = async (params: MeituanShopURLRequest, isTest: boolean): Promise<string> => {
     const prefix = await getPrefix(isTest);
     const res = await service.post(`${prefix}/occ/order/replaceUserLogin`, params);
     return res;
 };
 
-export const getUserInfo = async (token: string, userApi: string, isTest: boolean): Promise<UserInfo> => {
-    const prefix = await getPrefix(isTest);
-    const res = await service.post<UserInfo>(
-        `${prefix}/meituan/${userApi}`,
+interface UserInfo {
+    version: number;
+    versionPlus: number;
+    surplusDays: number;
+}
+/**
+ * 获取美团店铺用户信息
+ * @param {GetUserInfoRequest} params - 请求参数
+ * @returns {Promise<UserInfo>} 用户信息
+ */
+export const getUserInfo = async (params: GetUserInfoRequest): Promise<UserInfo> => {
+    const prefix = await getPrefix(params.isTest);
+    const res = await service.post(
+        `${prefix}/meituan/${params.userApi}`,
         {},
         {
             headers: {
-                token,
+                token: params.token,
             },
         },
     );

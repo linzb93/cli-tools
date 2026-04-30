@@ -136,7 +136,7 @@ function render(data: ParsedUsageData): void {
         }
         console.log(
             chalk.gray(
-                `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 3 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,
+                `  按 ${chalk.bold.white('Ctrl+C')} 退出 | 每 30 分钟自动刷新 | 输入 ${chalk.bold.white('/refresh')} 手动刷新`,
             ),
         );
         console.log(
@@ -196,7 +196,7 @@ export async function minimaxService(options?: Options): Promise<() => void> {
     }
 
     // 交互模式
-    const interval = 180000; // 默认 3 分钟
+    const interval = 1000 * 60 * 30; // 默认 30 分钟
 
     let token: string;
     try {

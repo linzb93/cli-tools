@@ -1,17 +1,36 @@
 import { service } from '@/utils/http/company-service';
 // import { getPrefix } from '../helpers/http';
 import { readSecret } from '@cli-tools/shared';
+import { PaginationResponse } from '@/utils/http/company-service.type';
 
-export const getUserList = async () => {
+type ZdbUserListResponse = PaginationResponse<{
+    /** 用户ID */
+    unionId: string;
+    /** 门店名称 */
+    shopName: string;
+}>;
+/**
+ * 获取用户列表
+ * @param keyword 搜索关键词
+ * @returns {Promise<ZdbUserListResponse>} 用户列表
+ */
+export const getUserList = async (keyword: string): Promise<ZdbUserListResponse> => {
     const { zdb } = await readSecret((db) => db.oa);
     return service.post(`${zdb.baseUrl}/admin/user/list`, {
         pageIndex: 1,
         pageSize: 1,
-        keyword: zdb.keyword,
+        keyword,
     });
 };
 
-export const directLogin = async (unionId: string) => {
+interface DirectLoginResponse {
+    accountShop: {
+        shopName: string;
+    };
+    accountShopToken: string;
+}
+export const directLogin = async (params: { unionId: string }): Promise<DirectLoginResponse> => {
+    const { unionId } = params;
     const { zdb } = await readSecret((db) => db.oa);
     return service.post(`${zdb.baseUrl}/login/directLogin`, {
         unionId,

@@ -16,7 +16,7 @@ export interface ReadlineCommand {
     usage?: string;
     /** 是否需要项目列表上下文（用于命令如 diff/commit/log/push） */
     requireList?: boolean;
-    handler: (args: string[], item: any) => void | Promise<void>;
+    handler: (args: string[], item: any) => void | Promise<boolean | void>;
 }
 
 export interface CommandCompleteContext {
@@ -192,7 +192,12 @@ export function createCommandReadline(
 
         rl.pause();
         try {
-            await cmd.handler(parsed.args, item);
+            const result = await cmd.handler(parsed.args, item);
+            // 如果 handler 返回 false，则退出 readline
+            if (result === false) {
+                rl.close();
+                return;
+            }
         } catch (err) {
             console.log(chalk.red(`命令执行失败: /${cmd.name}`));
             console.log(String(err));

@@ -1,4 +1,4 @@
-import { Options } from '../types';
+import { Options, GetUserInfoRequest } from '../types';
 export abstract class BasePlatform {
     abstract name: string;
     abstract serviceName: string;
@@ -13,7 +13,7 @@ export abstract class BasePlatform {
     /**
      * 获取用户信息
      */
-    abstract getUserInfo(token: string, userApi: string, isTest: boolean): Promise<any>;
+    abstract getUserInfo(params: GetUserInfoRequest): Promise<any>;
     /**
      * 自定义操作
      */

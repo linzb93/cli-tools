@@ -75,7 +75,8 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
             const newList = await doScan(list.map((item) => item.fullPath));
 
             if (newList.length === 0) {
-                console.log(chalk.yellow('没有项目需要提交或推送。'));
+                logger.success('所有项目正常，没有需要提交或推送的代码。');
+                return false;
             } else {
                 printTable(newList);
             }

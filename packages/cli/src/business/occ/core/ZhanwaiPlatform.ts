@@ -1,7 +1,8 @@
 import { BasePlatform } from './BasePlatform';
 import qs from 'node:querystring';
-import { Options } from '../types';
+import { Options, GetUserInfoRequest } from '../types';
 import { getLoginToken, chooseChannel, getUserList, getUserDetail, getShopDetail } from '../repository/zhanwai';
+import type { UserDetailVo } from '../repository/zhanwai';
 import { logger } from '@/utils/logger';
 // import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
 
@@ -24,20 +25,13 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
         }
 
         const formerToken = await getLoginToken();
-        const { token } = await chooseChannel(formerToken, this.agentId);
-        const listRes = await getUserList(token, keyword);
-        // console.log(token, keyword);
-        // console.log(listRes);
-        // if (listRes.data.code !== HTTP_STATUS.SUCCESS) {
-        //     logger.error('获取用户信息失败');
-        //     process.exit(0);
-        // }
+        const { token } = await chooseChannel({
+            token: formerToken,
+            agentId: this.agentId,
+        });
+        const listRes = await getUserList({ token, keyword });
         const accountId = listRes.list[0].id;
-        const shopRes = await getUserDetail(token, accountId);
-        // if (shopRes.data.code !== HTTP_STATUS.SUCCESS) {
-        //     logger.error('获取店铺信息失败');
-        //     process.exit(0);
-        // }
+        const shopRes = await getUserDetail({ token, keyword: accountId });
         if (shopRes.userDetailVoPageInfo.list.length === 0) {
             logger.error('该账号下店铺信息为空');
             process.exit(0);
@@ -51,13 +45,8 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
                 return item.platForm === '京东';
             }
             return false;
-        });
-        const ptMap: Record<string, string> = {
-            meituan: '8',
-            ele: '11',
-            jingdong: '4',
-        };
-        const res = await getShopDetail(token, accountId, shopId, pt);
+        }) as UserDetailVo;
+        const res = await getShopDetail({ token, accountId, shopId, pt });
         const result = res;
         let folder = '';
         if (pt === 'meituan') {
@@ -75,8 +64,8 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
         return url;
     }
 
-    async getUserInfo(token: string, userApi: string, isTest: boolean): Promise<any> {
-        return token;
+    async getUserInfo(params: GetUserInfoRequest): Promise<any> {
+        return params.token;
     }
     override getToken(url: string): string {
         const { hash } = new URL(url);
