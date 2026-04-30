@@ -11,9 +11,9 @@ import { TaobaoJingYingShenQi } from '../implementations/taobao';
 // import { chain } from '../implementations/chain';
 // import { spbj } from '../implementations/spbj';
 // import { wmb } from '../implementations/wmb';
-// import { kdb } from '../implementations/kdb';
+import { Wmb, Kdb } from '../implementations/zhanwai';
 // import { dkdMiniProgram } from '../implementations/dkdMiniProgram';
-// import { zdb } from '../implementations/zdb';
+import { Zdb } from '../implementations/Zdb';
 
 const apps: Record<string, BasePlatform> = {
     jysq: new MeituanJingYingShenQi(),
@@ -23,6 +23,9 @@ const apps: Record<string, BasePlatform> = {
     dj: new MeituanDianJinDaShi(),
     ai: new MeituanAiBaoDanShenQi(),
     ele: new TaobaoJingYingShenQi(),
+    zdb: new Zdb(),
+    wmb: new Wmb(),
+    kdb: new Kdb(),
 };
 
 /**

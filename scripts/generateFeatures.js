@@ -16,11 +16,14 @@ const excludes = [
     'common',
     'core',
     'types',
-    'common',
-    'core',
+    'helpers',
+    'repository',
     'implementations',
 ];
-const renameCommands = [['translate', 'eng']];
+const renameCommands = [
+    ['translate', 'eng'],
+    ['claudeCode', 'cc'],
+];
 
 function getFeatures() {
     const features = [];

@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-
+import { HTTP_STATUS } from '@cli-tools/shared';
 interface IOptions {
     baseURL: string;
 }
@@ -25,6 +25,10 @@ const useService = <T = any>(options: IOptions): IService<T> => {
     });
     instance.interceptors.response.use(
         (response) => {
+            if (response.data.code !== HTTP_STATUS.SUCCESS) {
+                console.log(response.config.url);
+                throw new Error(response.data.msg);
+            }
             return response.data.result;
         },
         (error) => {

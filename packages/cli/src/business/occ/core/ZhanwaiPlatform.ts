@@ -3,12 +3,15 @@ import qs from 'node:querystring';
 import { Options } from '../types';
 import { getLoginToken, chooseChannel, getUserList, getUserDetail, getShopDetail } from '../repository/zhanwai';
 import { logger } from '@/utils/logger';
-import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
+// import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
 
 export abstract class ZhanwaiPlatform extends BasePlatform {
     platform = 11;
     abstract agentId: string;
     abstract prefix: string;
+    defaultId = '13023942325';
+    testDefaultId = '13023942325';
+    appKey = '';
     async getShopUrl(keyword: string, options: Options): Promise<string> {
         const pt = options.platform;
         if (!pt) {
@@ -21,18 +24,20 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
         }
 
         const formerToken = await getLoginToken();
-        const token = await chooseChannel(formerToken, this.agentId);
+        const { token } = await chooseChannel(formerToken, this.agentId);
         const listRes = await getUserList(token, keyword);
-        if (listRes.data.code !== HTTP_STATUS.SUCCESS) {
-            logger.error('获取用户信息失败');
-            process.exit(0);
-        }
+        // console.log(token, keyword);
+        // console.log(listRes);
+        // if (listRes.data.code !== HTTP_STATUS.SUCCESS) {
+        //     logger.error('获取用户信息失败');
+        //     process.exit(0);
+        // }
         const accountId = listRes.list[0].id;
         const shopRes = await getUserDetail(token, accountId);
-        if (shopRes.data.code !== HTTP_STATUS.SUCCESS) {
-            logger.error('获取店铺信息失败');
-            process.exit(0);
-        }
+        // if (shopRes.data.code !== HTTP_STATUS.SUCCESS) {
+        //     logger.error('获取店铺信息失败');
+        //     process.exit(0);
+        // }
         if (shopRes.userDetailVoPageInfo.list.length === 0) {
             logger.error('该账号下店铺信息为空');
             process.exit(0);
@@ -53,7 +58,7 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
             jingdong: '4',
         };
         const res = await getShopDetail(token, accountId, shopId, pt);
-        const { result } = res.data;
+        const result = res;
         let folder = '';
         if (pt === 'meituan') {
             folder = 'jyzsapp';
