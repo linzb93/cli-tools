@@ -125,9 +125,15 @@ async function handleConflict() {
  * @returns 是否超时错误
  */
 export function isNetworkError(errMsg: string): boolean {
-    console.log(chalk.gray('debug'));
-    console.log(errMsg);
-    console.log(chalk.gray('debug-end'));
+    console.log(
+        errMsg.toLowerCase().includes('timeout'),
+        errMsg.includes("Couldn't connect to server"),
+        errMsg.includes('Failed'),
+        errMsg.includes('Failure'),
+        errMsg.includes('Connection reset by peer'),
+        errMsg.includes('unable to access'),
+        errMsg.includes('before end of the underlying stream'),
+    );
     return (
         errMsg.toLowerCase().includes('timeout') ||
         errMsg.includes("Couldn't connect to server") ||
