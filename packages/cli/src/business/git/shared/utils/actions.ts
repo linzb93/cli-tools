@@ -125,6 +125,7 @@ async function handleConflict() {
  * @returns 是否超时错误
  */
 export function isNetworkError(errMsg: string): boolean {
+    console.log(typeof errMsg);
     console.log(
         errMsg.toLowerCase().includes('timeout'),
         errMsg.includes("Couldn't connect to server"),
