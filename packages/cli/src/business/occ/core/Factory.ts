@@ -8,9 +8,6 @@ import {
 } from '../implementations/meituan';
 import { BasePlatform } from '../core/BasePlatform';
 import { TaobaoJingYingShenQi } from '../implementations/taobao';
-// import { chain } from '../implementations/chain';
-// import { spbj } from '../implementations/spbj';
-// import { wmb } from '../implementations/wmb';
 import { Wmb, Kdb } from '../implementations/zhanwai';
 // import { dkdMiniProgram } from '../implementations/dkdMiniProgram';
 import { Zdb } from '../implementations/Zdb';
@@ -22,7 +19,7 @@ const apps: Record<string, BasePlatform> = {
     im: new MeituanIMShenQi(),
     dj: new MeituanDianJinDaShi(),
     ai: new MeituanAiBaoDanShenQi(),
-    ele: new TaobaoJingYingShenQi(),
+    taobao: new TaobaoJingYingShenQi(),
     zdb: new Zdb(),
     wmb: new Wmb(),
     kdb: new Kdb(),
@@ -42,14 +39,6 @@ export const createApp = (appName: string): BasePlatform => {
 };
 
 /**
- * 获取所有可用的应用名称
- * @returns 应用名称数组
- */
-export const getAvailableAppNames = (): string[] => {
-    return Object.keys(apps);
-};
-
-/**
  * 检查应用名称是否存在
  * @param appName 应用名称
  * @returns 是否存在
@@ -64,12 +53,4 @@ export const hasApp = (appName: string): boolean => {
  */
 export const getDefaultApp = (): BasePlatform => {
     return new MeituanJingYingShenQi();
-};
-
-/**
- * 获取默认应用名称
- * @returns 默认应用名称
- */
-export const getDefaultAppName = (): string => {
-    return 'jysq';
 };

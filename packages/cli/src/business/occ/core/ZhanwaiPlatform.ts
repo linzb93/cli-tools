@@ -7,21 +7,25 @@ import { logger } from '@/utils/logger';
 // import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
 
 export abstract class ZhanwaiPlatform extends BasePlatform {
-    platform = 11;
+    platform = '';
     abstract agentId: string;
     abstract prefix: string;
     defaultId = '13023942325';
     testDefaultId = '13023942325';
+    /**
+     * 支持的平台列表
+     */
+    supportPlatformList: string[] = [];
     appKey = '';
     async getShopUrl(keyword: string, options: Options): Promise<string> {
         const pt = options.platform;
         if (!pt) {
-            logger.error('平台名称不能为空, 请指定--platform参数', true);
+            logger.error('平台名称不能为空, 请指定命令行platform选项: meituan/taobao/jingdong', true);
         }
-        const { name, serviceName } = this;
-
-        if (name === 'kdb' && pt === 'jingdong') {
-            logger.error(`京东店铺不支持${serviceName}`, true);
+        this.platform = pt;
+        const { serviceName } = this;
+        if (!this.supportPlatformList.includes(pt)) {
+            logger.error(`${pt}店铺不支持${serviceName}`, true);
         }
 
         const formerToken = await getLoginToken();
@@ -30,33 +34,40 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
             agentId: this.agentId,
         });
         const listRes = await getUserList({ token, keyword });
+        if (!listRes.list.length) {
+            logger.error('该账号下用户列表为空', true);
+        }
         const accountId = listRes.list[0].id;
         const shopRes = await getUserDetail({ token, keyword: accountId });
-        if (shopRes.userDetailVoPageInfo.list.length === 0) {
-            logger.error('该账号下店铺信息为空');
-            process.exit(0);
+        const shopList = shopRes.userDetailVoPageInfo.list;
+        if (!shopList.length) {
+            logger.error('该账号下店铺信息为空', true);
         }
-        const { shopId } = shopRes.userDetailVoPageInfo.list.find((item: { platForm: string }) => {
+        const { shopId } = shopList.find((item: { platForm: string }) => {
             if (pt === 'meituan') {
                 return item.platForm === '美团';
-            } else if (pt === 'ele') {
+            } else if (pt === 'taobao') {
                 return item.platForm === '饿了么';
             } else if (pt === 'jingdong') {
                 return item.platForm === '京东';
             }
             return false;
         }) as UserDetailVo;
-        const res = await getShopDetail({ token, accountId, shopId, pt });
-        const result = res;
+        const ptMap: Record<string, string> = {
+            meituan: '8',
+            taobao: '11',
+            jingdong: '4',
+        };
+        const result = await getShopDetail({ token, accountId, shopId, platform: ptMap[pt] });
         let folder = '';
         if (pt === 'meituan') {
             folder = 'jyzsapp';
-        } else if (pt === 'ele') {
+        } else if (pt === 'taobao') {
             folder = 'elejysqapp';
         } else if (pt === 'jingdong') {
             folder = 'jdjysq';
         }
-        const url = `${this.prefix}/pages/${folder}/?t=${Date.now()}#/${pt === 'jingdong' ? 'login' : 'loginByOuter'}?code=${
+        const url = `${this.prefix}/pages/${folder}/#/${pt === 'jingdong' ? 'login' : 'loginByOuter'}?code=${
             result.shopToken
         }&version=1&shopId=${result.shopId}&dueDate=${result.dueDate ? result.dueDate.split(' ')[0] : ''}&url=${
             pt === 'jingdong' ? '/' : '/apps'
@@ -69,7 +80,8 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
     }
     override getToken(url: string): string {
         const { hash } = new URL(url);
-        const obj = qs.parse(hash.replace(`#/loginByOuter?`, '')) as {
+        const loginPageName = this.platform === 'jingdong' ? 'login' : 'loginByOuter';
+        const obj = qs.parse(hash.replace(`#${loginPageName}?`, '')) as {
             code: string;
         };
         return obj.code;

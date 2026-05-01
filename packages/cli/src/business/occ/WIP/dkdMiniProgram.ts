@@ -6,7 +6,7 @@
 
 // const platformTypeEnum = {
 //     meituan: '8',
-//     ele: '11',
+//     taobao: '11',
 //     jingdong: '4',
 // };
 
@@ -74,9 +74,9 @@
 //                     shopId: shop.shopId,
 //                     venderId: shop.venderId,
 //                 };
-//             } else if (shop.platform === platformTypeEnum.ele) {
+//             } else if (shop.platform === platformTypeEnum.taobao) {
 //                 return {
-//                     platform: 'ele',
+//                     platform: 'taobao',
 //                     shopId: shop.shopId,
 //                     venderId: shop.venderId,
 //                 };

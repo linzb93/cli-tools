@@ -33,7 +33,7 @@ $ mycli occ pj 1234567 --token
 -   yx: 美团营销神器
 -   dj: 美团点金大师
 -   ai: 美团 AI 爆单神器
--   ele: 饿了么经营神器
+-   taobao: 淘宝闪购经营神器
 -   chain: 美团连锁品牌
 -   outer: 站外应用
 -   spbj: 商品搬家

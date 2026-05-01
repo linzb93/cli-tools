@@ -11,13 +11,9 @@ export abstract class BasePlatform {
      */
     abstract getShopUrl(keyword: string, options: Options): Promise<string>;
     /**
-     * 获取用户信息
+     * 获取应用内用户信息
      */
     abstract getUserInfo(params: GetUserInfoRequest): Promise<any>;
-    /**
-     * 自定义操作
-     */
-    customAction?(keyword: string, options: Options): Promise<void>;
     /**
      * 打开PC端
      * @param url 店铺URL

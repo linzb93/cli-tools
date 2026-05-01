@@ -11,7 +11,7 @@ interface ChooseChannelResponse {
     token: string;
 }
 /**
- * 选择渠道
+ * 登录之后，选择渠道，获取这个渠道的token
  * @param {ChooseChannelRequest} params - 请求参数
  * @returns {Promise<ChooseChannelResponse>}选择渠道结果
  */
@@ -121,7 +121,7 @@ interface ShopDetailRequest {
     token: string;
     accountId: string;
     shopId: string;
-    pt: string;
+    platform: string;
 }
 interface ShopDetailResponse {
     shopToken: string;
@@ -134,19 +134,14 @@ interface ShopDetailResponse {
  * @returns {Promise<ShopDetailResponse>}门店详情
  */
 export const getShopDetail = async (params: ShopDetailRequest): Promise<ShopDetailResponse> => {
-    const { token, accountId, shopId, pt } = params;
-    const ptMap: Record<string, string> = {
-        meituan: '8',
-        ele: '11',
-        jingdong: '4',
-    };
+    const { token, accountId, shopId, platform } = params;
     const zhanwai = await readSecret((db) => db.oa.zhanwai);
     const res = await service.post(
         `${zhanwai.baseUrl}/authorize/back/produce/shop/detail`,
         {
             accountId,
             shopId,
-            platform: ptMap[pt],
+            platform,
         },
         {
             headers: {
