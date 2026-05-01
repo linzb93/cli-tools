@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { executeCommands, CommandConfig } from '@/utils/execuate-command-line';
+import { executeCommands, CommandConfig } from '@/utils/execute-command-line';
 import inquirer from '@/utils/inquirer';
 
 /**
@@ -125,16 +125,6 @@ async function handleConflict() {
  * @returns 是否超时错误
  */
 export function isNetworkError(errMsg: string): boolean {
-    console.log(typeof errMsg);
-    console.log(
-        errMsg.toLowerCase().includes('timeout'),
-        errMsg.includes("Couldn't connect to server"),
-        errMsg.includes('Failed'),
-        errMsg.includes('Failure'),
-        errMsg.includes('Connection reset by peer'),
-        errMsg.includes('unable to access'),
-        errMsg.includes('before end of the underlying stream'),
-    );
     return (
         errMsg.toLowerCase().includes('timeout') ||
         errMsg.includes("Couldn't connect to server") ||

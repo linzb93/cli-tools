@@ -4,7 +4,7 @@ import { Factory } from './core/Factory';
 import { setContext } from './helpers/context';
 import type { DeployOptions } from './types';
 import { checkHardcoded } from '../shared/utils/hard-coded';
-import { calculateCommandTime } from '@/utils/execuate-command-line';
+import { calculateCommandTime } from '@/utils/execute-command-line';
 
 /**
  * 初始化分支信息

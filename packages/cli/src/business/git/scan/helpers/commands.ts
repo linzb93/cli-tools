@@ -4,7 +4,7 @@ import { logger } from '@/utils/logger';
 import { createCommandReadline, displayCommands, type ReadlineCommand } from '@/utils/readline';
 import { getGitLogData } from '../../log';
 import gitActions from '../../shared/utils/actions';
-import { executeCommands } from '@/utils/execuate-command-line';
+import { executeCommands } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import { deployService } from '../../deploy';
 import { printTable, doScan } from './scanner';

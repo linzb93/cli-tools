@@ -14,7 +14,7 @@ interface RetryOptions {
      */
     onError?: (attempt: number, error: Error) => onErrorReturn | Promise<onErrorReturn>;
 }
-type onErrorReturn = {
+export type onErrorReturn = {
     /**
      * 是否停止执行后续命令
      * @default false
@@ -30,18 +30,18 @@ type onErrorReturn = {
 export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
     const { maxAttempts = 10, onError } = options;
     let attempt = 1;
-    let firstFailTime: number | null = null;
+    let firstFailTime: number = 0;
 
     while (attempt <= maxAttempts) {
+        const now = Date.now();
         try {
             return await fn();
         } catch (error) {
-            const now = Date.now();
-            firstFailTime = now;
             if (now - firstFailTime < 1000) {
                 // 下一次失败与上一次失败间隔小于1秒，直接抛出错误
                 throw error instanceof Error ? error : new Error(String(error));
             }
+            firstFailTime = now;
 
             if (typeof onError === 'function') {
                 const { shouldStop } = await onError(attempt, error as Error);

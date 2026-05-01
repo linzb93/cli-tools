@@ -1,6 +1,6 @@
 import { execa } from 'execa';
 import { logger } from '@/utils/logger';
-import { executeCommands, CommandConfig } from '@/utils/execuate-command-line';
+import { executeCommands, CommandConfig } from '@/utils/execute-command-line';
 import { isGitProject } from '../../shared/utils';
 import { getAllTags } from '../shared';
 

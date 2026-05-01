@@ -1,7 +1,7 @@
 import { BaseDeploy } from '../core/BaseDeploy';
 import { getContext } from '../helpers/context';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../../shared/utils';
-import { executeCommands } from '@/utils/execuate-command-line';
+import { executeCommands } from '@/utils/execute-command-line';
 import gitActions, { isNetworkError } from '../../shared/utils/actions';
 import { logger } from '@/utils/logger';
 

@@ -1,4 +1,4 @@
-import { executeCommands } from '@/utils/execuate-command-line';
+import { executeCommands } from '@/utils/execute-command-line';
 import gitActions from '../../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../../shared/utils';
 import { getContext } from '../helpers/context';

@@ -4,7 +4,7 @@ import path from 'node:path';
 import chalk from 'chalk';
 import { createIterationStrategy } from './core/Factory';
 import { isGithubProject, isMonorepo } from '../shared/utils/project-type';
-import { calculateCommandTime } from '@/utils/execuate-command-line';
+import { calculateCommandTime } from '@/utils/execute-command-line';
 import type { IterationOptions } from './types';
 import { isDebug } from './helpers';
 /**

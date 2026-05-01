@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-import { isPlainObject } from 'lodash-es';
 import { execaCommand as execa } from 'execa';
-import { retryAsync } from './promise';
+import { sleep } from '@linzb93/utils';
+import { retryAsync, onErrorReturn } from './promise';
 import { timeRemainsFormat } from './time';
 /**
  * 命令配置接口
@@ -22,13 +22,7 @@ export interface CommandConfig {
      * @param {string} error - 错误信息
      * @returns { { shouldStop?: boolean }} 返回对象中的shouldStop为true时停止执行
      */
-    onError?: (error: string) => Promise<{
-        /**
-         * 是否停止执行后续命令
-         * @default false
-         */
-        shouldStop?: boolean;
-    }>;
+    onError?: (error: string) => onErrorReturn | Promise<onErrorReturn>;
 }
 
 export type Command = string | CommandConfig;

@@ -5,7 +5,7 @@ import type { IterationOptions } from '../types';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { logger } from '@/utils/logger';
-import { executeCommands } from '@/utils/execuate-command-line';
+import { executeCommands } from '@/utils/execute-command-line';
 import { updatePackageJSON } from '../helpers/updatePackageJSON';
 import { getGitProjectStatus, GitStatusMap, getMainBranchName, checkBranchExist } from '../../shared/utils';
 import gitActions from '../../shared/utils/actions';

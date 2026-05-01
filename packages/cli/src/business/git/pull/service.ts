@@ -1,6 +1,6 @@
 import { isGitProject, getCurrentBranchName, getGitProjectStatus, GitStatusMap } from '../shared/utils';
 import gitActions, { formatCommitMessage } from '../shared/utils/actions';
-import { executeCommands } from '@/utils/execuate-command-line';
+import { executeCommands } from '@/utils/execute-command-line';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';

@@ -6,7 +6,7 @@ import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { logger } from '@/utils/logger';
 import inquirer from '@/utils/inquirer';
 import type { Options } from './types';
-import { executeCommands } from '@/utils/execuate-command-line';
+import { executeCommands } from '@/utils/execute-command-line';
 
 /**
  * git merge 命令的实现函数

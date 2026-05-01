@@ -7,7 +7,6 @@ pnpm-lock.yaml
 !cache/awesome.json
 cache/
 package-lock.json
-.trae/documents
 **/*/stats.html
 .claude/setting.local.json
 .claude/settings.local.json
