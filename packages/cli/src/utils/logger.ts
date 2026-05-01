@@ -53,6 +53,9 @@ const afterLog = (needRestart: boolean): void => {
  * @param text - 要输出的文本或数字
  */
 const success = (text: string | number): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     const needRestart = beforeLog();
     console.log(`${logSymbols.success} ${text}`);
     afterLog(needRestart);
@@ -63,6 +66,9 @@ const success = (text: string | number): void => {
  * @param text - 要输出的文本或数字
  */
 const info = (text: string | number): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     const needRestart = beforeLog();
     console.log(`${logSymbols.info} ${text}`);
     afterLog(needRestart);
@@ -73,6 +79,9 @@ const info = (text: string | number): void => {
  * @param text - 要输出的文本或数字
  */
 const warn = (text: string | number): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     const needRestart = beforeLog();
     console.log(`${logSymbols.warning} ${text}`);
     afterLog(needRestart);
@@ -84,6 +93,9 @@ const warn = (text: string | number): void => {
  * @param needExit - 是否需要退出进程
  */
 const error = (text: string | number, needExit?: boolean): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     const needRestart = beforeLog();
     console.log(`${logSymbols.error} ${text}`);
     afterLog(needRestart);
@@ -99,6 +111,9 @@ const error = (text: string | number, needExit?: boolean): void => {
  * @param clearAll - 是否清除所有内容
  */
 const clearConsole = (start = 0, clearAll?: boolean): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     if (process.stdout.isTTY) {
         if (!clearAll) {
             const blank = '\n'.repeat(process.stdout.rows);
@@ -113,6 +128,9 @@ const clearConsole = (start = 0, clearAll?: boolean): void => {
  * 控制台光标回退一行
  */
 const backwardConsole = (times = 1): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     if (process.stdout.isTTY) {
         for (let i = 0; i < times; i++) {
             process.stdout.moveCursor(0, -1);
@@ -122,6 +140,9 @@ const backwardConsole = (times = 1): void => {
 };
 
 const empty = (lines = 1) => {
+    if (process.env.VITEST) {
+        return;
+    }
     for (let i = 0; i < lines; i++) {
         console.log();
     }
@@ -132,6 +153,9 @@ const empty = (lines = 1) => {
  * @param options - 盒子选项
  */
 const box = (options: BoxOptions): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     const { columns } = terminalSize();
     const title = chalk.bgRed.white(` ${options.title} `);
     const titleEdgeLength = Math.floor((columns - stringWidth(title)) / 2);
@@ -162,6 +186,9 @@ const box = (options: BoxOptions): void => {
  * @param content - 日志内容（命令）
  */
 const cli = (content: string): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     // 获取当前时间的年份和季度
     const year = dayjs().format('YYYY');
     const quarter = Math.ceil(Number(dayjs().format('MM')) / 3);
@@ -185,6 +212,9 @@ const cli = (content: string): void => {
  * @param content - 日志内容
  */
 const web = (content: string): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     fs.appendFile(resolve(cacheRoot, 'serverLog.txt'), `[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] ${content}\n`);
 };
 
@@ -200,6 +230,9 @@ const big = (
         random?: boolean;
     },
 ): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     cfonts.say(text, {
         font: 'block',
         colors: (() => {
@@ -212,6 +245,9 @@ const big = (
     });
 };
 const gradient = (text: string): void => {
+    if (process.env.VITEST) {
+        return;
+    }
     const coolGradient = gradientUtil([
         tinycolor('#FFBB65'),
         { r: 0, g: 255, b: 0 },

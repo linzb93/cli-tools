@@ -18,7 +18,7 @@ import { GetUserInfoRequest } from '../types';
 // };
 interface TaobaoShopURLRequest {
     /** 应用key */
-    appKey: string;
+    appId: string;
     /** 门店id */
     memberId: string;
     /** 平台 */

@@ -1,48 +1,47 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { init } from './_shared';
+import {
+    MeituanJingYingShenQi,
+    MeituanZhuangXiuShenQi,
+    MeituanPingJiaShenQi,
+    MeituanIMShenQi,
+    MeituanDianJinDaShi,
+    MeituanAiBaoDanShenQi,
+} from '../implementations/meituan';
 
-// 直接使用绝对路径
-const secretData = JSON.parse(
-    readFileSync(
-        process.cwd().endsWith('cli-tools')
-            ? `${process.cwd()}/cache/secret.json`
-            : join(process.cwd(), '../../', 'cache', 'secret.json'),
-        'utf-8',
-    ),
-);
+init();
 
-// mock readSecret 但保留其他导出
-vi.mock('@cli-tools/shared', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@cli-tools/shared')>();
-    return {
-        ...actual,
-        readSecret: vi.fn((callback) => Promise.resolve(callback(secretData))),
-    };
-});
-
-vi.mock('@/utils/logger', () => ({
-    logger: {
-        success: vi.fn(),
-        info: vi.fn(),
-        warn: vi.fn(),
-        error: vi.fn(),
-        debug: vi.fn(),
-    },
-}));
-
-vi.mock('../helpers/occUtils', () => ({
-    openPC: vi.fn(),
-}));
-
-describe('美团经营神器', () => {
+describe('美团平台', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
-
-    it('获取地址', async () => {
-        const { MeituanJingYingShenQi } = await import('../implementations/meituan');
+    it('美团经营神器获取地址', async () => {
         const instance = new MeituanJingYingShenQi();
+        const url = await instance.getShopUrl(instance.defaultId, { test: false });
+        expect(url).toBeTypeOf('string');
+    });
+    it('美团装修神器获取地址', async () => {
+        const instance = new MeituanZhuangXiuShenQi();
+        const url = await instance.getShopUrl(instance.defaultId, { test: false });
+        expect(url).toBeTypeOf('string');
+    });
+    it('美团评价神器获取地址', async () => {
+        const instance = new MeituanPingJiaShenQi();
+        const url = await instance.getShopUrl(instance.defaultId, { test: false });
+        expect(url).toBeTypeOf('string');
+    });
+    it('美团IM神器获取地址', async () => {
+        const instance = new MeituanIMShenQi();
+        const url = await instance.getShopUrl(instance.defaultId, { test: false });
+        expect(url).toBeTypeOf('string');
+    });
+    it('美团点金大师获取地址', async () => {
+        const instance = new MeituanDianJinDaShi();
+        const url = await instance.getShopUrl(instance.defaultId, { test: false });
+        expect(url).toBeTypeOf('string');
+    });
+    it('美团AI爆单神器获取地址', async () => {
+        const instance = new MeituanAiBaoDanShenQi();
         const url = await instance.getShopUrl(instance.defaultId, { test: false });
         expect(url).toBeTypeOf('string');
     });

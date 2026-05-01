@@ -1,5 +1,6 @@
 import { BasePlatform } from '../core/BasePlatform';
 import qs from 'node:querystring';
+import { logger } from '@/utils/logger';
 import { GetUserInfoRequest } from '../types';
 import { getUserList, directLogin } from '../repository/zdb';
 
@@ -21,7 +22,7 @@ export class Zdb extends BasePlatform {
                 if (!res.accountShop) {
                     throw new Error('获取门店信息失败');
                 }
-                console.log(`门店名称：${res.accountShop.shopName}`);
+                logger.info(`门店名称：${res.accountShop.shopName}`);
                 return `https://www.zdb.com/#/login?token=${res.accountShopToken}`;
             });
     }

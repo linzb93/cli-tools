@@ -17,7 +17,7 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
      */
     supportPlatformList: string[] = [];
     appKey = '';
-    async getShopUrl(keyword: string, options: Options): Promise<string> {
+    async getShopUrl(keyword: string, options: Pick<Options, 'platform'>): Promise<string> {
         const pt = options.platform;
         if (!pt) {
             logger.error('平台名称不能为空, 请指定命令行platform选项: meituan/taobao/jingdong', true);
@@ -81,7 +81,7 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
     override getToken(url: string): string {
         const { hash } = new URL(url);
         const loginPageName = this.platform === 'jingdong' ? 'login' : 'loginByOuter';
-        const obj = qs.parse(hash.replace(`#${loginPageName}?`, '')) as {
+        const obj = qs.parse(hash.replace(`#/${loginPageName}?`, '')) as {
             code: string;
         };
         return obj.code;

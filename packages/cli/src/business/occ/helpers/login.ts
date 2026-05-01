@@ -2,6 +2,7 @@ import inquirer from '@/utils/inquirer';
 import chalk from 'chalk';
 import { open } from '@/utils/web';
 import { useAI } from '@/utils/ai/implementation';
+import { logger } from '@/utils/logger';
 import { readSecret } from '@cli-tools/shared';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import { service } from '@/utils/http/company-service';
@@ -21,7 +22,7 @@ async function manualCaptchaLogin(
     token: string;
 }> {
     const { url, uuid, removeHandler } = await getLoginCaptcha();
-    console.log(chalk.green('请在浏览器中打开以下地址查看验证码：'));
+    logger.info(`请在浏览器中打开以下地址查看验证码：${url}`);
     await open(url);
 
     const { code } = await inquirer.prompt([
@@ -66,22 +67,21 @@ export async function login(): Promise<void> {
             try {
                 // 获取验证码并登录
                 loginResult = await processCaptchaAndLogin(username, password, prefix);
-                console.log(loginResult);
                 if (loginResult && loginResult.token) {
                     loginSuccess = true;
                 } else {
                     retryCount++;
-                    console.log(chalk.yellow(`登录失败，正在重试 (${retryCount}/${maxRetries})...`));
+                    logger.error(`登录失败，正在重试 (${retryCount}/${maxRetries})...`);
                 }
             } catch (error) {
                 retryCount++;
-                console.log(chalk.yellow(`验证码识别失败，正在重试 (${retryCount}/${maxRetries})...`));
+                logger.error(`验证码识别失败，正在重试 (${retryCount}/${maxRetries})...`);
             }
         }
 
         // 如果AI识别失败5次，则让用户手动输入
         if (!loginSuccess) {
-            console.log(chalk.red('验证码自动识别失败，请手动输入验证码'));
+            logger.error('验证码自动识别失败，请手动输入验证码');
             loginResult = await manualCaptchaLogin(username, password, prefix);
         }
 
@@ -90,8 +90,7 @@ export async function login(): Promise<void> {
             db.oa.token = loginResult.token;
         });
     } catch (error) {
-        console.error(chalk.red('登录过程中发生错误:'), (error as Error).message);
-        process.exit(0);
+        logger.error(`登录过程中发生错误: ${(error as Error).message}`, true);
     }
 }
 
@@ -156,7 +155,7 @@ async function processCaptchaAndLogin(
         if (!Number.isInteger(Number(ocrResult))) {
             throw new Error(`错误的识别结果：${ocrResult}`);
         } else {
-            console.log(`识别结果：${ocrResult}`);
+            logger.info(`识别结果：${ocrResult}`);
         }
         removeHandler();
         const res = await service.post(`${prefix}/login`, {
@@ -169,7 +168,7 @@ async function processCaptchaAndLogin(
     } catch (error) {
         removeHandler();
         if (process.env.MODE === 'cliTest') {
-            console.log((error as Error).message);
+            logger.error((error as Error).message);
         }
         throw error;
     }

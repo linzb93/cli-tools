@@ -4,10 +4,10 @@ import { getTaobaoShopURL, getTaobaoUserInfo } from '../repository/taobao';
 
 export abstract class TaobaoPlatform extends BasePlatform {
     platform = 11;
-    async getShopUrl(keyword: string, options: Options): Promise<string> {
+    async getShopUrl(keyword: string, options: Pick<Options, 'test'>): Promise<string> {
         return getTaobaoShopURL(
             {
-                appKey: this.appKey,
+                appId: this.appKey,
                 memberId: keyword,
                 platform: this.platform,
             },
