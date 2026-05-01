@@ -4,7 +4,7 @@ import { getMeituanShopURL, getUserInfo } from '../repository/meituan';
 import { openPC } from '../helpers/occUtils';
 export abstract class MeituanPlatform extends BasePlatform {
     platform = 8;
-    async getShopUrl(keyword: string, options: Options): Promise<string> {
+    async getShopUrl(keyword: string, options: Pick<Options, 'test'>): Promise<string> {
         return getMeituanShopURL(
             {
                 appKey: this.appKey,
