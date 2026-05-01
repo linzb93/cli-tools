@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
+import { isPlainObject } from 'lodash-es';
 import { execaCommand as execa } from 'execa';
 import { retryAsync } from './promise';
 import { timeRemainsFormat } from './time';
@@ -89,38 +90,34 @@ async function executeCommand(config: CommandConfig, options: { cwd?: string } =
     const cwd = options.cwd || process.cwd();
     await retryAsync(
         async () => {
-            try {
-                const { stdout } = await execa(config.message, { cwd, stripColor: false });
-                if (stdout) {
-                    console.log(stdout);
-                }
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-
-                if (config.onError) {
-                    const result = await config.onError(errorMessage);
-                    if (result && typeof result === 'object' && result.shouldStop) {
-                        throw new StopExecutionError(errorMessage);
-                    }
-                }
-
-                throw error;
+            const { stdout } = await execa(config.message, {
+                cwd,
+                stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
+                env: {
+                    FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
+                },
+            });
+            if (stdout) {
+                console.log(stdout);
             }
         },
         {
             maxAttempts: config.maxAttempts || 1,
-            onFail: (attempt, error) => {
-                const shouldStop = error instanceof StopExecutionError;
-                if (!shouldStop) {
-                    console.log(
-                        `第${chalk.yellow.bold(attempt.toString())}次重复${chalk.magenta(
-                            `[${dayjs().format('HH:mm:ss')}]`,
-                        )}`,
-                    );
-                    console.log(formatError(error.message));
+            onError: async (attempt, error) => {
+                const { shouldStop = false } = (await config.onError?.(error.message)) || {};
+                if (shouldStop) {
+                    return {
+                        shouldStop: true,
+                    };
                 }
+                console.log(
+                    `第${chalk.yellow.bold(attempt.toString())}次重复${chalk.magenta(
+                        `[${dayjs().format('HH:mm:ss')}]`,
+                    )}`,
+                );
+                console.log(formatError(error.message));
                 return {
-                    shouldStop,
+                    shouldStop: false,
                 };
             },
         },
@@ -175,14 +172,7 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
             continue;
         }
 
-        try {
-            await executeCommand(config, { cwd: options?.cwd });
-        } catch (error) {
-            if (error instanceof StopExecutionError) {
-                console.log(chalk.red('命令执行已停止'));
-            }
-            throw error;
-        }
+        await executeCommand(config, { cwd: options?.cwd });
     }
 
     if (!options?.silentStart && process.env.MODE !== 'cliTest') {

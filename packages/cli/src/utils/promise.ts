@@ -12,18 +12,15 @@ interface RetryOptions {
      * @param {number} attempt - 当前重试次数
      * @param {string} error - 错误信息
      */
-    onFail?: (
-        attempt: number,
-        error: Error,
-    ) => {
-        /**
-         * 是否停止执行后续命令
-         * @default false
-         */
-        shouldStop?: boolean;
-    };
+    onError?: (attempt: number, error: Error) => onErrorReturn | Promise<onErrorReturn>;
 }
-
+type onErrorReturn = {
+    /**
+     * 是否停止执行后续命令
+     * @default false
+     */
+    shouldStop?: boolean;
+};
 /**
  * 重试执行异步函数
  * @param {() => Promise<T>} fn - 需要重试的异步函数
@@ -31,7 +28,7 @@ interface RetryOptions {
  * @returns {Promise<T>} 异步函数的返回值
  */
 export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
-    const { maxAttempts = 10, onFail } = options;
+    const { maxAttempts = 10, onError } = options;
     let attempt = 1;
     let firstFailTime: number | null = null;
 
@@ -46,8 +43,8 @@ export async function retryAsync<T>(fn: () => Promise<T>, options: RetryOptions 
                 throw error instanceof Error ? error : new Error(String(error));
             }
 
-            if (typeof onFail === 'function') {
-                const { shouldStop } = onFail(attempt, error as Error);
+            if (typeof onError === 'function') {
+                const { shouldStop } = await onError(attempt, error as Error);
                 if (shouldStop) {
                     // 抛出和变量error一样的Error类型
                     throw error instanceof Error ? error : new Error(String(error));
