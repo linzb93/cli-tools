@@ -58,8 +58,9 @@ function registerCommands() {
     program
         .command('cd [path]')
         .description('记录并跳转目录')
-        .action((targetPath) => {
-            import('./commands/cd').then((m) => m.cdCommand(targetPath));
+        .option('-d, --delete', '删除历史记录')
+        .action((targetPath, options) => {
+            import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
         });
 
     // color 命令
