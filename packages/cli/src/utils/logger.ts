@@ -237,7 +237,10 @@ const big = (
         font: 'block',
         colors: (() => {
             if (options?.random) {
-                return sampleSize(Object.values(COLOR_MAP), 2);
+                return sampleSize(
+                    Object.values(COLOR_MAP).filter((color) => ![COLOR_MAP.black, COLOR_MAP.white].includes(color)),
+                    2,
+                );
             }
             return [options?.color || 'red'];
         })(),

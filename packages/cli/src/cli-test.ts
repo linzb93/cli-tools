@@ -23,21 +23,12 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// occ 命令
+// minimax 命令
 program
-    .command('occ [data...]')
-    .option('--token', '获取token')
-    .option('--pc', '打开PC端')
-    .option('--copy', '复制地址')
-    .option('--test', '测试环境')
-    .option('--user', '根据token获取用户信息')
-    .option('--full', '先获取登录账号的店铺信息')
-    .option('--platform <platformName>', '指定平台名称')
-    .option('--fix <url>', '补齐完整的登录地址')
-    .option('--version <version>', '指定版本号')
-    .option('--type <type>', '指定类型')
-    .action((data, options) => {
-        import('./commands/occ').then((m) => m.occCommand(data, options));
+    .command('minimax')
+    .option('--watch', '是否开启监控模式')
+    .action((options) => {
+        import('./commands/minimax').then((m) => m.minimaxCommand(options));
     });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
