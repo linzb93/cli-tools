@@ -1,39 +1,28 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import axios from 'axios';
-import { timeRemainsFormat } from '@/utils/time';
+import { timeFormatCN } from '@/utils/time';
 import { logger } from '@/utils/logger';
+import { renderProgressBar } from '@/utils/progress';
 import { COLOR_MAP } from '@/constant';
 import { readSecret } from '@cli-tools/shared';
 import type { ParsedUsageData, UsageResponse } from '../types';
-
-const MINIMAX_API_BASE = 'https://www.minimaxi.com/v1/api/openplatform';
-/**
- * 获取 Minimax API Token
- */
-async function getToken(): Promise<string> {
-    return readSecret((db) => db.ai.apiKey.minimax);
-}
-
-/**
- * 调用 Minimax API
- */
-async function fetchAPI<T>(endpoint: string, token: string): Promise<T> {
-    const response = await axios.get<T>(`${MINIMAX_API_BASE}${endpoint}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
-    });
-
-    return response.data;
-}
 
 /**
  * 获取用量数据
  */
 async function fetchUsage(token: string): Promise<UsageResponse> {
-    return fetchAPI<UsageResponse>('/coding_plan/remains', token);
+    const response = await axios.get<UsageResponse>(
+        `https://www.minimaxi.com/v1/api/openplatform/coding_plan/remains`,
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        },
+    );
+
+    return response.data;
 }
 
 /**
@@ -71,15 +60,6 @@ export function setWatchMode(value: boolean): void {
 }
 
 /**
- * 渲染进度条
- */
-function renderProgressBar(percentage: number, width: number = 40): string {
-    const filled = Math.round((percentage / 100) * width);
-    const empty = width - filled;
-    return '█'.repeat(filled) + '░'.repeat(empty);
-}
-
-/**
  * 渲染用量界面
  */
 function render(data: ParsedUsageData): void {
@@ -98,7 +78,7 @@ function render(data: ParsedUsageData): void {
     );
     console.log();
     console.log(
-        chalk.gray(`  距离下次重置时间还有${chalk.magenta(timeRemainsFormat(remainsTime, { minUnitIsMinute: true }))}`),
+        chalk.gray(`  距离下次重置时间还有${chalk.magenta(timeFormatCN(remainsTime, { minUnitIsMinute: true }))}`),
     );
     if (isWatchMode) {
         console.log();
@@ -119,7 +99,7 @@ function render(data: ParsedUsageData): void {
 
 export async function refresh() {
     try {
-        const token = await getToken();
+        const token = await readSecret((db) => db.ai.apiKey.minimax);
         const response = await fetchUsage(token);
         const data = parseUsageData(response);
         if (data) {

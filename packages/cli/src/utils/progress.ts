@@ -7,13 +7,13 @@ let total = 0;
 /**
  * 渲染进度条
  */
-function renderProgressBar(percentage: number, width: number = 40): string {
+export function renderProgressBar(percentage: number, width: number = 40): string {
     const filled = Math.round((percentage / 100) * width);
     const empty = width - filled;
     return '█'.repeat(filled) + '░'.repeat(empty);
 }
 
-export default {
+export const progress = {
     /**
      * 设置总数并重置进度
      */

@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import pReduce from 'p-reduce';
 import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
-import progress from '@/utils/progress';
+import { progress } from '@/utils/progress';
 
 /**
  * 目录信息

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { execaCommand as execa } from 'execa';
 import { sleep } from '@linzb93/utils';
 import { retryAsync, onErrorReturn } from './promise';
-import { timeRemainsFormat } from './time';
+import { timeFormatCN } from './time';
 /**
  * 命令配置接口
  */
@@ -68,7 +68,7 @@ export const calculateCommandTime = {
     end() {
         this.endTime = dayjs();
         console.log(
-            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${chalk.magenta(timeRemainsFormat(this.endTime.diff(this.startTime)))}`,
+            `${chalk.gray(`[${this.endTime.format('HH:mm:ss')}]`)} 执行命令耗时 ${chalk.magenta(timeFormatCN(this.endTime.diff(this.startTime)))}`,
         );
     },
 };

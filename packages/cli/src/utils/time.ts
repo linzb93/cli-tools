@@ -5,7 +5,7 @@
  * @param options.minUnitIsMinute 最小单位是否为分钟，默认false，即秒为单位单位
  * @returns 格式化后的时间字符串
  */
-export const timeRemainsFormat = (
+export const timeFormatCN = (
     timeMs: number,
     options?: {
         minUnitIsMinute?: boolean;
