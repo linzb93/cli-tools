@@ -139,7 +139,6 @@ const scanProject = async (
  * @returns 扫描结果列表
  */
 const doScan = async (packageName: string, targetVersions?: string[]): Promise<ScanResultItem[]> => {
-    logger.info('开始扫描');
     const allDirs = await expandWorkDirs();
 
     if (allDirs.length === 0) {
@@ -147,6 +146,7 @@ const doScan = async (packageName: string, targetVersions?: string[]): Promise<S
         return [];
     }
 
+    logger.info(`开始扫描 ${allDirs.length} 个项目`);
     return scanDirs(allDirs, (dirInfo) => scanProject(dirInfo, packageName, targetVersions));
 };
 
