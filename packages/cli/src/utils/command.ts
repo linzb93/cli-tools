@@ -17,7 +17,7 @@ export const subCommandCompiler = (fn: (cmd: Command) => void, options: Options 
         if (options.level === 2) {
             return index !== 2;
         }
-        return index < 2 || (index > 3 && index <= options.level + 1);
+        return index < 2 || index > 3;
     });
     program.parse(commands);
 };

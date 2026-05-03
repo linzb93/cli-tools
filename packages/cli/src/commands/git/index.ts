@@ -13,7 +13,7 @@ export const gitCommand = function (subCommand: string, nextCommand: string[]): 
         return;
     }
     if (subCommand === 'commit') {
-        import('./commit').then((module) => module.commitCommand());
+        import('./commit').then((module) => module.commitCommand(nextCommand));
         return;
     }
     if (subCommand === 'tag') {

@@ -1,10 +1,10 @@
 import { logger } from '@/utils/logger';
-import { isGitProject } from '../shared/utils';
-import gitActions from '../shared/utils/actions';
+import { isGitProject } from '../../shared/utils';
+import gitActions from '../../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/execute-command-line';
-import { checkHardcoded } from '../shared/utils/hard-coded';
+import { checkHardcoded } from '../../shared/utils/hard-coded';
 import type { Options } from './types';
-import { splitGitLog } from '../shared/utils/log';
+import { splitGitLog } from '../../shared/utils/log';
 
 /**
  * git commit 命令的主入口函数
@@ -32,7 +32,7 @@ export const commitService = async (message: string, options: Options): Promise<
         const commitPath = options.path ? options.path.replace(/\\/g, '/') : '.';
         let commands: Command[] = [`git add ${commitPath}`, gitActions.commit(message || '更新代码')];
         if (options.merge && !message) {
-            const arr = await splitGitLog(1);
+            const arr = await splitGitLog({ head: 1 });
             const lastCommit = arr[0].message;
             commands = commands.concat(gitActions.mergePrev({ message: lastCommit, path: commitPath, head: 2 }));
         }

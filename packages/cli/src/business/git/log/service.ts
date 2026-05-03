@@ -15,7 +15,7 @@ export const getGitLogData = async (options: Options) => {
         const unPushed = await execa('git log --oneline --not --branches', { cwd });
         head = unPushed.stdout.split('\n').length || 3;
     }
-    const arr = await splitGitLog(head, cwd);
+    const arr = await splitGitLog({ head, cwd });
     const output = await pMap(
         arr,
         async (item) => {

@@ -22,7 +22,7 @@ export const mergeService = async (options: Options): Promise<void> => {
     const { head } = options;
     logger.info(`您将要合并最近${head}个提交`);
     // 获取最近几个提交的信息
-    const arr = await splitGitLog(head);
+    const arr = await splitGitLog({ head });
     const table = new Table({
         head: ['日期', '提交内容'],
         colWidths: [30, 60],

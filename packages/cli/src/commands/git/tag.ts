@@ -6,7 +6,7 @@ import { subCommandCompiler } from '@/utils/command';
 /**
  * git tag 子命令的实现
  */
-const get = () => {
+const entry = () => {
     subCommandCompiler((program) => {
         program
             .command('tag')
@@ -60,7 +60,7 @@ export const tagCommand = function (subCommand: string[]): void {
 
     // 执行对应的子命令
     if (!subCommand.length || subCommand[0].startsWith('--')) {
-        get();
+        entry();
     } else if (commandMap[subCommand[0]]) {
         commandMap[subCommand[0]]();
     } else {
