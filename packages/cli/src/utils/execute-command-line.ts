@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-import { execaCommand as execa } from 'execa';
-import { sleep } from '@linzb93/utils';
+import { execaCommand } from 'execa';
 import { retryAsync, onErrorReturn } from './promise';
 import { timeFormatCN } from './time';
 /**
@@ -84,12 +83,13 @@ async function executeCommand(config: CommandConfig, options: { cwd?: string } =
     const cwd = options.cwd || process.cwd();
     await retryAsync(
         async () => {
-            const { stdout } = await execa(config.message, {
+            const { stdout } = await execaCommand(config.message, {
                 cwd,
                 stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
                 env: {
                     FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
                 },
+                shell: true, // 启用 shell 以正确解析引号和空格
             });
             if (stdout) {
                 console.log(stdout);
@@ -161,10 +161,11 @@ export async function executeCommands(commands: Command[], options?: ExecuateOpt
         console.log(`${chalk.cyan('>')} ${chalk.yellow(config.message)}`);
 
         // 调试模式下仅输出命令，不实际执行
-        if (process.env.MODE === 'cliTest') {
-            console.log(chalk.green('调试模式：跳过实际执行'));
-            continue;
-        }
+        // test
+        // if (process.env.MODE === 'cliTest') {
+        //     console.log(chalk.green('调试模式：跳过实际执行'));
+        //     continue;
+        // }
 
         await executeCommand(config, { cwd: options?.cwd });
     }

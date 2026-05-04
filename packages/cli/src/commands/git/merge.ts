@@ -9,7 +9,7 @@ export const mergeCommand = () => {
         program
             .command('merge')
             .description('合并最近的提交')
-            .option('--head <number>', '合并最近的几个提交，默认合并最近3个')
+            .option('-n,--head <number>', '合并最近的几个提交，默认合并最近3个')
             .action((options: MergeOptions) => {
                 mergeService(options);
             });

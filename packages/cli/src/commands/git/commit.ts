@@ -7,12 +7,13 @@ import type { Options as SearchOptions } from '@/business/git/commit/search/type
 const entry = () => {
     subCommandCompiler((program) => {
         program
-            .command('commit [message]')
+            .command('commit')
             .description('提交Git代码')
+            .option('-m, --message <message>', '提交信息')
             .option('--path <path>', '指定要提交的文件路径，默认当前目录')
             .option('--merge', '与上一条提交记录合并，使用上一条的提交信息')
-            .action((data: string, options: CommitOptions) => {
-                commitService(data, options);
+            .action((options: CommitOptions) => {
+                commitService(options);
             });
     });
 };
@@ -21,11 +22,12 @@ const search = () => {
     subCommandCompiler(
         (program) => {
             program
-                .command('search [keyword]')
+                .command('search')
                 .description('搜索Git提交记录')
-                .option('--head <head>', '指定要搜索的提交记录数量，默认10条')
-                .action((data: string, options: SearchOptions) => {
-                    commitSearchService(data, options);
+                .option('-k, --keyword <keyword>', '搜索关键词')
+                .option('-n,--head <head>', '指定要搜索的提交记录数量，默认10条')
+                .action((options: SearchOptions) => {
+                    commitSearchService(options);
                 });
         },
         { level: 3 },
@@ -41,7 +43,7 @@ export const commitCommand = (restCommand: string[]): void => {
     };
 
     // 执行对应的子命令
-    if (!restCommand || !restCommand.length || restCommand[0].startsWith('--')) {
+    if (!restCommand || !restCommand.length || restCommand[0].startsWith('--') || restCommand[0].startsWith('-')) {
         entry();
     } else if (commandMap[restCommand[0]]) {
         commandMap[restCommand[0]]();

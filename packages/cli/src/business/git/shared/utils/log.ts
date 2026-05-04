@@ -26,8 +26,8 @@ export const splitGitLog = async ({
     }[] = list.map((line) => {
         const splited = line.split(' ');
         const id = splited[0];
-        const message = splited.slice(2).join(' ') || '';
-        const date = splited.slice(1, 2).join(' ');
+        const message = splited.slice(3).join(' ') || '';
+        const date = splited.slice(1, 3).join(' ');
         return {
             id,
             date,

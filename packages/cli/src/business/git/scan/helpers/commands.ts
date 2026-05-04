@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import { logger } from '@/utils/logger';
 import { createCommandReadline, displayCommands, type ReadlineCommand } from '@/utils/readline';
-import { getGitLogData } from '../../log';
+import { commitSearchService } from '../../commit/search';
 import gitActions from '../../shared/utils/actions';
 import { executeCommands } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
@@ -40,21 +40,11 @@ const printProjectLog = async (item: ResultItem) => {
             // ignore
         }
         // 如果没有未推送的 commit，head 可能是 0，但这里我们想看最近的 log
-        if (head === 0) head = 3;
-
-        const logs = await getGitLogData({ cwd: item.fullPath, head, path: '' });
-        if (logs.length === 0) {
+        if (head === 0) {
             console.log(chalk.gray('  没有未推送的提交记录'));
             return;
         }
-        logs.forEach((log) => {
-            console.log(`  ${chalk.green(`[${log.branch}分支]`)} ${chalk.yellow(log.date)} ${log.message}`);
-            if (log.files && log.files.length) {
-                log.files.forEach((file: string) => {
-                    console.log(`    ${chalk.gray(file)}`);
-                });
-            }
-        });
+        await commitSearchService({ cwd: item.fullPath, head });
     } catch (e: any) {
         console.log(chalk.red(`  获取日志失败: ${e.message}`));
     }
@@ -199,4 +189,4 @@ const startRepl = (list: ResultItem[]) => {
     });
 };
 
-export { getStatusMap, printProjectLog, commands, startRepl };
+export { getStatusMap, commands, startRepl };

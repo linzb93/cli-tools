@@ -8,7 +8,7 @@ import inquirer from '@/utils/inquirer';
  * @returns {string} 格式化后的提交信息
  */
 export function formatCommitMessage(rawCommit: string): string {
-    let commit = rawCommit.trim().replace(/\s+/g, '-');
+    let commit = rawCommit.trim();
     if (!commit) {
         return 'feat:update';
     }

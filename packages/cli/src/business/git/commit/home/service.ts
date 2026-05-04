@@ -8,11 +8,11 @@ import { splitGitLog } from '../../shared/utils/log';
 
 /**
  * git commit 命令的主入口函数
- * @param {string} message - 提交信息
  * @param {Options} options - 选项
  * @returns {Promise<void>}
  */
-export const commitService = async (message: string, options: Options): Promise<void> => {
+export const commitService = async (options: Options): Promise<void> => {
+    const { message } = options;
     // 检查当前目录是否是 Git 项目
     if (!(await isGitProject())) {
         logger.error('当前目录不是 Git 项目');

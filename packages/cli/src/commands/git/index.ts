@@ -36,10 +36,6 @@ export const gitCommand = function (subCommand: string, nextCommand: string[]): 
         import('./merge').then((module) => module.mergeCommand());
         return;
     }
-    if (subCommand === 'log') {
-        import('./log').then((module) => module.logCommand());
-        return;
-    }
     if (subCommand === 'clone') {
         import('./clone').then((module) => module.cloneCommand());
         return;

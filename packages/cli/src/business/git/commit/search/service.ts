@@ -8,7 +8,8 @@ import Table from 'cli-table3';
  * @param {string} keyword - 搜索关键词
  * @returns {Promise<void>}
  */
-export const commitSearchService = async (keyword: string, options: SearchOptions): Promise<void> => {
+export const commitSearchService = async (options: SearchOptions): Promise<void> => {
+    const { keyword } = options;
     // 检查当前目录是否是 Git 项目
     if (!(await isGitProject())) {
         logger.error('当前目录不是 Git 项目');
@@ -17,6 +18,7 @@ export const commitSearchService = async (keyword: string, options: SearchOption
     const arr = await splitGitLog({
         head: options.head || 10,
         keyword,
+        cwd: options.cwd,
     });
     const table = new Table({
         head: ['日期', '提交内容'],

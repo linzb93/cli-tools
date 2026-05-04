@@ -13,6 +13,7 @@
         "mon:web": "nodemon packages/server/dist/web.js --watch packages/server/dist",
         "gen:features": "node scripts/generateFeatures.js",
         "build": "npm run gen:features && pnpm --filter \"@cli-tools/cli\" build",
+        "build-only": "npm run gen:features && pnpm --filter \"@cli-tools/cli\" build-only",
         "build:report": "pnpm --filter \"@cli-tools/cli\" build:report",
         "build:web": "pnpm --filter \"@cli-tools/server\" build",
         "build:server-legacy": "pnpm --filter \"@cli-tools/server-legacy\" build",
