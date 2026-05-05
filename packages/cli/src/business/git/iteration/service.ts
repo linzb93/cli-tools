@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import chalk from 'chalk';
 import { createIterationStrategy } from './core/Factory';
-import { isGithubProject, isMonorepo } from '../shared/utils/project-type';
+import { isGithubProject, isMonorepo } from '../shared/utils';
 import { calculateCommandTime } from '@/utils/execute-command-line';
 import type { IterationOptions } from './types';
 import { isDebug } from './helpers';

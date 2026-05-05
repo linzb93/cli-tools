@@ -1,7 +1,7 @@
 import { logger } from '@/utils/logger';
 import type { Options as SearchOptions } from './types';
 import { isGitProject } from '../../shared/utils';
-import { splitGitLog } from '../../shared/utils/log';
+import { splitGitLog } from '../../shared/utils';
 import Table from 'cli-table3';
 /**
  * git commit search 命令的主入口函数

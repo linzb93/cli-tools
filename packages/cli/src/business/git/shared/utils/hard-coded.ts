@@ -4,7 +4,7 @@ import { globby } from 'globby';
 import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import pMap from 'p-map';
-import { isMonorepo } from './project-type';
+import { isMonorepo } from '.';
 
 const findBusinessPaths = async (projectPath: string = process.cwd()): Promise<string[]> => {
     const buildConfigFiles = await globby(['vue.config.js', 'vite.config.js', 'vite.config.ts']);

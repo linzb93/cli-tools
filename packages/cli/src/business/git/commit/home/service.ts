@@ -4,7 +4,7 @@ import gitActions from '../../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import type { Options } from './types';
-import { splitGitLog } from '../../shared/utils/log';
+import { splitGitLog } from '../../shared/utils';
 
 /**
  * git commit 命令的主入口函数

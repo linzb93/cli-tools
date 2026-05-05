@@ -1,6 +1,6 @@
 import Table from 'cli-table3';
 import { isGitProject } from '../shared/utils';
-import { splitGitLog } from '../shared/utils/log';
+import { splitGitLog } from '../shared/utils';
 import chalk from 'chalk';
 import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { logger } from '@/utils/logger';

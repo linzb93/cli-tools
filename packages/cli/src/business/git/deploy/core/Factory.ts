@@ -1,7 +1,7 @@
 import { BaseDeploy } from './BaseDeploy';
 import { CompanyDeploy } from '../implementations/CompanyDeploy';
 import { GithubDeploy } from '../implementations/GithubDeploy';
-import { isGithubProject } from '../../shared/utils/project-type';
+import { isGithubProject } from '../../shared/utils';
 
 export const Factory = {
     async create(): Promise<BaseDeploy> {
