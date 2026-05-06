@@ -5,6 +5,9 @@ import type { Low } from 'lowdb';
  * 数据由程序录入，非人为操作
  */
 export interface Database {
+    open: {
+        root: string;
+    };
     /**
      * 最后一次启动服务器的日期，格式为YYYY-MM-DD
      */

@@ -36,7 +36,27 @@ export async function cdService(targetPath?: string, options?: Options) {
         }
 
         // Resolve absolute path
-        const absolutePath = path.resolve(process.cwd(), targetPath);
+        let absolutePath = path.resolve(process.cwd(), targetPath);
+
+        // --cwd 选项：如果路径中包含 src 目录，则跳转到 src 的上一级
+        if (options?.cwd) {
+            const parts = absolutePath.split(path.sep).filter(Boolean);
+            const srcIndex = parts.indexOf('src');
+            if (srcIndex !== -1) {
+                absolutePath = parts.slice(0, srcIndex).join(path.sep) || path.sep;
+            }
+        } else {
+            const root = await sql((db) => db.open.root);
+            if (absolutePath.startsWith(root)) {
+                // 跳转到这个地址距离root下两层目录
+                const rootLength = root.split(path.sep).filter(Boolean).length;
+                absolutePath = absolutePath
+                    .split(path.sep)
+                    .filter(Boolean)
+                    .slice(0, rootLength + 2)
+                    .join(path.sep);
+            }
+        }
 
         // Check if valid directory
         if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isDirectory()) {

@@ -59,6 +59,7 @@ function registerCommands() {
         .command('cd [path]')
         .description('记录并跳转目录')
         .option('-d, --delete', '删除历史记录')
+        .option('-c, --cwd', '跳转到项目根目录')
         .action((targetPath, options) => {
             import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
         });

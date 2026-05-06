@@ -23,12 +23,13 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// git 子命令
 program
-    .command('git [sub-command] [rest...]')
-    .allowUnknownOption()
-    .action((subCommand, rest) => {
-        import('./commands/git/index').then((m) => m.gitCommand(subCommand, rest));
+    .command('cd [path]')
+    .description('记录并跳转目录')
+    .option('-d, --delete', '删除历史记录')
+    .option('-c, --cwd', '跳转到项目根目录')
+    .action((targetPath, options) => {
+        import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
     });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
