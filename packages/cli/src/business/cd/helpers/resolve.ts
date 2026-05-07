@@ -3,6 +3,32 @@ import { sql } from '@cli-tools/shared';
 import path from 'node:path';
 
 /**
+ * 路径解析函数数组，按顺序执行
+ * 每个函数接收当前路径，返回处理后的路径
+ */
+const pathResolvers: Array<(path: string) => string | Promise<string>> = [
+    /**
+     * 检测路径中是否包含 packages 目录，如果有则跳转到其上一级
+     */
+    (absPath) => {
+        const parts = absPath.split(path.sep).filter(Boolean);
+        const pkgIndex = parts.indexOf('packages');
+        return pkgIndex !== -1 ? parts.slice(0, pkgIndex).join(path.sep) || path.sep : absPath;
+    },
+    /**
+     * 检测路径中是否包含 src 目录，如果有则跳转到其上一级
+     */
+    (absPath) => {
+        const parts = absPath.split(path.sep).filter(Boolean);
+        const srcIndex = parts.indexOf('src');
+        return srcIndex !== -1 ? parts.slice(0, srcIndex).join(path.sep) || path.sep : absPath;
+    },
+    async (absPath) => {
+        return absPath;
+    },
+];
+
+/**
  * 解析目标路径，返回最终跳转的绝对路径
  * @param targetPath - 目标路径（可以是相对路径、数字索引或目录名）
  * @param options - cd 命令选项
@@ -26,12 +52,10 @@ export async function resolveTargetPath(targetPath: string, options?: Options): 
     // Resolve absolute path
     let absolutePath = path.resolve(process.cwd(), resolvedPath);
 
-    // --cwd 选项：如果路径中包含 src 目录，则跳转到 src 的上一级
+    // --cwd 选项：遍历 pathResolvers 依次解析路径
     if (options?.cwd) {
-        const parts = absolutePath.split(path.sep).filter(Boolean);
-        const srcIndex = parts.indexOf('src');
-        if (srcIndex !== -1) {
-            absolutePath = parts.slice(0, srcIndex).join(path.sep) || path.sep;
+        for (const resolver of pathResolvers) {
+            absolutePath = await resolver(absolutePath);
         }
     } else {
         const root = await sql((db) => db.open.root);
