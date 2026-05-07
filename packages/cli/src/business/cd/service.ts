@@ -6,13 +6,14 @@ import { logger } from '@/utils/logger';
 import clipboard from 'clipboardy';
 import { isWin } from '@cli-tools/shared';
 import inquirer from '@/utils/inquirer';
-import { Options } from './types';
+import { Options, CdHistoryItem } from './types';
+import { resolveTargetPath } from './helpers/resolve';
 
-interface CdHistoryItem {
-    path: string;
-    count: number;
-}
-
+/**
+ * cd 命令服务
+ * @param targetPath - 目标路径
+ * @param options - cd 命令选项
+ */
 export async function cdService(targetPath?: string, options?: Options) {
     // 删除模式
     if (options?.delete) {
@@ -21,45 +22,10 @@ export async function cdService(targetPath?: string, options?: Options) {
     }
 
     if (targetPath) {
-        // 如果输入的是纯数字索引，尝试从历史记录中匹配
-        if (/^\d+$/.test(targetPath)) {
-            const index = parseInt(targetPath, 10) - 1;
-            const history = await sql((data) => data.cdHistory || []);
-            const topHistory = [...history].sort((a, b) => b.count - a.count).slice(0, 10);
-
-            if (index >= 0 && index < topHistory.length) {
-                targetPath = topHistory[index].path;
-            } else {
-                // 如果索引超出范围，我们不直接退出，而是尝试把它当作一个名为数字的目录
-                // （这符合原生 cd 命令的回退机制）
-            }
-        }
-
-        // Resolve absolute path
-        let absolutePath = path.resolve(process.cwd(), targetPath);
-
-        // --cwd 选项：如果路径中包含 src 目录，则跳转到 src 的上一级
-        if (options?.cwd) {
-            const parts = absolutePath.split(path.sep).filter(Boolean);
-            const srcIndex = parts.indexOf('src');
-            if (srcIndex !== -1) {
-                absolutePath = parts.slice(0, srcIndex).join(path.sep) || path.sep;
-            }
-        } else {
-            const root = await sql((db) => db.open.root);
-            if (absolutePath.startsWith(root)) {
-                // 跳转到这个地址距离root下两层目录
-                const rootLength = root.split(path.sep).filter(Boolean).length;
-                absolutePath = absolutePath
-                    .split(path.sep)
-                    .filter(Boolean)
-                    .slice(0, rootLength + 2)
-                    .join(path.sep);
-            }
-        }
+        const absolutePath = await resolveTargetPath(targetPath, options);
 
         // Check if valid directory
-        if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isDirectory()) {
+        if (!absolutePath || !fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isDirectory()) {
             logger.error(`错误: 路径不存在或不是一个目录 -> ${absolutePath}`, true);
         }
 
