@@ -24,6 +24,18 @@ const pathResolvers: Array<(path: string) => string | Promise<string>> = [
         return srcIndex !== -1 ? parts.slice(0, srcIndex).join(path.sep) || path.sep : absPath;
     },
     async (absPath) => {
+        const root = await sql((db) => db.open.root);
+        const formattedRoot = root.replace(/\//g, path.sep);
+        console.log(absPath);
+        console.log(formattedRoot);
+        if (absPath.startsWith(formattedRoot)) {
+            const rootLength = formattedRoot.split(path.sep).filter(Boolean).length;
+            return absPath
+                .split(path.sep)
+                .filter(Boolean)
+                .slice(0, rootLength + 2)
+                .join(path.sep);
+        }
         return absPath;
     },
 ];
@@ -35,6 +47,7 @@ const pathResolvers: Array<(path: string) => string | Promise<string>> = [
  * @returns 解析后的绝对路径
  */
 export async function resolveTargetPath(targetPath: string, options?: Options): Promise<string> {
+    console.log(`待解析的路径：${targetPath}`);
     let resolvedPath = targetPath;
 
     // 如果输入的是纯数字索引，尝试从历史记录中匹配
@@ -52,21 +65,14 @@ export async function resolveTargetPath(targetPath: string, options?: Options): 
     // Resolve absolute path
     let absolutePath = path.resolve(process.cwd(), resolvedPath);
 
-    // --cwd 选项：遍历 pathResolvers 依次解析路径
+    // --cwd 选项：遍历 pathResolvers 依次解析路径，匹配成功则停止
     if (options?.cwd) {
         for (const resolver of pathResolvers) {
+            const previousPath = absolutePath;
             absolutePath = await resolver(absolutePath);
-        }
-    } else {
-        const root = await sql((db) => db.open.root);
-        if (absolutePath.startsWith(root)) {
-            // 跳转到这个地址距离root下两层目录
-            const rootLength = root.split(path.sep).filter(Boolean).length;
-            absolutePath = absolutePath
-                .split(path.sep)
-                .filter(Boolean)
-                .slice(0, rootLength + 2)
-                .join(path.sep);
+            if (absolutePath !== previousPath) {
+                break;
+            }
         }
     }
 

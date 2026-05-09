@@ -4,15 +4,10 @@ import { readFileSync } from 'node:fs';
 import { join, sep } from 'node:path';
 // import { sql } from '@cli-tools/shared';
 
+const cwd = process.cwd().endsWith('cli-tools') ? process.cwd() : join(process.cwd(), '../..');
+
 // 直接使用绝对路径
-const sqlData = JSON.parse(
-    readFileSync(
-        process.cwd().endsWith('cli-tools')
-            ? `${process.cwd()}/cache/app.json`
-            : join(process.cwd(), '../../', 'cache', 'app.json'),
-        'utf-8',
-    ),
-);
+const sqlData = JSON.parse(readFileSync(join(cwd, 'cache', 'app.json'), 'utf-8'));
 
 const init = () => {
     // mock sql 但保留其他导出
@@ -31,7 +26,7 @@ function isPathLike(path: string): boolean {
 }
 
 describe('解析目标地址', () => {
-    const fakeCwd = join(process.cwd(), 'path', 'to', 'dir');
+    const fakeCwd = join(cwd, 'path', 'to', 'dir');
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -45,21 +40,20 @@ describe('解析目标地址', () => {
         expect(targetPath).toBe(fakeCwd);
     });
     it('从含src的路径中获取项目根目录', async () => {
-        const targetPath = await resolveTargetPath(join(fakeCwd, 'src', 'utils', 'logger.ts'), { cwd: true });
+        const targetPath = await resolveTargetPath(join(cwd, 'src', 'utils', 'logger.ts'), { cwd: true });
         expect(isPathLike(targetPath)).toBeTruthy();
-        expect(targetPath).toBe(fakeCwd);
+        expect(targetPath).toBe(cwd);
     });
-    it.todo('从含packages的路径中获取项目根目录', async () => {
-        const targetPath = await resolveTargetPath(
-            join(fakeCwd, 'packages', 'cli-tools', 'src', 'utils', 'logger.ts'),
-            { cwd: true },
-        );
+    it('从含packages的路径中获取项目根目录', async () => {
+        const targetPath = await resolveTargetPath(join(cwd, 'packages', 'cli-tools', 'src', 'utils', 'logger.ts'), {
+            cwd: true,
+        });
         expect(isPathLike(targetPath)).toBeTruthy();
-        expect(targetPath).toBe(fakeCwd);
+        expect(targetPath).toBe(cwd);
     });
-    it.todo('从无法识别的路径获取项目根目录', async () => {
-        const targetPath = await resolveTargetPath(join(fakeCwd, 'pages', 'application', 'index.vue'));
+    it('从无法识别的路径获取项目根目录', async () => {
+        const targetPath = await resolveTargetPath(join(cwd, 'pages', 'application', 'index.vue'), { cwd: true });
         expect(isPathLike(targetPath)).toBeTruthy();
-        expect(targetPath).toBe(fakeCwd);
+        expect(targetPath).toBe(cwd);
     });
 });
