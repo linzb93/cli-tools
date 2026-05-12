@@ -21,6 +21,12 @@ export async function cdService(targetPath?: string, options?: Options) {
         return;
     }
 
+    // 别名模式
+    if (options?.alias) {
+        await setAlias();
+        return;
+    }
+
     if (targetPath) {
         const absolutePath = await resolveTargetPath(targetPath, options);
 
@@ -44,7 +50,8 @@ export async function cdService(targetPath?: string, options?: Options) {
         logger.info(
             `请使用 'mycli cd <序号>' 跳转到以下历史目录:\n${topHistory
                 .map((item, index) => {
-                    return `  [${index + 1}] ${item.path} (访问次数: ${item.count})`;
+                    const aliasInfo = item.alias ? ` (别名: ${item.alias})` : '';
+                    return `  [${index + 1}] ${item.path} (访问次数: ${item.count})${aliasInfo}`;
                 })
                 .join('\n')}`,
         );
@@ -79,6 +86,59 @@ async function deleteHistory(): Promise<void> {
     });
 
     logger.success(`已删除 ${selectedPaths.length} 条历史记录`);
+}
+
+async function setAlias(): Promise<void> {
+    const history: CdHistoryItem[] = await sql((data) => data.cdHistory || []);
+
+    if (history.length === 0) {
+        logger.info('当前无目录跳转历史记录');
+        return;
+    }
+
+    const { selectedPath } = await inquirer.prompt({
+        type: 'select',
+        name: 'selectedPath',
+        message: '请选择要设置别名的目录',
+        choices: history.map((item) => ({
+            name: item.alias ? `${item.path} (别名: ${item.alias})` : item.path,
+            value: item.path,
+        })),
+    });
+
+    if (!selectedPath) {
+        logger.info('未选择目录，操作已取消');
+        return;
+    }
+
+    const { alias } = await inquirer.prompt({
+        type: 'input',
+        name: 'alias',
+        message: '请输入别名',
+        validate: (input: string) => {
+            if (!input || !input.trim()) {
+                return '别名不能为空';
+            }
+            if (input.includes(' ')) {
+                return '别名不能包含空格';
+            }
+            // 检查别名是否已被其他目录使用
+            const existing = history.find((item) => item.alias === input.trim() && item.path !== selectedPath);
+            if (existing) {
+                return `别名已被 "${existing.path}" 使用`;
+            }
+            return true;
+        },
+    });
+
+    await sql((data) => {
+        const item = data.cdHistory?.find((item: CdHistoryItem) => item.path === selectedPath);
+        if (item) {
+            item.alias = alias.trim();
+        }
+    });
+
+    logger.success(`已为 "${selectedPath}" 设置别名: ${alias.trim()}`);
 }
 
 async function updateHistoryAndPrint(absolutePath: string) {

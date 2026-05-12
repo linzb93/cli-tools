@@ -75,7 +75,7 @@ async function getPage(pkg: string): Promise<Npm> {
             }
             const { pkgAns } = await inquirer.prompt([
                 {
-                    type: 'list',
+                    type: 'select',
                     name: 'pkgAns',
                     message: '检测到您输入的npm依赖有误，请选择下面其中一个',
                     choices,

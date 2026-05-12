@@ -103,6 +103,10 @@ export interface Database {
          * 访问频次
          */
         count: number;
+        /**
+         * 别名
+         */
+        alias?: string;
     }[];
 }
 

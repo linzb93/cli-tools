@@ -80,7 +80,7 @@ const smartBuildProject = async (config: ProjectConfig): Promise<void> => {
         // 如果有多个，提示用户选择
         const { selectedScript } = await inquirer.prompt([
             {
-                type: 'list',
+                type: 'select',
                 name: 'selectedScript',
                 message: '检测到多个构建命令，请选择一个执行',
                 choices: buildScripts,
@@ -142,7 +142,7 @@ const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
 
     const { selectedId } = await inquirer.prompt([
         {
-            type: 'list',
+            type: 'select',
             name: 'selectedId',
             message: '请选择运行的项目及命令',
             choices: list.map((item) => ({
@@ -257,7 +257,7 @@ const selectProjectAndBranch = async (): Promise<{ selectedPath: string; selecte
 
     const { selectedPath } = await inquirer.prompt([
         {
-            type: 'list',
+            type: 'select',
             name: 'selectedPath',
             message: '请选择项目',
             choices: pathList.map((path) => ({
@@ -271,7 +271,7 @@ const selectProjectAndBranch = async (): Promise<{ selectedPath: string; selecte
 
     const { selectedBranch } = await inquirer.prompt([
         {
-            type: 'list',
+            type: 'select',
             name: 'selectedBranch',
             message: '请选择分支',
             choices: branches.map((branch) => ({

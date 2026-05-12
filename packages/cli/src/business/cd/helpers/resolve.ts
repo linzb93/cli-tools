@@ -26,8 +26,6 @@ const pathResolvers: Array<(path: string) => string | Promise<string>> = [
     async (absPath) => {
         const root = await sql((db) => db.open.root);
         const formattedRoot = root.replace(/\//g, path.sep);
-        console.log(absPath);
-        console.log(formattedRoot);
         if (absPath.startsWith(formattedRoot)) {
             const rootLength = formattedRoot.split(path.sep).filter(Boolean).length;
             return absPath
@@ -42,7 +40,7 @@ const pathResolvers: Array<(path: string) => string | Promise<string>> = [
 
 /**
  * 解析目标路径，返回最终跳转的绝对路径
- * @param targetPath - 目标路径（可以是相对路径、数字索引或目录名）
+ * @param targetPath - 目标路径（可以是相对路径、数字索引、别名或目录名）
  * @param options - cd 命令选项
  * @returns 解析后的绝对路径
  */
@@ -50,16 +48,24 @@ export async function resolveTargetPath(targetPath: string, options?: Options): 
     console.log(`待解析的路径：${targetPath}`);
     let resolvedPath = targetPath;
 
+    // 获取历史记录
+    const history: CdHistoryItem[] = await sql((data) => data.cdHistory || []);
+
     // 如果输入的是纯数字索引，尝试从历史记录中匹配
     if (/^\d+$/.test(targetPath)) {
         const index = parseInt(targetPath, 10) - 1;
-        const history: CdHistoryItem[] = await sql((data) => data.cdHistory || []);
         const topHistory = [...history].sort((a, b) => b.count - a.count).slice(0, 10);
 
         if (index >= 0 && index < topHistory.length) {
             resolvedPath = topHistory[index].path;
         }
         // 如果索引超出范围，保持 resolvedPath 不变（即 targetPath 原值），继续当作目录名处理
+    }
+
+    // 如果输入的是别名，尝试从历史记录中匹配
+    const aliasMatch = history.find((item) => item.alias === targetPath);
+    if (aliasMatch) {
+        resolvedPath = aliasMatch.path;
     }
 
     // Resolve absolute path

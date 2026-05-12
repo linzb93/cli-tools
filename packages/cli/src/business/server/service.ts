@@ -20,7 +20,7 @@ const openPage = async (options?: Options) => {
         let menu = '';
         if (options.menu === true && menus && menus.length) {
             const { answer } = await inquirer.prompt({
-                type: 'list',
+                type: 'select',
                 name: 'answer',
                 message: '请选择要打开的菜单',
                 choices: menus.map((menu) => ({
