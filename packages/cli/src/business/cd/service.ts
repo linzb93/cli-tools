@@ -155,9 +155,6 @@ async function updateHistoryAndPrint(absolutePath: string) {
         // Write the target path to a temporary file for the shell wrapper to read
         const tempFile = path.join(os.tmpdir(), '.mycli_cd_path');
         fs.writeFileSync(tempFile, absolutePath, 'utf8');
-
-        // Also output to stdout for visibility
-        logger.info(`准备跳转到: ${absolutePath}`);
     } else {
         logger.warn(`非 Windows 系统，不支持直接跳转到${path.basename(absolutePath)}目录,已经将命令复制进剪贴板`);
         clipboard.writeSync(`cd ${absolutePath}`);
