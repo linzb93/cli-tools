@@ -4,7 +4,7 @@ import pMap from 'p-map';
 import { getAllBranches, deleteBranch } from '../../shared/utils';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import inquirer from '@/utils/inquirer';
+import { multiSelect, confirm } from '@/utils/inquirer';
 import type { BranchExtraItem } from './types';
 
 export const branchDeleteService = async () => {
@@ -30,19 +30,12 @@ export const branchDeleteService = async () => {
     }, []);
 
     let selected: string[] = [];
-    let answer: any = {};
     try {
-        answer = await inquirer.prompt({
-            message: '请选择要删除的分支',
-            type: 'checkbox',
-            choices: branches,
-            name: 'selected',
-        });
+        selected = await multiSelect('请选择要删除的分支', branches);
     } catch (error) {
         logger.error('退出删除分支操作', true);
         return;
     }
-    selected = answer.selected;
 
     if (!selected.length) {
         logger.error('您没有选择任何标签，已退出');
@@ -92,14 +85,9 @@ export const branchDeleteService = async () => {
     }
 
     // 询问用户是否处理删除失败的分支
-    const handleFailedBranchesAnswer = await inquirer.prompt({
-        type: 'confirm',
-        name: 'handleFailedBranches',
-        message: '是否处理删除失败的分支？',
-        default: false,
-    });
+    const handleFailedBranches = await confirm('是否处理删除失败的分支？');
 
-    if (!handleFailedBranchesAnswer.handleFailedBranches) {
+    if (!handleFailedBranches) {
         logger.warn('已取消处理删除失败的分支');
         return;
     }
@@ -128,14 +116,9 @@ export const branchDeleteService = async () => {
             logger.warn(`- ${branch.name}`);
         });
 
-        const pushAnswer = await inquirer.prompt({
-            type: 'confirm',
-            name: 'pushBranches',
-            message: '是否推送这些分支的 commit？',
-            default: false,
-        });
+        const pushBranches = await confirm('是否推送这些分支的 commit？');
 
-        if (pushAnswer.pushBranches) {
+        if (pushBranches) {
             let pushSuccess = false;
             for (const branch of branchesWithUnpushedCommits) {
                 try {
@@ -172,14 +155,9 @@ export const branchDeleteService = async () => {
             logger.warn(`- ${branch.name}`);
         });
 
-        const forceDeleteAnswer = await inquirer.prompt({
-            type: 'confirm',
-            name: 'forceDelete',
-            message: '是否强制删除这些分支？',
-            default: false,
-        });
+        const forceDelete = await confirm('是否强制删除这些分支？');
 
-        if (forceDeleteAnswer.forceDelete) {
+        if (forceDelete) {
             for (const branch of branchesWithoutUnpushedCommits) {
                 try {
                     await Promise.all([

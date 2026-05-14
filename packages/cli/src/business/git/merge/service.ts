@@ -4,7 +4,7 @@ import { splitGitLog } from '../shared/utils';
 import chalk from 'chalk';
 import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { logger } from '@/utils/logger';
-import inquirer from '@/utils/inquirer';
+import { ask } from '@/utils/inquirer';
 import type { Options } from './types';
 import { executeCommands } from '@/utils/execute-command-line';
 
@@ -31,14 +31,8 @@ export const mergeService = async (options: Options): Promise<void> => {
         table.push([item.date, item.message]);
     });
     console.log(table.toString());
-    const answer = await inquirer.prompt({
-        type: 'input',
-        message: `请输入合并后的提交信息，默认使用最近一次的提交信息`,
-        name: 'commitMessage',
-    });
-    const commitMessage = formatCommitMessage(
-        answer.commitMessage !== '' ? answer.commitMessage : arr[0].message.replace(/\w+\:/g, ''),
-    );
+    const message = await ask(`请输入合并后的提交信息，默认使用最近一次的提交信息`);
+    const commitMessage = formatCommitMessage(message !== '' ? message : arr[0].message.replace(/\w+\:/g, ''));
     await executeCommands(gitActions.mergePrev({ message: commitMessage, head }));
     logger.success(chalk.green('合并完成'));
 };

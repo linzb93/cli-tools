@@ -6,7 +6,7 @@ import detectPort from 'detect-port';
 import chalk from 'chalk';
 import { root, sql } from '@cli-tools/shared';
 import { killService } from '../kill';
-import inquirer from '@/utils/inquirer';
+import { select } from '@/utils/inquirer';
 import { serverConfig } from '@cli-tools/shared';
 import type { Options } from './types';
 
@@ -19,15 +19,13 @@ const openPage = async (options?: Options) => {
         const menus = await sql((db) => db.menus);
         let menu = '';
         if (options.menu === true && menus && menus.length) {
-            const { answer } = await inquirer.prompt({
-                type: 'select',
-                name: 'answer',
-                message: '请选择要打开的菜单',
-                choices: menus.map((menu) => ({
+            const answer = await select(
+                '请选择要打开的菜单',
+                menus.map((menu) => ({
                     name: menu.title,
                     value: menu.to,
                 })),
-            });
+            );
             menu = answer;
         } else {
             menu = options.menu as string;

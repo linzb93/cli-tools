@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger';
-import inquirer from '@/utils/inquirer';
+import { multiSelect } from '@/utils/inquirer';
 import { isGitProject } from '../../shared/utils';
 import { getAllTags, deleteTags } from '../shared';
 
@@ -20,12 +20,10 @@ export const tagDeleteService = async (): Promise<void> => {
         }
 
         // 提示用户选择要删除的标签
-        const { selectedTags } = await inquirer.prompt({
-            type: 'checkbox',
-            name: 'selectedTags',
-            message: '请选择要删除的标签',
-            choices: tags.map((tag) => ({ name: tag, value: tag })),
-        });
+        const { selectedTags } = await multiSelect(
+            '请选择要删除的标签',
+            tags.map((tag) => ({ name: tag, value: tag })),
+        );
 
         if (!selectedTags.length) {
             logger.info('未选择任何标签，操作已取消');

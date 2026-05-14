@@ -3,7 +3,7 @@ import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { executeCommands } from '@/utils/execute-command-line';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
-import inquirer from '@/utils/inquirer';
+import { ask } from '@/utils/inquirer';
 import type { Options } from './types';
 
 /**
@@ -31,14 +31,7 @@ export const pullService = async (options: Options): Promise<void> => {
         // 检查是否有未提交的代码
         const projectStatus = await getGitProjectStatus();
         if (projectStatus.status === GitStatusMap.Uncommitted) {
-            const { commitMessage } = await inquirer.prompt([
-                {
-                    type: 'input',
-                    message: '检测到有未提交的代码，请输入提交信息:',
-                    name: 'commitMessage',
-                    default: 'feat:update',
-                },
-            ]);
+            const commitMessage = await ask('检测到有未提交的代码，请输入提交信息:');
 
             const formattedMessage = formatCommitMessage(commitMessage);
             logger.info(`提交信息: ${chalk.green(formattedMessage)}`);

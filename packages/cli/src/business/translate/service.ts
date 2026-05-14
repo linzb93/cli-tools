@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import inquirer from '@/utils/inquirer';
+import { confirm } from '@/utils/inquirer';
 import { createDefaultTranslators, getTranslator, TranslatorType } from './core/Factory';
 import { TranslateResultItem } from './core/BaseTranslator';
 import { Options } from './types';
@@ -121,14 +121,7 @@ export const engService = async (text: string | undefined, options: Options) => 
 
     // 2. 处理无参情况
     if (!text) {
-        const { useClipboard } = await inquirer.prompt([
-            {
-                type: 'confirm',
-                name: 'useClipboard',
-                message: '检测到未输入内容，是否读取剪贴板？',
-                default: true,
-            },
-        ]);
+        const useClipboard = await confirm('检测到未输入内容，是否读取剪贴板？');
 
         if (useClipboard) {
             const content = getClipboardContent();
@@ -140,14 +133,7 @@ export const engService = async (text: string | undefined, options: Options) => 
             // 显示预览
             console.log(chalk.cyan(`内容预览: "${content.substring(0, 100)}${content.length > 100 ? '...' : ''}"`));
 
-            const { confirmTranslate } = await inquirer.prompt([
-                {
-                    type: 'confirm',
-                    name: 'confirmTranslate',
-                    message: '是否翻译？',
-                    default: true,
-                },
-            ]);
+            const confirmTranslate = await confirm('是否翻译？');
 
             if (confirmTranslate) {
                 // 剪贴板内容默认使用 AI 翻译

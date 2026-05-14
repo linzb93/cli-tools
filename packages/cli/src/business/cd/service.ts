@@ -5,7 +5,7 @@ import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import clipboard from 'clipboardy';
 import { isWin } from '@cli-tools/shared';
-import inquirer from '@/utils/inquirer';
+import { ask, select, multiSelect } from '@/utils/inquirer';
 import { Options, CdHistoryItem } from './types';
 import { resolveTargetPath } from './helpers/resolve';
 
@@ -66,15 +66,13 @@ async function deleteHistory(): Promise<void> {
         return;
     }
 
-    const { selectedPaths } = await inquirer.prompt({
-        type: 'checkbox',
-        name: 'selectedPaths',
-        message: '请选择要删除的目录',
-        choices: history.map((item) => ({
+    const selectedPaths = await multiSelect(
+        '请选择要删除的目录',
+        history.map((item) => ({
             name: `${item.path} (访问次数: ${item.count})`,
             value: item.path,
         })),
-    });
+    );
 
     if (!selectedPaths.length) {
         logger.info('未选择任何目录，操作已取消');
@@ -96,40 +94,34 @@ async function setAlias(): Promise<void> {
         return;
     }
 
-    const { selectedPath } = await inquirer.prompt({
-        type: 'select',
-        name: 'selectedPath',
-        message: '请选择要设置别名的目录',
-        choices: history.map((item) => ({
+    const selectedPath = await select(
+        '请选择要设置别名的目录',
+        history.map((item) => ({
             name: item.alias ? `${item.path} (别名: ${item.alias})` : item.path,
             value: item.path,
         })),
-    });
+    );
 
     if (!selectedPath) {
         logger.info('未选择目录，操作已取消');
         return;
     }
 
-    const { alias } = await inquirer.prompt({
-        type: 'input',
-        name: 'alias',
-        message: '请输入别名',
-        validate: (input: string) => {
-            if (!input || !input.trim()) {
-                return '别名不能为空';
-            }
-            if (input.includes(' ')) {
-                return '别名不能包含空格';
-            }
-            // 检查别名是否已被其他目录使用
-            const existing = history.find((item) => item.alias === input.trim() && item.path !== selectedPath);
-            if (existing) {
-                return `别名已被 "${existing.path}" 使用`;
-            }
-            return true;
-        },
-    });
+    const alias = await ask('请输入别名');
+    if (!alias || !alias.trim()) {
+        logger.error('别名不能为空');
+        return;
+    }
+    if (alias.includes(' ')) {
+        logger.error('别名不能包含空格');
+        return;
+    }
+    // 检查别名是否已被其他目录使用
+    const existing = history.find((item) => item.alias === alias.trim() && item.path !== selectedPath);
+    if (existing) {
+        logger.error(`别名已被 "${existing.path}" 使用`);
+        return;
+    }
 
     await sql((data) => {
         const item = data.cdHistory?.find((item: CdHistoryItem) => item.path === selectedPath);
@@ -163,9 +155,6 @@ async function updateHistoryAndPrint(absolutePath: string) {
         // Write the target path to a temporary file for the shell wrapper to read
         const tempFile = path.join(os.tmpdir(), '.mycli_cd_path');
         fs.writeFileSync(tempFile, absolutePath, 'utf8');
-
-        // Also output to stdout for visibility
-        logger.info(`准备跳转到: ${absolutePath}`);
     } else {
         logger.warn(`非 Windows 系统，不支持直接跳转到${path.basename(absolutePath)}目录,已经将命令复制进剪贴板`);
         clipboard.writeSync(`cd ${absolutePath}`);

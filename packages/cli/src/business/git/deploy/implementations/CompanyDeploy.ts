@@ -2,7 +2,7 @@ import { BaseDeploy } from '../core/BaseDeploy';
 import { getContext } from '../helpers/context';
 import { openDeployPage } from '../../shared/utils/jenkins';
 import { logger } from '@/utils/logger';
-import inquirer from '@/utils/inquirer';
+import { confirm } from '@/utils/inquirer';
 import { tagService, Options as TagOptions } from '../../tag/home';
 
 export class CompanyDeploy extends BaseDeploy {
@@ -53,14 +53,7 @@ export class CompanyDeploy extends BaseDeploy {
         await this.executeBaseManagers();
         if (context.prod) {
             // 询问用户是否确认发布
-            const { confirmDeploy } = await inquirer.prompt([
-                {
-                    type: 'confirm',
-                    name: 'confirmDeploy',
-                    message: `确认要发布项目吗？这将合并代码到${mainBranch}分支并发布`,
-                    default: false,
-                },
-            ]);
+            const confirmDeploy = await confirm(`确认要发布项目吗？这将合并代码到${mainBranch}分支并发布`);
 
             if (!confirmDeploy) {
                 logger.info('已取消发布操作');

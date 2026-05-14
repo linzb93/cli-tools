@@ -1,7 +1,6 @@
-import chalk from 'chalk';
 import { closestMatch } from 'closest-match';
 import { executeCommands, CommandConfig } from '@/utils/execute-command-line';
-import inquirer from '@/utils/inquirer';
+import { confirm } from '@/utils/inquirer';
 
 /**
  * 预定义的前缀列表
@@ -175,14 +174,7 @@ function addQuoteWhenBlankExist(message: string): string {
  * @throws {Error} 如果用户选择不解决冲突
  */
 async function handleConflict() {
-    const { resolved } = await inquirer.prompt([
-        {
-            message: '代码合并失败，检测到代码有冲突，是否已解决？',
-            type: 'confirm',
-            default: true,
-            name: 'resolved',
-        },
-    ]);
+    const resolved = await confirm('代码合并失败，检测到代码有冲突，是否已解决？');
     if (!resolved) {
         throw new Error('exit');
     }

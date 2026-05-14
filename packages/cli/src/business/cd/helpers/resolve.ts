@@ -45,7 +45,6 @@ const pathResolvers: Array<(path: string) => string | Promise<string>> = [
  * @returns 解析后的绝对路径
  */
 export async function resolveTargetPath(targetPath: string, options?: Options): Promise<string> {
-    console.log(`待解析的路径：${targetPath}`);
     let resolvedPath = targetPath;
 
     // 获取历史记录
