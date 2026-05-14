@@ -5,4 +5,5 @@ export interface Options {
     path: string;
     merge?: boolean;
     message?: string;
+    select?: boolean;
 }

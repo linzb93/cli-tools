@@ -12,6 +12,7 @@ const entry = () => {
             .option('-m, --message <message>', '提交信息')
             .option('--path <path>', '指定要提交的文件路径，默认当前目录')
             .option('--merge', '与上一条提交记录合并，使用上一条的提交信息')
+            .option('--select', '交互式选择提交前缀')
             .action((options: CommitOptions) => {
                 commitService(options);
             });

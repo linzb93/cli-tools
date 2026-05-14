@@ -51,15 +51,34 @@ export async function resolveTargetPath(targetPath: string, options?: Options): 
     // 获取历史记录
     const history: CdHistoryItem[] = await sql((data) => data.cdHistory || []);
 
-    // 如果输入的是纯数字索引，尝试从历史记录中匹配
-    if (/^\d+$/.test(targetPath)) {
-        const index = parseInt(targetPath, 10) - 1;
-        const topHistory = [...history].sort((a, b) => b.count - a.count).slice(0, 10);
+    // 获取排序后的前10条历史记录
+    const topHistory = [...history].sort((a, b) => b.count - a.count).slice(0, 10);
 
-        if (index >= 0 && index < topHistory.length) {
-            resolvedPath = topHistory[index].path;
+    // 如果输入的是纯数字索引，尝试从历史记录中匹配（支持负数）
+    if (/^-?\d+$/.test(targetPath)) {
+        const index = parseInt(targetPath, 10);
+
+        if (index > 0) {
+            // 正数：1-based 转 0-based
+            if (index <= topHistory.length) {
+                resolvedPath = topHistory[index - 1].path;
+            }
+        } else if (index < 0) {
+            // 负数：从后面开始数，-1 是最后一个
+            const negativeIndex = topHistory.length + index;
+            if (negativeIndex >= 0 && negativeIndex < topHistory.length) {
+                resolvedPath = topHistory[negativeIndex].path;
+            }
         }
         // 如果索引超出范围，保持 resolvedPath 不变（即 targetPath 原值），继续当作目录名处理
+    }
+
+    // 如果输入的是关键字，尝试从历史记录中匹配路径包含该关键字的记录
+    if (options?.keyword) {
+        const match = topHistory.find((item) => item.path.includes(options.keyword!));
+        if (match) {
+            resolvedPath = match.path;
+        }
     }
 
     // 如果输入的是别名，尝试从历史记录中匹配

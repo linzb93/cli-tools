@@ -61,6 +61,7 @@ function registerCommands() {
         .option('-d, --delete', '删除历史记录')
         .option('-c, --cwd', '跳转到项目根目录')
         .option('--alias', '为目录设置别名')
+        .option('--keyword <value>', '通过关键字匹配历史记录')
         .action((targetPath, options) => {
             import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
         });
