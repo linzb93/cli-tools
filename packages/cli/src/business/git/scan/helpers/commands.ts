@@ -41,12 +41,12 @@ const printProjectLog = async (item: ResultItem) => {
         }
         // 如果没有未推送的 commit，head 可能是 0，但这里我们想看最近的 log
         if (head === 0) {
-            console.log(chalk.gray('  没有未推送的提交记录'));
+            console.log(chalk.gray('没有未推送的提交记录'));
             return;
         }
         await commitSearchService({ cwd: item.fullPath, head });
     } catch (e: any) {
-        console.log(chalk.red(`  获取日志失败: ${e.message}`));
+        console.log(chalk.red(`获取日志失败: ${e.message}`));
     }
 };
 
@@ -58,7 +58,7 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
     {
         name: 'restart',
         description: '重新扫描已列出的项目',
-        handler: async () => {
+        handler: async (_args, item, utils) => {
             logger.clearConsole();
             logger.empty();
             console.log(chalk.blue('正在重新扫描...'));
@@ -66,13 +66,11 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
 
             if (newList.length === 0) {
                 logger.success('所有项目正常，没有需要提交或推送的代码。');
+                utils.close();
                 return false;
             } else {
                 printTable(newList);
             }
-
-            // 重新显示所有交互命令
-            displayCommands(commands(newList), 'exit');
         },
     },
     {
@@ -148,13 +146,7 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
         description: '查看已提交未推送的commit',
         requireList: true,
         handler: async (args, item: ResultItem) => {
-            if (args.length > 0) {
-                await printProjectLog(item);
-            } else {
-                for (const i of list) {
-                    await printProjectLog(i);
-                }
-            }
+            await printProjectLog(item);
         },
     },
     {
@@ -184,7 +176,7 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
 const startRepl = (list: ResultItem[]) => {
     const cmds = commands(list);
     createCommandReadline(cmds, {
-        prompt: 'git-scan',
+        prompt: '',
         items: list,
     });
 };

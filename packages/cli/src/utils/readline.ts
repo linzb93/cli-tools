@@ -16,7 +16,13 @@ export interface ReadlineCommand {
     usage?: string;
     /** 是否需要项目列表上下文（用于命令如 diff/commit/log/push） */
     requireList?: boolean;
-    handler: (args: string[], item: any) => void | Promise<boolean | void>;
+    handler: (
+        args: string[],
+        item: any,
+        utils: {
+            close: Function;
+        },
+    ) => void | Promise<boolean | void>;
 }
 
 export interface CommandCompleteContext {
@@ -112,7 +118,15 @@ export function createCommandReadline(
     for (const cmd of commands) {
         commandMap.set(cmd.name, cmd);
     }
-    displayCommands(commands, exitCommand);
+
+    // 注册 /help 命令
+    commandMap.set('help', {
+        name: 'help',
+        description: '显示所有可用命令',
+        handler: () => {
+            displayCommands(commands, exitCommand);
+        },
+    });
 
     const rl = readline.createInterface({
         input: process.stdin,
@@ -192,7 +206,7 @@ export function createCommandReadline(
 
         rl.pause();
         try {
-            const result = await cmd.handler(parsed.args, item);
+            const result = await cmd.handler(parsed.args, item, { close: rl.close });
             // 如果 handler 返回 false，则退出 readline
             if (result === false) {
                 rl.close();
