@@ -5,7 +5,7 @@ import { executeCommands, type Command } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import type { Options } from './types';
 import { splitGitLog } from '../../shared/utils';
-import inquirer from '@/utils/inquirer';
+import { confirm, select } from '@/utils/inquirer';
 
 /**
  * git commit 命令的主入口函数
@@ -36,28 +36,14 @@ export const commitService = async (options: Options): Promise<void> => {
         // 处理 --select 选项，让用户选择前缀
         if (options.select) {
             const prefixValues = getPrefixValues();
-            const { selected } = await inquirer.prompt([
-                {
-                    type: 'list',
-                    name: 'selected',
-                    message: '请选择提交前缀：',
-                    choices: prefixValues,
-                },
-            ]);
+            const selected = await select('请选择提交前缀', prefixValues);
             finalMessage = `${selected}:${finalMessage}`;
         } else {
             const { commit: formattedCommit, suggestedPrefix } = await formatCommitMessageWithSuggestion(finalMessage);
 
             // 如果检测到非标准前缀，提示用户确认
             if (suggestedPrefix) {
-                const { confirmed } = await inquirer.prompt([
-                    {
-                        type: 'confirm',
-                        name: 'confirmed',
-                        message: `检测到非标准前缀，已自动纠正为 "${suggestedPrefix}:"，是否继续？`,
-                        default: true,
-                    },
-                ]);
+                const confirmed = await confirm(`检测到非标准前缀，已自动纠正为 "${suggestedPrefix}:"，是否继续？`);
                 if (!confirmed) {
                     logger.info('已取消提交');
                     return;

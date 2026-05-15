@@ -113,13 +113,13 @@ export async function formatCommitMessageWithSuggestion(rawCommit: string): Prom
 }> {
     let commit = rawCommit.trim();
     if (!commit) {
-        return { commit: 'feat:update', suggestedPrefix: 'feat' };
+        return { commit: 'feat:update', suggestedPrefix: '' };
     }
 
     // 1. 检查是否已有标准前缀 (如 feat:、fix: 等)
     const hasStandardPrefix = prefixes.find((item) => commit.startsWith(`${item.value}:`));
     if (hasStandardPrefix) {
-        return { commit, suggestedPrefix: hasStandardPrefix.value };
+        return { commit, suggestedPrefix: '' };
     }
 
     // 2. 提取用户输入的前缀（冒号前面的部分）
@@ -152,9 +152,9 @@ export async function formatCommitMessageWithSuggestion(rawCommit: string): Prom
 
     // 4. 无匹配时默认使用 feat
     if (!inferredPrefix) {
-        return { commit: `feat:${commit}`, suggestedPrefix: 'feat' };
+        return { commit: `feat:${commit}`, suggestedPrefix: '' };
     }
-    return { commit: `${inferredPrefix.value}:${commit}`, suggestedPrefix: inferredPrefix.value };
+    return { commit: `${inferredPrefix.value}:${commit}`, suggestedPrefix: '' };
 }
 /**
  * 当提交信息包含空格时，添加引号
