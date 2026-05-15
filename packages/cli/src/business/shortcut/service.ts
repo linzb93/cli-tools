@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { isWin } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
-import { groupBy } from 'lodash-es';
+import { groupBy } from 'es-toolkit';
 import type { IShortcutItem } from './types';
 
 const renderItem = (item: IShortcutItem) => {
@@ -120,7 +120,7 @@ export const shortcut = (name: string) => {
             type: 'chrome',
         },
     ];
-    const grouped = groupBy(shortcutMap, 'type') as {
+    const grouped = groupBy(shortcutMap, (item) => item.type) as {
         all: IShortcutItem[];
         chrome: IShortcutItem[];
         vscode: IShortcutItem[];

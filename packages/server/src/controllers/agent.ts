@@ -1,6 +1,6 @@
 import { Router, type Application, Request, Response } from 'express';
 import axios from 'axios';
-import { omit } from 'lodash-es';
+import { omit } from 'es-toolkit';
 import { sql } from '@cli-tools/shared';
 import response from '../shared/response';
 const router = Router();
@@ -135,7 +135,7 @@ export const agentCallback = (app: Application) => {
             } else if (method === 'post') {
                 response = await axios.post(targetUrl, req.body, {
                     headers: {
-                        ...omit(req.headers, 'host', 'connection'),
+                        ...omit(req.headers, ['host', 'connection']),
                     },
                 });
             } else {

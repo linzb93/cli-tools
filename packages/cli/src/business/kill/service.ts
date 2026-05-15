@@ -1,6 +1,6 @@
 import rawKillPort from 'kill-port';
 import detectPort from 'detect-port';
-import { last, isPlainObject } from 'lodash-es';
+import { last, isPlainObject } from 'es-toolkit';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
 import { IOption } from './types';

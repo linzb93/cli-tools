@@ -44,42 +44,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import type { Agent } from '../types'
-import { cloneDeep } from 'lodash-es'
-import request from '@/helpers/request'
-import { ElForm, ElMessage } from 'element-plus'
-import { Delete } from '@element-plus/icons-vue'
+import { ref, watch, computed } from 'vue';
+import type { Agent } from '../types';
+import { cloneDeep } from 'es-toolkit';
+import request from '@/helpers/request';
+import { ElForm, ElMessage } from 'element-plus';
+import { Delete } from '@element-plus/icons-vue';
 const props = defineProps<{
-  visible: boolean
-  row: Agent
-}>()
+  visible: boolean;
+  row: Agent;
+}>();
 
 watch(props, ({ visible }) => {
   if (visible) {
     form.value = {
       ...cloneDeep(props.row)
-    }
+    };
   }
-})
-const emit = defineEmits(['update:visible', 'closed', 'save'])
-const isEdit = computed(() => props.row.id > 0)
-const formRef = ref<InstanceType<typeof ElForm>>()
+});
+const emit = defineEmits(['update:visible', 'closed', 'save']);
+const isEdit = computed(() => props.row.id > 0);
+const formRef = ref<InstanceType<typeof ElForm>>();
 const form = ref<Agent>({
   id: 0,
   name: '',
   prefix: '',
   rules: []
-})
+});
 const formRules = {
   name: [{ required: true, message: '请输入名称' }],
   prefix: [{ required: true, message: '请输入前缀' }],
   rules: [{ required: true, message: '请添加规则' }]
-}
+};
 
 const handleClose = () => {
-  emit('update:visible', false)
-}
+  emit('update:visible', false);
+};
 
 const handleClosed = () => {
   form.value = {
@@ -87,46 +87,46 @@ const handleClosed = () => {
     name: '',
     prefix: '',
     rules: []
-  }
-  formRef.value?.resetFields()
-}
+  };
+  formRef.value?.resetFields();
+};
 
 const handleAddRule = () => {
   form.value.rules.push({
     from: '',
     to: ''
-  })
-}
+  });
+};
 const formatFormValue = () => {
   if (!form.value.prefix.startsWith('/')) {
-    form.value.prefix = `/${form.value.prefix}`
+    form.value.prefix = `/${form.value.prefix}`;
   }
   form.value.rules = form.value.rules.map((rule) => ({
     from: !rule.from.startsWith('/') ? `/${rule.from}` : rule.from,
     to: !rule.to.startsWith('/') ? `/${rule.to}` : rule.to
-  }))
-}
+  }));
+};
 const handleSave = () => {
   formRef.value?.validate((valid) => {
     if (!valid) {
-      return
+      return;
     }
-    formatFormValue()
+    formatFormValue();
     request('agent/save', form.value).then(() => {
       ElMessage.success({
         message: '保存成功',
         duration: 1000,
         onClose: () => {
-          emit('save')
-          handleClose()
+          emit('save');
+          handleClose();
         }
-      })
-    })
-  })
-}
+      });
+    });
+  });
+};
 const handleDeleteRule = (index: number) => {
-  form.value.rules.splice(index, 1)
-}
+  form.value.rules.splice(index, 1);
+};
 </script>
 
 <style lang="scss" scoped>

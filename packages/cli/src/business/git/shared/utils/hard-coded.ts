@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { globby } from 'globby';
 import chalk from 'chalk';
 import { execaCommand } from 'execa';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 import { isMonorepo } from '.';
 
 const findBusinessPaths = async (projectPath: string = process.cwd()): Promise<string[]> => {
@@ -24,7 +24,7 @@ export const checkHardcoded = async (projectPath: string = process.cwd()): Promi
     const businessPaths = await findBusinessPaths(projectPath);
     let hasHardcoded = false;
 
-    await pMap(
+    await mapAsync(
         businessPaths,
         async (path) => {
             try {

@@ -1,6 +1,6 @@
 import { deleteAsync as del } from 'del';
 import { globby } from 'globby';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 import { logger } from '@/utils/logger';
 import type { IOptions } from './types';
 
@@ -32,7 +32,7 @@ export const clearService = async (filename: string, options?: IOptions): Promis
         logger.info('未发现需要删除的文件');
         return;
     }
-    await pMap(paths as string[], async (file) => del(file), {
+    await mapAsync(paths as string[], async (file) => del(file), {
         concurrency: 10,
     });
     logger.success(`操作成功，共删除${len}个文件`);

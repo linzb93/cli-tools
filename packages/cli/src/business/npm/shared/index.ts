@@ -1,4 +1,3 @@
-import { get } from 'lodash-es';
 import { load, CheerioAPI } from 'cheerio';
 import axios from 'axios';
 import fs from 'fs-extra';
@@ -61,7 +60,7 @@ async function getPage(pkg: string): Promise<Npm> {
         return new Npm($, registryRes.data);
     } catch (e) {
         // 没找到
-        if (get(e, 'response.status') === 404) {
+        if (e.response?.status === 404) {
             let res = await axios.get(`https://www.npmjs.com/search?q=${pkg}`);
             html = res.data;
             const $ = load(html);

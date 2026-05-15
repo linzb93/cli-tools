@@ -5,7 +5,7 @@ import { execaCommand as execa } from 'execa';
 import dayjs from 'dayjs';
 import chokidar from 'chokidar';
 import * as sass from 'sass';
-import { sleep } from '@linzb93/utils';
+import { delay } from 'es-toolkit';
 import { logger } from '@/utils/logger';
 import { SassContext } from './types';
 
@@ -124,7 +124,7 @@ const registerChangeEvent = (ctx: SassContext): void => {
  */
 const handleFileChange = async (file: string, ctx: SassContext): Promise<void> => {
     // 在VSCode中编辑的文件会被上锁无法读取，所以需要等一段时间。
-    await sleep(500);
+    await delay(500);
 
     // 更新依赖关系
     await updateDependencyRelations(file, ctx);

@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import fs from 'fs-extra';
 import dayjs from 'dayjs';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
 import inquirer from '@/utils/inquirer';
@@ -77,7 +77,7 @@ const getApiDetails = async (
 ): Promise<SavedData[]> => {
     const savedDocs: SavedData[] = [];
 
-    await pMap(
+    await mapAsync(
         apiList,
         async (apiItem) => {
             try {

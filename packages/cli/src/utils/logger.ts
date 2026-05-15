@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import cfonts from 'cfonts';
 import fs from 'fs-extra';
 import tinycolor from 'tinycolor2';
-import { sampleSize } from 'lodash-es';
+import { sampleSize } from 'es-toolkit';
 import gradientUtil from 'gradient-string';
 import logSymbols from 'log-symbols';
 import terminalSize from 'terminal-size';

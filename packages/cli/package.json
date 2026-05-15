@@ -23,7 +23,6 @@
     "license": "ISC",
     "dependencies": {
         "@cli-tools/shared": "workspace:*",
-        "@linzb93/utils": "^0.0.14",
         "ali-oss": "^6.22.0",
         "binary-split": "^1.0.5",
         "bytes": "^3.1.2",
@@ -50,7 +49,6 @@
         "open": "^11.0.0",
         "openai": "^4.78.1",
         "ora": "^9.3.0",
-        "p-reduce": "^3.0.0",
         "public-ip": "^5.0.0",
         "read-pkg": "^9.0.0",
         "rxjs": "^7.8.1",

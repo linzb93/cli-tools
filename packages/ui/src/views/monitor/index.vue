@@ -91,43 +91,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import dayjs from 'dayjs'
-import { pick } from 'lodash-es'
-import { ElMessage } from 'element-plus'
-import { EditPen } from '@element-plus/icons-vue'
-import request from '@/helpers/request'
-import { service } from './utils'
-import Qa from '@/components/Qa.vue'
-import AppManage from './components/AppManage.vue'
-import CodeBeautify from './components/CodeBeautify.vue'
-import { type Application, type PanelItem, type ErrorItem, type ErrorDetailItem } from './types'
+import { ref, onMounted, computed } from 'vue';
+import dayjs from 'dayjs';
+import { pick } from 'es-toolkit';
+import { ElMessage } from 'element-plus';
+import { EditPen } from '@element-plus/icons-vue';
+import request from '@/helpers/request';
+import { service } from './utils';
+import Qa from '@/components/Qa.vue';
+import AppManage from './components/AppManage.vue';
+import CodeBeautify from './components/CodeBeautify.vue';
+import { type Application, type PanelItem, type ErrorItem, type ErrorDetailItem } from './types';
 
 const visible = ref({
   apps: false,
   code: false
-})
+});
 
 const getSelectedApps = async () => {
-  const data = await request('bug/getApps')
-  apps.value = data.list
-}
+  const data = await request('bug/getApps');
+  apps.value = data.list;
+};
 
 onMounted(async () => {
-  getSelectedApps()
-  const { inited } = await request('bug/init')
+  getSelectedApps();
+  const { inited } = await request('bug/init');
   if (inited) {
-    form.value.selected = apps.value.map((item) => item.siteId)
+    form.value.selected = apps.value.map((item) => item.siteId);
     const result = (await request('bug/getCached')) as {
       list: {
-        siteId: string
-        name: string
-        list: ErrorItem[]
-      }[]
-      lastDate: string
-    }
-    form.value.dateValue = 3
-    form.value.beginDate = result.lastDate.split(' ')[0]
+        siteId: string;
+        name: string;
+        list: ErrorItem[];
+      }[];
+      lastDate: string;
+    };
+    form.value.dateValue = 3;
+    form.value.beginDate = result.lastDate.split(' ')[0];
     panels.value = (result.list || [])
       .map((sub) => {
         return {
@@ -135,80 +135,80 @@ onMounted(async () => {
           siteId: sub.siteId,
           title: sub.name,
           data: sub.list
-        }
+        };
       })
-      .filter((item) => item.data.length)
+      .filter((item) => item.data.length);
   }
-})
+});
 
 const resetSelectedApps = () => {
-  form.value.selected = []
-  getSelectedApps()
-}
+  form.value.selected = [];
+  getSelectedApps();
+};
 
-const apps = ref<Application[]>([])
+const apps = ref<Application[]>([]);
 const form = ref<{
-  selected: string[]
-  dateValue: number
-  beginDate: string
-  endDate: string
+  selected: string[];
+  dateValue: number;
+  beginDate: string;
+  endDate: string;
 }>({
   selected: [],
   dateValue: 0,
   beginDate: dayjs().format('YYYY-MM-DD'),
   endDate: dayjs().format('YYYY-MM-DD')
-})
+});
 const radioChange = (e: InputEvent) => {
-  const value = Number((e.target as HTMLInputElement).value)
-  form.value.dateValue = value
+  const value = Number((e.target as HTMLInputElement).value);
+  form.value.dateValue = value;
   if (value === 3) {
-    return
+    return;
   }
 
   const map = [
     [0, 0],
     [1, 1],
     [7, 0]
-  ]
-  form.value.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD')
-  form.value.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD')
-}
+  ];
+  form.value.beginDate = dayjs().subtract(map[value][0], 'd').format('YYYY-MM-DD');
+  form.value.endDate = dayjs().subtract(map[value][1], 'd').format('YYYY-MM-DD');
+};
 const dateRange = computed({
   get() {
-    return [form.value.beginDate, form.value.endDate]
+    return [form.value.beginDate, form.value.endDate];
   },
   set(value) {
     if (value) {
-      form.value.beginDate = dayjs(value[0]).format('YYYY-MM-DD')
-      form.value.endDate = dayjs(value[1]).format('YYYY-MM-DD')
+      form.value.beginDate = dayjs(value[0]).format('YYYY-MM-DD');
+      form.value.endDate = dayjs(value[1]).format('YYYY-MM-DD');
     }
   }
-})
+});
 const changeDate = (range: [string, string]) => {
   if (!range) {
-    form.value.dateValue = 0
+    form.value.dateValue = 0;
   }
-  form.value.beginDate = dayjs(range[0]).format('YYYY-MM-DD')
-  form.value.endDate = dayjs(range[1]).format('YYYY-MM-DD')
-  form.value.dateValue = 3
-}
+  form.value.beginDate = dayjs(range[0]).format('YYYY-MM-DD');
+  form.value.endDate = dayjs(range[1]).format('YYYY-MM-DD');
+  form.value.dateValue = 3;
+};
 
 const isSelectAll = computed(() => {
-  return form.value.selected.length === apps.value.length
-})
+  return form.value.selected.length === apps.value.length;
+});
 const selectAll = () => {
   if (form.value.selected.length < apps.value.length) {
-    form.value.selected = apps.value.map((item) => item.siteId)
+    form.value.selected = apps.value.map((item) => item.siteId);
   } else {
-    form.value.selected = []
+    form.value.selected = [];
   }
-}
+};
 
-const panels = ref<PanelItem[]>([])
+const panels = ref<PanelItem[]>([]);
 const generate = async () => {
   if (!form.value.selected.length) {
-    ElMessage.error('请至少选择一个应用')
-    return
+    ElMessage.error('请至少选择一个应用');
+    return;
   }
   const promiseList = form.value.selected.map((siteId) => {
     return {
@@ -218,7 +218,7 @@ const generate = async () => {
         service.post<
           any,
           {
-            list: ErrorItem[]
+            list: ErrorItem[];
           }
         >('/data/analysis/jsErrorCount', {
           beginTime: `${form.value.beginDate} 00:00:00`,
@@ -231,58 +231,58 @@ const generate = async () => {
           type: ['eventError', 'consoleError'],
           visitType: 0
         })
-    }
-  })
+    };
+  });
   const data = await Promise.all(
     promiseList.map(async (item) => {
-      const result = await item.action()
+      const result = await item.action();
       return {
         siteId: item.siteId,
         title: item.title,
         data: result.list
-      }
+      };
     })
-  )
-  panels.value = data.filter((item) => item.data.length)
-  loaded.value = true
-}
+  );
+  panels.value = data.filter((item) => item.data.length);
+  loaded.value = true;
+};
 
 const getAppName = (id: string) => {
-  const match = apps.value.find((item) => item.siteId === id)
-  return match ? match.name : ''
-}
-const loaded = ref(false)
-const hideUnimportant = ref(true)
+  const match = apps.value.find((item) => item.siteId === id);
+  return match ? match.name : '';
+};
+const loaded = ref(false);
+const hideUnimportant = ref(true);
 const isImportantError = (row: ErrorItem) => {
-  const { content } = row
+  const { content } = row;
   return (
     content.startsWith('Cannot read properties of undefined') ||
     content.startsWith('Cannot read properties of null') ||
     content.includes('is not defined')
-  )
-}
+  );
+};
 const renderTableData = (panel: PanelItem) =>
-  panel.data.filter((row) => (hideUnimportant.value ? isImportantError(row) : true))
+  panel.data.filter((row) => (hideUnimportant.value ? isImportantError(row) : true));
 
 const renderContentColor = (row: ErrorItem) => {
-  const { content } = row
+  const { content } = row;
   if (isImportantError(row)) {
-    return '#F56C6C'
+    return '#F56C6C';
   }
   if (content.startsWith('Loading chunk')) {
-    return '#e1e1e1'
+    return '#e1e1e1';
   }
-  return ''
-}
-const targetPath = ref('')
-const currentItem = ref<ErrorItem>()
-const currentErrorMsg = ref('')
+  return '';
+};
+const targetPath = ref('');
+const currentItem = ref<ErrorItem>();
+const currentErrorMsg = ref('');
 const focusError = async (row: ErrorItem, siteId: string) => {
-  currentItem.value = row
+  currentItem.value = row;
   const res = await service.post<
     any,
     {
-      list: ErrorDetailItem[]
+      list: ErrorDetailItem[];
     }
   >('/data/analysis/getVisitInfo', {
     ...pick(row, ['content', 'url']),
@@ -292,32 +292,32 @@ const focusError = async (row: ErrorItem, siteId: string) => {
     pageSize: 1,
     siteId,
     type: ['eventError', 'consoleError']
-  })
+  });
   if (!res.list.length) {
-    ElMessage.error('该错误无法定位信息')
-    return
+    ElMessage.error('该错误无法定位信息');
+    return;
   }
-  const target = res.list[0]
-  const { errorMsg } = target
+  const target = res.list[0];
+  const { errorMsg } = target;
   if (errorMsg.startsWith('MiniProgramError')) {
-    visible.value.code = true
-    targetPath.value = 'MiniProgramError'
-    currentErrorMsg.value = errorMsg
-    return
+    visible.value.code = true;
+    targetPath.value = 'MiniProgramError';
+    currentErrorMsg.value = errorMsg;
+    return;
   }
-  const match = errorMsg.match(/(http.+\.js\:\d+\:\d+)/)
+  const match = errorMsg.match(/(http.+\.js\:\d+\:\d+)/);
   if (match && match[1]) {
-    visible.value.code = true
-    targetPath.value = match[1]
+    visible.value.code = true;
+    targetPath.value = match[1];
   }
-}
+};
 
 const yesterdayInfo = {
   is: dayjs().day() === 1,
   content: `获取的是${dayjs().subtract(3, 'd').format('YYYY-MM-DD')}~${dayjs()
     .subtract(1, 'd')
     .format('YYYY-MM-DD')}的报告`
-}
+};
 </script>
 <style scoped lang="scss">
 .date-picker-wrap {

@@ -2,12 +2,12 @@ import { Router } from 'express';
 import axios from 'axios';
 import { sql } from '@cli-tools/shared';
 import dayjs from 'dayjs';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 // import Table from 'cli-table3';
 import { readSecret } from '@cli-tools/shared';
 import response from '../shared/response';
 // import { log } from '../shared/log';
-import { omit, clone } from 'lodash-es';
+import { omit, clone } from 'es-toolkit';
 const router = Router();
 
 const getLastDate = () => {
@@ -83,7 +83,7 @@ export const bugCallback = async () => {
     const prefix = await readSecret((db) => db.oa.apiPrefix);
     let lastDate = getLastDate();
     // const title = `${lastDate.split(' ')[0]} 至 ${dayjs().format('YYYY-MM-DD')} 错误统计`;
-    const resList = await pMap(
+    const resList = await mapAsync(
         list,
         async (item) => {
             const res = await axios.post(`${prefix}/dataanaly/data/analysis/jsErrorCount`, {

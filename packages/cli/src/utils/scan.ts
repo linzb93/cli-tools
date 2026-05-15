@@ -1,8 +1,8 @@
 import fsp from 'node:fs/promises';
 import Table from 'cli-table3';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 import { join } from 'node:path';
-import pReduce from 'p-reduce';
+import { reduceAsync } from 'es-toolkit';
 import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import { progress } from '@/utils/progress';
@@ -28,7 +28,7 @@ export const expandWorkDirs = async (): Promise<string[]> => {
         return [];
     }
 
-    const allDirs = await pReduce(
+    const allDirs = await reduceAsync(
         workDirs,
         async (acc, dir) => {
             try {
@@ -59,7 +59,7 @@ export const scanDirs = async <T>(
 ): Promise<T[]> => {
     progress.setTotal(allDirs.length);
 
-    const results = await pMap(
+    const results = await mapAsync(
         allDirs,
         async (project) => {
             progress.tick();

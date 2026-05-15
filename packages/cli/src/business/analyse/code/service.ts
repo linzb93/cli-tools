@@ -1,6 +1,6 @@
 import Table from 'cli-table3';
 import fs from 'fs-extra';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 import { globby } from 'globby';
 import chalk from 'chalk';
 import spinner from '@/utils/spinner';
@@ -49,7 +49,7 @@ const run = async (modules: Module[]) => {
 
     const { files, max, module } = match;
 
-    const accumulator = await pMap(files, async (file) => {
+    const accumulator = await mapAsync(files, async (file) => {
         const content = await fs.readFile(file, 'utf8');
         const splitLines = splitByLine(content);
         const calcResult = module.calc(splitLines);

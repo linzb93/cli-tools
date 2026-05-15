@@ -1,13 +1,12 @@
 // import chalk from 'chalk';
 // import axios from 'axios';
 // import { fork, ChildProcess } from 'node:child_process';
-// import { flatten, omit } from 'lodash-es';
+// import { flatten, omit,delay } from 'es-toolkit';
 // import { sql } from '@cli-tools/shared';
 // import clipboardy from 'clipboardy';
 // // import { reactive } from "@vue/reactivity";
 // // import { watch } from "@vue/runtime-core";
-// import { sleep } from '@linzb93/utils';
-// import pMap from 'p-map';
+// import { mapAsync } from 'es-toolkit';
 // import path from 'node:path';
 // import BaseManager from '../BaseManager';
 // // import set from "./set";
@@ -158,7 +157,7 @@
 //         //   update: 0,
 //         //   total: 0,
 //         // };
-//         // (db.data as ApiList).items = await pMap(
+//         // (db.data as ApiList).items = await mapAsync(
 //         //   result,
 //         //   async (item: any) => {
 //         //     const match = source.find((s) => s.id === item.id);
@@ -187,7 +186,7 @@
 //         //   return;
 //         // }
 //         // this.logger.info("正在启动服务器...");
-//         // await sleep(500);
+//         // await delay(500);
 //         // this.current = answer;
 //         // await this.createServer();
 //     }

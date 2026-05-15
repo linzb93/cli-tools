@@ -1,5 +1,5 @@
 import rawOpen from 'open';
-import { sleep } from '@linzb93/utils';
+import { delay } from 'es-toolkit';
 
 /**
  * 判断是否为URL
@@ -16,5 +16,5 @@ export const isURL = (text: string): boolean => {
  * @returns {Promise<void>}
  */
 export const open = async (url: string): Promise<void> => {
-    await Promise.race([rawOpen(url, { wait: true }), sleep(5000)]);
+    await Promise.race([rawOpen(url, { wait: true }), delay(5000)]);
 };

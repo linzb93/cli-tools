@@ -1,6 +1,6 @@
 import repl from 'node:repl';
 import dayjs from 'dayjs';
-import * as lodash from 'lodash-es';
+import * as toolkit from 'es-toolkit';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
 
@@ -11,7 +11,7 @@ export const replService = async () => {
         prompt: chalk.cyan('>'),
     });
     instance.context.dayjs = dayjs;
-    instance.context.lodash = lodash;
+    instance.context.toolkit = toolkit;
     instance.on('close', () => {
         logger.info(chalk.yellow('say goodbye from repl'));
     });

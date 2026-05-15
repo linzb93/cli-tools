@@ -1,13 +1,13 @@
-import useEventListener from "./useEventListener";
-import { shallowRef } from "vue";
-import { throttle } from "lodash-es";
+import useEventListener from './useEventListener';
+import { shallowRef } from 'vue';
+import { throttle } from 'es-toolkit';
 
 export default (throttleTime = 150) => {
   const x = shallowRef(0);
   const y = shallowRef(0);
   useEventListener(
     window,
-    "mousemove",
+    'mousemove',
     throttle((e) => {
       x.value = e.pageX;
       y.value = e.pageY;
@@ -15,6 +15,6 @@ export default (throttleTime = 150) => {
   );
   return {
     x,
-    y,
+    y
   };
 };

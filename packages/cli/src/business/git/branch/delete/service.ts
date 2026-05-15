@@ -1,6 +1,6 @@
 import { execaCommand } from 'execa';
 import chalk from 'chalk';
-import pMap from 'p-map';
+import { mapAsync } from 'es-toolkit';
 import { getAllBranches, deleteBranch } from '../../shared/utils';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
@@ -47,7 +47,7 @@ export const branchDeleteService = async () => {
     const selectedItems = selected.map((sel) => branches.find((item) => item.value === sel) as BranchExtraItem);
     let successCount = 0;
 
-    await pMap(
+    await mapAsync(
         selectedItems,
         async (branchItem) => {
             // 先删除本地分支，如果成功再删除远端分支
