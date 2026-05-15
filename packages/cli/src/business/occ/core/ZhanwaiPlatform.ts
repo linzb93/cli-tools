@@ -4,7 +4,7 @@ import { Options, GetUserInfoRequest } from '../types';
 import { getLoginToken, chooseChannel, getUserList, getUserDetail, getShopDetail } from '../repository/zhanwai';
 import type { UserDetailVo } from '../repository/zhanwai';
 import { logger } from '@/utils/logger';
-// import { HTTP_STATUS, readSecret } from '@cli-tools/shared';
+import { platformMap as ptMap } from '../constants';
 
 export abstract class ZhanwaiPlatform extends BasePlatform {
     platform = '';
@@ -53,11 +53,6 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
             }
             return false;
         }) as UserDetailVo;
-        const ptMap: Record<string, string> = {
-            meituan: '8',
-            taobao: '11',
-            jingdong: '4',
-        };
         const result = await getShopDetail({ token, accountId, shopId, platform: ptMap[pt] });
         let folder = '';
         if (pt === 'meituan') {

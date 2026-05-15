@@ -8,6 +8,8 @@ type ZdbUserListResponse = PaginationResponse<{
     unionId: string;
     /** 门店名称 */
     shopName: string;
+    /** 平台 */
+    platform: string;
 }>;
 /**
  * 获取用户列表
@@ -29,10 +31,11 @@ interface DirectLoginResponse {
     };
     accountShopToken: string;
 }
-export const directLogin = async (params: { unionId: string }): Promise<DirectLoginResponse> => {
-    const { unionId } = params;
+export const directLogin = async (params: { unionId: string; platform: string }): Promise<DirectLoginResponse> => {
+    const { unionId, platform } = params;
     const { zdb } = await readSecret((db) => db.oa);
     return service.post(`${zdb.baseUrl}/login/directLogin`, {
+        platform,
         unionId,
     });
 };

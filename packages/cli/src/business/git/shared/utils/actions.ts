@@ -105,7 +105,7 @@ export function formatCommitMessage(rawCommit: string): string {
 /**
  * 检查提交信息中的前缀是否有效，如果无效则返回最接近的匹配前缀
  * @param {string} rawCommit - 原始提交信息
- * @returns {Promise<{ commit: string, suggestedPrefix: string | null }>} 返回格式化后的提交信息和建议的前缀
+ * @returns {Promise<{ commit: string, suggestedPrefix: string }>} 返回格式化后的提交信息和建议的前缀
  */
 export async function formatCommitMessageWithSuggestion(rawCommit: string): Promise<{
     commit: string;
@@ -113,13 +113,13 @@ export async function formatCommitMessageWithSuggestion(rawCommit: string): Prom
 }> {
     let commit = rawCommit.trim();
     if (!commit) {
-        return { commit: 'feat:update', suggestedPrefix: null };
+        return { commit: 'feat:update', suggestedPrefix: 'feat' };
     }
 
     // 1. 检查是否已有标准前缀 (如 feat:、fix: 等)
     const hasStandardPrefix = prefixes.find((item) => commit.startsWith(`${item.value}:`));
     if (hasStandardPrefix) {
-        return { commit, suggestedPrefix: null };
+        return { commit, suggestedPrefix: hasStandardPrefix.value };
     }
 
     // 2. 提取用户输入的前缀（冒号前面的部分）
@@ -152,9 +152,9 @@ export async function formatCommitMessageWithSuggestion(rawCommit: string): Prom
 
     // 4. 无匹配时默认使用 feat
     if (!inferredPrefix) {
-        return { commit: `feat:${commit}`, suggestedPrefix: null };
+        return { commit: `feat:${commit}`, suggestedPrefix: 'feat' };
     }
-    return { commit: `${inferredPrefix.value}:${commit}`, suggestedPrefix: null };
+    return { commit: `${inferredPrefix.value}:${commit}`, suggestedPrefix: inferredPrefix.value };
 }
 /**
  * 当提交信息包含空格时，添加引号

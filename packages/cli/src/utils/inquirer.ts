@@ -18,7 +18,7 @@ export const ask = (input: string) =>
     inquirer.prompt({ type: 'input', name: 'answer', message: input }).then((answer) => answer.answer);
 
 export const select = (input: string, choices: Answers['choices']) =>
-    inquirer.prompt({ type: 'list', name: 'answer', message: input, choices }).then((answer) => answer.answer);
+    inquirer.prompt({ type: 'select', name: 'answer', message: input, choices }).then((answer) => answer.answer);
 
 export const confirm = (input: string) =>
     inquirer

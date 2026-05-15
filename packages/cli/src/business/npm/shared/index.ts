@@ -1,5 +1,5 @@
 import { load, CheerioAPI } from 'cheerio';
-import axios from 'axios';
+import axios, { type AxiosError } from 'axios';
 import fs from 'fs-extra';
 import { readPackage as readPkg } from 'read-pkg';
 import inquirer from '@/utils/inquirer';
@@ -60,7 +60,7 @@ async function getPage(pkg: string): Promise<Npm> {
         return new Npm($, registryRes.data);
     } catch (e) {
         // 没找到
-        if (e.response?.status === 404) {
+        if ((e as AxiosError).response?.status === 404) {
             let res = await axios.get(`https://www.npmjs.com/search?q=${pkg}`);
             html = res.data;
             const $ = load(html);

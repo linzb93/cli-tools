@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 import { isGitProject } from '../../shared/utils';
-import gitActions, { getPrefixValues } from '../../shared/utils/actions';
+import gitActions, { getPrefixValues, formatCommitMessageWithSuggestion } from '../../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import type { Options } from './types';
@@ -46,8 +46,7 @@ export const commitService = async (options: Options): Promise<void> => {
             ]);
             finalMessage = `${selected}:${finalMessage}`;
         } else {
-            // 使用 formatCommitMessageWithSuggestion 检测并建议最近的前缀匹配
-            const { commit: formattedCommit, suggestedPrefix } = await gitActions.formatCommitMessageWithSuggestion(finalMessage);
+            const { commit: formattedCommit, suggestedPrefix } = await formatCommitMessageWithSuggestion(finalMessage);
 
             // 如果检测到非标准前缀，提示用户确认
             if (suggestedPrefix) {

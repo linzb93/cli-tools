@@ -1,8 +1,10 @@
 import { BasePlatform } from '../core/BasePlatform';
 import qs from 'node:querystring';
 import { logger } from '@/utils/logger';
-import { GetUserInfoRequest } from '../types';
+import { GetUserInfoRequest, Options } from '../types';
 import { getUserList, directLogin } from '../repository/zdb';
+import { select } from '@/utils/inquirer';
+import { platformMap as ptMap } from '../constants';
 
 export class Zdb extends BasePlatform {
     name = 'zdb';
@@ -10,13 +12,14 @@ export class Zdb extends BasePlatform {
     defaultId = '15505916470';
     testDefaultId = '-';
     appKey = 'zdb';
-    async getShopUrl(keyword: string) {
+    async getShopUrl(keyword: string, options: Options) {
         return getUserList(keyword)
             .then((res) => {
                 if (!res.list.length) {
                     throw new Error('未找到用户');
                 }
-                return directLogin({ unionId: res.list[0].unionId });
+                const { platform } = options;
+                return directLogin({ unionId: res.list[0].unionId, platform: ptMap[platform] });
             })
             .then((res) => {
                 if (!res.accountShop) {
