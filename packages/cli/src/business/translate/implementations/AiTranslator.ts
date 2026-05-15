@@ -1,7 +1,7 @@
 import { TranslateResultItem, TranslatorStrategy } from '../core/BaseTranslator';
 import { useAI } from '@/utils/ai/implementation';
 import { extractJSONFromMarkdown } from '@/utils/ai/utils';
-import spinner from '../../../utils/spinner';
+import spinner from '@/utils/spinner';
 
 /**
  * AI翻译器

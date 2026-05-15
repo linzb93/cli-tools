@@ -23,9 +23,15 @@ export enum GitStatusMap {
     NotOnMainBranch = 4,
 }
 
+interface GetGitProjectStatusOptions {
+    /** 是否获取分支名称 */
+    getBranchName?: boolean;
+}
+
 /**
  * 获取指定 Git 项目的状态
  * @param {string} [projectPath=process.cwd()] - 项目路径，默认为当前工作目录
+ * @param {GetGitProjectStatusOptions} [options] - 选项
  * @returns {Promise<{ status: number; branchName: string }>} 状态码
  *
  * - status: 状态码
@@ -36,7 +42,10 @@ export enum GitStatusMap {
  * - 4: 不在 master/main 分支上
  * - branchName: 分支名称
  */
-export async function getGitProjectStatus(projectPath: string = process.cwd()): Promise<{
+export async function getGitProjectStatus(
+    projectPath: string = process.cwd(),
+    options: GetGitProjectStatusOptions = {},
+): Promise<{
     status: number;
     branchName: string;
 }> {
@@ -47,8 +56,11 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
     if (!(await isGitProject(projectPath))) {
         return output;
     }
-    const branchName = await getCurrentBranchName(projectPath);
-    output.branchName = branchName;
+    const { getBranchName = false } = options;
+    if (getBranchName) {
+        const branchName = await getCurrentBranchName(projectPath);
+        output.branchName = branchName;
+    }
 
     try {
         const { stdout } = await execaCommand('git status', {
@@ -63,7 +75,7 @@ export async function getGitProjectStatus(projectPath: string = process.cwd()): 
             return output;
         }
         // 检查是否在 master/main 分支
-        if (!['master', 'main'].includes(branchName)) {
+        if (!getBranchName || !['master', 'main'].includes(output.branchName)) {
             output.status = GitStatusMap.NotOnMainBranch;
             return output;
         }

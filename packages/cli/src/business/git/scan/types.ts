@@ -17,3 +17,7 @@ export interface ResultItem extends InputItem {
     /** 当前分支名称 */
     branchName: string;
 }
+export interface Options {
+    /** 是否获取分支名称 */
+    getBranchName?: boolean;
+}

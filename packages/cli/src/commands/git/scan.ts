@@ -9,8 +9,9 @@ export const scanCommand = () => {
         program
             .command('scan')
             .description('扫描Git分支')
-            .action(() => {
-                scanService();
+            .option('--get-branch-name', '获取分支名称')
+            .action((options) => {
+                scanService(options);
             });
     });
 };

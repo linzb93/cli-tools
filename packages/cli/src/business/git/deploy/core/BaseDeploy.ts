@@ -1,4 +1,5 @@
 import { executeCommands } from '@/utils/execute-command-line';
+import { formatAndExport } from '../../commit/home/service';
 import gitActions from '../../shared/utils/actions';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../../shared/utils';
 import { getContext } from '../helpers/context';
@@ -10,7 +11,7 @@ export abstract class BaseDeploy {
         const context = getContext();
         let gitStatus = await getGitProjectStatus(context.cwd);
         if (gitStatus.status === GitStatusMap.Uncommitted) {
-            await executeCommands(['git add .', gitActions.commit(context.commit)], {
+            await executeCommands(['git add .', await formatAndExport(context.commit)], {
                 cwd: context.cwd,
                 silentStart: true,
             });
@@ -24,7 +25,7 @@ export abstract class BaseDeploy {
         // 检查Pull后是否有未提交的更改（如合并产生的未提交更改）
         gitStatus = await getGitProjectStatus(context.cwd);
         if (gitStatus.status === GitStatusMap.Uncommitted) {
-            await executeCommands(['git add .', gitActions.commit('合并代码')], {
+            await executeCommands(['git add .', await formatAndExport('合并代码')], {
                 cwd: context.cwd,
                 silentStart: true,
             });

@@ -21,6 +21,7 @@ export interface ReadlineCommand {
         item: any,
         utils: {
             close: Function;
+            displayCommands: Function;
         },
     ) => void | Promise<boolean | void>;
 }
@@ -89,7 +90,7 @@ function parseSlashCommand(line: string): ParsedSlashCommand | null {
     };
 }
 
-export const displayCommands = (commands: ReadlineCommand[], exitCommand: string) => {
+const displayCommands = (commands: ReadlineCommand[], exitCommand: string) => {
     const displayLines: string[] = [];
     for (const cmd of commands) {
         const usage = cmd.usage ? ` ${cmd.usage}` : '';
@@ -206,7 +207,10 @@ export function createCommandReadline(
 
         rl.pause();
         try {
-            const result = await cmd.handler(parsed.args, item, { close: rl.close });
+            const result = await cmd.handler(parsed.args, item, {
+                close: rl.close,
+                displayCommands,
+            });
             // 如果 handler 返回 false，则退出 readline
             if (result === false) {
                 rl.close();

@@ -1,14 +1,14 @@
 import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import { logger } from '@/utils/logger';
-import { createCommandReadline, displayCommands, type ReadlineCommand } from '@/utils/readline';
+import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import { commitSearchService } from '../../commit/search';
-import gitActions from '../../shared/utils/actions';
+import { formatAndExport } from '../../commit/home/service';
 import { executeCommands } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import { deployService } from '../../deploy';
 import { printTable, doScan } from './scanner';
-import type { ResultItem } from '../types';
+import type { ResultItem, Options } from '../types';
 
 /**
  * 获取 Git 状态对应的显示文本
@@ -53,8 +53,9 @@ const printProjectLog = async (item: ResultItem) => {
 /**
  * 交互命令数组
  * @param {ResultItem[]} list - 项目列表引用
+ * @param {Options} options - 选项
  */
-const commands = (list: ResultItem[]): ReadlineCommand[] => [
+const commands = (list: ResultItem[], options: Options = {}): ReadlineCommand[] => [
     {
         name: 'restart',
         description: '重新扫描已列出的项目',
@@ -62,14 +63,14 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
             logger.clearConsole();
             logger.empty();
             console.log(chalk.blue('正在重新扫描...'));
-            const newList = await doScan(list.map((item) => item.fullPath));
+            const newList = await doScan(list.map((item) => item.fullPath), options);
 
             if (newList.length === 0) {
                 logger.success('所有项目正常，没有需要提交或推送的代码。');
                 utils.close();
                 return false;
             } else {
-                printTable(newList);
+                printTable(newList, options);
             }
         },
     },
@@ -133,7 +134,7 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
             const message = args.slice(1).join(' ');
 
             try {
-                await executeCommands(['git add .', gitActions.commit(message)], { cwd: item.fullPath });
+                await executeCommands(['git add .', await formatAndExport(message)], { cwd: item.fullPath });
                 console.log(chalk.green(`提交成功: ${message}`));
             } catch (e: any) {
                 console.log(chalk.red(`提交失败: ${e.message}`));
@@ -172,9 +173,10 @@ const commands = (list: ResultItem[]): ReadlineCommand[] => [
 /**
  * 启动交互式命令行
  * @param {ResultItem[]} list - 项目列表
+ * @param {Options} options - 选项
  */
-const startRepl = (list: ResultItem[]) => {
-    const cmds = commands(list);
+const startRepl = (list: ResultItem[], options: Options = {}) => {
+    const cmds = commands(list, options);
     createCommandReadline(cmds, {
         prompt: '',
         items: list,

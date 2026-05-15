@@ -1,11 +1,31 @@
 import { logger } from '@/utils/logger';
 import { isGitProject } from '../../shared/utils';
-import gitActions, { getPrefixValues, formatCommitMessageWithSuggestion } from '../../shared/utils/actions';
+import { getPrefixValues, formatCommitMessageWithSuggestion } from '../../shared/utils/actions';
+import gitActions from '../../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import type { Options } from './types';
 import { splitGitLog } from '../../shared/utils';
 import { confirm, select } from '@/utils/inquirer';
+
+/**
+ * 格式化提交信息并返回 git commit 命令配置，如果用户取消则返回 undefined
+ * @param {string} message - 提交信息
+ * @returns {Promise<string>} git commit 命令配置
+ */
+export async function formatAndExport(message: string): Promise<string> {
+    const { commit: formattedCommit, suggestedPrefix } = await formatCommitMessageWithSuggestion(message);
+
+    if (suggestedPrefix) {
+        const confirmed = await confirm(`检测到非标准前缀，已自动纠正为 "${suggestedPrefix}:"，是否继续？`);
+        if (!confirmed) {
+            logger.info('已取消提交');
+            return `git commit -m "${formattedCommit}"`;
+        }
+        return `git commit -m "${formattedCommit}"`;
+    }
+    return `git commit -m "${formattedCommit}"`;
+}
 
 /**
  * git commit 命令的主入口函数
@@ -39,22 +59,10 @@ export const commitService = async (options: Options): Promise<void> => {
             const selected = await select('请选择提交前缀', prefixValues);
             finalMessage = `${selected}:${finalMessage}`;
         } else {
-            const { commit: formattedCommit, suggestedPrefix } = await formatCommitMessageWithSuggestion(finalMessage);
-
-            // 如果检测到非标准前缀，提示用户确认
-            if (suggestedPrefix) {
-                const confirmed = await confirm(`检测到非标准前缀，已自动纠正为 "${suggestedPrefix}:"，是否继续？`);
-                if (!confirmed) {
-                    logger.info('已取消提交');
-                    return;
-                }
-                finalMessage = formattedCommit;
-            } else {
-                finalMessage = formattedCommit;
-            }
+            finalMessage = await formatAndExport(finalMessage);
         }
 
-        let commands: Command[] = [`git add ${commitPath}`, gitActions.commit(finalMessage)];
+        let commands: Command[] = [`git add ${commitPath}`, await formatAndExport(finalMessage)];
         if (options.merge && !message) {
             const arr = await splitGitLog({ head: 1 });
             const lastCommit = arr[0].message;

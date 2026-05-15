@@ -178,7 +178,17 @@ async function handleConflict() {
     if (!resolved) {
         throw new Error('exit');
     }
-    await executeCommands(['git add .', commit('解决冲突')]);
+    await executeCommands([
+        'git add .',
+        {
+            message: `git commit -m ${addQuoteWhenBlankExist(formatCommitMessage('解决冲突'))}`,
+            onError: async () => {
+                return {
+                    shouldStop: true,
+                };
+            },
+        },
+    ]);
 }
 /**
  * 判断是否超时错误
@@ -196,22 +206,6 @@ export function isNetworkError(errMsg: string): boolean {
         errMsg.includes('before end of the underlying stream')
     );
 }
-/**
- * 生成 Git 提交命令配置
- * @param {string} message - 提交信息
- * @returns {CommandConfig} Git 提交命令配置对象
- */
-function commit(message: string): CommandConfig {
-    return {
-        message: `git commit -m ${addQuoteWhenBlankExist(formatCommitMessage(message))}`,
-        onError: async () => {
-            return {
-                shouldStop: true,
-            };
-        },
-    };
-}
-
 /**
  * 生成 Git 拉取代码命令配置
  * @returns {CommandConfig} Git 拉取代码命令配置对象
@@ -266,7 +260,14 @@ function mergePrev({
         {
             message: `git add ${path}`,
         },
-        commit(message),
+        {
+            message: `git commit -m ${addQuoteWhenBlankExist(formatCommitMessage(message))}`,
+            onError: async () => {
+                return {
+                    shouldStop: true,
+                };
+            },
+        },
     ];
 }
 
@@ -335,7 +336,6 @@ function checkout(branch: string, createBranch?: boolean): CommandConfig {
 }
 
 export default {
-    commit,
     pull,
     merge,
     mergePrev,

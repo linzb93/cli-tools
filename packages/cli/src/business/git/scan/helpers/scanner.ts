@@ -2,7 +2,7 @@ import { printResultTable } from '@/utils/scan';
 import { scanDirs } from '@/utils/scan';
 import { getGitProjectStatus, GitStatusMap } from '../../shared/utils';
 import chalk from 'chalk';
-import type { ResultItem } from '../types';
+import type { ResultItem, Options } from '../types';
 import { basename } from 'node:path';
 /**
  * 过滤需要处理的项目
@@ -16,11 +16,13 @@ const filterProjects = (items: ResultItem[]): ResultItem[] => {
 
 /**
  * 执行全量扫描
+ * @param {string[]} list - 路径列表
+ * @param {GetGitProjectStatusOptions} [options] - 选项
  * @returns 扫描结果列表
  */
-export const doScan = async (list: string[]): Promise<ResultItem[]> => {
+export const doScan = async (list: string[], options: Options = {}): Promise<ResultItem[]> => {
     const scannedList = await scanDirs<ResultItem>(list, async (dirPath) => {
-        const { status, branchName } = await getGitProjectStatus(dirPath);
+        const { status, branchName } = await getGitProjectStatus(dirPath, options);
         return {
             fullPath: dirPath,
             status,
@@ -43,15 +45,21 @@ export const rescanProjects = async (list: string[]): Promise<ResultItem[]> => {
 /**
  * 打印扫描结果表格
  * @param items - 扫描结果列表
+ * @param options - 选项
  */
-export const printTable = (items: ResultItem[]) => {
-    printResultTable(items, {
-        head: ['名称', '地址', '状态', '分支'],
-        map: (item) => [
+export const printTable = (items: ResultItem[], options: { getBranchName?: boolean } = {}) => {
+    const { getBranchName = false } = options;
+    const head = getBranchName ? ['名称', '地址', '状态', '分支'] : ['名称', '地址', '状态'];
+    const map = (item: ResultItem) => {
+        const output = [
             `${basename(item.fullPath)}`,
             item.fullPath,
             item.status === 1 ? chalk.red('未提交') : item.status === 2 ? chalk.yellow('未推送') : chalk.green('正常'),
-            item.branchName,
-        ],
-    });
+        ];
+        if (getBranchName) {
+            return [...output, item.branchName];
+        }
+        return output;
+    };
+    printResultTable(items, { head, map });
 };
