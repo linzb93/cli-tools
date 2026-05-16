@@ -3,7 +3,6 @@ import { getContext } from '../helpers/context';
 import { isCurrenetBranchPushed, getGitProjectStatus, GitStatusMap } from '../../shared/utils';
 import { executeCommands } from '@/utils/execute-command-line';
 import gitActions, { isNetworkError } from '../../shared/utils/actions';
-import { formatAndExport } from '../../commit/home/service';
 import { logger } from '@/utils/logger';
 
 export class GithubDeploy extends BaseDeploy {
@@ -26,7 +25,7 @@ export class GithubDeploy extends BaseDeploy {
             const gitStatus = await getGitProjectStatus(context.cwd);
 
             if (gitStatus.status === GitStatusMap.Uncommitted) {
-                await executeCommands(['git add .', await formatAndExport(context.commit)], {
+                await executeCommands(['git add .', gitActions.commit(context.commit)], {
                     cwd: context.cwd,
                     silentStart: true,
                 });
@@ -61,7 +60,7 @@ export class GithubDeploy extends BaseDeploy {
                                         const status = await getGitProjectStatus(context.cwd);
                                         if (status.status === GitStatusMap.Uncommitted) {
                                             await executeCommands(
-                                                ['git add .', await formatAndExport('Merge remote changes')],
+                                                ['git add .', gitActions.commit('Merge remote changes')],
                                                 {
                                                     silentStart: true,
                                                     cwd: context.cwd,

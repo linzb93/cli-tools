@@ -9,7 +9,6 @@ import { executeCommands } from '@/utils/execute-command-line';
 import { updatePackageJSON } from '../helpers/updatePackageJSON';
 import { getGitProjectStatus, GitStatusMap, getMainBranchName, checkBranchExist } from '../../shared/utils';
 import gitActions from '../../shared/utils/actions';
-import { formatAndExport } from '../../commit/home/service';
 
 interface ExtraStrategyOptions {
     /** 项目路径 */
@@ -107,7 +106,7 @@ export abstract class BaseStrategy {
         const currentBranch = gitStatus.branchName;
         if (gitStatus.status === GitStatusMap.Uncommitted) {
             logger.info('当前分支有未提交的代码，正在自动提交...');
-            await executeCommands(['git add .', await formatAndExport('save uncommitted changes before iteration')], {
+            await executeCommands(['git add .', gitActions.commit('save uncommitted changes before iteration')], {
                 silentStart: true,
             });
         }
@@ -172,7 +171,7 @@ export abstract class BaseStrategy {
     async commitAndPushChanges(isBranchExist: boolean): Promise<void> {
         const { newVersion, targetBranch } = this;
         logger.info('提交版本变更并推送到远端...');
-        await executeCommands(['git add .', await formatAndExport(`chore:bump version to ${newVersion}`)], {
+        await executeCommands(['git add .', gitActions.commit(`chore:bump version to ${newVersion}`)], {
             silentStart: true,
         });
 

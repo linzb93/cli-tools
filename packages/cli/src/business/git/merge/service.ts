@@ -32,7 +32,7 @@ export const mergeService = async (options: Options): Promise<void> => {
     });
     console.log(table.toString());
     const message = await ask(`请输入合并后的提交信息，默认使用最近一次的提交信息`);
-    const commitMessage = formatCommitMessage(message !== '' ? message : arr[0].message.replace(/\w+\:/g, ''));
-    await executeCommands(gitActions.mergePrev({ message: commitMessage, head }));
+    const commitMessage = await formatCommitMessage(message !== '' ? message : arr[0].message.replace(/\w+\:/g, ''));
+    await executeCommands(await gitActions.mergePrev({ message: commitMessage, head }));
     logger.success(chalk.green('合并完成'));
 };

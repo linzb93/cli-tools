@@ -3,10 +3,10 @@ import { execaCommand } from 'execa';
 import { logger } from '@/utils/logger';
 import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
 import { commitSearchService } from '../../commit/search';
-import { formatAndExport } from '../../commit/home/service';
 import { executeCommands } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import { deployService } from '../../deploy';
+import gitActions from '../../shared/utils/actions';
 import { printTable, doScan } from './scanner';
 import type { ResultItem, Options } from '../types';
 
@@ -63,7 +63,10 @@ const commands = (list: ResultItem[], options: Options = {}): ReadlineCommand[] 
             logger.clearConsole();
             logger.empty();
             console.log(chalk.blue('正在重新扫描...'));
-            const newList = await doScan(list.map((item) => item.fullPath), options);
+            const newList = await doScan(
+                list.map((item) => item.fullPath),
+                options,
+            );
 
             if (newList.length === 0) {
                 logger.success('所有项目正常，没有需要提交或推送的代码。');
@@ -134,7 +137,7 @@ const commands = (list: ResultItem[], options: Options = {}): ReadlineCommand[] 
             const message = args.slice(1).join(' ');
 
             try {
-                await executeCommands(['git add .', await formatAndExport(message)], { cwd: item.fullPath });
+                await executeCommands(['git add .', gitActions.commit(message)], { cwd: item.fullPath });
                 console.log(chalk.green(`提交成功: ${message}`));
             } catch (e: any) {
                 console.log(chalk.red(`提交失败: ${e.message}`));

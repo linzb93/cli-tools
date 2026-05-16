@@ -1,5 +1,5 @@
 import { isGitProject, getCurrentBranchName, getGitProjectStatus, GitStatusMap } from '../shared/utils';
-import gitActions, { formatCommitMessage } from '../shared/utils/actions';
+import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/execute-command-line';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
@@ -33,10 +33,7 @@ export const pullService = async (options: Options): Promise<void> => {
         if (projectStatus.status === GitStatusMap.Uncommitted) {
             const commitMessage = await ask('检测到有未提交的代码，请输入提交信息:');
 
-            const formattedMessage = formatCommitMessage(commitMessage);
-            logger.info(`提交信息: ${chalk.green(formattedMessage)}`);
-
-            await executeCommands(['git add .', `git commit -m ${formattedMessage}`]);
+            await executeCommands(['git add .', gitActions.commit(commitMessage)]);
             logger.success('代码已提交');
         }
 

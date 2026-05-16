@@ -1,31 +1,10 @@
 import { logger } from '@/utils/logger';
 import { isGitProject } from '../../shared/utils';
-import { getPrefixValues, formatCommitMessageWithSuggestion } from '../../shared/utils/actions';
 import gitActions from '../../shared/utils/actions';
 import { executeCommands, type Command } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
 import type { Options } from './types';
 import { splitGitLog } from '../../shared/utils';
-import { confirm, select } from '@/utils/inquirer';
-
-/**
- * 格式化提交信息并返回 git commit 命令配置，如果用户取消则返回 undefined
- * @param {string} message - 提交信息
- * @returns {Promise<string>} git commit 命令配置
- */
-export async function formatAndExport(message: string): Promise<string> {
-    const { commit: formattedCommit, suggestedPrefix } = await formatCommitMessageWithSuggestion(message);
-
-    if (suggestedPrefix) {
-        const confirmed = await confirm(`检测到非标准前缀，已自动纠正为 "${suggestedPrefix}:"，是否继续？`);
-        if (!confirmed) {
-            logger.info('已取消提交');
-            return `git commit -m "${formattedCommit}"`;
-        }
-        return `git commit -m "${formattedCommit}"`;
-    }
-    return `git commit -m "${formattedCommit}"`;
-}
 
 /**
  * git commit 命令的主入口函数
@@ -51,22 +30,12 @@ export const commitService = async (options: Options): Promise<void> => {
             logger.error('发现硬编码，禁止提交', true);
         }
         const commitPath = options.path ? options.path.replace(/\\/g, '/') : '.';
-        let finalMessage = message || '更新代码';
 
-        // 处理 --select 选项，让用户选择前缀
-        if (options.select) {
-            const prefixValues = getPrefixValues();
-            const selected = await select('请选择提交前缀', prefixValues);
-            finalMessage = `${selected}:${finalMessage}`;
-        } else {
-            finalMessage = await formatAndExport(finalMessage);
-        }
-
-        let commands: Command[] = [`git add ${commitPath}`, await formatAndExport(finalMessage)];
+        let commands: Command[] = [`git add ${commitPath}`, gitActions.commit(message)];
         if (options.merge && !message) {
             const arr = await splitGitLog({ head: 1 });
             const lastCommit = arr[0].message;
-            commands = commands.concat(gitActions.mergePrev({ message: lastCommit, path: commitPath, head: 2 }));
+            commands = commands.concat(await gitActions.mergePrev({ message: lastCommit, path: commitPath, head: 2 }));
         }
         await executeCommands(commands);
 
