@@ -1,5 +1,5 @@
 import { executeCommands, CommandConfig } from '@/utils/execute-command-line';
-import { confirm } from '@/utils/inquirer';
+import { confirm } from '@/utils/readline';
 import { formatCommitMessage } from './commit';
 
 export { formatCommitMessage };

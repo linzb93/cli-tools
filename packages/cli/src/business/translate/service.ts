@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import { confirm } from '@/utils/inquirer';
+import { confirm } from '@/utils/readline';
 import { createDefaultTranslators, getTranslator, TranslatorType } from './core/Factory';
 import { TranslateResultItem } from './core/BaseTranslator';
 import { Options } from './types';

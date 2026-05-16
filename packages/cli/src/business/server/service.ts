@@ -6,7 +6,7 @@ import detectPort from 'detect-port';
 import chalk from 'chalk';
 import { root, sql } from '@cli-tools/shared';
 import { killService } from '../kill';
-import { select } from '@/utils/inquirer';
+import { select } from '@/utils/readline';
 import { serverConfig } from '@cli-tools/shared';
 import type { Options } from './types';
 

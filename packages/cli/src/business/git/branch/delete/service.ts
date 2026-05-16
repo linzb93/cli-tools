@@ -4,7 +4,7 @@ import { mapAsync } from 'es-toolkit';
 import { getAllBranches, deleteBranch } from '../../shared/utils';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import { multiSelect, confirm } from '@/utils/inquirer';
+import { multiSelect, confirm } from '@/utils/readline';
 import type { BranchExtraItem } from './types';
 
 export const branchDeleteService = async () => {

@@ -5,7 +5,7 @@ import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 import clipboard from 'clipboardy';
 import { isWin } from '@cli-tools/shared';
-import { ask, select, multiSelect } from '@/utils/inquirer';
+import { ask, select, multiSelect } from '@/utils/readline';
 import { Options, CdHistoryItem } from './types';
 import { resolveTargetPath } from './helpers/resolve';
 

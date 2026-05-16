@@ -3,7 +3,7 @@ import qs from 'node:querystring';
 import { logger } from '@/utils/logger';
 import { GetUserInfoRequest, Options } from '../types';
 import { getUserList, directLogin } from '../repository/zdb';
-import { select } from '@/utils/inquirer';
+import { select } from '@/utils/readline';
 import { platformMap as ptMap } from '../constants';
 
 export class Zdb extends BasePlatform {

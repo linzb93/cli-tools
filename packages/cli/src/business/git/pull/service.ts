@@ -3,7 +3,7 @@ import gitActions from '../shared/utils/actions';
 import { executeCommands } from '@/utils/execute-command-line';
 import chalk from 'chalk';
 import { logger } from '@/utils/logger';
-import { ask } from '@/utils/inquirer';
+import { ask } from '@/utils/readline';
 import type { Options } from './types';
 
 /**

@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { mapAsync } from 'es-toolkit';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import inquirer from '@/utils/inquirer';
+import { confirm } from '@/utils/readline';
 import {
     getYapiInterfaceTotal,
     getYapiInterfaceList,
@@ -203,16 +203,9 @@ export const yapiService = async (url: string) => {
         // 获取cookie信息
         let cookie = await getYapiCookie();
         if (!cookie) {
-            const manualInput = await inquirer.prompt([
-                {
-                    type: 'confirm',
-                    name: 'confirm',
-                    message: '无法自动获取登录信息，是否手动输入token?',
-                    default: false,
-                },
-            ]);
+            const manualInput = await confirm('无法自动获取登录信息，是否手动输入token?');
 
-            if (manualInput.confirm) {
+            if (manualInput) {
                 cookie = (await manualInputCookie()) as string;
             }
 

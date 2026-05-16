@@ -2,7 +2,7 @@ import { BaseDeploy } from '../core/BaseDeploy';
 import { getContext } from '../helpers/context';
 import { openDeployPage } from '../../shared/utils/jenkins';
 import { logger } from '@/utils/logger';
-import { confirm } from '@/utils/inquirer';
+import { confirm } from '@/utils/readline';
 import { tagService, Options as TagOptions } from '../../tag/home';
 
 export class CompanyDeploy extends BaseDeploy {

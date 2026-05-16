@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger';
-import inquirer from '@/utils/inquirer';
+import { ask } from '@/utils/readline';
 import { sql, type Database } from '@cli-tools/shared';
 
 /**
@@ -9,22 +9,8 @@ import { sql, type Database } from '@cli-tools/shared';
 export const manualInputCookie = async (): Promise<string | null> => {
     try {
         // 提示用户输入token和uid
-        const answers = await inquirer.prompt([
-            {
-                type: 'input',
-                name: 'token',
-                message: '请输入Yapi的_yapi_token:',
-                validate: (input: string) => !!input || 'token不能为空',
-            },
-            {
-                type: 'input',
-                name: 'uid',
-                message: '请输入Yapi的_yapi_uid:',
-                validate: (input: string) => !!input || 'uid不能为空',
-            },
-        ]);
-
-        const { token, uid } = answers;
+        const token = await ask('请输入Yapi的_yapi_token:');
+        const uid = await ask('请输入Yapi的_yapi_uid:');
 
         // 将token保存到数据库
         await sql(async (db: Database) => {

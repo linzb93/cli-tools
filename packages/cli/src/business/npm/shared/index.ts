@@ -2,7 +2,7 @@ import { load, CheerioAPI } from 'cheerio';
 import axios, { type AxiosError } from 'axios';
 import fs from 'fs-extra';
 import { readPackage as readPkg } from 'read-pkg';
-import inquirer from '@/utils/inquirer';
+import { select } from '@/utils/readline';
 
 /**
  * 总体思路：
@@ -72,14 +72,7 @@ async function getPage(pkg: string): Promise<Npm> {
             if (choices.length) {
                 throw new Error('检测到您输入的npm依赖有误');
             }
-            const { pkgAns } = await inquirer.prompt([
-                {
-                    type: 'select',
-                    name: 'pkgAns',
-                    message: '检测到您输入的npm依赖有误，请选择下面其中一个',
-                    choices,
-                },
-            ]);
+            const pkgAns = await select('检测到您输入的npm依赖有误，请选择下面其中一个', choices);
             res = await axios.get(`https://www.npmjs.com/package/${pkgAns}`);
             html = res.data;
             return new Npm(load(html), { description: '' });

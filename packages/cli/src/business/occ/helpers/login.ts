@@ -1,5 +1,4 @@
-import inquirer from '@/utils/inquirer';
-import chalk from 'chalk';
+import { ask } from '@/utils/readline';
 import { open } from '@/utils/web';
 import { useAI } from '@/utils/ai/implementation';
 import { logger } from '@/utils/logger';
@@ -25,14 +24,7 @@ async function manualCaptchaLogin(
     logger.info(`请在浏览器中打开以下地址查看验证码：${url}`);
     await open(url);
 
-    const { code } = await inquirer.prompt([
-        {
-            type: 'input',
-            name: 'code',
-            message: '请输入验证码:',
-        },
-    ]);
-
+    const code = await ask('请输入验证码:');
     const res = await service.post(`${prefix}/login`, {
         username,
         password,
@@ -95,18 +87,9 @@ export async function login(): Promise<void> {
 }
 
 async function getOCCUserInfo() {
-    const { username, password } = await inquirer.prompt([
-        {
-            type: 'input',
-            name: 'username',
-            message: '请输入用户名',
-        },
-        {
-            type: 'input',
-            name: 'password',
-            message: '请输入密码',
-        },
-    ]);
+    const username = await ask('请输入用户名:');
+    const password = await ask('请输入密码:');
+
     await readSecret((db) => {
         db.oa.username = username;
         db.oa.password = password;

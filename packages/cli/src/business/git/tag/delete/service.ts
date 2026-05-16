@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger';
-import { multiSelect } from '@/utils/inquirer';
+import { multiSelect } from '@/utils/readline';
 import { isGitProject } from '../../shared/utils';
 import { getAllTags, deleteTags } from '../shared';
 

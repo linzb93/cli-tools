@@ -3,7 +3,7 @@ import { deleteAsync as del } from 'del';
 import globalNpm from 'global-modules';
 import { readPackage as readPkg, NormalizedPackageJson } from 'read-pkg';
 import { logger } from '@/utils/logger';
-import inquirer from '@/utils/inquirer';
+import { multiSelect, confirm } from '@/utils/readline';
 import npm from '../shared';
 import type { Options, SimilarOption } from './types';
 
@@ -42,14 +42,7 @@ const delGlobal = async (name: string) => {
     } catch (error) {
         const similarNpm = await getSimilar(name);
         if ((similarNpm as SimilarOption).name) {
-            const { action } = await inquirer.prompt([
-                {
-                    type: 'confirm',
-                    message: `${name}不存在，你想删除的是${(similarNpm as SimilarOption).name}吗？`,
-                    default: true,
-                    name: 'action',
-                },
-            ]);
+            const action = await confirm(`${name}不存在，你想删除的是${(similarNpm as SimilarOption).name}吗？`);
             if (action) {
                 pkg = await readPkg({
                     cwd: resolve(globalNpm, 'node_modules', (similarNpm as SimilarOption).name),
@@ -102,19 +95,15 @@ export const uninstallService = async (args: string[], options: Options) => {
         logger.success('删除成功');
         return;
     }
-    const ans = await inquirer.prompt([
-        {
-            message: '发现有多个符合条件的依赖，请选择其中需要删除的',
-            type: 'checkbox',
-            name: 'ret',
-            choices: listRet.list.map((item) => ({
-                name: npm.getVersion(item),
-                value: item,
-            })),
-        },
-    ]);
+    const ans = await multiSelect(
+        '发现有多个符合条件的依赖，请选择其中需要删除的',
+        listRet.list.map((item) => ({
+            name: npm.getVersion(item),
+            value: item,
+        })),
+    );
     try {
-        for (const pkg of ans.ret) {
+        for (const pkg of ans) {
             await del(`node_modules/${pkg}`);
         }
     } catch (error) {

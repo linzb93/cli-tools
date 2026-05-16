@@ -4,7 +4,7 @@ import { splitGitLog } from '../shared/utils';
 import chalk from 'chalk';
 import gitActions, { formatCommitMessage } from '../shared/utils/actions';
 import { logger } from '@/utils/logger';
-import { ask } from '@/utils/inquirer';
+import { ask } from '@/utils/readline';
 import type { Options } from './types';
 import { executeCommands } from '@/utils/execute-command-line';
 

@@ -8,7 +8,7 @@ import { sql, type Database } from '@cli-tools/shared';
 import * as git from '../git/shared/utils';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
-import inquirer from '@/utils/inquirer';
+import { select } from '@/utils/readline';
 import type { Options, ProjectConfig } from './types';
 import { startStaticServer } from './helpers/staticServer';
 
@@ -78,15 +78,7 @@ const smartBuildProject = async (config: ProjectConfig): Promise<void> => {
         targetCommand = buildScripts[0];
     } else {
         // 如果有多个，提示用户选择
-        const { selectedScript } = await inquirer.prompt([
-            {
-                type: 'select',
-                name: 'selectedScript',
-                message: '检测到多个构建命令，请选择一个执行',
-                choices: buildScripts,
-            },
-        ]);
-        targetCommand = selectedScript;
+        targetCommand = await select('检测到多个构建命令，请选择一个执行', buildScripts);
     }
 
     // 判断 Node.js 版本
@@ -140,17 +132,13 @@ const getProjectConfig = async (options: Options): Promise<ProjectConfig | null>
 const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
     const list = (await sql((db) => db.vue)) as Database['vue'][number][];
 
-    const { selectedId } = await inquirer.prompt([
-        {
-            type: 'select',
-            name: 'selectedId',
-            message: '请选择运行的项目及命令',
-            choices: list.map((item) => ({
-                name: item.path,
-                value: item.id,
-            })),
-        },
-    ]);
+    const selectedId = await select(
+        '请选择运行的项目及命令',
+        list.map((item) => ({
+            name: item.path,
+            value: item.id,
+        })),
+    );
 
     const match = list.find((item) => item.id === selectedId);
     if (!match) {
@@ -255,31 +243,23 @@ const selectProjectAndBranch = async (): Promise<{ selectedPath: string; selecte
     const list = await sql((db) => db.vue);
     const pathList = Array.from(new Set(list.map((item) => item.path)));
 
-    const { selectedPath } = await inquirer.prompt([
-        {
-            type: 'select',
-            name: 'selectedPath',
-            message: '请选择项目',
-            choices: pathList.map((path) => ({
-                name: path,
-                value: path,
-            })),
-        },
-    ]);
+    const selectedPath = await select(
+        '请选择项目',
+        pathList.map((path) => ({
+            name: path,
+            value: path,
+        })),
+    );
 
     const branches = await git.getAllBranches(selectedPath);
 
-    const { selectedBranch } = await inquirer.prompt([
-        {
-            type: 'select',
-            name: 'selectedBranch',
-            message: '请选择分支',
-            choices: branches.map((branch) => ({
-                name: branch.name,
-                value: branch.name,
-            })),
-        },
-    ]);
+    const selectedBranch = await select(
+        '请选择分支',
+        branches.map((branch) => ({
+            name: branch.name,
+            value: branch.name,
+        })),
+    );
 
     return { selectedPath, selectedBranch };
 };
