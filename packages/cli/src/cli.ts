@@ -70,6 +70,8 @@ function registerCommands() {
     program
         .command('color [text]')
         .option('--get', '用指定颜色显示文字')
+        .option('--lighten <delta>', '提亮颜色，支持数字或百分比')
+        .option('--darken <delta>', '变暗颜色，支持数字或百分比')
         .action((data, options) => {
             import('./commands/color').then((m) => m.colorCommand(data, options));
         });

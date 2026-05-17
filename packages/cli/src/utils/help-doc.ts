@@ -38,7 +38,7 @@ const findContent = (options: Options): Transform => {
     const { moduleName, title } = options;
     const fileDirStr = join(fileURLToPath(import.meta.url), '../../src/business', moduleName);
     let filePathStr = '';
-    if (!title.startsWith('--')) {
+    if (title && !title.startsWith('--')) {
         filePathStr = join(fileDirStr, title.replace(' ', '/'), `docs/help.md`);
     } else {
         filePathStr = join(fileDirStr, 'docs/help.md');
@@ -93,7 +93,12 @@ export const generateHelpDoc = (commands: string[]) => {
         try {
             const stream = findContent({
                 moduleName: commands[0],
-                title: commands[2] && !commands[2].startsWith('--') ? `${commands[1]} ${commands[2]}` : commands[1],
+                title: (() => {
+                    if (!commands[2]) {
+                        return commands[1];
+                    }
+                    return !commands[2].startsWith('--') ? `${commands[1]} ${commands[2]}` : commands[1];
+                })(),
             });
             fromStream(stream)
                 .pipe(
