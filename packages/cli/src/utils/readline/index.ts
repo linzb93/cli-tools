@@ -2,7 +2,7 @@ import readline from 'node:readline';
 import chalk from 'chalk';
 import { ReadlineCommand, ParsedSlashCommand, CommandReadlineOptions } from './types';
 export * from './inquirer';
-
+export type { ReadlineCommand };
 /**
  * 解析 usage 字符串，返回必需的参数个数
  * @param usage - 用法字符串，如 '<x>' '<x> <message>' '[x]'

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import { logger } from '@/utils/logger';
-import { createCommandReadline, type ReadlineCommand } from '@/utils/readline';
+import { createReadline } from '@/utils/readline/readline-v2';
 import { commitSearchService } from '../../commit/search';
 import { executeCommands } from '@/utils/execute-command-line';
 import { checkHardcoded } from '../../shared/utils/hard-coded';
@@ -12,7 +12,7 @@ import type { ResultItem, Options } from '../types';
 
 /**
  * 获取 Git 状态对应的显示文本
- * @param {number} status - 状态码
+ * @param status - 状态码
  * @returns 格式化后的状态文本
  */
 const getStatusMap = (status: number) => {
@@ -27,7 +27,7 @@ const getStatusMap = (status: number) => {
 
 /**
  * 打印项目的日志
- * @param {ResultItem} item - 项目对象
+ * @param item - 项目对象
  */
 const printProjectLog = async (item: ResultItem) => {
     console.log(chalk.bold.cyan(`\n项目: ${item.fullPath} (${item.branchName})`));
@@ -39,7 +39,6 @@ const printProjectLog = async (item: ResultItem) => {
         } catch {
             // ignore
         }
-        // 如果没有未推送的 commit，head 可能是 0，但这里我们想看最近的 log
         if (head === 0) {
             console.log(chalk.gray('没有未推送的提交记录'));
             return;
@@ -51,15 +50,23 @@ const printProjectLog = async (item: ResultItem) => {
 };
 
 /**
- * 交互命令数组
- * @param {ResultItem[]} list - 项目列表引用
- * @param {Options} options - 选项
+ * 启动交互式命令行
+ * @param list - 项目列表
+ * @param options - 选项
  */
-const commands = (list: ResultItem[], options: Options = {}): ReadlineCommand[] => [
-    {
-        name: 'restart',
-        description: '重新扫描已列出的项目',
-        handler: async (_args, item, utils) => {
+const startRepl = (list: ResultItem[], options: Options = {}) => {
+    const program = createReadline({
+        prompt: '',
+        items: list,
+    });
+    const {
+        utils: { close },
+    } = program;
+
+    program
+        .command('/restart')
+        .description('重新扫描已列出的项目')
+        .action(async () => {
             logger.clearConsole();
             logger.empty();
             console.log(chalk.blue('正在重新扫描...'));
@@ -70,120 +77,105 @@ const commands = (list: ResultItem[], options: Options = {}): ReadlineCommand[] 
 
             if (newList.length === 0) {
                 logger.success('所有项目正常，没有需要提交或推送的代码。');
-                utils.close();
+                close();
                 return false;
             } else {
                 printTable(newList, options);
             }
-        },
-    },
-    {
-        name: 'diff',
-        usage: '<x>',
-        description: '列出有修改的文件。单个文件时显示详细改动',
-        requireList: true,
-        handler: async (_args, item) => {
-            const fullPath = (item as ResultItem).fullPath;
-            try {
-                const { stdout: status } = await execaCommand('git status --porcelain', { cwd: fullPath });
-                if (!status.trim()) {
-                    console.log(chalk.green('没有要提交的代码'));
-                    return;
-                }
+        });
 
-                // 过滤出修改的文件（不是新增 A 或删除 D）
-                const modifiedFiles = status
-                    .split('\n')
-                    .filter((line) => line.trim() && line[1] === 'M')
-                    .map((line) => line.slice(3).trim());
+    program
+        .command('/diff <x>')
+        .description('列出有修改的文件。单个文件时显示详细改动')
+        .action((args) => {
+            const index = args[0];
+            const item = list[parseInt(index, 10) - 1] as ResultItem;
+            const fullPath = item.fullPath;
+            execaCommand('git status --porcelain', { cwd: fullPath })
+                .then(({ stdout: status }) => {
+                    if (!status.trim()) {
+                        console.log(chalk.green('没有要提交的代码'));
+                        return;
+                    }
 
-                if (modifiedFiles.length === 1) {
-                    await execaCommand('git diff HEAD', {
-                        cwd: fullPath,
-                        stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
-                        env: {
-                            FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
-                        },
-                    });
-                } else {
-                    await execaCommand('git diff --stat', {
-                        cwd: fullPath,
-                        stdout: 'inherit', // 直接将输出导向主进程，通常能保留颜色
-                        env: {
-                            FORCE_COLOR: '3', // 强制启用彩色输出 (3 代表 Truecolor)
-                        },
-                    });
-                }
-            } catch (e: any) {
-                console.log(chalk.red(`执行 diff 失败: ${e.message}`));
-            }
-        },
-    },
-    {
-        name: 'hard-coded',
-        description: '查看项目是否有硬编码的文件',
-        usage: '<x>',
-        requireList: true,
-        handler: async (_args, item: ResultItem) => {
-            await checkHardcoded(item.fullPath);
-        },
-    },
-    {
-        name: 'commit',
-        usage: '<x> <message>',
-        description: '提交代码',
-        requireList: true,
-        handler: async (args, item: ResultItem) => {
+                    const modifiedFiles = status
+                        .split('\n')
+                        .filter((line) => line.trim() && line[1] === 'M')
+                        .map((line) => line.slice(3).trim());
+
+                    if (modifiedFiles.length === 1) {
+                        execaCommand('git diff HEAD', {
+                            cwd: fullPath,
+                            stdout: 'inherit',
+                            env: { FORCE_COLOR: '3' },
+                        });
+                    } else {
+                        execaCommand('git diff --stat', {
+                            cwd: fullPath,
+                            stdout: 'inherit',
+                            env: { FORCE_COLOR: '3' },
+                        });
+                    }
+                })
+                .catch((e: any) => {
+                    console.log(chalk.red(`执行 diff 失败: ${e.message}`));
+                });
+        });
+
+    program
+        .command('/hard-coded <x>')
+        .description('查看项目是否有硬编码的文件')
+        .action((args) => {
+            const index = args[0];
+            const item = list[parseInt(index, 10) - 1] as ResultItem;
+            checkHardcoded(item.fullPath);
+        });
+
+    program
+        .command('/commit <x> <message>')
+        .description('提交代码')
+        .action((args) => {
+            const index = args[0];
             const message = args.slice(1).join(' ');
+            const item = list[parseInt(index, 10) - 1] as ResultItem;
+            executeCommands(['git add .', gitActions.commit(message)], { cwd: item.fullPath })
+                .then(() => {
+                    console.log(chalk.green(`提交成功: ${message}`));
+                })
+                .catch((e: any) => {
+                    console.log(chalk.red(`提交失败: ${e.message}`));
+                });
+        });
 
-            try {
-                await executeCommands(['git add .', gitActions.commit(message)], { cwd: item.fullPath });
-                console.log(chalk.green(`提交成功: ${message}`));
-            } catch (e: any) {
-                console.log(chalk.red(`提交失败: ${e.message}`));
-            }
-        },
-    },
-    {
-        name: 'log',
-        usage: '[x]',
-        description: '查看已提交未推送的commit',
-        requireList: true,
-        handler: async (args, item: ResultItem) => {
-            await printProjectLog(item);
-        },
-    },
-    {
-        name: 'deploy',
-        usage: '<x> <message>',
-        description: '部署代码',
-        requireList: true,
-        handler: async (args, item: ResultItem) => {
+    program
+        .command('/log <x>')
+        .description('查看已提交未推送的commit')
+        .action((args) => {
+            const index = args[0] || '1';
+            const item = list[parseInt(index, 10) - 1] as ResultItem;
+            printProjectLog(item);
+        });
+
+    program
+        .command('/deploy <x> <message>')
+        .description('部署代码')
+        .action((args) => {
+            const index = args[0];
             const message = args.slice(1).join(' ');
+            const item = list[parseInt(index, 10) - 1] as ResultItem;
             const fullPath = item.fullPath;
 
-            try {
-                console.log(chalk.blue(`正在部署: ${fullPath.split('/').pop()} ...`));
-                await deployService({ current: true, commit: message, cwd: fullPath });
-                console.log(chalk.green(`部署成功: ${fullPath.split('/').pop()}`));
-            } catch (e: any) {
-                console.log(chalk.red(`部署失败 (${fullPath.split('/').pop()}): ${e.message}`));
-            }
-        },
-    },
-];
+            console.log(chalk.blue(`正在部署: ${fullPath.split('/').pop()} ...`));
+            deployService({ current: true, commit: message, cwd: fullPath })
+                .then(() => {
+                    console.log(chalk.green(`部署成功: ${fullPath.split('/').pop()}`));
+                })
+                .catch((e: any) => {
+                    console.log(chalk.red(`部署失败 (${fullPath.split('/').pop()}): ${e.message}`));
+                });
+        });
 
-/**
- * 启动交互式命令行
- * @param {ResultItem[]} list - 项目列表
- * @param {Options} options - 选项
- */
-const startRepl = (list: ResultItem[], options: Options = {}) => {
-    const cmds = commands(list, options);
-    createCommandReadline(cmds, {
-        prompt: '',
-        items: list,
-    });
+    void program.start();
 };
 
-export { getStatusMap, commands, startRepl };
+export { getStatusMap, startRepl };
