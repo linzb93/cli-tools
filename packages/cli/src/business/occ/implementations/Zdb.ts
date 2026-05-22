@@ -9,7 +9,7 @@ import { platformMap as ptMap } from '../constants';
 export class Zdb extends BasePlatform {
     name = 'zdb';
     serviceName = '涨单宝小程序';
-    defaultId = '15505916470';
+    defaultId = '15659169542';
     testDefaultId = '-';
     appKey = 'zdb';
     async getShopUrl(keyword: string, options: Options) {
