@@ -1,4 +1,4 @@
-const map = [];
+const map: any[] = [];
 export const log = (content: string) => {
     map.push({
         type: 'message',

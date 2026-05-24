@@ -8,16 +8,14 @@
         "cli"
     ],
     "exports": {
-        ".": "./src/index.ts",
-        "./*": "./src/*"
+        ".": "./dist/index.js",
+        "./*": "./dist/*"
     },
     "main": "./src/index.ts",
     "types": "./src/index.ts",
     "scripts": {
+        "build": "vite build",
         "test": "vitest run"
-    },
-    "dependencies": {
-        "@cli-tools/shared": "workspace:*"
     },
     "author": "linzb93",
     "license": "ISC"

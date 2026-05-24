@@ -32,7 +32,7 @@ router.post('/getCached', async (_, res) => {
         const result = await sql((data, db) => {
             const list = clone(data.monitorResultCache);
             data.monitorResultCache = [];
-            db.write();
+            // db.write();
             return list;
         });
         response(res, {
@@ -61,7 +61,7 @@ router.post('/saveApps', async (req, res) => {
         });
         response(res, null);
     } catch (error) {
-        response(res, { message: error.message });
+        response(res, { message: (error as Error).message });
     }
 });
 export default router;
@@ -101,7 +101,8 @@ export const bugCallback = async () => {
                 siteId: item.siteId,
                 name: item.name,
                 errorTotal: res.data.result.totalCount,
-                emphasizeTotal: res.data.result.list.filter((item) => !item.content.startsWith('Loading chunk')).length,
+                emphasizeTotal: res.data.result.list.filter((item: any) => !item.content.startsWith('Loading chunk'))
+                    .length,
                 list: res.data.result.list,
             };
         },

@@ -10,7 +10,7 @@ router.post('/get', async (_, res) => {
             api: secret,
         });
     } catch (error) {
-        response(res, { message: error.message });
+        response(res, { message: (error as Error).message });
     }
 });
 

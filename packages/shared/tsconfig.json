@@ -7,7 +7,7 @@
         "isolatedModules": true,
         "rootDir": ".",
         "outDir": "./dist/",
-        "noEmit": true,
+        "noEmit": false,
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "paths": {

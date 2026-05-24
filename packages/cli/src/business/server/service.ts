@@ -54,7 +54,6 @@ export const server = async (command?: string, options?: Options) => {
     return new Promise((resolve, reject) => {
         child.on('message', async (msgObj: { type: string; message: string }) => {
             if (msgObj.type === 'message') {
-                console.log(msgObj.message);
                 return;
             }
             if (msgObj.type === 'server-start') {
