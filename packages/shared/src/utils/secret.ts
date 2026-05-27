@@ -11,6 +11,7 @@ interface Database {
             volcano: string;
             volcanoDeepseekV3: string;
             minimax: string;
+            deepseekCompany: string;
         };
     };
     jenkins: {

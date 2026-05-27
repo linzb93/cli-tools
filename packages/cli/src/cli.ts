@@ -101,7 +101,10 @@ function registerCommands() {
         .action((options) => {
             import('./commands/curl').then((m) => m.curlCommand(options));
         });
-
+    // ds 命令
+    program.command('ds').action(() => {
+        import('./commands/deepseek').then((m) => m.deepseekCommand());
+    });
     // eng 命令
     program
         .command('eng [text]')
