@@ -218,6 +218,11 @@ function registerCommands() {
         import('./commands/time').then((m) => m.timeCommand(data));
     });
 
+    // ui 命令
+    program.command('ui').action(() => {
+        import('./commands/ui').then((m) => m.uiCommand());
+    });
+
     // token 命令
     program
         .command('token [data]')

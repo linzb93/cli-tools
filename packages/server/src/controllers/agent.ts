@@ -10,7 +10,7 @@ router.post('/list', async (_, res) => {
         const list = await sql((db) => db.agent);
         response(res, list);
     } catch (error) {
-        response(res, { message: error.message });
+        response(res, { message: (error as Error).message });
     }
 });
 
@@ -33,7 +33,7 @@ router.post('/save', async (req, res) => {
         });
         response(res, {});
     } catch (error) {
-        response(res, { message: error.message });
+        response(res, { message: (error as Error).message });
     }
 });
 
@@ -45,7 +45,7 @@ router.post('/delete', async (req, res) => {
         });
         response(res, {});
     } catch (error) {
-        response(res, { message: error.message });
+        response(res, { message: (error as Error).message });
     }
 });
 

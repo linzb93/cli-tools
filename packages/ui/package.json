@@ -37,6 +37,7 @@
     "jsdom": "^24.1.0",
     "npm-run-all2": "^6.2.0",
     "vite-plugin-cdn-import": "^1.0.1",
+    "vite-tsconfig-paths": "^6.1.1",
     "vue-tsc": "^2.2.4"
   }
 }

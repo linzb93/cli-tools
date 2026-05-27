@@ -14,7 +14,7 @@ router.post('/fetchApiCrossOrigin', async (req, res) => {
         });
         response(res, res1.data);
     } catch (error) {
-        response(res, { message: error.message });
+        response(res, { message: (error as Error).message });
     }
 });
 

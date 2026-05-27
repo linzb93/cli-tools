@@ -3,7 +3,8 @@ import { defineConfig } from 'vite';
 import fs from 'fs-extra';
 import cdn from 'vite-plugin-cdn-import';
 import vue from '@vitejs/plugin-vue';
-import { serverConfig } from '@cli-tools/shared';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { serverConfig } from '@cli-tools/shared/serverConstant';
 
 const file = fs.readJSONSync('../../cache/secret.json');
 const cdnObject = file.cdn;
@@ -21,6 +22,7 @@ export default defineConfig({
     'process.platform': JSON.stringify(process.platform)
   },
   plugins: [
+    tsconfigPaths(),
     vue(),
     cdn({
       modules: [

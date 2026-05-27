@@ -10,7 +10,8 @@
     "scripts": {
         "dev": "tsc && vite build --watch",
         "build": "tsc && vite build",
-        "test": "vitest run"
+        "test": "vitest run",
+        "check": "tsc"
     },
     "author": "linzb93",
     "license": "ISC",
@@ -22,6 +23,7 @@
         "multer": "2.1.1"
     },
     "devDependencies": {
-        "@types/fs-extra": "^11.0.4"
+        "@types/fs-extra": "^11.0.4",
+        "typescript": "^6.0.2"
     }
 }

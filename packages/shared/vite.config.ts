@@ -2,12 +2,10 @@ import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
-import pkg from './package.json';
 import rootPkg from '../../package.json';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 const allDependencies = {
-    ...pkg.dependencies,
     ...rootPkg.dependencies,
 };
 
@@ -21,10 +19,11 @@ export default defineConfig({
         target: 'node14',
         outDir: 'dist',
         minify: false,
-        emptyOutDir: !process.env.MODE,
+        emptyOutDir: true,
         rollupOptions: {
             input: {
-                web: 'src/index.ts',
+                index: 'src/index.ts',
+                serverConstant: 'src/constant/server.ts',
             },
             output: {
                 dir: 'dist',
@@ -33,8 +32,8 @@ export default defineConfig({
             external: [...Object.keys(allDependencies).filter((dep) => dep !== '@cli-tools/shared'), /^node:.*/],
         },
         lib: {
-            entry: './src/bin/index.ts',
-            fileName: 'cli',
+            entry: './src/index.ts',
+            fileName: 'index',
             formats: ['es'],
         },
     },
