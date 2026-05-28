@@ -66,7 +66,11 @@ export async function getGitProjectStatus(
         const { stdout } = await execaCommand('git status', {
             cwd: projectPath,
         });
-        if (stdout.includes('Changes not staged for commit') || stdout.includes('Changes to be committed')) {
+        if (
+            ['Untracked files', 'Changes not staged for commit', 'Changes to be committed'].some((item) =>
+                stdout.includes(item),
+            )
+        ) {
             output.status = GitStatusMap.Uncommitted;
             return output;
         }
