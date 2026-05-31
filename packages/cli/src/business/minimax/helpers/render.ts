@@ -21,7 +21,9 @@ async function fetchUsage(token: string): Promise<UsageResponse> {
             },
         },
     );
-
+    if (!response.data.model_remains) {
+        throw new Error(response.data.base_resp.status_msg);
+    }
     return response.data;
 }
 
@@ -106,7 +108,6 @@ export async function refresh() {
             render(data);
         }
     } catch (error) {
-        logger.clearConsole();
         logger.error(`[${dayjs().format('HH:mm:ss')}]获取用量数据失败: ${(error as Error).message}`);
     }
 }

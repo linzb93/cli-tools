@@ -1,4 +1,4 @@
-import { deepseekService } from '@/business/deepseek/service';
+import { deepseekService } from '@/business/deepseek';
 
 export async function deepseekCommand() {
     await deepseekService();

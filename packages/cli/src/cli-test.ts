@@ -23,13 +23,12 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// server 命令
+// minimax 命令
 program
-    .command('server [command]')
-    .option('--menu [name]', '菜单名称')
-    .option('-o, --open', '打开浏览器')
-    .action((command, option) => {
-        import('./commands/server').then((m) => m.serverCommand(command, option));
+    .command('minimax')
+    .option('--watch', '是否开启监控模式')
+    .action((options) => {
+        import('./commands/minimax').then((m) => m.minimaxCommand(options));
     });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
