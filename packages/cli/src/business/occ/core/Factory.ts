@@ -9,7 +9,7 @@ import {
 import { BasePlatform } from '../core/BasePlatform';
 import { TaobaoJingYingShenQi, TaobaoIMShenQi } from '../implementations/taobao';
 import { Wmb, Kdb } from '../implementations/zhanwai';
-// import { dkdMiniProgram } from '../implementations/dkdMiniProgram';
+import { DkdMiniProgramApp } from '../implementations/dkdMiniProgram';
 import { Zdb } from '../implementations/Zdb';
 
 /**
@@ -51,6 +51,9 @@ export const createApp = (appName: string): BasePlatform => {
     if (appName === 'kdb') {
         return new Kdb();
     }
+    if (appName === 'minip') {
+        return new DkdMiniProgramApp();
+    }
     throw new Error(`未找到应用: ${appName}`);
 };
 
@@ -60,9 +63,21 @@ export const createApp = (appName: string): BasePlatform => {
  * @returns 是否存在
  */
 export const hasApp = (appName: string): boolean => {
-    return !!['default', 'jysq', 'zx', 'pj', 'im', 'dj', 'ai', 'taobao', 'taobao-im', 'zdb', 'wmb', 'kdb'].includes(
-        appName,
-    );
+    return !![
+        'default',
+        'jysq',
+        'zx',
+        'pj',
+        'im',
+        'dj',
+        'ai',
+        'taobao',
+        'taobao-im',
+        'zdb',
+        'wmb',
+        'kdb',
+        'minip',
+    ].includes(appName);
 };
 
 /**

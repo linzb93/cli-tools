@@ -52,6 +52,7 @@ interface Database {
             baseUrl: string;
             unionId: string;
             keyword: string;
+            origin: string;
         };
     };
     yapi: {

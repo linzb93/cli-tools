@@ -39,8 +39,7 @@ const parseArgs = (input: string[], options: Options): { appName: string; search
             appName = input[0];
 
             if (!hasApp(appName)) {
-                logger.error(`未找到应用: ${appName}`);
-                return { appName: '', searchKeyword: '' };
+                logger.error(`未找到应用: ${appName}`, true);
             }
 
             const matchApp = createApp(appName);
@@ -65,7 +64,7 @@ const runApp = async (app: BasePlatform, keyword: string, options: Options) => {
 /**
  * 应用运行后处理
  */
-const afterSearchApp = async (app: BasePlatform, url: string, shopName: string, options: Options) => {
+export const afterSearchApp = async (app: BasePlatform, url: string, shopName: string, options: Options) => {
     const token = app.getToken(url);
     if (options.token) {
         copyToken({ token, serviceName: app.serviceName, shopName });

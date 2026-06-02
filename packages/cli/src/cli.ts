@@ -245,12 +245,12 @@ function registerCommands() {
         });
 
     // minimax 命令
-    program
-        .command('minimax')
-        .option('--watch', '是否开启监控模式')
-        .action((options) => {
-            import('./commands/minimax').then((m) => m.minimaxCommand(options));
-        });
+    // program
+    //     .command('minimax')
+    //     .option('--watch', '是否开启监控模式')
+    //     .action((options) => {
+    //         import('./commands/minimax').then((m) => m.minimaxCommand(options));
+    //     });
 
     // vue 命令
     program
