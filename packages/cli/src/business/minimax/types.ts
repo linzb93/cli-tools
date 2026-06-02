@@ -27,6 +27,10 @@ export interface ModelRemain {
  */
 export interface UsageResponse {
     model_remains: ModelRemain[];
+    base_resp: {
+        status_code: number;
+        status_msg: string;
+    };
 }
 
 /**

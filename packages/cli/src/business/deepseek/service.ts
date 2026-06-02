@@ -12,10 +12,14 @@ export async function deepseekService() {
             Authorization: `Bearer ${key}`,
         },
     };
-    const res = await axios(config);
-    const body = res.data;
-    if (!body.is_available) {
-        throw new Error(body.message);
+    try {
+        const res = await axios(config);
+        const body = res.data;
+        if (!body.is_available) {
+            throw new Error(body.message);
+        }
+        logger.info(`余额：${body.balance_infos[0].total_balance}元`);
+    } catch (error) {
+        logger.error((error as Error).message);
     }
-    logger.info(`余额：${body.balance_infos[0].total_balance}元`);
 }
