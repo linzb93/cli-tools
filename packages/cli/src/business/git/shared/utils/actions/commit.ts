@@ -86,6 +86,11 @@ export function formatCommitMessage(rawCommit: string): string {
         return commit;
     }
 
+    // 移除用户输入的双引号包裹，后续 addQuoteWhenBlankExist 会统一添加
+    if (commit.startsWith('"') && commit.endsWith('"')) {
+        commit = commit.slice(1, -1);
+    }
+
     // 2. 提取用户输入的前缀（冒号前面的部分）
     const colonIndex = commit.indexOf(':');
     if (colonIndex > 0) {
