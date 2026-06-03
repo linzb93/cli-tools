@@ -1,3 +1,4 @@
+import { stringify } from 'node:querystring';
 import { logger } from '@/utils/logger';
 import { BasePlatform } from '../core/BasePlatform';
 import { Options, GetUserInfoRequest } from '../types';
@@ -7,14 +8,9 @@ import {
     loginMiniProgramShopByAdmin,
     getMiniProgramTokenByUnionId,
 } from '../repository/miniprogram';
-import { readSecret } from '@cli-tools/shared';
-import { afterSearchApp } from '../service';
+import { platformMap } from '../constants';
 
-const platformTypeEnum = {
-    meituan: '8',
-    taobao: '11',
-    jingdong: '4',
-};
+const origin = 'https://jysq.diankeduo.net/pages/jdjysq/#';
 
 export class DkdMiniProgramApp extends BasePlatform {
     name = 'minip';
@@ -27,7 +23,7 @@ export class DkdMiniProgramApp extends BasePlatform {
             return this.customAction(keyword, options);
         }
         const commonInfo = await this.getCommonInfo(keyword, false);
-        const target = commonInfo.shopList.find((item: any) => item.platform === platformTypeEnum.jingdong);
+        const target = commonInfo.shopList.find((item: any) => item.platform === platformMap.jingdong);
         if (!target) {
             throw new Error('未查询到用户店铺');
         }
@@ -39,7 +35,10 @@ export class DkdMiniProgramApp extends BasePlatform {
             },
             false,
         );
-        return `https://jysq.diankeduo.net/pages/jdjysq/#/login?code=${res3.token}&shopId=${target.shopId}`;
+        return `${origin}/login?${stringify({
+            code: res3.token,
+            shopId: target.shopId,
+        })}`;
     }
     async getUserInfo(params: GetUserInfoRequest): Promise<any> {
         return params.token;
@@ -76,19 +75,19 @@ export class DkdMiniProgramApp extends BasePlatform {
     }
     private getDataSummarizingMatchShop = (list: any[]) => {
         for (const shop of list) {
-            if (shop.platform === platformTypeEnum.meituan) {
+            if (shop.platform === platformMap.meituan) {
                 return {
                     platform: 'meituan',
                     shopId: shop.shopId,
                     venderId: shop.venderId,
                 };
-            } else if (shop.platform === platformTypeEnum.taobao) {
+            } else if (shop.platform === platformMap.taobao) {
                 return {
                     platform: 'taobao',
                     shopId: shop.shopId,
                     venderId: shop.venderId,
                 };
-            } else if (shop.platform === platformTypeEnum.jingdong) {
+            } else if (shop.platform === platformMap.jingdong) {
                 return {
                     platform: 'jingdong',
                     shopId: shop.shopId,
@@ -109,7 +108,14 @@ export class DkdMiniProgramApp extends BasePlatform {
             if (!match) {
                 throw new Error('未找到匹配店铺');
             }
-            const url = `https://jysq.diankeduo.net/pages/jdjysq/#/loginByAccount?source=dkdMiniProgram&code=${token}&url=/data&shopId=${match.shopId}&userId=${match.venderId}&fromProject=${match.platform}`;
+            const url = `${origin}/loginByAccount?${stringify({
+                source: 'dkdMiniProgram',
+                code: token,
+                url: '/data',
+                shopId: match.shopId,
+                userId: match.venderId,
+                fromProject: match.platform,
+            })}`;
             return url;
         }
         return Promise.resolve('');

@@ -13,6 +13,9 @@ export const getOccUrl = (occUrl: string) => {
 /**
  * 将token复制到剪贴板
  * @param obj - 包含token、服务名称和店铺名称的对象
+ * @param obj.token - token
+ * @param obj.serviceName - 服务名称
+ * @param obj.shopName - 店铺名称
  */
 export const copyToken = (obj: { token: string; serviceName: string; shopName: string }) => {
     clipboard.writeSync(obj.token);

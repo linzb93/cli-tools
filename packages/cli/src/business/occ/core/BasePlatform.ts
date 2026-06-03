@@ -25,13 +25,13 @@ export abstract class BasePlatform {
     /**
      * 获取token
      */
-    getToken(url: string): string {
+    getToken(url: string, tokenKey = 'code'): string {
         if (!url.startsWith('http')) {
             return url;
         }
         const { hash } = new URL(url);
         const params = new URLSearchParams(hash.replace(/^#\/[0-9a-zA-Z]+/, ''));
-        const fullToken = params.get('code') || '';
+        const fullToken = params.get(tokenKey) || '';
         return fullToken.replace(/occ_(senior_)?/, '').replace(/&.+/, '');
     }
     /**

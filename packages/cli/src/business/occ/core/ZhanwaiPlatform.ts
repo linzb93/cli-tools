@@ -62,11 +62,13 @@ export abstract class ZhanwaiPlatform extends BasePlatform {
         } else if (pt === 'jingdong') {
             folder = 'jdjysq';
         }
-        const url = `${this.prefix}/pages/${folder}/#/${pt === 'jingdong' ? 'login' : 'loginByOuter'}?code=${
-            result.shopToken
-        }&version=1&shopId=${result.shopId}&dueDate=${result.dueDate ? result.dueDate.split(' ')[0] : ''}&url=${
-            pt === 'jingdong' ? '/' : '/apps'
-        }`;
+        const url = `${this.prefix}/pages/${folder}/#/${pt === 'jingdong' ? 'login' : 'loginByOuter'}?${qs.stringify({
+            code: result.shopToken,
+            version: 1,
+            shopId: result.shopId,
+            dueDate: result.dueDate ? result.dueDate.split(' ')[0] : '',
+            url: pt === 'jingdong' ? '/' : '/apps',
+        })}`;
         return url;
     }
 
