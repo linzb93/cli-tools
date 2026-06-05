@@ -33,10 +33,16 @@ export async function cdService(targetPath?: string, options?: Options) {
         // Check if valid directory
         if (!absolutePath || !fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isDirectory()) {
             logger.error(`错误: 路径不存在或不是一个目录 -> ${absolutePath}`, true);
+            return;
         }
 
-        // Update database and print
-        await updateHistoryAndPrint(absolutePath);
+        // 相对路径处理: "." 仅存入数据库不跳转，其他相对路径正常跳转
+        if (targetPath === '.') {
+            await updateHistoryOnly(absolutePath);
+            logger.success(`已将当前目录存入数据库: ${absolutePath}`);
+        } else {
+            await updateHistoryAndPrint(absolutePath);
+        }
     } else {
         // No path provided, show index list
         const history = await sql((data) => data.cdHistory || []);
@@ -159,4 +165,25 @@ async function updateHistoryAndPrint(absolutePath: string) {
         logger.warn(`非 Windows 系统，不支持直接跳转到${path.basename(absolutePath)}目录,已经将命令复制进剪贴板`);
         clipboard.writeSync(`cd ${absolutePath}`);
     }
+}
+
+/**
+ * 仅更新历史记录，不触发目录跳转（不写临时文件/剪贴板）
+ */
+async function updateHistoryOnly(absolutePath: string) {
+    await sql((data) => {
+        if (!data.cdHistory) {
+            data.cdHistory = [];
+        }
+
+        const existing = data.cdHistory.find((item) => item.path === absolutePath);
+        if (existing) {
+            existing.count += 1;
+        } else {
+            data.cdHistory.push({
+                path: absolutePath,
+                count: 1,
+            });
+        }
+    });
 }

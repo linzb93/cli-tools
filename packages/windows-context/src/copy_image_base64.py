@@ -6,7 +6,7 @@ from PIL import Image
 import io
 import pyperclip
 def get_input():
-    input_text = simpledialog.askinteger("温馨提醒", "请输入图片宽度，按回车键完成（无输入表示使用图片默认宽度）")
+    input_text = simpledialog.askstring("温馨提醒", "请输入图片宽度，按回车键完成（无输入表示使用图片默认宽度）")
     return input_text
 
 def main():

@@ -61,7 +61,7 @@ export const sizeService = async (filePath: string, options: Options) => {
             logger.success(`大小：${bytesSize}，尺寸：${dimensions.width} X ${dimensions.height}`);
             await del(targetName);
         } else {
-            logger.success(bytesSize);
+            logger.success(bytesSize as string);
         }
         return bytesSize;
     }
