@@ -3,6 +3,7 @@ export interface Options {
     cwd?: boolean;
     alias?: boolean;
     keyword?: string;
+    recursive?: boolean;
 }
 
 export interface CdHistoryItem {

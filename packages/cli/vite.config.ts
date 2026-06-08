@@ -4,13 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import pkg from './package.json';
 import rootPkg from '../../package.json';
-import sharedPkg from '../shared/package.json';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 const allDependencies = {
     ...pkg.dependencies,
     ...rootPkg.dependencies,
-    ...sharedPkg.dependencies,
 };
 
 const input: {

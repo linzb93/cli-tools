@@ -62,6 +62,7 @@ function registerCommands() {
         .option('-c, --cwd', '跳转到项目根目录')
         .option('--alias', '为目录设置别名')
         .option('--keyword <value>', '通过关键字匹配历史记录')
+        .option('-r, --recursive', '递归浏览子目录并跳转')
         .action((targetPath, options) => {
             import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
         });
