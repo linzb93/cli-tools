@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
+import { open as openPath } from '@/utils/web';
+import editor from '@/utils/editor';
 import type { Options } from './types';
 import { resolveTargetPath } from './helpers/resolve';
 import { updateHistoryAndPrint, updateHistoryOnly } from './helpers/history';
@@ -25,9 +27,7 @@ export async function cdService(targetPath?: string, options?: Options) {
     }
 
     if (options?.recursive) {
-        const startPath = targetPath
-            ? await resolveTargetPath(targetPath, options)
-            : process.cwd();
+        const startPath = targetPath ? await resolveTargetPath(targetPath, options) : process.cwd();
         if (!startPath || !fs.existsSync(startPath) || !fs.statSync(startPath).isDirectory()) {
             logger.error(`错误: 路径不存在或不是一个目录 -> ${startPath}`, true);
             return;
@@ -49,6 +49,10 @@ export async function cdService(targetPath?: string, options?: Options) {
             logger.success(`已将当前目录存入数据库: ${absolutePath}`);
         } else {
             await updateHistoryAndPrint(absolutePath);
+        }
+
+        if (options?.open) {
+            options.open === 'code' ? editor.open(absolutePath) : openPath(absolutePath);
         }
     } else {
         const history = await sql((data) => data.cdHistory || []);

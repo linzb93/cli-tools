@@ -4,6 +4,7 @@ export interface Options {
     alias?: boolean;
     keyword?: string;
     recursive?: boolean;
+    open?: boolean | 'code';
 }
 
 export interface CdHistoryItem {
