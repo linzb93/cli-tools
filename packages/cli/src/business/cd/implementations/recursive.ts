@@ -1,4 +1,4 @@
-import { recursiveBrowsePath } from '@/utils/recursivePath';
+import { recursiveBrowsePath } from '@/utils/recursive-path';
 import { navigateOnly } from '../helpers/history';
 
 /**

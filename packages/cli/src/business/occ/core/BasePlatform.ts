@@ -5,6 +5,7 @@ export abstract class BasePlatform {
     abstract defaultId: string;
     abstract testDefaultId: string;
     abstract appKey: string;
+    abstract userApi: string;
     isDefault = false;
     /**
      * 获取店铺URL

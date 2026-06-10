@@ -80,7 +80,7 @@ export const afterSearchApp = async (app: BasePlatform, url: string, shopName: s
     }
     if (options.user) {
         await printUserInfo(
-            { token, serviceName: app.serviceName, shopName, getUserInfo: app.getUserInfo.bind(app) },
+            { token, serviceName: app.serviceName, shopName, getUserInfo: app.getUserInfo.bind(app), app },
             options.test,
         );
         return;

@@ -26,7 +26,8 @@ export async function recursiveBrowsePath(startPath: string): Promise<string> {
         const selected = await select('请选择目录', choices);
 
         if (selected === '__prev__') {
-            return path.join(currentDir, '..');
+            currentDir = path.join(currentDir, '..');
+            continue;
         }
         if (selected === '__current__') {
             return currentDir;

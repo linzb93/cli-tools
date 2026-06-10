@@ -2,7 +2,7 @@ import clipboard from 'clipboardy';
 import { logger } from '@/utils/logger';
 import { open } from '@/utils/web';
 import { GetUserInfoRequest } from '../types';
-
+import type { BasePlatform } from '../core/BasePlatform';
 /**
  * 获取 OCC URL
  */
@@ -53,11 +53,12 @@ export const printUserInfo = async (
         serviceName: string;
         shopName: string;
         getUserInfo: (params: GetUserInfoRequest) => Promise<any>;
+        app: BasePlatform;
     },
     test: boolean,
 ) => {
     logger.info('正在获取用户信息');
-    const data = await obj.getUserInfo({ token: obj.token, userApi: '', isTest: test });
+    const data = await obj.getUserInfo({ token: obj.token, userApi: obj.app.userApi, isTest: test });
     logger.success(`获取店铺【${obj.shopName}】信息成功!`);
     console.log(data);
 };

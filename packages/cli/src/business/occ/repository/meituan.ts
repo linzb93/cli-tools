@@ -1,7 +1,7 @@
 import { getPrefix } from '../helpers/http';
 import { service } from '@/utils/http/company-service';
 import { GetUserInfoRequest } from '../types';
-
+import { readSecret } from '@cli-tools/shared';
 interface MeituanShopURLRequest {
     /** 应用key */
     appKey: string;
@@ -33,7 +33,7 @@ interface UserInfo {
  * @returns {Promise<UserInfo>} 用户信息
  */
 export const getUserInfo = async (params: GetUserInfoRequest): Promise<UserInfo> => {
-    const prefix = await getPrefix(params.isTest);
+    const prefix = await readSecret((db) => db.oa.userApiPrefix);
     const res = await service.post(
         `${prefix}/meituan/${params.userApi}`,
         {},

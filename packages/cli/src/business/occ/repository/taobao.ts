@@ -2,27 +2,28 @@ import { service } from '@/utils/http/company-service';
 import { getPrefix } from '../helpers/http';
 import { GetUserInfoRequest } from '../types';
 
-// interface TaobaoShopListRequest {
-//     appKey: string;
-//     memberId: string;
-//     platform: number;
-// }
-// export const getTaobaoShopList = async (params: TaobaoShopListRequest, isTest: boolean) => {
-//     const prefix = await getPrefix(isTest);
-//     const res = await service.post(`${prefix}/eleOcc/manage/getOrderList`, {
-//         ...params,
-//         pageSize: 1,
-//         pageIndex: 1,
-//     });
-//     return res;
-// };
+interface TaobaoShopListRequest {
+    appId: string;
+    param: string;
+    serviceName: string;
+}
+export const getTaobaoShopList = async (params: TaobaoShopListRequest, isTest: boolean): Promise<{ list: any[] }> => {
+    const prefix = await getPrefix(isTest);
+    const res = await service.post(`${prefix}/eleOcc/manage/getOrderList`, {
+        ...params,
+        memberId: '',
+        pageSize: 1,
+        pageIndex: 1,
+    });
+    return res;
+};
 interface TaobaoShopURLRequest {
     /** 应用key */
     appId: string;
     /** 门店id */
-    memberId: string;
-    /** 平台 */
-    platform: number;
+    shopId: string;
+    /** 用户id */
+    userId: number;
 }
 /**
  * 获取淘宝店铺登录url
@@ -41,9 +42,10 @@ export const getTaobaoShopURL = async (params: TaobaoShopURLRequest, isTest: boo
  * @returns {Promise<any>} 用户信息
  */
 export const getTaobaoUserInfo = async (params: GetUserInfoRequest): Promise<any> => {
-    const prefix = await getPrefix(params.isTest);
+    const prefix = (await getPrefix(params.isTest)) as string;
+    const realPrefix = prefix.split('/').slice(0, -1).join('/');
     const res = await service.post(
-        `${prefix}/meituan/homeUserInfo`,
+        `${realPrefix}/ele/home/getUserInfo`,
         {},
         {
             headers: {
