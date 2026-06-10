@@ -202,11 +202,6 @@ function registerCommands() {
             import('./commands/server').then((m) => m.serverCommand(command, option));
         });
 
-    // shortcut 命令
-    program.command('shortcut [name]').action((name) => {
-        import('./commands/shortcut').then((m) => m.shortcutCommand(name));
-    });
-
     // size 命令
     program
         .command('size [url]')
@@ -261,6 +256,22 @@ function registerCommands() {
         .option('--skip', '跳过打包阶段，直接启动服务器')
         .action((option) => {
             import('./commands/vue').then((m) => m.vueCommand(option));
+        });
+
+    // open 命令
+    program
+        .command('open')
+        .description('递归浏览目录并打开')
+        .option('--type <type>', '打开方式，目前仅支持 vscode')
+        .action((options) => {
+            import('./commands/open').then((m) => m.openCommand(options));
+        });
+    // search 命令
+    program
+        .command('search <sub-command> [rest...]')
+        .allowUnknownOption()
+        .action((subCommand, rest) => {
+            import('./commands/search').then((m) => m.searchCommand(subCommand, rest));
         });
 
     // fetch 命令

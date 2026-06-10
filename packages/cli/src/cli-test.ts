@@ -23,17 +23,12 @@ program.hook('preAction', () => {
 });
 
 //**** 请在这里替换需要调试的代码 ****
-// cd 命令
+// search 命令
 program
-    .command('cd [path]')
-    .description('记录并跳转目录')
-    .option('-d, --delete', '删除历史记录')
-    .option('-c, --cwd', '跳转到项目根目录')
-    .option('--alias', '为目录设置别名')
-    .option('--keyword <value>', '通过关键字匹配历史记录')
-    .option('-r, --recursive', '递归浏览子目录并跳转')
-    .action((targetPath, options) => {
-        import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
+    .command('search <sub-command> [rest...]')
+    .allowUnknownOption()
+    .action((subCommand, rest) => {
+        import('./commands/search').then((m) => m.searchCommand(subCommand, rest));
     });
 
 program.parse(process.argv.filter((cmd) => ['--help'].includes(cmd) === false));
