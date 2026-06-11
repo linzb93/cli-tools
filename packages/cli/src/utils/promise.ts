@@ -72,7 +72,7 @@ export const pLocate = async (list: any[], callback: Function): Promise<any> => 
     for (let i = 0; i < list.length; i++) {
         try {
             return await callback(list[i]);
-        } catch (error) {
+        } catch {
             //
         }
     }

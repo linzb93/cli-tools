@@ -21,7 +21,7 @@ export abstract class BasePlatform {
      * @param shopName 店铺名称
      */
     openPC(url: string, shopName: string): void {
-        // window.open(url, '_blank');
+        console.log(url, shopName);
     }
     /**
      * 获取token

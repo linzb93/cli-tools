@@ -8,7 +8,7 @@
 export function extractJSONFromMarkdown(str: string): unknown {
     try {
         return JSON.parse(str);
-    } catch (error) {
+    } catch {
         const match = str.match(/```json\s*([\s\S]*?)\s*```/);
         if (!match) return null;
         try {

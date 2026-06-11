@@ -18,6 +18,7 @@ export class DkdMiniProgramApp extends BasePlatform {
     defaultId = '18759916391';
     testDefaultId = '18759916391';
     appKey = '';
+    userApi = '';
     async getShopUrl(keyword: string, options: Options) {
         if (options.type === 'data') {
             return this.customAction(keyword, options);

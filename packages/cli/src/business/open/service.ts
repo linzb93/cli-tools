@@ -5,7 +5,6 @@ import type { OpenOptions } from './types';
 
 export async function openService(options: OpenOptions) {
     const dir = await recursiveBrowsePath(process.cwd());
-
     if (options.type === 'vscode') {
         await editor.open(dir);
     } else {

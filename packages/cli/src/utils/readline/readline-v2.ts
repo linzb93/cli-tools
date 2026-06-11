@@ -70,13 +70,9 @@ function displayCommands(commands: RegisteredCommand[], exitCommand: string): vo
     const lines: string[] = [];
     for (const cmd of commands) {
         const argsStr =
-            cmd.pattern.requiredArgs.length > 0
-                ? ' ' + cmd.pattern.requiredArgs.map((a) => `<${a}>`).join(' ')
-                : '';
+            cmd.pattern.requiredArgs.length > 0 ? ' ' + cmd.pattern.requiredArgs.map((a) => `<${a}>`).join(' ') : '';
         const optStr =
-            cmd.pattern.optionalArgs.length > 0
-                ? cmd.pattern.optionalArgs.map((a) => ` [<${a}>]`).join('')
-                : '';
+            cmd.pattern.optionalArgs.length > 0 ? cmd.pattern.optionalArgs.map((a) => ` [<${a}>]`).join('') : '';
         const desc = cmd.description ? ` - ${cmd.description}` : '';
         lines.push(`/${cmd.pattern.name}${argsStr}${optStr}${desc}`);
     }
@@ -92,7 +88,6 @@ export function createReadline(options: CreateReadlineOptions = {}): ReadlinePro
     const registeredCommands: RegisteredCommand[] = [];
     const prompt = options.prompt ?? '';
     const exitCommand = options.exitCommand ?? 'exit';
-    const items = options.items;
 
     // utils 在 start() 时初始化
     let utils: ReadlineUtils = {

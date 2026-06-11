@@ -7,7 +7,7 @@ import type { MessageOptions } from '../types';
  * @param options 选项
  * @returns 包含流式响应和模型名称的对象
  */
-export const useAIStream = async (
+const useAIStream = async (
     messages: MessageOptions[],
     options: {
         type: string;

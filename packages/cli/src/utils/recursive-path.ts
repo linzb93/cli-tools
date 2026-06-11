@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import chalk from 'chalk';
 import { select } from '@/utils/readline';
+import { logger } from '@/utils/logger';
 
 /**
  * 递归浏览子目录，返回用户最终选中的目录路径
@@ -10,7 +11,7 @@ import { select } from '@/utils/readline';
  */
 export async function recursiveBrowsePath(startPath: string): Promise<string> {
     let currentDir = startPath;
-
+    let counter = 0;
     while (true) {
         const subdirs = fs
             .readdirSync(currentDir, { withFileTypes: true })
@@ -18,18 +19,20 @@ export async function recursiveBrowsePath(startPath: string): Promise<string> {
             .map((dirent) => dirent.name);
 
         const choices = [
-            { name: `${chalk.magenta('返回上一级')}`, value: '__prev__' },
             { name: `${chalk.cyan('当前目录')}`, value: '__current__' },
             ...subdirs.map((dir) => ({ name: dir, value: dir })),
+            { name: `${chalk.magenta('返回上一级')}`, value: '__prev__' },
         ];
 
         const selected = await select('请选择目录', choices);
 
         if (selected === '__prev__') {
             currentDir = path.join(currentDir, '..');
+            counter++;
             continue;
         }
         if (selected === '__current__') {
+            logger.backwardConsole(counter + 1);
             return currentDir;
         }
 
@@ -42,5 +45,6 @@ export async function recursiveBrowsePath(startPath: string): Promise<string> {
         }
 
         currentDir = nextDir;
+        counter++;
     }
 }

@@ -11,6 +11,7 @@ export class Zdb extends BasePlatform {
     defaultId = '15659169542';
     testDefaultId = '-';
     appKey = 'zdb';
+    userApi = '';
     async getShopUrl(keyword: string, options: Options) {
         const userRes = await getUserList(keyword);
         if (!userRes.list.length) {

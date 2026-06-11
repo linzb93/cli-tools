@@ -71,21 +71,6 @@ const findContent = (options: Options): Transform => {
 };
 
 /**
- * 检查一行文本是否匹配指定级别的标题
- * @param {string} line - 要检查的文本行
- * @param {number} currentLevel - 当前标题级别
- * @returns {number | null} 如果匹配则返回匹配的标题级别，否则返回 null
- */
-const matches = (line: string, currentLevel: number) => {
-    for (let levelIndex = 0; levelIndex <= currentLevel; levelIndex++) {
-        if (line.match(new RegExp(`^#{${levelIndex}} `))) {
-            return levelIndex;
-        }
-    }
-    return null;
-};
-
-/**
  * 生成命令帮助文档
  */
 export const generateHelpDoc = (commands: string[]) => {
@@ -122,7 +107,7 @@ export const generateHelpDoc = (commands: string[]) => {
                         resolve();
                     },
                 });
-        } catch (error) {
+        } catch {
             logger.error(`没有找到${commands.join(' ')}的帮助文档`);
             resolve();
         }

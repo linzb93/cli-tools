@@ -15,16 +15,16 @@ const openCode = async (
     options?: {
         isGoto?: boolean;
         reuse?: boolean;
-    }
+    },
 ): Promise<void> => {
     try {
         await execa(
-            `${isCursor ? 'cursor' : 'code'} ${options?.isGoto ? '-g' : ''} ${project} ${options?.reuse ? '-r' : ''}`
+            `${isCursor ? 'cursor' : 'code'} ${options?.isGoto ? '-g' : ''} ${project} ${options?.reuse ? '-r' : ''}`,
         );
-    } catch (cmdError) {
+    } catch {
         try {
             await fs.access(project);
-        } catch (accessError) {
+        } catch {
             logger.error('项目路径不存在');
             return;
         }

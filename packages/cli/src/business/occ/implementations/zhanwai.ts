@@ -6,6 +6,7 @@ export class Wmb extends ZhanwaiPlatform {
     serviceName = '外卖宝';
     prefix = 'https://wm.fzmskj.com';
     supportPlatformList = ['meituan', 'taobao', 'jingdong'];
+    userApi = '';
 }
 
 export class Kdb extends ZhanwaiPlatform {
@@ -14,4 +15,5 @@ export class Kdb extends ZhanwaiPlatform {
     serviceName = '开店宝';
     prefix = 'https://kdb.fzmskj.com';
     supportPlatformList = ['meituan', 'taobao'];
+    userApi = '';
 }
