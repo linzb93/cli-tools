@@ -1,2 +1,2 @@
-import { fetchService } from './service';
-import { FetchOptions } from './types';
+export { fetchService } from './service';
+export type { FetchOptions } from './types';

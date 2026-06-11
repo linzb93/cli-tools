@@ -1,5 +1,4 @@
 import { addIdea, listIdeas } from '@/business/idea/index';
-import chalk from 'chalk';
 
 export const ideaCommand = async (subCommand?: string, rest?: string[]) => {
     if (!subCommand) {

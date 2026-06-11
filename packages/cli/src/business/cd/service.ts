@@ -1,8 +1,6 @@
 import fs from 'node:fs';
 import { sql } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
-import { open as openPath } from '@/utils/web';
-import editor from '@/utils/editor';
 import type { Options } from './types';
 import { resolveTargetPath } from './helpers/resolve';
 import { updateHistoryAndPrint, updateHistoryOnly, jump } from './helpers/history';
