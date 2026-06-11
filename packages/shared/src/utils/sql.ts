@@ -13,6 +13,10 @@ export interface Database {
      */
     lastServerStartDate: string;
     /**
+     * 最近一次使用cd命令跳转前当前的路径
+     */
+    lastCdPath: string;
+    /**
      * vue项目服务器启动配置
      */
     vue: {

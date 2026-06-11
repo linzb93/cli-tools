@@ -58,12 +58,12 @@ function registerCommands() {
     program
         .command('cd [path]')
         .description('记录并跳转目录')
-        .option('-d, --delete', '删除历史记录')
-        .option('-c, --cwd', '跳转到项目根目录')
+        .option('--delete', '删除历史记录')
+        .option('--cwd', '跳转到项目根目录')
         .option('--alias', '为目录设置别名')
         .option('--keyword <value>', '通过关键字匹配历史记录')
         .option('-r, --recursive', '递归浏览子目录并跳转')
-        .option('--open [value]', '打开项目')
+        .option('--prev', '跳转到之前的目录')
         .action((targetPath, options) => {
             import('./commands/cd').then((m) => m.cdCommand(targetPath, options));
         });

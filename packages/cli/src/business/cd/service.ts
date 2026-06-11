@@ -5,7 +5,7 @@ import { open as openPath } from '@/utils/web';
 import editor from '@/utils/editor';
 import type { Options } from './types';
 import { resolveTargetPath } from './helpers/resolve';
-import { updateHistoryAndPrint, updateHistoryOnly } from './helpers/history';
+import { updateHistoryAndPrint, updateHistoryOnly, jump } from './helpers/history';
 import { deleteHistory } from './implementations/delete';
 import { setAlias } from './implementations/alias';
 import { recursiveBrowse } from './implementations/recursive';
@@ -35,6 +35,14 @@ export async function cdService(targetPath?: string, options?: Options) {
         await recursiveBrowse(startPath);
         return;
     }
+    if (options?.prev) {
+        const prevPath = await sql((data) => data.lastCdPath || '');
+        if (!prevPath) {
+            return;
+        }
+        await jump(prevPath);
+        return;
+    }
 
     if (targetPath) {
         const absolutePath = await resolveTargetPath(targetPath, options);
@@ -49,10 +57,6 @@ export async function cdService(targetPath?: string, options?: Options) {
             logger.success(`已将当前目录存入数据库: ${absolutePath}`);
         } else {
             await updateHistoryAndPrint(absolutePath);
-        }
-
-        if (options?.open) {
-            options.open === 'code' ? editor.open(absolutePath) : openPath(absolutePath);
         }
     } else {
         const history = await sql((data) => data.cdHistory || []);

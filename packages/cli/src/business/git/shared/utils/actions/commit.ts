@@ -21,19 +21,15 @@ const prefixes: {
     },
     {
         value: 'perf',
-        key: ['性能', '速度', 'perf', 'performance', 'speed'],
+        key: ['性能', '速度'],
     },
     {
         value: 'test',
-        key: ['测试', '用例', 'test', 'case', 'spec', 'e2e', 'unit', 'coverage'],
+        key: ['测试', '用例'],
     },
     {
         value: 'build',
-        key: ['构建', '依赖', 'build', 'dependencies', 'npm', 'pnpm', 'webpack', 'vite', 'rollup'],
-    },
-    {
-        value: 'ci',
-        key: ['ci', 'workflow', 'pipeline', 'action', 'jenkins', 'travis', 'circle', 'github actions'],
+        key: ['构建', '依赖', 'build', 'npm', 'pnpm', 'webpack', 'vite'],
     },
     {
         value: 'chore',
@@ -41,7 +37,7 @@ const prefixes: {
     },
     {
         value: 'refactor',
-        key: ['重构', '优化', '提升', '简化', '迁移'],
+        key: ['重构', '优化', '简化', '迁移', '拆分'],
     },
     {
         value: 'fix',

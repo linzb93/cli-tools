@@ -23,8 +23,7 @@ export async function updateHistoryAndPrint(absolutePath: string) {
     });
     if (isWin) {
         if (process.env.MODE !== 'cliTest') {
-            const tempFile = path.join(os.tmpdir(), '.mycli_cd_path');
-            fs.writeFileSync(tempFile, absolutePath, 'utf8');
+            jump(absolutePath);
         } else {
             logger.info(`调试模式下，不触发目录跳转，已经将命令复制进剪贴板`);
             clipboard.writeSync(`cd ${absolutePath}`);
@@ -41,8 +40,7 @@ export async function updateHistoryAndPrint(absolutePath: string) {
 export function navigateOnly(absolutePath: string) {
     if (isWin) {
         if (process.env.MODE !== 'cliTest') {
-            const tempFile = path.join(os.tmpdir(), '.mycli_cd_path');
-            fs.writeFileSync(tempFile, absolutePath, 'utf8');
+            jump(absolutePath);
         } else {
             logger.info(`调试模式下，不触发目录跳转，已经将命令复制进剪贴板`);
             clipboard.writeSync(`cd ${absolutePath}`);
@@ -51,6 +49,15 @@ export function navigateOnly(absolutePath: string) {
         logger.warn(`非 Windows 系统，不支持直接跳转到${path.basename(absolutePath)}目录,已经将命令复制进剪贴板`);
         clipboard.writeSync(`cd ${absolutePath}`);
     }
+}
+
+export async function jump(pathParam: string) {
+    const cwd = process.cwd();
+    await sql((db) => {
+        db.lastCdPath = cwd;
+    });
+    const tempFile = path.join(os.tmpdir(), '.mycli_cd_path');
+    fs.writeFileSync(tempFile, pathParam, 'utf8');
 }
 
 /**
