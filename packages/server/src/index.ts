@@ -10,6 +10,7 @@ import setting from './controllers/setting';
 import { run } from './shared/log';
 import agent, { agentCallback } from './controllers/agent';
 import awesome from './controllers/awesome';
+import aiModel from './controllers/ai-model';
 import { mountVueProjects, vueRouter } from './controllers/vue';
 
 const app = express();
@@ -24,6 +25,7 @@ router.use('/bug', bug);
 router.use('/setting', setting);
 router.use('/agent', agent);
 router.use('/awesome', awesome);
+router.use('/ai-model', aiModel);
 router.use('/common', common);
 router.use('/vue', vueRouter);
 

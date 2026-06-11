@@ -16,6 +16,10 @@ const routes = [
   {
     path: '/awesome',
     component: () => import('./views/awesome/index.vue')
+  },
+  {
+    path: '/ai-models',
+    component: () => import('./views/ai-models/index.vue')
   }
 ];
 

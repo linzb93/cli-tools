@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { View, Clock, Star } from '@element-plus/icons-vue';
+import { View, Clock, Star, Cpu } from '@element-plus/icons-vue';
 
 const router = useRouter();
 
@@ -45,6 +45,11 @@ const menuList: Menu[] = [
     title: 'Awesome',
     to: '/awesome',
     icon: Star
+  },
+  {
+    title: 'AI模型',
+    to: '/ai-models',
+    icon: Cpu
   }
 ];
 
