@@ -11,8 +11,8 @@ const sqlData = JSON.parse(readFileSync(join(cwd, 'cache', 'app.json'), 'utf-8')
 
 const init = () => {
     // mock sql 但保留其他导出
-    vi.mock('@cli-tools/shared', async (importOriginal) => {
-        const actual = await importOriginal<typeof import('@cli-tools/shared')>();
+    vi.mock('@cli-tools/shared/node', async (importOriginal) => {
+        const actual = await importOriginal<typeof import('@cli-tools/shared/node')>();
         return {
             ...actual,
             sql: vi.fn((callback) => Promise.resolve(callback(sqlData))),

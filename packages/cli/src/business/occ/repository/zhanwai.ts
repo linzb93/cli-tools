@@ -1,5 +1,5 @@
 import { service } from '@/utils/http/company-service';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import encryptPassword from '../helpers/encryptPassword';
 import { PaginationResponse } from '@/utils/http/company-service.type';
 interface ChooseChannelRequest {

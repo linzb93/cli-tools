@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import type { AiModel } from '@cli-tools/shared';
 import response from '../shared/response';
 import Database from 'better-sqlite3';

@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
-import { sql, isWin } from '@cli-tools/shared';
+import { sql, isWin } from '@cli-tools/shared/node';
 import { logger } from '@/utils/logger';
 import clipboard from 'clipboardy';
 

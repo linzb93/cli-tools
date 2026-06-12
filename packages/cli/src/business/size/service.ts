@@ -9,7 +9,7 @@ import { logger } from '@/utils/logger';
 import { emptyWritableStream } from '@/utils/stream';
 import { isURL } from '@/utils/web';
 import { isImage } from '@/utils/image';
-import { root } from '@cli-tools/shared';
+import { root } from '@cli-tools/shared/node';
 import { Options, Dimensions } from './types';
 
 export const sizeService = async (filePath: string, options: Options) => {

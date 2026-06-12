@@ -1,6 +1,6 @@
 import { service } from '@/utils/http/company-service';
 // import { getPrefix } from '../helpers/http';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import { PaginationResponse } from '@/utils/http/company-service.type';
 
 type ZdbUserListResponse = PaginationResponse<{

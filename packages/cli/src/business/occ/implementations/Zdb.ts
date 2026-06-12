@@ -4,7 +4,7 @@ import { logger } from '@/utils/logger';
 import { Options } from '../types';
 import { getUserList, directLogin } from '../repository/zdb';
 import { platformMap as ptMap } from '../constants';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 export class Zdb extends BasePlatform {
     name = 'zdb';
     serviceName = '涨单宝小程序';

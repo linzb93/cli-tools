@@ -1,4 +1,4 @@
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import { logger } from '@/utils/logger';
 import { multiSelect } from '@/utils/readline';
 import type { CdHistoryItem } from '../types';

@@ -1,5 +1,5 @@
 import { Options, CdHistoryItem } from '../types';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import path from 'node:path';
 
 /**

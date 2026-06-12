@@ -4,7 +4,7 @@ import through from 'through2';
 import { concatMap, from, interval, first, map } from 'rxjs';
 import { fromStream } from '@/utils/help-doc';
 import type { Options } from './types';
-import { isWin } from '@cli-tools/shared';
+import { isWin } from '@cli-tools/shared/node';
 export async function searchService(options: Options) {}
 
 export function printCmdDocs() {

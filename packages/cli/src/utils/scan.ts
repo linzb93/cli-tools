@@ -3,7 +3,7 @@ import Table from 'cli-table3';
 import { mapAsync } from 'es-toolkit';
 import { join } from 'node:path';
 import { reduceAsync } from 'es-toolkit';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import { logger } from '@/utils/logger';
 import { progress } from '@/utils/progress';
 

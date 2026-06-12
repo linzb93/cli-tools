@@ -5,7 +5,7 @@ import { timeFormatCN } from '@/utils/time';
 import { logger } from '@/utils/logger';
 import { renderProgressBar } from '@/utils/progress';
 import { COLOR_MAP } from '@/constant';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import type { ParsedUsageData, UsageResponse } from '../types';
 
 /**

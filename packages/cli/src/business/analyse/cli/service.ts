@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import chalk from 'chalk';
-import { cacheRoot } from '@cli-tools/shared';
+import { cacheRoot } from '@cli-tools/shared/node';
 import { levelCharacters } from '@/constant';
 import { logger } from '@/utils/logger';
 import { parseLogDir } from '@/utils/files/log';

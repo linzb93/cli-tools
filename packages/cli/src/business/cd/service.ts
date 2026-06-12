@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import { logger } from '@/utils/logger';
 import type { Options } from './types';
 import { resolveTargetPath } from './helpers/resolve';

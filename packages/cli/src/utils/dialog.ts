@@ -1,6 +1,6 @@
 import { execaCommand as execa } from 'execa';
 import { cmdName, getExecutePath } from '@cli-tools/shared';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 const pythonFileDialogExecutePath = getExecutePath('file-dialog');
 
 /**

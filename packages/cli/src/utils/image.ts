@@ -1,11 +1,12 @@
 import intoStream from 'into-stream';
 import OSS from 'ali-oss';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import { join } from 'node:path';
 import slash from 'slash';
 import { type Readable } from 'node:stream';
 import { execaCommand as execa } from 'execa';
-import { isWin, cmdName, parseJSON, getExecutePath } from '@cli-tools/shared';
+import { isWin } from '@cli-tools/shared/node';
+import { cmdName, parseJSON, getExecutePath } from '@cli-tools/shared';
 
 const pythonExecutePath = getExecutePath(`image-clipboard-${isWin ? 'win' : 'mac'}`);
 type Params =

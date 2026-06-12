@@ -4,7 +4,7 @@ import clipboardy from 'clipboardy';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import fs from 'fs-extra';
-import { sql, type Database } from '@cli-tools/shared';
+import { sql, type Database } from '@cli-tools/shared/node';
 import * as git from '../git/shared/utils';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';

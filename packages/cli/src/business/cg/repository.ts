@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { readSecret, HTTP_STATUS } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
+import { HTTP_STATUS } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
 
 export const getPerformanceData = async () => {

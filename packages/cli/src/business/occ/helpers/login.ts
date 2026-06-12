@@ -2,7 +2,7 @@ import { ask } from '@/utils/readline';
 import { open } from '@/utils/web';
 import { useAI } from '@/utils/ai/implementation';
 import { logger } from '@/utils/logger';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import { service } from '@/utils/http/company-service';
 

@@ -1,6 +1,6 @@
 import { join, dirname } from 'node:path';
 // import { log } from '../shared/log';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import express, { type Application, Router } from 'express';
 // import { startStaticServer } from '../../../cli/src/business/vue/staticServer'; // Fixed path
 

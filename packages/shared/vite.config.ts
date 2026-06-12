@@ -23,6 +23,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 index: 'src/index.ts',
+                node: 'src/node.ts',
                 serverConstant: 'src/constant/server.ts',
             },
             output: {

@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import axios from 'axios';
 export async function deepseekService() {
     const key = await readSecret((db) => db.ai.apiKey.deepseekCompany);

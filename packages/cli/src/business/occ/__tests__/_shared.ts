@@ -14,8 +14,8 @@ const secretData = JSON.parse(
 
 export const init = () => {
     // mock readSecret 但保留其他导出
-    vi.mock('@cli-tools/shared', async (importOriginal) => {
-        const actual = await importOriginal<typeof import('@cli-tools/shared')>();
+    vi.mock('@cli-tools/shared/node', async (importOriginal) => {
+        const actual = await importOriginal<typeof import('@cli-tools/shared/node')>();
         return {
             ...actual,
             readSecret: vi.fn((callback) => Promise.resolve(callback(secretData))),

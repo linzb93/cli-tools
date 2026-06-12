@@ -1,7 +1,7 @@
 import { getPrefix } from '../helpers/http';
 import { service } from '@/utils/http/company-service';
 import { GetUserInfoRequest } from '../types';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 interface MeituanShopURLRequest {
     /** 应用key */
     appKey: string;

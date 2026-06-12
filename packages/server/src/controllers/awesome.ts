@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import fs from 'fs-extra';
 import path from 'node:path';
-import { cacheRoot } from '@cli-tools/shared';
+import { cacheRoot } from '@cli-tools/shared/node';
 import response from '../shared/response';
 
 const router = Router();

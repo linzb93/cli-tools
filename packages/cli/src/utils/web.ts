@@ -1,6 +1,6 @@
 import rawOpen from 'open';
 import { timeout } from 'es-toolkit';
-import { isWin } from '@cli-tools/shared';
+import { isWin } from '@cli-tools/shared/node';
 import { execa } from 'execa';
 /**
  * 判断是否为URL

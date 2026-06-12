@@ -11,7 +11,7 @@ import logSymbols from 'log-symbols';
 import terminalSize from 'terminal-size';
 import stringWidth from 'string-width';
 import spinner from './spinner';
-import { cacheRoot } from '@cli-tools/shared';
+import { cacheRoot } from '@cli-tools/shared/node';
 import { COLOR_MAP } from '../constant';
 
 interface BoxOptions {

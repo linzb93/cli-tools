@@ -1,7 +1,7 @@
 import { Router, type Application, Request, Response } from 'express';
 import axios from 'axios';
 import { omit } from 'es-toolkit';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import response from '../shared/response';
 const router = Router();
 

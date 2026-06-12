@@ -1,4 +1,4 @@
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import { AIModel } from './base';
 
 /**

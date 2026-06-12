@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { getCurrentBranchName } from '@/business/git/shared/utils/';
 import chokidar from 'chokidar';
 import os from 'node:os';
-import { root } from '@cli-tools/shared';
+import { root } from '@cli-tools/shared/node';
 import { join } from 'node:path';
 
 export const uiService = async () => {

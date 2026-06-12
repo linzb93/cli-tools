@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { sql } from '@cli-tools/shared';
+import { sql } from '@cli-tools/shared/node';
 import dayjs from 'dayjs';
 import { mapAsync } from 'es-toolkit';
 // import Table from 'cli-table3';
-import { readSecret } from '@cli-tools/shared';
+import { readSecret } from '@cli-tools/shared/node';
 import response from '../shared/response';
 // import { log } from '../shared/log';
 import { omit, clone } from 'es-toolkit';

@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 import { ask } from '@/utils/readline';
-import { sql, type Database } from '@cli-tools/shared';
+import { sql, type Database } from '@cli-tools/shared/node';
 
 /**
  * 手动输入Yapi的token和uid
