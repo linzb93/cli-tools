@@ -14,7 +14,7 @@
       <el-form-item label="平台" prop="platform">
         <el-select v-model="form.platform" placeholder="请选择平台" style="width: 100%" @change="onPlatformChange">
           <el-option
-            v-for="opt in PLATFORM_OPTIONS"
+            v-for="opt in PLATFORMS"
             :key="opt.value"
             :label="opt.label"
             :value="opt.value"
@@ -88,8 +88,7 @@ import type { FormInstance, FormRules } from 'element-plus';
 import request from '@/helpers/request';
 import type { AiModel } from '../types';
 import {
-  PLATFORM_OPTIONS,
-  PLATFORM_DEFAULT_URLS,
+  PLATFORMS,
   INTERFACE_FORMAT_OPTIONS,
   INTERFACE_FORMAT_URLS,
   MEDIA_TYPE_OPTIONS,
@@ -149,15 +148,22 @@ const rules = reactive<FormRules>({
 });
 
 const onPlatformChange = (val: string) => {
-  if (val && val !== 'custom') {
-    form.url = PLATFORM_DEFAULT_URLS[val] || '';
+  const platform = PLATFORMS.find((p) => p.value === val);
+  if (platform && val !== 'custom') {
+    if (form.interfaceFormat.length > 0) {
+      form.url = platform.urls[form.interfaceFormat[0]] || '';
+    } else {
+      form.url = Object.values(platform.urls).find((u) => u) || '';
+    }
   }
 };
 
 const onInterfaceFormatChange = (val: string[]) => {
-  if (val.length === 1) {
-    form.url = INTERFACE_FORMAT_URLS[val[0]] || '';
-  } else if (val.length > 1) {
+  if (val.length === 0) return;
+  const platform = PLATFORMS.find((p) => p.value === form.platform);
+  if (platform) {
+    form.url = platform.urls[val[0]] || '';
+  } else {
     form.url = INTERFACE_FORMAT_URLS[val[0]] || '';
   }
 };

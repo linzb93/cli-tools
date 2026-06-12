@@ -55,8 +55,8 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/helpers/request';
-import type { AiModel } from './types';
-import { PLATFORM_OPTIONS } from './types';
+import type { AiModel } from '@cli-tools/shared';
+import { PLATFORMS } from './types';
 import EditDialog from './components/EditDialog.vue';
 
 const list = ref<AiModel[]>([]);
@@ -65,7 +65,7 @@ const editVisible = ref(false);
 const currentRow = ref<AiModel | undefined>(undefined);
 
 const platformLabel = (value: string) => {
-  const found = PLATFORM_OPTIONS.find((opt) => opt.value === value);
+  const found = PLATFORMS.find((opt) => opt.value === value);
   return found?.label || value;
 };
 
