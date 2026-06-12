@@ -2,6 +2,11 @@ import { Router } from 'express';
 import { sql } from '@cli-tools/shared';
 import type { AiModel } from '@cli-tools/shared';
 import response from '../shared/response';
+import { Database } from 'bun:sqlite';
+import path from 'node:path';
+import os from 'node:os';
+
+const ccSwitchDatabase = new Database(path.join(os.homedir(), '.cc-switch', 'cc_switch.db'));
 
 const router = Router();
 
@@ -104,6 +109,31 @@ router.post('/delete', async (req, res) => {
         response(res, {});
     } catch (error: any) {
         response(res, { message: error.message });
+    }
+});
+
+// 同步cc-switch数据库
+router.post('/sync-cc-switch', async (req, res) => {
+    try {
+        const providers = ccSwitchDatabase.query('SELECT * FROM providers').all();
+        const result = providers.map((provider: any) => {
+            if (provider.settings_config) {
+                const data = JSON.parse(provider.settings_config);
+                return data.env && data.env.ANTHROPIC_AUTH_TOKEN
+                    ? {
+                          token: data.env.ANTHROPIC_AUTH_TOKEN,
+                          model: data.env.ANTHROPIC_MODEL,
+                          url: data.env.ANTHROPIC_BASE_URL,
+                          name: provider.name,
+                      }
+                    : null;
+            }
+            return null;
+        });
+        response(res, result.filter(Boolean));
+    } catch (error: any) {
+        response(res, null);
+        console.error('同步cc-switch数据库失败:', error);
     }
 });
 

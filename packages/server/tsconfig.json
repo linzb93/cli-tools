@@ -13,7 +13,7 @@
             "@cli-tools/shared/*": ["../../shared/src/*"]
         },
         "skipLibCheck": true,
-        "types": ["node"]
+        "types": ["node", "bun"]
     },
     "include": ["src/**/*", "env.d.ts"],
     "exclude": ["**/__tests__/**/*", "node_modules/**/*", "../../node_modules/**/*"]
