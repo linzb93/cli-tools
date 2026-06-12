@@ -2,6 +2,9 @@
   <div class="ai-models-container">
     <div class="header">
       <el-button type="primary" @click="openEditDialog()">新增模型</el-button>
+      <el-button type="warning" @click="handleSyncCcSwitch" :loading="syncing">
+        同步CC Switch
+      </el-button>
     </div>
 
     <el-table :data="list" style="width: 100%" v-loading="loading">
@@ -43,11 +46,7 @@
       </el-table-column>
     </el-table>
 
-    <EditDialog
-      v-model="editVisible"
-      :data="currentRow"
-      @success="fetchList"
-    />
+    <EditDialog v-model="editVisible" :data="currentRow" @success="fetchList" />
   </div>
 </template>
 
@@ -56,11 +55,12 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import request from '@/helpers/request';
 import type { AiModel } from '@cli-tools/shared';
-import { PLATFORMS } from './types';
+import { AI_MODELS_PLATFORMS as PLATFORMS } from '@cli-tools/shared';
 import EditDialog from './components/EditDialog.vue';
 
 const list = ref<AiModel[]>([]);
 const loading = ref(false);
+const syncing = ref(false);
 const editVisible = ref(false);
 const currentRow = ref<AiModel | undefined>(undefined);
 
@@ -78,6 +78,19 @@ const fetchList = async () => {
     ElMessage.error(error.message || '获取列表失败');
   } finally {
     loading.value = false;
+  }
+};
+
+const handleSyncCcSwitch = async () => {
+  syncing.value = true;
+  try {
+    await request('/ai-model/sync-cc-switch');
+    ElMessage.success('同步成功');
+    fetchList();
+  } catch (error: any) {
+    ElMessage.error(error.message || '同步失败');
+  } finally {
+    syncing.value = false;
   }
 };
 

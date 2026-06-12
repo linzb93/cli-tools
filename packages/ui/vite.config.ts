@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import cdn from 'vite-plugin-cdn-import';
 import vue from '@vitejs/plugin-vue';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { serverConfig } from '@cli-tools/shared/serverConstant';
+import { serverConfig } from '@cli-tools/shared';
 
 const file = fs.readJSONSync('../../cache/secret.json');
 const cdnObject = file.cdn;

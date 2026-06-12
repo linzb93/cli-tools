@@ -2,11 +2,11 @@ import { Router } from 'express';
 import { sql } from '@cli-tools/shared';
 import type { AiModel } from '@cli-tools/shared';
 import response from '../shared/response';
-import { Database } from 'bun:sqlite';
+import Database from 'better-sqlite3';
 import path from 'node:path';
 import os from 'node:os';
 
-const ccSwitchDatabase = new Database(path.join(os.homedir(), '.cc-switch', 'cc_switch.db'));
+const ccSwitchDatabase = new Database(path.join(os.homedir(), '.cc-switch', 'cc-switch.db'));
 
 const router = Router();
 
@@ -115,24 +115,51 @@ router.post('/delete', async (req, res) => {
 // 同步cc-switch数据库
 router.post('/sync-cc-switch', async (req, res) => {
     try {
-        const providers = ccSwitchDatabase.query('SELECT * FROM providers').all();
-        const result = providers.map((provider: any) => {
+        const providers = ccSwitchDatabase.prepare('SELECT * FROM providers').all();
+        const ccSwitchList = providers.map((provider: any) => {
             if (provider.settings_config) {
                 const data = JSON.parse(provider.settings_config);
                 return data.env && data.env.ANTHROPIC_AUTH_TOKEN
                     ? {
-                          token: data.env.ANTHROPIC_AUTH_TOKEN,
+                          apiKey: data.env.ANTHROPIC_AUTH_TOKEN,
                           model: data.env.ANTHROPIC_MODEL,
                           url: data.env.ANTHROPIC_BASE_URL,
-                          name: provider.name,
+                          platform: provider.name,
+                          name: provider.notes,
                       }
                     : null;
             }
             return null;
         });
-        response(res, result.filter(Boolean));
-    } catch (error: any) {
+        const filteredList = ccSwitchList.filter((item): item is NonNullable<typeof item> => item !== null);
+
+        // 获取现有模型列表，对比 apiKey 判断是否需要插入
+        const existingList = await getModelList();
+        const existingApiKeys = new Set(existingList.map((item) => item.apiKey).filter(Boolean));
+
+        const newItems: AiModel[] = [];
+        for (const item of filteredList) {
+            if (!existingApiKeys.has(item.apiKey)) {
+                newItems.push({
+                    id: generateId(),
+                    platform: item.platform || 'cc-switch',
+                    name: item.name || '',
+                    url: item.url || '',
+                    mediaType: 'text',
+                    apiKey: item.apiKey,
+                    interfaceFormat: ['anthropic'],
+                    weight: 0,
+                });
+            }
+        }
+
+        if (newItems.length > 0) {
+            await saveModelList([...existingList, ...newItems]);
+        }
+
         response(res, null);
+    } catch (error: any) {
+        response(res, { message: error.message });
         console.error('同步cc-switch数据库失败:', error);
     }
 });

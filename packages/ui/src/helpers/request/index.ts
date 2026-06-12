@@ -1,7 +1,7 @@
 import { ref, shallowRef } from 'vue';
 import axios from 'axios';
 import { loading } from '../util';
-import { serverConfig } from '@cli-tools/shared/serverConstant';
+import { serverConfig } from '@cli-tools/shared';
 
 interface Option {
   showLoading?: boolean;

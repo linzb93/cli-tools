@@ -30,7 +30,7 @@ export default defineConfig({
                 dir: 'dist',
                 entryFileNames: '[name].js',
             },
-            external: [...Object.keys(allDependencies).filter((dep) => dep !== '@cli-tools/shared'), /^node:.*/],
+            external: [...Object.keys(allDependencies).filter((dep) => dep !== '@cli-tools/shared'), /^node:.*/, /^bun:.*/],
         },
         lib: {
             entry: './src/bin/index.ts',
