@@ -3,6 +3,7 @@
     :model-value="modelValue"
     :title="isEdit ? '编辑模型' : '新增模型'"
     width="550px"
+    :close-on-click-modal="false"
     @update:model-value="handleClose"
     @close="handleClose"
   >
@@ -27,8 +28,25 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item v-if="form.platform === 'custom'" label="URL" prop="url">
-        <el-input v-model="form.url" placeholder="请输入接口地址" />
+      <el-form-item label="URL" prop="url">
+        <el-input
+          v-model="form.url"
+          placeholder="请输入接口地址"
+          :disabled="form.platform !== 'custom'"
+        />
+      </el-form-item>
+
+      <el-form-item label="接口格式" prop="interfaceFormat">
+        <el-radio-group v-model="form.interfaceFormat" @change="onInterfaceFormatChange">
+          <el-radio
+            v-for="opt in INTERFACE_FORMAT_OPTIONS"
+            :key="opt.value"
+            :value="opt.value"
+            :disabled="!isInterfaceFormatAvailable(opt.value)"
+          >
+            {{ opt.label }}
+          </el-radio>
+        </el-radio-group>
       </el-form-item>
 
       <el-form-item label="媒体类型" prop="mediaType">
@@ -41,23 +59,6 @@
 
       <el-form-item label="apiKey" prop="apiKey">
         <el-input v-model="form.apiKey" placeholder="请输入 API Key" />
-      </el-form-item>
-
-      <el-form-item label="接口格式" prop="interfaceFormat">
-        <el-select
-          v-model="form.interfaceFormat"
-          multiple
-          placeholder="请选择接口格式"
-          style="width: 100%"
-          @change="onInterfaceFormatChange"
-        >
-          <el-option
-            v-for="opt in INTERFACE_FORMAT_OPTIONS"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
-          />
-        </el-select>
       </el-form-item>
 
       <el-form-item label="权重" prop="weight">
@@ -74,6 +75,9 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
+        <el-button type="warning" :loading="validating" @click="handleValidate">
+          验证有效性
+        </el-button>
         <el-button type="primary" :loading="loading" @click="handleSubmit"> 确定 </el-button>
       </span>
     </template>
@@ -100,6 +104,7 @@ const emit = defineEmits<{
 
 const formRef = ref<FormInstance>();
 const loading = ref(false);
+const validating = ref(false);
 
 const form = reactive({
   name: '',
@@ -107,11 +112,19 @@ const form = reactive({
   url: '',
   mediaType: 'text' as 'text' | 'image',
   apiKey: '',
-  interfaceFormat: [] as string[],
+  interfaceFormat: '',
   weight: 0
 });
 
 const isEdit = computed(() => !!props.data);
+
+// 检查当前平台下某个接口格式是否可用（有对应的URL）
+const isInterfaceFormatAvailable = (format: string): boolean => {
+  if (form.platform === 'custom') return true;
+  const platform = PLATFORMS.find((p) => p.value === form.platform);
+  if (!platform) return false;
+  return !!platform.urls[format];
+};
 
 const rules = reactive<FormRules>({
   name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
@@ -131,34 +144,39 @@ const rules = reactive<FormRules>({
   mediaType: [{ required: true, message: '请选择媒体类型', trigger: 'change' }],
   apiKey: [{ required: true, message: '请输入 API Key', trigger: 'blur' }],
   interfaceFormat: [
-    {
-      type: 'array',
-      required: true,
-      message: '请选择接口格式',
-      trigger: 'change'
-    }
+    { required: true, message: '请选择接口格式', trigger: 'change' }
   ],
   weight: [{ required: true, message: '请输入权重', trigger: 'blur' }]
 });
 
-const onPlatformChange = (val: string) => {
-  const platform = PLATFORMS.find((p) => p.value === val);
-  if (platform && val !== 'custom') {
-    if (form.interfaceFormat.length > 0) {
-      form.url = platform.urls[form.interfaceFormat[0]] || '';
-    } else {
-      form.url = Object.values(platform.urls).find((u) => u) || '';
-    }
+// 根据平台和接口格式自动填充URL
+const autoFillUrl = () => {
+  if (form.platform === 'custom') return;
+  const platform = PLATFORMS.find((p) => p.value === form.platform);
+  if (!platform) return;
+  if (form.interfaceFormat) {
+    form.url = platform.urls[form.interfaceFormat] || '';
+  } else {
+    form.url = Object.values(platform.urls).find((u) => u) || '';
   }
 };
 
-const onInterfaceFormatChange = (val: string[]) => {
-  if (val.length === 0) return;
+const onPlatformChange = (_val: string) => {
+  // 切换平台时，检查当前接口格式是否还可用
+  if (form.interfaceFormat && !isInterfaceFormatAvailable(form.interfaceFormat)) {
+    form.interfaceFormat = '';
+    form.url = '';
+  }
+  autoFillUrl();
+};
+
+const onInterfaceFormatChange = (val: string) => {
+  if (!val) return;
   const platform = PLATFORMS.find((p) => p.value === form.platform);
   if (platform) {
-    form.url = platform.urls[val[0]] || '';
+    form.url = platform.urls[val] || '';
   } else {
-    form.url = INTERFACE_FORMAT_URLS[val[0]] || '';
+    form.url = INTERFACE_FORMAT_URLS[val] || '';
   }
 };
 
@@ -172,7 +190,7 @@ watch(
         form.url = props.data.url || '';
         form.mediaType = props.data.mediaType;
         form.apiKey = props.data.apiKey;
-        form.interfaceFormat = [...props.data.interfaceFormat];
+        form.interfaceFormat = props.data.interfaceFormat || '';
         form.weight = props.data.weight;
       } else {
         resetForm();
@@ -187,7 +205,7 @@ const resetForm = () => {
   form.url = '';
   form.mediaType = 'text';
   form.apiKey = '';
-  form.interfaceFormat = [];
+  form.interfaceFormat = '';
   form.weight = 0;
 };
 
@@ -209,7 +227,7 @@ const handleSubmit = async () => {
           url: form.url,
           mediaType: form.mediaType,
           apiKey: form.apiKey,
-          interfaceFormat: form.interfaceFormat,
+          interfaceFormat: form.interfaceFormat || '',
           weight: form.weight,
           oldId: isEdit.value ? props.data?.id : undefined
         };
@@ -224,5 +242,47 @@ const handleSubmit = async () => {
       }
     }
   });
+};
+
+// 验证模型有效性
+const handleValidate = async () => {
+  if (!formRef.value) return;
+
+  // 先检查所有必填字段
+  let hasError = false;
+  const fieldsToCheck = [
+    { field: 'name', label: '名称' },
+    { field: 'platform', label: '平台' },
+    { field: 'url', label: 'URL' },
+    { field: 'mediaType', label: '媒体类型' },
+    { field: 'apiKey', label: 'API Key' },
+    { field: 'interfaceFormat', label: '接口格式' },
+  ];
+
+  for (const { field, label } of fieldsToCheck) {
+    const value = (form as any)[field];
+    if (!value || (typeof value === 'string' && !value.trim())) {
+      ElMessage.warning(`请填写${label}`);
+      hasError = true;
+      break;
+    }
+  }
+
+  if (hasError) return;
+
+  validating.value = true;
+  try {
+    const result = await request('/ai-model/validate', {
+      platform: form.platform,
+      url: form.url,
+      apiKey: form.apiKey,
+      interfaceFormat: form.interfaceFormat,
+    });
+    ElMessage.success(result?.message || '接口验证有效');
+  } catch (error: any) {
+    ElMessage.error(error.message || '接口验证失败');
+  } finally {
+    validating.value = false;
+  }
 };
 </script>

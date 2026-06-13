@@ -21,15 +21,10 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="接口格式" min-width="180">
+      <el-table-column label="接口格式" min-width="120">
         <template #default="{ row }">
-          <el-tag
-            v-for="fmt in row.interfaceFormat"
-            :key="fmt"
-            size="small"
-            style="margin-right: 5px"
-          >
-            {{ fmt }}
+          <el-tag v-if="row.interfaceFormat" size="small">
+            {{ row.interfaceFormat }}
           </el-tag>
         </template>
       </el-table-column>

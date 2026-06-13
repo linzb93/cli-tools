@@ -16,7 +16,10 @@
     "author": "linzb93",
     "license": "ISC",
     "dependencies": {
+        "@ai-sdk/anthropic": "^3.0.83",
+        "@ai-sdk/openai": "^3.0.70",
         "@cli-tools/shared": "workspace:*",
+        "ai": "^6.0.202",
         "better-sqlite3": "12",
         "del": "^6.0.0",
         "fs-extra": "^11.3.0",

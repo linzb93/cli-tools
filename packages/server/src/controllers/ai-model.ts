@@ -5,6 +5,9 @@ import response from '../shared/response';
 import Database from 'better-sqlite3';
 import path from 'node:path';
 import os from 'node:os';
+import { createOpenAI } from '@ai-sdk/openai';
+import { createAnthropic } from '@ai-sdk/anthropic';
+import { generateText } from 'ai';
 
 const ccSwitchDatabase = new Database(path.join(os.homedir(), '.cc-switch', 'cc-switch.db'));
 
@@ -68,7 +71,7 @@ router.post('/save', async (req, res) => {
                     url: url || '',
                     mediaType: mediaType || 'text',
                     apiKey: apiKey || '',
-                    interfaceFormat: interfaceFormat || [],
+                    interfaceFormat: interfaceFormat || '',
                     weight: weight ?? 0,
                 };
             } else {
@@ -83,7 +86,7 @@ router.post('/save', async (req, res) => {
                 url: url || '',
                 mediaType: mediaType || 'text',
                 apiKey: apiKey || '',
-                interfaceFormat: interfaceFormat || [],
+                interfaceFormat: interfaceFormat || '',
                 weight: weight ?? 0,
             });
         }
@@ -147,7 +150,7 @@ router.post('/sync-cc-switch', async (req, res) => {
                     url: item.url || '',
                     mediaType: 'text',
                     apiKey: item.apiKey,
-                    interfaceFormat: ['anthropic'],
+                    interfaceFormat: 'anthropic',
                     weight: 0,
                 });
             }
@@ -161,6 +164,41 @@ router.post('/sync-cc-switch', async (req, res) => {
     } catch (error: any) {
         response(res, { message: error.message });
         console.error('同步cc-switch数据库失败:', error);
+    }
+});
+
+// 验证模型接口有效性
+router.post('/validate', async (req, res) => {
+    const { url, apiKey, interfaceFormat } = req.body;
+
+    if (!url || !apiKey || !interfaceFormat) {
+        return response(res, { message: 'URL、API Key 和接口格式不能为空' });
+    }
+
+    try {
+        if (interfaceFormat === 'openai') {
+            const provider = createOpenAI({ apiKey, baseURL: url });
+            const model = provider('gpt-3.5-turbo');
+            await generateText({
+                model,
+                prompt: 'Hi',
+                maxOutputTokens: 1,
+            });
+        } else if (interfaceFormat === 'anthropic') {
+            const provider = createAnthropic({ apiKey, baseURL: url });
+            const model = provider('claude-3-5-haiku-20241022');
+            await generateText({
+                model,
+                prompt: 'Hi',
+                maxOutputTokens: 1,
+            });
+        } else {
+            return response(res, { message: `不支持的接口格式: ${interfaceFormat}` });
+        }
+
+        response(res, { message: '接口验证有效' });
+    } catch (error: any) {
+        response(res, { message: error.message || '接口验证失败' });
     }
 });
 

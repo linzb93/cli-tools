@@ -36,7 +36,6 @@
     "dependencies": {
         "@ai-sdk/anthropic": "^3.0.83",
         "@ai-sdk/openai": "^3.0.70",
-        "@types/react": "^19.2.14",
         "ai": "^6.0.202",
         "axios": "1.6.8",
         "body-parser": "^1.20.2",
