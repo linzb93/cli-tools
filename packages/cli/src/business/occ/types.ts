@@ -56,3 +56,19 @@ export interface GetUserInfoRequest {
     userApi: string;
     isTest: boolean;
 }
+export interface OccSchema {
+    oa: {
+        apiPrefix: string;
+        testPrefix: string;
+        username: string;
+        password: string;
+        token: string;
+    };
+}
+export interface OccImplZdbSchema {
+    oa: {
+        zdb: {
+            origin: string;
+        };
+    };
+}

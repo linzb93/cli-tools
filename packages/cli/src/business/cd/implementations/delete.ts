@@ -1,10 +1,10 @@
 import { sql } from '@cli-tools/shared/node';
 import { logger } from '@/utils/logger';
 import { multiSelect } from '@/utils/readline';
-import type { CdHistoryItem } from '../types';
+import type { CdHistoryItem, CdSchema } from '../types';
 
 export async function deleteHistory(): Promise<void> {
-    const history: CdHistoryItem[] = await sql((data) => data.cdHistory || []);
+    const history: CdHistoryItem[] = await sql<CdHistoryItem[], CdSchema>((data) => data.cdHistory || []);
 
     if (history.length === 0) {
         logger.info('当前无目录跳转历史记录');
@@ -24,7 +24,7 @@ export async function deleteHistory(): Promise<void> {
         return;
     }
 
-    await sql((data) => {
+    await sql<void, CdSchema>((data) => {
         data.cdHistory = (data.cdHistory || []).filter((item: CdHistoryItem) => !selectedPaths.includes(item.path));
     });
 

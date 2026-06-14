@@ -14,3 +14,11 @@ export interface ProjectConfig {
     cwd: string;
     publicPath?: string;
 }
+
+export interface VueSchema {
+    vue: {
+        path: string;
+        id: number;
+        publicPath?: string;
+    }[];
+}

@@ -2,11 +2,12 @@ import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
 import { sql, isWin } from '@cli-tools/shared/node';
+import type { CdSchema } from '../types';
 import { logger } from '@/utils/logger';
 import clipboard from 'clipboardy';
 
 export async function updateHistoryAndPrint(absolutePath: string) {
-    await sql((data) => {
+    await sql<void, CdSchema>((data) => {
         if (!data.cdHistory) {
             data.cdHistory = [];
         }
@@ -53,7 +54,7 @@ export function navigateOnly(absolutePath: string) {
 
 export async function jump(pathParam: string) {
     const cwd = process.cwd();
-    await sql((db) => {
+    await sql<void, CdSchema>((db) => {
         db.lastCdPath = cwd;
     });
     const tempFile = path.join(os.tmpdir(), '.mycli_cd_path');
@@ -64,7 +65,7 @@ export async function jump(pathParam: string) {
  * 仅更新历史记录，不触发目录跳转（不写临时文件/剪贴板）
  */
 export async function updateHistoryOnly(absolutePath: string) {
-    await sql((data) => {
+    await sql<void, CdSchema>((data) => {
         if (!data.cdHistory) {
             data.cdHistory = [];
         }

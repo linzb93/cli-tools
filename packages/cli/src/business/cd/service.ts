@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { sql } from '@cli-tools/shared/node';
 import { logger } from '@/utils/logger';
-import type { Options } from './types';
+import type { Options, CdSchema, CdHistoryItem } from './types';
 import { resolveTargetPath } from './helpers/resolve';
 import { updateHistoryAndPrint, updateHistoryOnly, jump } from './helpers/history';
 import { deleteHistory } from './implementations/delete';
@@ -34,7 +34,7 @@ export async function cdService(targetPath?: string, options?: Options) {
         return;
     }
     if (options?.prev) {
-        const prevPath = await sql((data) => data.lastCdPath || '');
+        const prevPath = await sql<string, CdSchema>((data) => data.lastCdPath || '');
         if (!prevPath) {
             return;
         }
@@ -57,7 +57,7 @@ export async function cdService(targetPath?: string, options?: Options) {
             await updateHistoryAndPrint(absolutePath);
         }
     } else {
-        const history = await sql((data) => data.cdHistory || []);
+        const history = await sql<CdHistoryItem[], CdSchema>((data) => data.cdHistory || []);
         if (history.length === 0) {
             logger.error('当前无目录跳转历史记录', true);
         }

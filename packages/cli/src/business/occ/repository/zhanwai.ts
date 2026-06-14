@@ -1,6 +1,7 @@
 import { service } from '@/utils/http/company-service';
 import { readSecret } from '@cli-tools/shared/node';
 import encryptPassword from '../helpers/encryptPassword';
+import type { OccRepoZhanwaiSchema } from './types';
 import { PaginationResponse } from '@/utils/http/company-service.type';
 interface ChooseChannelRequest {
     token: string;
@@ -16,7 +17,7 @@ interface ChooseChannelResponse {
  * @returns {Promise<ChooseChannelResponse>}选择渠道结果
  */
 export const chooseChannel = async (params: ChooseChannelRequest): Promise<ChooseChannelResponse> => {
-    const zhanwai = await readSecret((db) => db.oa.zhanwai);
+    const zhanwai = await readSecret<OccRepoZhanwaiSchema['oa']['zhanwai'], OccRepoZhanwaiSchema>((db) => db.oa.zhanwai);
     const res = await service.post(
         `${zhanwai.baseUrl}/authorize/agent/account/choseChannel`,
         {
@@ -37,7 +38,7 @@ export const chooseChannel = async (params: ChooseChannelRequest): Promise<Choos
  * @returns {Promise<string>}登录token
  */
 export const getLoginToken = async (): Promise<string> => {
-    const zhanwai = await readSecret((db) => db.oa.zhanwai);
+    const zhanwai = await readSecret<OccRepoZhanwaiSchema['oa']['zhanwai'], OccRepoZhanwaiSchema>((db) => db.oa.zhanwai);
     const res = await service.post(`${zhanwai.baseUrl}/authorize/agent/account/login`, {
         areaCode: '+86',
         phoneNumber: zhanwai.username,
@@ -61,7 +62,7 @@ type UserListResponse = PaginationResponse<{
  */
 export const getUserList = async (params: UserListRequest): Promise<UserListResponse> => {
     const { token, keyword } = params;
-    const zhanwai = await readSecret((db) => db.oa.zhanwai);
+    const zhanwai = await readSecret<OccRepoZhanwaiSchema['oa']['zhanwai'], OccRepoZhanwaiSchema>((db) => db.oa.zhanwai);
     const res = await service.post(
         `${zhanwai.baseUrl}/authorize/back/produce/user/list`,
         {
@@ -100,7 +101,7 @@ interface UserDetailResponse {
  */
 export const getUserDetail = async (params: UserDetailRequest): Promise<UserDetailResponse> => {
     const { token, keyword } = params;
-    const zhanwai = await readSecret((db) => db.oa.zhanwai);
+    const zhanwai = await readSecret<OccRepoZhanwaiSchema['oa']['zhanwai'], OccRepoZhanwaiSchema>((db) => db.oa.zhanwai);
     const res = await service.post(
         `${zhanwai.baseUrl}/authorize/back/produce/user/detail`,
         {
@@ -135,7 +136,7 @@ interface ShopDetailResponse {
  */
 export const getShopDetail = async (params: ShopDetailRequest): Promise<ShopDetailResponse> => {
     const { token, accountId, shopId, platform } = params;
-    const zhanwai = await readSecret((db) => db.oa.zhanwai);
+    const zhanwai = await readSecret<OccRepoZhanwaiSchema['oa']['zhanwai'], OccRepoZhanwaiSchema>((db) => db.oa.zhanwai);
     const res = await service.post(
         `${zhanwai.baseUrl}/authorize/back/produce/shop/detail`,
         {

@@ -1,4 +1,4 @@
-import { Options, CdHistoryItem } from '../types';
+import { Options, CdHistoryItem, CdSchema } from '../types';
 import { sql } from '@cli-tools/shared/node';
 import path from 'node:path';
 
@@ -24,7 +24,7 @@ const pathResolvers: Array<(path: string) => string | Promise<string>> = [
         return srcIndex !== -1 ? parts.slice(0, srcIndex).join(path.sep) || path.sep : absPath;
     },
     async (absPath) => {
-        const root = await sql((db) => db.open.root);
+        const root = await sql<string, { open: { root: string } }>((db) => db.open.root);
         const formattedRoot = root.replace(/\//g, path.sep);
         if (absPath.startsWith(formattedRoot)) {
             const rootLength = formattedRoot.split(path.sep).filter(Boolean).length;
@@ -48,7 +48,7 @@ export async function resolveTargetPath(targetPath: string, options?: Options): 
     let resolvedPath = targetPath;
 
     // 获取历史记录
-    const history: CdHistoryItem[] = await sql((data) => data.cdHistory || []);
+    const history: CdHistoryItem[] = await sql<CdHistoryItem[], CdSchema>((data) => data.cdHistory || []);
 
     // 获取排序后的前10条历史记录
     const topHistory = [...history].sort((a, b) => b.count - a.count).slice(0, 10);

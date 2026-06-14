@@ -1,12 +1,13 @@
 import { readSecret } from '@cli-tools/shared/node';
 import { handleAIError } from '@cli-tools/shared';
 import { AIModel } from './base';
+import type { AiModelSchema } from './types';
 
 /**
  * 创建Siliconflow模型实例
  */
 export const createSiliconflowModel = async (): Promise<AIModel> => {
-    const apiKey = await readSecret((db) => db.ai.apiKey.siliconflow);
+    const apiKey = await readSecret<string, AiModelSchema>((db) => db.ai.apiKey.siliconflow);
 
     return {
         title: 'siliconflow',

@@ -1,12 +1,13 @@
 import { readSecret } from '@cli-tools/shared/node';
 import { handleAIError } from '@cli-tools/shared';
 import { AIModel } from './base';
+import type { AiModelSchema } from './types';
 
 /**
  * 创建火山方舟大模型图像识别实例
  */
 export const createVolcanoImageModel = async (): Promise<AIModel> => {
-    const apiKey = await readSecret((db) => db.ai.apiKey.volcano);
+    const apiKey = await readSecret<string, AiModelSchema>((db) => db.ai.apiKey.volcano);
 
     return {
         title: '火山方舟大模型图像识别',

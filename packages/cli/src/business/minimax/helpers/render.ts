@@ -7,6 +7,7 @@ import { renderProgressBar } from '@/utils/progress';
 import { COLOR_MAP } from '@/constant';
 import { readSecret } from '@cli-tools/shared/node';
 import type { ParsedUsageData, UsageResponse } from '../types';
+import type { MinimaxSchema } from './types';
 
 /**
  * 获取用量数据
@@ -101,7 +102,7 @@ function render(data: ParsedUsageData): void {
 
 export async function refresh() {
     try {
-        const token = await readSecret((db) => db.ai.apiKey.minimax);
+        const token = await readSecret<string, MinimaxSchema>((db) => db.ai.apiKey.minimax);
         const response = await fetchUsage(token);
         const data = parseUsageData(response);
         if (data) {

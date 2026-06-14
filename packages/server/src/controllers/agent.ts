@@ -2,13 +2,14 @@ import { Router, type Application, Request, Response } from 'express';
 import axios from 'axios';
 import { omit } from 'es-toolkit';
 import { sql } from '@cli-tools/shared/node';
+import type { AppDbSchema } from './types';
 import { HTTP_STATUS } from '@cli-tools/shared';
 import { success, error as responseError } from '../shared/response';
 const router = Router();
 
 router.post('/list', async (_, res) => {
     try {
-        const list = await sql((db) => db.agent);
+        const list = await sql<AppDbSchema['agent'], AppDbSchema>((db) => db.agent);
         success(res, list);
     } catch (error) {
         responseError(res, (error as Error).message || '获取列表失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
@@ -18,7 +19,7 @@ router.post('/list', async (_, res) => {
 router.post('/save', async (req, res) => {
     const { id, name, prefix, rules } = req.body;
     try {
-        await sql((db) => {
+        await sql<void, AppDbSchema>((db) => {
             if (!db.agent) {
                 db.agent = [{ id, name, prefix, rules }];
                 return;
@@ -41,7 +42,7 @@ router.post('/save', async (req, res) => {
 router.post('/delete', async (req, res) => {
     const { id } = req.body;
     try {
-        await sql((db) => {
+        await sql<void, AppDbSchema>((db) => {
             db.agent = db.agent.filter((item) => item.id !== id);
         });
         success(res, {});
@@ -53,7 +54,7 @@ router.post('/delete', async (req, res) => {
 router.post('/debug', async (req, res) => {
     const { method, url, body, prefix, headers, id } = req.body;
     try {
-        const agent = await sql((db) => db.agent.find((item) => item.id === id));
+        const agent = await sql<AppDbSchema['agent'][number] | undefined, AppDbSchema>((db) => db.agent.find((item) => item.id === id));
         if (!agent) {
             responseError(res, '未找到匹配的代理配置', HTTP_STATUS.NOT_FOUND);
             return;
@@ -98,7 +99,7 @@ export const agentCallback = (app: Application) => {
             const remainingPath = pathAfterAgent.substring(slashIndex);
 
             // 3. 在数据库中查找匹配的agent
-            const agentList = await sql((db) => db.agent);
+            const agentList = await sql<AppDbSchema['agent'], AppDbSchema>((db) => db.agent);
             const matchedAgent = agentList.find((item) => item.prefix === `/${prefix}`);
 
             if (!matchedAgent) {

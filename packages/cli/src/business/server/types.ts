@@ -16,3 +16,10 @@ export interface Options {
      * */
     exit?: boolean;
 }
+
+export interface ServerSchema {
+    menus: {
+        title: string;
+        to: string;
+    }[];
+}

@@ -2,9 +2,10 @@ import axios from 'axios';
 import { readSecret } from '@cli-tools/shared/node';
 import { HTTP_STATUS } from '@cli-tools/shared';
 import { logger } from '@/utils/logger';
+import type { CgSchema } from './types';
 
 export const getPerformanceData = async () => {
-    const prefix = await readSecret((db) => db.oa.dkdPrefix);
+    const prefix = await readSecret<string, CgSchema>((db) => db.oa.dkdPrefix);
     try {
         const res = await axios.post(`${prefix}/AppApi/GetDkdData`);
         const { Total, Setting } = res.data.Result;
@@ -21,7 +22,7 @@ export const getPerformanceData = async () => {
 };
 
 export const userForcastList = async () => {
-    const prefix = await readSecret((db) => db.oa.apiPrefix);
+    const prefix = await readSecret<string, CgSchema>((db) => db.oa.apiPrefix);
     try {
         const res = await axios.post(`${prefix}/dkd/ad/forecast/query`);
         const { result } = res.data;
@@ -36,7 +37,7 @@ export const userForcastList = async () => {
 };
 
 export const setUserForcast = async (amount: number) => {
-    const { prefix, cg } = await readSecret((db) => ({
+    const { prefix, cg } = await readSecret<{ prefix: string; cg: CgSchema['cg'] }, CgSchema>((db) => ({
         prefix: db.oa.apiPrefix,
         cg: db.cg,
     }));

@@ -1,6 +1,7 @@
 import { execaCommand as execa } from 'execa';
-import { cmdName, getExecutePath } from '@cli-tools/shared';
+import { cmdName, getExecutePath } from '@cli-tools/shared/node';
 import { readSecret } from '@cli-tools/shared/node';
+import type { OpenSchema } from './types';
 const pythonFileDialogExecutePath = getExecutePath('file-dialog');
 
 /**
@@ -9,7 +10,7 @@ const pythonFileDialogExecutePath = getExecutePath('file-dialog');
  * @returns {Promise<string>} 选择的文件/文件夹地址
  */
 export const showOpenDialog = async (type: 'file' | 'files' | 'directory'): Promise<string> => {
-    const root = await readSecret((db) => db.open.root);
+    const root = await readSecret<string, OpenSchema>((db) => db.open.root);
     const { stdout } = await execa(`${cmdName} ${pythonFileDialogExecutePath} --type=${type} --root="${root}"`);
     return stdout;
 };

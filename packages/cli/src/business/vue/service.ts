@@ -4,7 +4,8 @@ import clipboardy from 'clipboardy';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import fs from 'fs-extra';
-import { sql, type Database } from '@cli-tools/shared/node';
+import { sql } from '@cli-tools/shared/node';
+import type { VueSchema } from './types';
 import * as git from '../git/shared/utils';
 import { logger } from '@/utils/logger';
 import spinner from '@/utils/spinner';
@@ -130,7 +131,7 @@ const getProjectConfig = async (options: Options): Promise<ProjectConfig | null>
  * @returns 项目配置信息
  */
 const getProjectConfigFromList = async (): Promise<ProjectConfig | null> => {
-    const list = (await sql((db) => db.vue)) as Database['vue'][number][];
+    const list = await sql<VueSchema['vue'], VueSchema>((db) => db.vue);
 
     const selectedId = await select(
         '请选择运行的项目及命令',
@@ -226,7 +227,7 @@ const saveProjectToDatabase = async (config: ProjectConfig): Promise<void> => {
         config.publicPath = (await getPublicPathFromConfig(config.cwd)) || '';
     }
 
-    await sql((db) => {
+    await sql<void, VueSchema>((db) => {
         db.vue.push({
             id: db.vue.length + 1,
             path: config.cwd,
@@ -240,7 +241,7 @@ const saveProjectToDatabase = async (config: ProjectConfig): Promise<void> => {
  * @returns 选中的项目路径和分支名称
  */
 const selectProjectAndBranch = async (): Promise<{ selectedPath: string; selectedBranch: string }> => {
-    const list = await sql((db) => db.vue);
+    const list = await sql<VueSchema['vue'], VueSchema>((db) => db.vue);
     const pathList = Array.from(new Set(list.map((item) => item.path)));
 
     const selectedPath = await select(
@@ -314,7 +315,7 @@ const checkoutBranchAndStartServer = async (options: Options) => {
  * @returns 项目配置
  */
 const getProjectConfigFromPath = async (path: string, options: Options): Promise<ProjectConfig | null> => {
-    const list = await sql((db) => db.vue);
+    const list = await sql<VueSchema['vue'], VueSchema>((db) => db.vue);
     const project = list.find((item) => item.path === path);
 
     if (!project) {

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { sql } from '@cli-tools/shared/node';
+import { sql, readSecret } from '@cli-tools/shared/node';
+import type { AppDbSchema, BugSecretSchema } from './types';
 import dayjs from 'dayjs';
 import { mapAsync } from 'es-toolkit';
 // import Table from 'cli-table3';
-import { readSecret } from '@cli-tools/shared/node';
 import { HTTP_STATUS } from '@cli-tools/shared';
 import { success, error as responseError } from '../shared/response';
 // import { log } from '../shared/log';
@@ -20,7 +20,7 @@ const getLastDate = () => {
 
 router.post('/getApps', async (_, res) => {
     try {
-        const result = await sql((db) => db.monitor);
+        const result = await sql<AppDbSchema['monitor'], AppDbSchema>((db) => db.monitor);
         success(res, {
             list: result,
         });
@@ -30,7 +30,7 @@ router.post('/getApps', async (_, res) => {
 });
 router.post('/getCached', async (_, res) => {
     try {
-        const result = await sql((data) => {
+        const result = await sql<any[], AppDbSchema>((data) => {
             const list = clone(data.monitorResultCache);
             data.monitorResultCache = [];
             // db.write();
@@ -46,7 +46,7 @@ router.post('/getCached', async (_, res) => {
 });
 router.post('/init', async (_, res) => {
     try {
-        const result = await sql((db) => db.monitorResultCache);
+        const result = await sql<any[], AppDbSchema>((db) => db.monitorResultCache);
         success(res, {
             inited: result && !!result.length,
         });
@@ -57,7 +57,7 @@ router.post('/init', async (_, res) => {
 router.post('/saveApps', async (req, res) => {
     const list = req.body;
     try {
-        await sql((db) => {
+        await sql<void, AppDbSchema>((db) => {
             db.monitor = list;
         });
         success(res, null);
@@ -68,20 +68,20 @@ router.post('/saveApps', async (req, res) => {
 export default router;
 
 export const bugCallback = async () => {
-    const lastServerStartDate = await sql((db) => db.lastServerStartDate);
+    const lastServerStartDate = await sql<string, AppDbSchema>((db) => db.lastServerStartDate);
     const today = dayjs().format('YYYY-MM-DD');
     if (lastServerStartDate === today) {
         return;
     }
-    const list = await sql((db) => db.monitor);
+    const list = await sql<AppDbSchema['monitor'], AppDbSchema>((db) => db.monitor);
     if (!list || !list.length) {
         return;
     }
     // 更新最后启动日期
-    await sql((db) => {
+    await sql<void, AppDbSchema>((db) => {
         db.lastServerStartDate = today;
     });
-    const prefix = await readSecret((db) => db.oa.apiPrefix);
+    const prefix = await readSecret<string, BugSecretSchema>((db) => db.oa.apiPrefix);
     let lastDate = getLastDate();
     // const title = `${lastDate.split(' ')[0]} 至 ${dayjs().format('YYYY-MM-DD')} 错误统计`;
     const resList = await mapAsync(
@@ -119,7 +119,7 @@ export const bugCallback = async () => {
     //         .map((item) => [item.name, item.errorTotal, item.emphasizeTotal > 0 ? item.emphasizeTotal : '-']),
     // );
     // log(`\n${title}\n${table.toString()}`);
-    await sql((db) => {
+    await sql<void, AppDbSchema>((db) => {
         db.monitorResultCache = resList
             .filter((item) => item.errorTotal > 0)
             .map((item) => omit(item, ['errorTotal', 'emphasizeTotal']));

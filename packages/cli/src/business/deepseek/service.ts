@@ -2,7 +2,16 @@ import { logger } from '@/utils/logger';
 import { readSecret } from '@cli-tools/shared/node';
 import axios from 'axios';
 export async function deepseekService() {
-    const key = await readSecret((db) => db.ai.apiKey.deepseekCompany);
+    const key = await readSecret<
+        string,
+        {
+            ai: {
+                apiKey: {
+                    deepseekCompany: string;
+                };
+            };
+        }
+    >((db) => db.ai.apiKey.deepseekCompany);
     let config = {
         method: 'get',
         maxBodyLength: Infinity,

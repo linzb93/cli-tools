@@ -1,6 +1,6 @@
 import { operateJsonDatabase } from './_internal/database';
 
-interface Database {
+export interface SecretData {
     ai: {
         /**
          * 各平台ai api key
@@ -82,6 +82,6 @@ interface Database {
  * @param callback 回调函数
  * @returns 回调函数返回值
  */
-export async function readSecret<T>(callback: (data: Database) => T): Promise<T> {
-    return operateJsonDatabase<Database, T>('secret.json', callback);
+export async function readSecret<T, D = SecretData>(callback: (data: D) => T): Promise<T> {
+    return operateJsonDatabase<D, T>('secret.json', callback);
 }

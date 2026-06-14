@@ -5,7 +5,7 @@ import type { AiModel } from '../types/ai-model';
 /**
  * 数据由程序录入，非人为操作
  */
-export interface Database {
+export interface SqlData {
     open: {
         root: string;
     };
@@ -126,6 +126,6 @@ export interface Database {
  * @param callback 回调函数
  * @returns 回调函数返回值
  */
-export async function sql<T>(callback: (data: Database, db?: Low<unknown>) => T): Promise<T> {
-    return operateJsonDatabase<Database, T>('app.json', callback);
+export async function sql<T, D = SqlData>(callback: (data: D, db?: Low<unknown>) => T): Promise<T> {
+    return operateJsonDatabase<D, T>('app.json', callback);
 }

@@ -9,7 +9,14 @@ interface JenkinsProject {
     onlineName?: string;
     type?: string;
 }
-
+interface JenkinsSchema {
+    jenkins: {
+        url: {
+            internal: string;
+            public: string;
+        };
+    };
+}
 /**
  * 打开公司内部Jenkins部署页面
  */
@@ -17,7 +24,9 @@ export const openDeployPage = async (type?: string, isOnline?: boolean) => {
     const { id, name, onlineId, onlineName } = await getProjectName(type);
     if (id) {
         const isWork = true;
-        const origin = await readSecret((db) => (isWork ? db.jenkins.url.internal : db.jenkins.url.public));
+        const origin = await readSecret<string, JenkinsSchema>((db) =>
+            isWork ? db.jenkins.url.internal : db.jenkins.url.public,
+        );
         await open(
             `http://${origin}/view/${isOnline ? onlineName || name : name}/job/${isOnline ? onlineId || id : id}/`,
         );

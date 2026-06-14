@@ -5,6 +5,7 @@ import { logger } from '@/utils/logger';
 import { readSecret } from '@cli-tools/shared/node';
 import { imageBase64ToStream, tempUpload } from '@/utils/image';
 import { service } from '@/utils/http/company-service';
+import type { OccSchema } from '../types';
 
 /**
  * 手动输入验证码进行登录
@@ -38,11 +39,11 @@ async function manualCaptchaLogin(
 
 export async function login(): Promise<void> {
     try {
-        let { username } = await readSecret((db) => db.oa);
+        let { username } = await readSecret<OccSchema['oa'], OccSchema>((db) => db.oa);
         if (!username) {
             await getOCCUserInfo();
         }
-        const oa = await readSecret((db) => db.oa);
+        const oa = await readSecret<OccSchema['oa'], OccSchema>((db) => db.oa);
         username = oa.username;
         const password = oa.password;
         const prefix = oa.apiPrefix;
@@ -78,7 +79,7 @@ export async function login(): Promise<void> {
         }
 
         // 保存token
-        await readSecret((db) => {
+        await readSecret<void, OccSchema>((db) => {
             db.oa.token = loginResult.token;
         });
     } catch (error) {
@@ -90,7 +91,7 @@ async function getOCCUserInfo() {
     const username = await ask('请输入用户名:');
     const password = await ask('请输入密码:');
 
-    await readSecret((db) => {
+    await readSecret<void, OccSchema>((db) => {
         db.oa.username = username;
         db.oa.password = password;
     });
@@ -162,7 +163,7 @@ async function getLoginCaptcha(): Promise<{
     uuid: string;
     removeHandler: () => Promise<void>;
 }> {
-    const prefix = await readSecret((db) => db.oa.apiPrefix);
+    const prefix = await readSecret<string, OccSchema>((db) => db.oa.apiPrefix);
     const res = await service.get<{
         /**
          * 验证码base64，不含前面`data:image/png;base64,`

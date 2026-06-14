@@ -4,6 +4,7 @@ import { mapAsync } from 'es-toolkit';
 import { join } from 'node:path';
 import { reduceAsync } from 'es-toolkit';
 import { sql } from '@cli-tools/shared/node';
+import type { ScanSchema } from './scanSchema';
 import { logger } from '@/utils/logger';
 import { progress } from '@/utils/progress';
 
@@ -22,7 +23,7 @@ export interface DirInfo {
  * @returns 所有子目录信息列表
  */
 export const expandWorkDirs = async (): Promise<string[]> => {
-    const workDirs = await sql(async (db) => db.workDirs);
+    const workDirs = await sql<ScanSchema['workDirs'], ScanSchema>((db) => db.workDirs);
 
     if (!workDirs || workDirs.length === 0) {
         return [];

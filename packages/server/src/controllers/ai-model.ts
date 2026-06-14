@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { sql } from '@cli-tools/shared/node';
+import type { AppDbSchema } from './types';
 import type { AiModel } from '@cli-tools/shared';
 import { HTTP_STATUS, handleAIError } from '@cli-tools/shared';
 import { success, error as responseError } from '../shared/response';
@@ -15,12 +16,12 @@ const ccSwitchDatabase = new Database(path.join(os.homedir(), '.cc-switch', 'cc-
 const router = Router();
 
 const getModelList = async (): Promise<AiModel[]> => {
-    const data = await sql((db) => db.aiModels);
+    const data = await sql<AppDbSchema['aiModels'], AppDbSchema>((db) => db.aiModels);
     return data || [];
 };
 
 const saveModelList = async (list: AiModel[]) => {
-    await sql((db) => {
+    await sql<void, AppDbSchema>((db) => {
         db.aiModels = list;
     });
 };

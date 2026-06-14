@@ -1,7 +1,12 @@
 import { logger } from '@/utils/logger';
 import { ask } from '@/utils/readline';
-import { sql, type Database } from '@cli-tools/shared/node';
-
+import { sql } from '@cli-tools/shared/node';
+interface YapiSchema {
+    yapi: {
+        token: string;
+        uid: string;
+    };
+}
 /**
  * 手动输入Yapi的token和uid
  * @returns cookie字符串
@@ -13,7 +18,7 @@ export const manualInputCookie = async (): Promise<string | null> => {
         const uid = await ask('请输入Yapi的_yapi_uid:');
 
         // 将token保存到数据库
-        await sql(async (db: Database) => {
+        await sql<null, YapiSchema>((db) => {
             if (!db.yapi) {
                 db.yapi = {
                     token: '',
@@ -26,7 +31,7 @@ export const manualInputCookie = async (): Promise<string | null> => {
         });
 
         // 将token保存到secret
-        await sql(async (data) => {
+        await sql<void, YapiSchema>(async (data) => {
             if (!data.yapi) {
                 data.yapi = {
                     token: '',
@@ -50,7 +55,7 @@ export const manualInputCookie = async (): Promise<string | null> => {
  * @returns cookie字符串
  */
 export const getYapiCookie = async (): Promise<string> => {
-    const result = await sql((data) => {
+    const result = await sql<string, YapiSchema>((data) => {
         if (!data.yapi?.token || !data.yapi?.uid) {
             return '';
         }

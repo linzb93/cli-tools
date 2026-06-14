@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import detectPort from 'detect-port';
 import chalk from 'chalk';
 import { root, sql } from '@cli-tools/shared/node';
+import type { ServerSchema } from './types';
 import { killService } from '../kill';
 import { select } from '@/utils/readline';
 import { serverConfig } from '@cli-tools/shared';
@@ -16,7 +17,7 @@ const openPage = async (options?: Options) => {
         return;
     }
     if (options?.menu) {
-        const menus = await sql((db) => db.menus);
+        const menus = await sql<ServerSchema['menus'], ServerSchema>((db) => db.menus);
         let menu = '';
         if (options.menu === true && menus && menus.length) {
             const answer = await select(

@@ -6,9 +6,15 @@ export interface Options {
     recursive?: boolean;
     prev?: boolean;
 }
-
 export interface CdHistoryItem {
     path: string;
     count: number;
     alias?: string;
+}
+export interface CdSchema {
+    cdHistory?: CdHistoryItem[];
+    lastCdPath?: string;
+    open?: {
+        root: string;
+    };
 }

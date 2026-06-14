@@ -2,6 +2,7 @@ import { getPrefix } from '../helpers/http';
 import { service } from '@/utils/http/company-service';
 import { GetUserInfoRequest } from '../types';
 import { readSecret } from '@cli-tools/shared/node';
+import type { OccRepoMeituanSchema } from './types';
 interface MeituanShopURLRequest {
     /** 应用key */
     appKey: string;
@@ -33,7 +34,7 @@ interface UserInfo {
  * @returns {Promise<UserInfo>} 用户信息
  */
 export const getUserInfo = async (params: GetUserInfoRequest): Promise<UserInfo> => {
-    const prefix = await readSecret((db) => db.oa.userApiPrefix);
+    const prefix = await readSecret<string, OccRepoMeituanSchema>((db) => db.oa.userApiPrefix);
     const res = await service.post(
         `${prefix}/meituan/${params.userApi}`,
         {},

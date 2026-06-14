@@ -2,11 +2,12 @@ import intoStream from 'into-stream';
 import OSS from 'ali-oss';
 import { readSecret } from '@cli-tools/shared/node';
 import { join } from 'node:path';
+import type { OssSchema } from './types';
 import slash from 'slash';
 import { type Readable } from 'node:stream';
 import { execaCommand as execa } from 'execa';
 import { isWin } from '@cli-tools/shared/node';
-import { cmdName, parseJSON, getExecutePath } from '@cli-tools/shared';
+import { cmdName, parseJSON, getExecutePath } from '@cli-tools/shared/node';
 
 const pythonExecutePath = getExecutePath(`image-clipboard-${isWin ? 'win' : 'mac'}`);
 type Params =
@@ -22,7 +23,7 @@ type Params =
  * 临时文件上传至OSS，用完之后清除。
  */
 export const tempUpload = async (data: Params) => {
-    const ossData = await readSecret((db) => db.oss);
+    const ossData = await readSecret<OssSchema['oss'], OssSchema>((db) => db.oss);
     const { uploadPath, ...config } = ossData;
     const client = new OSS(config);
     const ossPath = slash(join(uploadPath, `local-${Date.now()}.png`));
