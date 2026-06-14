@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import response from '../shared/response';
+import { HTTP_STATUS } from '@cli-tools/shared';
+import { success, error as responseError } from '../shared/response';
 import axios from 'axios';
 const router = Router();
 
@@ -12,9 +13,9 @@ router.post('/fetchApiCrossOrigin', async (req, res) => {
             method: 'get',
             url: req.body.url,
         });
-        response(res, res1.data);
+        success(res, res1.data);
     } catch (error) {
-        response(res, { message: (error as Error).message });
+        responseError(res, (error as Error).message || '请求失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 

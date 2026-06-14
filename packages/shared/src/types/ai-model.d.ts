@@ -5,6 +5,7 @@ export interface AiModel {
     url: string;
     mediaType: 'text' | 'image';
     apiKey: string;
+    model: string;
     interfaceFormat: string;
     weight: number;
 }

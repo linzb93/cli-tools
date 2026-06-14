@@ -1,4 +1,5 @@
 import { readSecret } from '@cli-tools/shared/node';
+import { handleAIError } from '@cli-tools/shared';
 import { AIModel } from './base';
 
 /**
@@ -13,6 +14,6 @@ export const createVolcanoImageModel = async (): Promise<AIModel> => {
         model: 'doubao-1-5-vision-pro-32k-250115',
         type: 'image',
         apiKey,
-        errorHandler: (errorMessage: string): string => errorMessage,
+        errorHandler: (errorMessage: string): string => handleAIError(errorMessage, '火山方舟图像'),
     };
 };

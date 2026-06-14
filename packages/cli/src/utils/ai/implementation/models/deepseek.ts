@@ -1,4 +1,5 @@
 import { readSecret } from '@cli-tools/shared/node';
+import { handleAIError } from '@cli-tools/shared';
 import { AIModel } from './base';
 
 /**
@@ -13,11 +14,6 @@ export const createDeepseekModel = async (): Promise<AIModel> => {
         model: 'deepseek-chat',
         type: 'text',
         apiKey,
-        errorHandler: (errorMessage: string): string => {
-            if (errorMessage.includes('Insufficient Balance')) {
-                return 'DeepSeek余额不足';
-            }
-            return errorMessage;
-        },
+        errorHandler: (errorMessage: string): string => handleAIError(errorMessage, 'DeepSeek'),
     };
 };

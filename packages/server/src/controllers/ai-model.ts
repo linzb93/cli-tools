@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { sql } from '@cli-tools/shared/node';
 import type { AiModel } from '@cli-tools/shared';
-import response from '../shared/response';
+import { HTTP_STATUS, handleAIError } from '@cli-tools/shared';
+import { success, error as responseError } from '../shared/response';
 import Database from 'better-sqlite3';
 import path from 'node:path';
 import os from 'node:os';
@@ -33,22 +34,24 @@ const generateId = (): string => {
 router.post('/list', async (_req, res) => {
     try {
         const list = await getModelList();
-        response(res, list);
+        success(res, list);
     } catch (error: any) {
-        response(res, null);
         console.error('获取AI模型列表失败:', error);
+        error(res, error.message || '获取AI模型列表失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
 // 新增/编辑模型
 router.post('/save', async (req, res) => {
-    const { id, name, platform, url, mediaType, apiKey, interfaceFormat, weight, oldId } = req.body;
+    const { id, name, model, platform, url, mediaType, apiKey, interfaceFormat, weight, oldId } = req.body;
 
     if (!name) {
-        return response(res, { message: '名称不能为空' });
+        responseError(res, '名称不能为空', HTTP_STATUS.DATAISVALID);
+        return;
     }
     if (!platform) {
-        return response(res, { message: '平台不能为空' });
+        responseError(res, '平台不能为空', HTTP_STATUS.DATAISVALID);
+        return;
     }
 
     try {
@@ -57,7 +60,8 @@ router.post('/save', async (req, res) => {
         // 检查名称重复（排除自身）
         const nameExists = list.some((item) => item.name === name && (!oldId || item.id !== oldId));
         if (nameExists) {
-            return response(res, { message: `名称 "${name}" 已存在` });
+            responseError(res, `名称 "${name}" 已存在`, HTTP_STATUS.BUSINESSERROR);
+            return;
         }
 
         if (oldId) {
@@ -67,6 +71,7 @@ router.post('/save', async (req, res) => {
                 list[index] = {
                     id: oldId,
                     name,
+                    model: model || '',
                     platform,
                     url: url || '',
                     mediaType: mediaType || 'text',
@@ -75,13 +80,15 @@ router.post('/save', async (req, res) => {
                     weight: weight ?? 0,
                 };
             } else {
-                return response(res, { message: `模型 "${oldId}" 不存在` });
+                responseError(res, `模型 "${oldId}" 不存在`, HTTP_STATUS.NULLDATA);
+                return;
             }
         } else {
             // 新增模式
             list.push({
                 id: id || generateId(),
                 name,
+                model: model || '',
                 platform,
                 url: url || '',
                 mediaType: mediaType || 'text',
@@ -92,9 +99,9 @@ router.post('/save', async (req, res) => {
         }
 
         await saveModelList(list);
-        response(res, {});
+        success(res, {});
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '保存失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -102,16 +109,17 @@ router.post('/save', async (req, res) => {
 router.post('/delete', async (req, res) => {
     const { id } = req.body;
     if (!id) {
-        return response(res, { message: 'ID 不能为空' });
+        responseError(res, 'ID 不能为空', HTTP_STATUS.DATAISVALID);
+        return;
     }
 
     try {
         const list = await getModelList();
         const newList = list.filter((item) => item.id !== id);
         await saveModelList(newList);
-        response(res, {});
+        success(res, {});
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '删除失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -145,6 +153,7 @@ router.post('/sync-cc-switch', async (req, res) => {
             if (!existingApiKeys.has(item.apiKey)) {
                 newItems.push({
                     id: generateId(),
+                    model: (item as any).model || '',
                     platform: item.platform || 'cc-switch',
                     name: item.name || '',
                     url: item.url || '',
@@ -160,25 +169,26 @@ router.post('/sync-cc-switch', async (req, res) => {
             await saveModelList([...existingList, ...newItems]);
         }
 
-        response(res, null);
+        success(res, null);
     } catch (error: any) {
-        response(res, { message: error.message });
         console.error('同步cc-switch数据库失败:', error);
+        error(res, error.message || '同步cc-switch数据库失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
 // 验证模型接口有效性
 router.post('/validate', async (req, res) => {
-    const { url, apiKey, interfaceFormat } = req.body;
+    const { model: modelName, url, apiKey, interfaceFormat } = req.body;
 
-    if (!url || !apiKey || !interfaceFormat) {
-        return response(res, { message: 'URL、API Key 和接口格式不能为空' });
+    if (!modelName || !url || !apiKey || !interfaceFormat) {
+        responseError(res, '模型、URL、API Key 和接口格式不能为空', HTTP_STATUS.DATAISVALID);
+        return;
     }
 
     try {
         if (interfaceFormat === 'openai') {
             const provider = createOpenAI({ apiKey, baseURL: url });
-            const model = provider('gpt-3.5-turbo');
+            const model = provider.chat(modelName);
             await generateText({
                 model,
                 prompt: 'Hi',
@@ -186,19 +196,20 @@ router.post('/validate', async (req, res) => {
             });
         } else if (interfaceFormat === 'anthropic') {
             const provider = createAnthropic({ apiKey, baseURL: url });
-            const model = provider('claude-3-5-haiku-20241022');
+            const model = provider(modelName);
             await generateText({
                 model,
                 prompt: 'Hi',
                 maxOutputTokens: 1,
             });
         } else {
-            return response(res, { message: `不支持的接口格式: ${interfaceFormat}` });
+            responseError(res, `不支持的接口格式: ${interfaceFormat}`, HTTP_STATUS.BUSINESSERROR);
+            return;
         }
 
-        response(res, { message: '接口验证有效' });
+        success(res, { message: '接口验证有效' });
     } catch (error: any) {
-        response(res, { message: error.message || '接口验证失败' });
+        responseError(res, handleAIError(error.message || '接口验证失败'), HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 

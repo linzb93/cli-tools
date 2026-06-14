@@ -1,4 +1,5 @@
 import { readSecret } from '@cli-tools/shared/node';
+import { handleAIError } from '@cli-tools/shared';
 import { AIModel } from './base';
 
 /**
@@ -13,6 +14,6 @@ export const createSiliconflowModel = async (): Promise<AIModel> => {
         model: 'deepseek-ai/DeepSeek-V3',
         type: 'text',
         apiKey,
-        errorHandler: (errorMessage: string): string => errorMessage,
+        errorHandler: (errorMessage: string): string => handleAIError(errorMessage, '硅基流动'),
     };
 };

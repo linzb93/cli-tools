@@ -7,7 +7,7 @@ export const AI_MODELS_PLATFORMS: PlatformConfig[] = [
     {
         label: 'Deepseek',
         value: 'Deepseek',
-        urls: { openai: 'https://api.deepseek.com', anthropic: 'https://api.deepseek.com/anthropic' },
+        urls: { openai: 'https://api.deepseek.com/v1', anthropic: 'https://api.deepseek.com/anthropic' },
     },
     {
         label: 'Minimax',

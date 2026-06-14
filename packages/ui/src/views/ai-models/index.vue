@@ -9,6 +9,7 @@
 
     <el-table :data="list" style="width: 100%" v-loading="loading">
       <el-table-column prop="name" label="自定义名称" min-width="150" />
+      <el-table-column prop="model" label="模型" min-width="150" />
       <el-table-column label="所属平台" width="120">
         <template #default="{ row }">
           {{ platformLabel(row.platform) }}
@@ -16,7 +17,7 @@
       </el-table-column>
       <el-table-column label="媒体类型" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.mediaType === 'image' ? 'warning' : ''" size="small">
+          <el-tag :type="row.mediaType === 'image' ? 'warning' : 'primary'" size="small">
             {{ row.mediaType === 'text' ? '文本' : '图片' }}
           </el-tag>
         </template>

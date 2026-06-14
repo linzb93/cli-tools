@@ -2,15 +2,16 @@ import { Router, type Application, Request, Response } from 'express';
 import axios from 'axios';
 import { omit } from 'es-toolkit';
 import { sql } from '@cli-tools/shared/node';
-import response from '../shared/response';
+import { HTTP_STATUS } from '@cli-tools/shared';
+import { success, error as responseError } from '../shared/response';
 const router = Router();
 
 router.post('/list', async (_, res) => {
     try {
         const list = await sql((db) => db.agent);
-        response(res, list);
+        success(res, list);
     } catch (error) {
-        response(res, { message: (error as Error).message });
+        responseError(res, (error as Error).message || '获取列表失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -31,9 +32,9 @@ router.post('/save', async (req, res) => {
                 db.agent.push({ id, name, prefix, rules });
             }
         });
-        response(res, {});
+        success(res, {});
     } catch (error) {
-        response(res, { message: (error as Error).message });
+        responseError(res, (error as Error).message || '保存失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -43,9 +44,9 @@ router.post('/delete', async (req, res) => {
         await sql((db) => {
             db.agent = db.agent.filter((item) => item.id !== id);
         });
-        response(res, {});
+        success(res, {});
     } catch (error) {
-        response(res, { message: (error as Error).message });
+        responseError(res, (error as Error).message || '删除失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -54,18 +55,14 @@ router.post('/debug', async (req, res) => {
     try {
         const agent = await sql((db) => db.agent.find((item) => item.id === id));
         if (!agent) {
-            return response(res, {
-                code: 404,
-                message: '未找到匹配的代理配置',
-            });
+            responseError(res, '未找到匹配的代理配置', HTTP_STATUS.NOT_FOUND);
+            return;
         }
         const { rules } = agent;
         const matchedRule = rules.find((rule) => prefix === rule.from);
         if (!matchedRule) {
-            return response(res, {
-                code: 404,
-                message: '未找到匹配的代理规则',
-            });
+            responseError(res, '未找到匹配的代理规则', HTTP_STATUS.NOT_FOUND);
+            return;
         }
         const fullUrl = `${matchedRule.to}${url}`;
         const res1 = await axios({
@@ -74,13 +71,9 @@ router.post('/debug', async (req, res) => {
             data: body ? JSON.parse(body) : {},
             headers: headers ? JSON.parse(headers) : {},
         });
-        response(res, res1.data);
+        success(res, res1.data);
     } catch (err: any) {
-        response(res, {
-            code: err.response?.status || 500,
-            message: err.message,
-            data: err.response?.data,
-        });
+        responseError(res, err.message || '调试请求失败', err.response?.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 

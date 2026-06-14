@@ -5,7 +5,8 @@ import dayjs from 'dayjs';
 import { mapAsync } from 'es-toolkit';
 // import Table from 'cli-table3';
 import { readSecret } from '@cli-tools/shared/node';
-import response from '../shared/response';
+import { HTTP_STATUS } from '@cli-tools/shared';
+import { success, error as responseError } from '../shared/response';
 // import { log } from '../shared/log';
 import { omit, clone } from 'es-toolkit';
 const router = Router();
@@ -20,7 +21,7 @@ const getLastDate = () => {
 router.post('/getApps', async (_, res) => {
     try {
         const result = await sql((db) => db.monitor);
-        response(res, {
+        success(res, {
             list: result,
         });
     } catch (err) {
@@ -29,13 +30,13 @@ router.post('/getApps', async (_, res) => {
 });
 router.post('/getCached', async (_, res) => {
     try {
-        const result = await sql((data, db) => {
+        const result = await sql((data) => {
             const list = clone(data.monitorResultCache);
             data.monitorResultCache = [];
             // db.write();
             return list;
         });
-        response(res, {
+        success(res, {
             list: result,
             lastDate: getLastDate(),
         });
@@ -46,7 +47,7 @@ router.post('/getCached', async (_, res) => {
 router.post('/init', async (_, res) => {
     try {
         const result = await sql((db) => db.monitorResultCache);
-        response(res, {
+        success(res, {
             inited: result && !!result.length,
         });
     } catch (err) {
@@ -59,9 +60,9 @@ router.post('/saveApps', async (req, res) => {
         await sql((db) => {
             db.monitor = list;
         });
-        response(res, null);
+        success(res, null);
     } catch (error) {
-        response(res, { message: (error as Error).message });
+        responseError(res, (error as Error).message || '保存失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 export default router;

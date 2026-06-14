@@ -1,4 +1,4 @@
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
 // import { log } from '../shared/log';
 import { sql } from '@cli-tools/shared/node';
 import express, { type Application, Router } from 'express';
@@ -15,7 +15,7 @@ vueRouter.post('/start', async (req, res) => {
         }
 
         // path could be the dist directory, we need the project root
-        const cwd = path.endsWith('dist') ? dirname(path) : path;
+        // const cwd = path.endsWith('dist') ? dirname(path) : path;
 
         // const result = await startStaticServer({ cwd, reqApp: req.app });
         // res.json({ success: true, url: result.url });

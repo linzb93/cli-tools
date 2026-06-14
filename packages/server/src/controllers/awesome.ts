@@ -2,7 +2,8 @@ import { Router } from 'express';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { cacheRoot } from '@cli-tools/shared/node';
-import response from '../shared/response';
+import { HTTP_STATUS } from '@cli-tools/shared';
+import { success, error } from '../shared/response';
 
 const router = Router();
 const filePath = path.resolve(cacheRoot, 'awesome.json');
@@ -61,9 +62,9 @@ router.post('/list', async (req, res) => {
             }
         }
 
-        response(res, results);
+        success(res, results);
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '获取列表失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -72,7 +73,8 @@ router.post('/save', async (req, res) => {
     const { title, description, url, tag, oldTitle } = req.body;
 
     if (!title) {
-        return response(res, { message: 'Title is required' });
+        error(res, 'Title is required', HTTP_STATUS.DATAISVALID);
+        return;
     }
 
     try {
@@ -86,7 +88,8 @@ router.post('/save', async (req, res) => {
         );
 
         if (exists) {
-            return response(res, { message: `Title "${title}" already exists` });
+            error(res, `Title "${title}" already exists`, HTTP_STATUS.BUSINESSERROR);
+            return;
         }
 
         if (oldTitle) {
@@ -95,7 +98,8 @@ router.post('/save', async (req, res) => {
             if (index !== -1) {
                 list[index] = { title, description, url, tag };
             } else {
-                return response(res, { message: `Item with title "${oldTitle}" not found` });
+                error(res, `Item with title "${oldTitle}" not found`, HTTP_STATUS.NULLDATA);
+                return;
             }
         } else {
             // Add mode
@@ -103,9 +107,9 @@ router.post('/save', async (req, res) => {
         }
 
         await saveAwesomeList(list);
-        response(res, {});
+        success(res, {});
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '保存失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -113,16 +117,17 @@ router.post('/save', async (req, res) => {
 router.post('/delete', async (req, res) => {
     const { title } = req.body;
     if (!title) {
-        return response(res, { message: 'Title is required' });
+        error(res, 'Title is required', HTTP_STATUS.DATAISVALID);
+        return;
     }
 
     try {
         const list = await getAwesomeList();
         const newList = list.filter((item) => item.title !== title);
         await saveAwesomeList(newList);
-        response(res, {});
+        success(res, {});
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '删除失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -139,9 +144,9 @@ router.post('/tags', async (_, res) => {
                 });
             }
         });
-        response(res, Array.from(allTags).sort());
+        success(res, Array.from(allTags).sort() as any);
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '获取标签失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
@@ -149,7 +154,8 @@ router.post('/tags', async (_, res) => {
 router.post('/tags/edit', async (req, res) => {
     const { tags } = req.body; // Array of { from, to }
     if (!tags || !Array.isArray(tags)) {
-        return response(res, { message: 'Tags mapping is required' });
+        error(res, 'Tags mapping is required', HTTP_STATUS.DATAISVALID);
+        return;
     }
 
     try {
@@ -188,9 +194,9 @@ router.post('/tags/edit', async (req, res) => {
             await saveAwesomeList(list);
         }
 
-        response(res, { affected: affectedTitles });
+        success(res, { affected: affectedTitles });
     } catch (error: any) {
-        response(res, { message: error.message });
+        error(res, error.message || '编辑标签失败', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 });
 
